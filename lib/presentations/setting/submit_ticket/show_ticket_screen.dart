@@ -1,0 +1,594 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:payfussion/core/theme/theme.dart';
+import '../../../core/constants/routes_name.dart';
+import '../../../services/submit_ticket_service.dart'; // Adjust path as needed
+
+class ShowTicketScreen extends StatefulWidget {
+  const ShowTicketScreen({super.key});
+
+  @override
+  State<ShowTicketScreen> createState() => _ShowTicketScreenState();
+}
+
+class _ShowTicketScreenState extends State<ShowTicketScreen>
+    with TickerProviderStateMixin {
+
+  // Animation controllers
+  late AnimationController _slideController;
+  late AnimationController _fadeController;
+  late AnimationController _scaleController;
+
+  // Animations
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
+
+  // Initialize the repository - THIS WAS THE MISSING PART
+  late TicketRepository _ticketRepository;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize the repository - ADD THIS LINE
+    _ticketRepository = TicketRepository();
+
+    // Initialize animation controllers
+    _slideController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+
+    _scaleController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+
+    // Initialize animations
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _slideController,
+      curve: Curves.easeOutCubic,
+    ));
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _fadeController,
+      curve: Curves.easeInOut,
+    ));
+
+    _scaleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _scaleController,
+      curve: Curves.elasticOut,
+    ));
+
+    // Start entry animations
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fadeController.forward();
+      _slideController.forward();
+      _scaleController.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _slideController.dispose();
+    _fadeController.dispose();
+    _scaleController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: Column(
+        children: [
+          SizedBox(height: 30.h),
+          // Animated Back Button
+          SlideTransition(
+            position: _slideAnimation,
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  _buildBackButton(),
+                ],
+              ),
+            ),
+          ),
+
+          SizedBox(height: 20.h),
+
+          // Animated Title
+          SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0, 0.2),
+              end: Offset.zero,
+            ).animate(CurvedAnimation(
+              parent: _slideController,
+              curve: const Interval(0.2, 1.0, curve: Curves.easeOutCubic),
+            )),
+            child: ScaleTransition(
+              scale: _scaleAnimation,
+              child: _buildTitle(),
+            ),
+          ),
+
+          SizedBox(height: 30.h),
+
+          // Animated Tickets List
+          Expanded(
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0, 0.1),
+                end: Offset.zero,
+              ).animate(CurvedAnimation(
+                parent: _slideController,
+                curve: const Interval(0.4, 1.0, curve: Curves.easeOutCubic),
+              )),
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: _buildTicketsList(),
+              ),
+            ),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: (){
+          context.push(RouteNames.submitATicket);
+        },
+        label: const Text("Add Ticket"),
+      ),
+    );
+  }
+
+  Widget _buildBackButton() {
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 600),
+      tween: Tween(begin: 0.0, end: 1.0),
+      builder: (context, value, child) {
+        return Transform.translate(
+          offset: Offset(-20 * (1 - value), 0),
+          child: Opacity(
+            opacity: value,
+            child: InkWell(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                context.go('/');
+              },
+              borderRadius: BorderRadius.circular(12.r),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: 16.w, vertical: 8.h),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TweenAnimationBuilder<double>(
+                      duration: const Duration(milliseconds: 800),
+                      tween: Tween(begin: 0.0, end: 1.0),
+                      builder: (context, iconValue, child) {
+                        return Transform.scale(
+                          scale: iconValue,
+                          child: Icon(
+                            Icons.arrow_back_ios_new,
+                            color: const Color(0xff2D9CDB),
+                            size: 24.r,
+                          ),
+                        );
+                      },
+                    ),
+                    SizedBox(width: 2.w),
+                    Text(
+                      'Back',
+                      style: TextStyle(
+                        fontFamily: 'Montserrat',
+                        fontSize: 20.sp,
+                        color: const Color(0xff2D9CDB),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildTitle() {
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 800),
+      tween: Tween(begin: 0.0, end: 1.0),
+      builder: (context, value, child) {
+        return Transform.translate(
+          offset: Offset(0, 20 * (1 - value)),
+          child: Opacity(
+            opacity: value,
+            child: Text(
+              'My Tickets',
+              style: TextStyle(
+                fontFamily: 'Montserrat',
+                fontSize: 24.sp,
+                color: const Color(0xff2D9CDB),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildTicketsList() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _ticketRepository.getCurrentUserTicketsStream(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildLoadingState();
+        }
+
+        if (snapshot.hasError) {
+          return _buildErrorState(snapshot.error.toString());
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return _buildEmptyState();
+        }
+
+        return _buildTicketsListView(snapshot.data!.docs);
+      },
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          TweenAnimationBuilder<double>(
+            duration: const Duration(milliseconds: 1000),
+            tween: Tween(begin: 0.0, end: 1.0),
+            builder: (context, value, child) {
+              return Transform.rotate(
+                angle: value * 2 * 3.14159,
+                child: SizedBox(
+                  height: 50.h,
+                  width: 50.w,
+                  child: CircularProgressIndicator(
+                    color: const Color(0xff2D9CDB),
+                    strokeWidth: 3,
+                  ),
+                ),
+              );
+            },
+          ),
+          SizedBox(height: 20.h),
+          Text(
+            'Loading tickets...',
+            style: TextStyle(
+              fontFamily: 'Montserrat',
+              fontSize: 16.sp,
+              color: Colors.grey,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(String error) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: 60.r,
+            color: Colors.red,
+          ),
+          SizedBox(height: 20.h),
+          Text(
+            'Error loading tickets',
+            style: TextStyle(
+              fontFamily: 'Montserrat',
+              fontSize: 18.sp,
+              color: Colors.red,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(height: 10.h),
+          Text(
+            error,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Montserrat',
+              fontSize: 14.sp,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          TweenAnimationBuilder<double>(
+            duration: const Duration(milliseconds: 800),
+            tween: Tween(begin: 0.0, end: 1.0),
+            builder: (context, value, child) {
+              return Transform.scale(
+                scale: 0.8 + (0.2 * value),
+                child: Icon(
+                  Icons.confirmation_number_outlined,
+                  size: 80.r,
+                  color: Colors.grey,
+                ),
+              );
+            },
+          ),
+          SizedBox(height: 20.h),
+          Text(
+            'No tickets found',
+            style: TextStyle(
+              fontFamily: 'Montserrat',
+              fontSize: 18.sp,
+              color: Colors.grey,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(height: 10.h),
+          Text(
+            'You haven\'t created any tickets yet',
+            style: TextStyle(
+              fontFamily: 'Montserrat',
+              fontSize: 14.sp,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTicketsListView(List<QueryDocumentSnapshot> tickets) {
+    // Sort tickets by date in Flutter instead of Firestore
+    tickets.sort((a, b) {
+      final aData = a.data() as Map<String, dynamic>;
+      final bData = b.data() as Map<String, dynamic>;
+
+      final aDate = aData['date'] as Timestamp?;
+      final bDate = bData['date'] as Timestamp?;
+
+      // Handle null dates
+      if (aDate == null && bDate == null) return 0;
+      if (aDate == null) return 1;
+      if (bDate == null) return -1;
+
+      // Sort by date descending (newest first)
+      return bDate.compareTo(aDate);
+    });
+
+    return ListView.builder(
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      itemCount: tickets.length,
+      itemBuilder: (context, index) {
+        final ticket = tickets[index];
+        final data = ticket.data() as Map<String, dynamic>;
+
+        return TweenAnimationBuilder<double>(
+          duration: Duration(milliseconds: 600 + (index * 100)),
+          tween: Tween(begin: 0.0, end: 1.0),
+          builder: (context, value, child) {
+            return Transform.translate(
+              offset: Offset(50 * (1 - value), 0),
+              child: Opacity(
+                opacity: value,
+                child: _buildTicketCard(data, ticket.id),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildTicketCard(Map<String, dynamic> data, String documentId) {
+    final title = data['title'] ?? 'No Title';
+    final description = data['description'] ?? 'No Description';
+    final status = data['status'] ?? 'pending';
+    final userId = data['userId'] ?? '';
+    final date = data['date'] as Timestamp?;
+
+    String formattedDate = 'Unknown Date';
+    if (date != null) {
+      final dateTime = date.toDate();
+      formattedDate =
+      '${dateTime.day}/${dateTime.month}/${dateTime.year} at ${dateTime
+          .hour}:${dateTime.minute.toString().padLeft(2, '0')}';
+    }
+
+    Color statusColor = _getStatusColor(status);
+    IconData statusIcon = _getStatusIcon(status);
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 16.h),
+      child: Container(
+        padding: EdgeInsets.all(20.w),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(
+            color: MyTheme.primaryColor.withOpacity(0.3),
+            width: 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xff2D9CDB),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: 12.w, vertical: 6.h),
+                  decoration: BoxDecoration(
+                    color: statusColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20.r),
+                    border: Border.all(
+                      color: statusColor.withOpacity(0.3),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        statusIcon,
+                        size: 14.r,
+                        color: statusColor,
+                      ),
+                      SizedBox(width: 4.w),
+                      Text(
+                        status.toUpperCase(),
+                        style: TextStyle(
+                          fontFamily: 'Montserrat',
+                          fontSize: 12.sp,
+                          color: statusColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 12.h),
+
+            // Description
+            Text(
+              description,
+              style: TextStyle(
+                fontFamily: 'Montserrat',
+                fontSize: 14.sp,
+                color: Colors.grey.shade700,
+                height: 1.4,
+              ),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+
+            SizedBox(height: 16.h),
+
+            // Footer Row
+            Row(
+              children: [
+                Icon(
+                  Icons.access_time,
+                  size: 16.r,
+                  color: Colors.grey,
+                ),
+                SizedBox(width: 6.w),
+                Text(
+                  formattedDate,
+                  style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontSize: 12.sp,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  'ID: ${documentId.substring(0, 8)}...',
+                  style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontSize: 12.sp,
+                    color: const Color(0xff2D9CDB),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return Colors.orange;
+      case 'in_progress':
+      case 'in progress':
+        return Colors.blue;
+      case 'resolved':
+      case 'completed':
+        return Colors.green;
+      case 'closed':
+        return Colors.grey;
+      case 'cancelled':
+        return Colors.red;
+      default:
+        return Colors.orange;
+    }
+  }
+
+  IconData _getStatusIcon(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return Icons.pending;
+      case 'in_progress':
+      case 'in progress':
+        return Icons.loop;
+      case 'resolved':
+      case 'completed':
+        return Icons.check_circle;
+      case 'closed':
+        return Icons.lock;
+      case 'cancelled':
+        return Icons.cancel;
+      default:
+        return Icons.pending;
+    }
+  }
+}

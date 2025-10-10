@@ -1,0 +1,556 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:password_strength_indicator_plus/password_strength_indicator_plus.dart';
+import 'package:payfussion/core/constants/routes_name.dart';
+
+import '../../../core/constants/image_url.dart';
+import '../../../logic/blocs/setting/change-password/change_password_bloc.dart';
+import '../../../logic/blocs/setting/change-password/change_pasword_event.dart';
+import '../../../logic/blocs/setting/change-password/change_pasword_state.dart';
+import '../../widgets/auth_widgets/auth_button.dart';
+import '../../widgets/auth_widgets/credential_text_field.dart';
+import '../../widgets/helper_widgets/error_dialog.dart';
+
+class ChangePasswordScreen extends StatefulWidget {
+  const ChangePasswordScreen({super.key});
+
+  @override
+  State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
+}
+
+class _ChangePasswordScreenState extends State<ChangePasswordScreen>
+    with TickerProviderStateMixin {
+  final TextEditingController oldPasswordController = TextEditingController();
+  final TextEditingController newPasswordController = TextEditingController();
+  final TextEditingController confirmNewPasswordController =
+  TextEditingController();
+
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _formKey = GlobalKey();
+
+  late AnimationController _fadeAnimationController;
+  late AnimationController _slideAnimationController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  // Focus nodes for text fields
+  final FocusNode _oldPasswordFocus = FocusNode();
+  final FocusNode _newPasswordFocus = FocusNode();
+  final FocusNode _confirmPasswordFocus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize animations
+    _fadeAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+
+    _slideAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _fadeAnimationController,
+      curve: Curves.easeInOut,
+    ));
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _slideAnimationController,
+      curve: Curves.easeOutBack,
+    ));
+
+    // Start animations
+    _fadeAnimationController.forward();
+    _slideAnimationController.forward();
+
+    // Add listeners to focus nodes for auto-scroll
+    _oldPasswordFocus.addListener(_handleFocusChange);
+    _newPasswordFocus.addListener(_handleFocusChange);
+    _confirmPasswordFocus.addListener(_handleFocusChange);
+  }
+
+  void _handleFocusChange() {
+    if (_oldPasswordFocus.hasFocus ||
+        _newPasswordFocus.hasFocus ||
+        _confirmPasswordFocus.hasFocus) {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) {
+          _scrollToActiveField();
+        }
+      });
+    }
+  }
+
+  void _scrollToActiveField() {
+    final RenderBox? renderBox = _formKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox != null) {
+      const offset = 200.0; // Adjust this value as needed
+      _scrollController.animateTo(
+        _scrollController.position.pixels + offset,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    oldPasswordController.dispose();
+    newPasswordController.dispose();
+    confirmNewPasswordController.dispose();
+    _scrollController.dispose();
+    _fadeAnimationController.dispose();
+    _slideAnimationController.dispose();
+    _oldPasswordFocus.dispose();
+    _newPasswordFocus.dispose();
+    _confirmPasswordFocus.dispose();
+    super.dispose();
+  }
+
+  PasswordStrength _checkPasswordStrength(String password) {
+    final hasUppercase = password.contains(RegExp(r'[A-Z]'));
+    final hasLowercase = password.contains(RegExp(r'[a-z]'));
+    final hasDigit = password.contains(RegExp(r'\d'));
+    final hasSpecialChar = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+    final hasMinLength = password.length >= 8;
+
+    if (hasUppercase &&
+        hasLowercase &&
+        hasDigit &&
+        hasSpecialChar &&
+        hasMinLength) {
+      return PasswordStrength.strong;
+    } else if ((hasLowercase || hasUppercase) && hasDigit && hasMinLength) {
+      return PasswordStrength.medium;
+    } else {
+      return PasswordStrength.weak;
+    }
+  }
+
+  Widget _buildAnimatedField({
+    required TextEditingController controller,
+    required FocusNode focusNode,
+    required String helpText,
+    required bool isPasswordField,
+    required int animationDelay,
+  }) {
+    return TweenAnimationBuilder<double>(
+      duration: Duration(milliseconds: 600 + (animationDelay * 200)),
+      tween: Tween<double>(begin: 0.0, end: 1.0),
+      curve: Curves.elasticOut,
+      builder: (context, value, child) {
+        return Transform.translate(
+          offset: Offset(0, 50 * (1 - value)),
+          child: Opacity(
+            opacity: value,
+            child: CredentialsFields(
+              controller: controller,
+              isPasswordField: isPasswordField,
+              helpText: helpText,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<ChangePasswordBloc, ChangePasswordState>(
+      listener: (context, state) {
+        // Handle loading state with animated dialog
+        if (state.isLoading) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => WillPopScope(
+              onWillPop: () async => false,
+              child: Center(
+                child: TweenAnimationBuilder<double>(
+                  duration: const Duration(milliseconds: 500),
+                  tween: Tween<double>(begin: 0.0, end: 1.0),
+                  builder: (context, value, child) {
+                    return Transform.scale(
+                      scale: value,
+                      child: Container(
+                        padding: EdgeInsets.all(20.w),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15.r),
+                        ),
+                        child: const CircularProgressIndicator(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          );
+        } else {
+          // Dismiss loading dialog if it's showing
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          }
+
+          // Handle success state with animation
+          if (state.isSuccess) {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: [
+                      TweenAnimationBuilder<double>(
+                        duration: const Duration(milliseconds: 500),
+                        tween: Tween<double>(begin: 0.0, end: 1.0),
+                        builder: (context, value, child) {
+                          return Transform.scale(
+                            scale: value,
+                            child: const Icon(
+                              Icons.check_circle,
+                              color: Colors.white,
+                            ),
+                          );
+                        },
+                      ),
+                      SizedBox(width: 10.w),
+                      const Text('Password changed successfully!'),
+                    ],
+                  ),
+                  backgroundColor: Colors.green,
+                  behavior: SnackBarBehavior.floating,
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            Navigator.pop(context); // Return to previous screen
+          }
+          // Handle error state
+          else if (state.errorMessage != null) {
+            ErrorDialog.show(context, state.errorMessage!);
+          }
+        }
+      },
+      builder: (context, state) {
+        return SafeArea(
+          child: Scaffold(
+            resizeToAvoidBottomInset: true, // Changed to true
+            body: SingleChildScrollView(
+              controller: _scrollController,
+              physics: const BouncingScrollPhysics(),
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom + 20.h,
+              ),
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: SlideTransition(
+                  position: _slideAnimation,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 15.h),
+
+                      // Animated back button
+                      TweenAnimationBuilder<double>(
+                        duration: const Duration(milliseconds: 800),
+                        tween: Tween<double>(begin: -100.0, end: 0.0),
+                        curve: Curves.elasticOut,
+                        builder: (context, value, child) {
+                          return Transform.translate(
+                            offset: Offset(value, 0),
+                            child: InkWell(
+                              onTap: () => context.pop(),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.arrow_back_ios_new,
+                                    color: const Color(0xff2D9CDB),
+                                    size: 24.r,
+                                  ),
+                                  SizedBox(width: 2.w),
+                                  Text(
+                                    'Back',
+                                    style: TextStyle(
+                                      fontFamily: 'Montserrat',
+                                      fontSize: 20.sp,
+                                      color: const Color(0xff2D9CDB),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+
+                      SizedBox(height: 25.h),
+
+                      // Animated logo
+                      TweenAnimationBuilder<double>(
+                        duration: const Duration(milliseconds: 1200),
+                        tween: Tween<double>(begin: 0.0, end: 1.0),
+                        curve: Curves.bounceOut,
+                        builder: (context, value, child) {
+                          return Transform.scale(
+                            scale: value,
+                            child: Transform.rotate(
+                              angle: (1 - value) * 0.5,
+                              child: Hero(
+                                tag: 'logo',
+                                child: Image.asset(TImageUrl.iconLogo, height: 100.h),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+
+                      SizedBox(height: 40.h),
+
+                      // Animated app name
+                      TweenAnimationBuilder<double>(
+                        duration: const Duration(milliseconds: 1000),
+                        tween: Tween<double>(begin: 0.0, end: 1.0),
+                        curve: Curves.easeInOut,
+                        builder: (context, value, child) {
+                          return Opacity(
+                            opacity: value,
+                            child: Text(
+                              'PayFussion',
+                              style: TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontSize: 22.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+
+                      SizedBox(height: 67.h),
+
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 45.w),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // Animated title
+                              TweenAnimationBuilder<double>(
+                                duration: const Duration(milliseconds: 800),
+                                tween: Tween<double>(begin: 0.0, end: 1.0),
+                                curve: Curves.easeOutBack,
+                                builder: (context, value, child) {
+                                  return Transform.translate(
+                                    offset: Offset(0, 30 * (1 - value)),
+                                    child: Opacity(
+                                      opacity: value,
+                                      child: Text(
+                                        'Change Password',
+                                        style: TextStyle(
+                                          fontFamily: 'Montserrat',
+                                          fontSize: 22.sp,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+
+                              SizedBox(height: 56.h),
+
+                              // Animated text fields
+                              _buildAnimatedField(
+                                controller: oldPasswordController,
+                                focusNode: _oldPasswordFocus,
+                                helpText: 'Enter Old Password',
+                                isPasswordField: true,
+                                animationDelay: 0,
+                              ),
+
+                              SizedBox(height: 20.h),
+
+                              _buildAnimatedField(
+                                controller: newPasswordController,
+                                focusNode: _newPasswordFocus,
+                                helpText: 'Enter New Password',
+                                isPasswordField: true,
+                                animationDelay: 1,
+                              ),
+
+                              // Animated password strength indicator
+                              TweenAnimationBuilder<double>(
+                                duration: const Duration(milliseconds: 1000),
+                                tween: Tween<double>(begin: 0.0, end: 1.0),
+                                curve: Curves.easeInOut,
+                                builder: (context, value, child) {
+                                  return Transform.translate(
+                                    offset: Offset(0, 20 * (1 - value)),
+                                    child: Opacity(
+                                      opacity: value,
+                                      child: SizedBox(
+                                        width: 280.w,
+                                        child: PasswordStrengthIndicatorPlus(
+                                          textController: newPasswordController,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+
+                              SizedBox(height: 20.h),
+
+                              _buildAnimatedField(
+                                controller: confirmNewPasswordController,
+                                focusNode: _confirmPasswordFocus,
+                                helpText: 'Confirm New Password',
+                                isPasswordField: true,
+                                animationDelay: 2,
+                              ),
+
+                              // Animated error message
+                              if (state.passwordsDoNotMatchError)
+                                TweenAnimationBuilder<double>(
+                                  duration: const Duration(milliseconds: 400),
+                                  tween: Tween<double>(begin: 0.0, end: 1.0),
+                                  builder: (context, value, child) {
+                                    return Transform.translate(
+                                      offset: Offset(0, 10 * (1 - value)),
+                                      child: Opacity(
+                                        opacity: value,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(top: 8.0),
+                                          child: Text(
+                                            'Passwords do not match.',
+                                            style: TextStyle(
+                                              color: Colors.red,
+                                              fontSize: 12.sp,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+
+                              SizedBox(height: 40.h), // Increased for better spacing
+
+                              // Animated save button
+                              TweenAnimationBuilder<double>(
+                                duration: const Duration(milliseconds: 1200),
+                                tween: Tween<double>(begin: 0.0, end: 1.0),
+                                curve: Curves.elasticOut,
+                                builder: (context, value, child) {
+                                  return Transform.scale(
+                                    scale: value,
+                                    child: AuthButton(
+                                      colors: const [Color(0xff2D9CDB), Color(0xff56CCF2)],
+                                      onTap: () {
+                                        // Hide any existing snackbar
+                                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+                                        final oldPassword = oldPasswordController.text.trim();
+                                        final newPassword = newPasswordController.text.trim();
+                                        final confirmNewPassword =
+                                        confirmNewPasswordController.text.trim();
+
+                                        // Validate empty fields
+                                        if (oldPassword.isEmpty ||
+                                            newPassword.isEmpty ||
+                                            confirmNewPassword.isEmpty) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                              content: Text('Please fill all fields'),
+                                              backgroundColor: Colors.red,
+                                              behavior: SnackBarBehavior.floating,
+                                            ),
+                                          );
+                                          return;
+                                        }
+
+                                        // Validate password match
+                                        if (newPassword != confirmNewPassword) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                              content: Text('Passwords do not match'),
+                                              backgroundColor: Colors.red,
+                                              behavior: SnackBarBehavior.floating,
+                                            ),
+                                          );
+                                          return;
+                                        }
+
+                                        // Validate password strength
+                                        final passwordStrength = _checkPasswordStrength(newPassword);
+                                        if (passwordStrength != PasswordStrength.strong) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Password must be at least 8 characters, include uppercase, lowercase, digit, and special character.',
+                                              ),
+                                              backgroundColor: Colors.red,
+                                              behavior: SnackBarBehavior.floating,
+                                              duration: Duration(seconds: 4),
+                                            ),
+                                          );
+                                          return;
+                                        }
+
+                                        // Validate if new password is different from old password
+                                        if (oldPassword == newPassword) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'New password must be different from old password',
+                                              ),
+                                              backgroundColor: Colors.red,
+                                              behavior: SnackBarBehavior.floating,
+                                            ),
+                                          );
+                                          return;
+                                        }
+
+                                        // All validations passed, submit the change password request
+                                        context.read<ChangePasswordBloc>().add(
+                                          SubmitChangePasswordEvent(
+                                            oldPassword: oldPassword,
+                                            newPassword: newPassword,
+                                          ),
+                                        );
+                                      },
+                                      text: 'Save',
+                                    ),
+                                  );
+                                },
+                              ),
+
+                              SizedBox(height: 50.h), // Extra spacing at bottom
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

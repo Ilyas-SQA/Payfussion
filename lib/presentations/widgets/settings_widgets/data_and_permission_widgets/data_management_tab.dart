@@ -1,0 +1,333 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:payfussion/core/theme/theme.dart';
+
+import '../../../../core/constants/routes_name.dart';
+import '../../../../core/utils/setting_utils/data_and_permission_utils/app_colors_utils.dart';
+import '../../../../core/utils/setting_utils/data_and_permission_utils/app_styles.dart';
+import 'bullet_points.dart';
+import 'feature_card.dart';
+
+class DataManagementTab extends StatelessWidget {
+  final AppColors colors;
+
+  const DataManagementTab({super.key, required this.colors});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Your Data Control Center',
+            style: AppStyles.sectionTitleStyle(context, color: Theme.of(context).secondaryHeaderColor),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Manage your personal data and control how it\'s used within PayFusion.',
+            style: AppStyles.bodyTextStyle(context),
+          ),
+          const SizedBox(height: 24),
+
+          // Data access section
+          FeatureCard(
+            icon: Icons.description_outlined,
+            iconColor: MyTheme.primaryColor,
+            title: 'Access Your Data',
+            colors: colors,
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const BulletPoint(
+                  'View and download a comprehensive report of all your personal data stored with PayFusion.',
+                ),
+                const BulletPoint(
+                  'Reports include transaction history, personal details, linked accounts, and usage patterns.',
+                ),
+                const BulletPoint(
+                  'Data is provided in machine-readable formats (JSON, CSV) for portability.',
+                ),
+                const SizedBox(height: 12),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.download_rounded, size: 18),
+                  label: Text('Request Data Report'),
+                  onPressed: () {
+                    _showDataReportDialog(context, colors);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: MyTheme.primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Data deletion section
+          FeatureCard(
+            icon: Icons.delete_outline,
+            iconColor: colors.error,
+            title: 'Data Deletion',
+            colors: colors,
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const BulletPoint(
+                  'Delete specific data categories or request complete account deletion.',
+                ),
+                const BulletPoint(
+                  'Account deletion will remove all your personal data after legally mandated retention periods.',
+                ),
+                const BulletPoint(
+                  'Note: Financial records may be retained for regulatory compliance even after deletion requests.',
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        child: Text('Delete Specific Data', style: TextStyle(fontSize: 12,)),
+                        onPressed: () {
+                          _showSelectionDialog(context, colors);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          backgroundColor: colors.warning,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Expanded(
+                      child: ElevatedButton(
+                        child: Text('Delete Account', style: TextStyle(fontSize: 12,)),
+                        onPressed: () {
+                          _showAccountDeletionDialog(context, colors);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          backgroundColor: colors.error,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // Other cards...
+          const SizedBox(height: 16),
+
+          FeatureCard(
+            icon: Icons.edit_outlined,
+            iconColor: MyTheme.primaryColor,
+            title: 'Data Correction',
+            colors: colors,
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const BulletPoint(
+                  'Update or correct inaccurate personal information in our system.',
+                ),
+                const BulletPoint(
+                  'Some changes may require identity verification for security purposes.',
+                ),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  child: Text('Update Personal Details', style: AppStyles.buttonTextStyle(context)),
+                  onPressed: () {
+                    context.go(RouteNames.profile);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: MyTheme.primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          FeatureCard(
+            icon: Icons.gavel_outlined,
+            iconColor: MyTheme.primaryColor,
+            title: 'Your Data Rights',
+            colors: colors,
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                BulletPoint(
+                  'Under data protection laws (GDPR, CCPA, etc.), you have specific rights regarding your personal data.',
+                ),
+                BulletPoint(
+                  'These include rights to access, correct, delete, restrict processing, and data portability.',
+                ),
+                BulletPoint(
+                  'For data concerns or complaints, contact our Data Protection Officer through our website.',
+                ),
+                const SizedBox(height: 12),
+                TextButton(
+                  onPressed: () {
+                    context.go('/legal/privacy-policy');
+                  },
+                  child: Text(
+                    'Read Full Privacy Policy',
+                    style: AppStyles.bodyTextStyle(context).copyWith(
+                      color: colors.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDataReportDialog(BuildContext context, AppColors colors) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: colors.cardBackground,
+        title: Text('Request Data Report', style: TextStyle(color: colors.textPrimary)),
+        content: Text(
+          'Your data report will be prepared and sent to your registered email within 48 hours. This report contains all your personal data stored with PayFusion.',
+          style: TextStyle(color: colors.textPrimary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel', style: TextStyle(color: colors.primary)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Data report request submitted successfully')),
+              );
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: MyTheme.primaryColor),
+            child: const Text('Confirm Request'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSelectionDialog(BuildContext context, AppColors colors) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: colors.cardBackground,
+        title: Text('Select Data to Delete', style: TextStyle(color: colors.textPrimary)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildCheckboxListTile(context, 'Search History', 'Clears your in-app search records', true),
+            _buildCheckboxListTile(context, 'Transaction Memos', 'Removes personal notes from transactions', false),
+            _buildCheckboxListTile(context, 'Location History', 'Clears stored location data', false),
+            _buildCheckboxListTile(context, 'Device Information', 'Removes linked device data', false),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel', style: TextStyle(color: colors.primary)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Selected data deleted successfully')),
+              );
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: colors.error),
+            child: const Text('Delete Selected'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCheckboxListTile(BuildContext context, String title, String subtitle, bool value) {
+    return StatefulBuilder(
+        builder: (context, setState) {
+          bool isChecked = value;
+          return CheckboxListTile(
+            title: Text(title, style: TextStyle(color: AppColors.of(context).textPrimary)),
+            subtitle: Text(subtitle, style: TextStyle(color: AppColors.of(context).textSecondary)),
+            value: isChecked,
+            onChanged: (newValue) {
+              setState(() {
+                isChecked = newValue ?? false;
+              });
+            },
+          );
+        }
+    );
+  }
+
+  void _showAccountDeletionDialog(BuildContext context, AppColors colors) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: colors.cardBackground,
+        title: Text('Delete Account', style: TextStyle(color: colors.textPrimary)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Warning: This action cannot be undone.',
+              style: TextStyle(color: colors.error, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Account deletion will:',
+              style: TextStyle(color: colors.textPrimary),
+            ),
+            const SizedBox(height: 5),
+            Text('• Close your PayFusion account permanently', style: TextStyle(color: colors.textPrimary)),
+            Text('• Delete your personal profile information', style: TextStyle(color: colors.textPrimary)),
+            Text('• Remove your payment methods and settings', style: TextStyle(color: colors.textPrimary)),
+            Text('• Cancel all recurring payments', style: TextStyle(color: colors.textPrimary)),
+            const SizedBox(height: 10),
+            Text('Note: Some information may be retained for legal and regulatory compliance.', style: TextStyle(color: colors.textSecondary),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel', style: TextStyle(color: colors.primary)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              //: TODO add delete account function
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: colors.error),
+            child: const Text('Delete My Account'),
+          ),
+        ],
+      ),
+    );
+  }
+}

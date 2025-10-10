@@ -1,0 +1,893 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../core/constants/app_colors.dart';
+import '../../../core/theme/theme.dart';
+import '../../../data/models/payment_request/payment_request_model.dart';
+import '../../../logic/blocs/payment_request/payment_request_bloc.dart';
+import '../../../logic/blocs/payment_request/payment_request_event.dart';
+import '../../../logic/blocs/payment_request/payment_request_state.dart';
+import 'receive_money_payment_screen.dart';
+
+class ReceiveMoneyScreen extends StatelessWidget {
+  const ReceiveMoneyScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        centerTitle: true,
+        elevation: 0,
+        title: const Text('Receive Money', style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        )),
+        actions: [
+          TweenAnimationBuilder<double>(
+            duration: const Duration(milliseconds: 800),
+            tween: Tween(begin: 0.0, end: 1.0),
+            builder: (context, value, child) {
+              return Transform.scale(
+                scale: 0.8 + (0.2 * value),
+                child: Opacity(
+                  opacity: value,
+                  child: TextButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const ReceiveMoneyPaymentScreen()),
+                      );
+                    },
+                    icon: const Icon(Icons.add_circle_outline, color: MyTheme.secondaryColor),
+                    label: const Text('New Request', style: TextStyle(fontSize: 12,color: MyTheme.secondaryColor)),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+      body: const SafeArea(child: PaymentRequestsList()),
+    );
+  }
+}
+
+class PaymentRequestsList extends StatefulWidget {
+  const PaymentRequestsList({super.key});
+
+  @override
+  State<PaymentRequestsList> createState() => _PaymentRequestsListState();
+}
+
+class _PaymentRequestsListState extends State<PaymentRequestsList>
+    with TickerProviderStateMixin {
+  final _search = TextEditingController();
+  Timer? _debounce;
+  String _searchQuery = '';
+  String _statusFilter = 'All';
+
+  late AnimationController _slideController;
+  late AnimationController _fadeController;
+  late AnimationController _filterController;
+  late AnimationController _listController;
+
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _filterAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize animation controllers
+    _slideController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+
+    _filterController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+
+    _listController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+
+    // Initialize animations
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _slideController,
+      curve: Curves.easeOutCubic,
+    ));
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _fadeController,
+      curve: Curves.easeInOut,
+    ));
+
+    _filterAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _filterController,
+      curve: Curves.elasticOut,
+    ));
+
+    // Start animations
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fadeController.forward();
+      _slideController.forward();
+      _filterController.forward();
+      _listController.forward();
+    });
+
+    /// Load payment requests when screen initializes
+    context.read<PaymentRequestBloc>().add(const LoadPaymentRequests());
+  }
+
+  @override
+  void dispose() {
+    _search.dispose();
+    _debounce?.cancel();
+    _slideController.dispose();
+    _fadeController.dispose();
+    _filterController.dispose();
+    _listController.dispose();
+    super.dispose();
+  }
+
+  /// Filter requests based on search query and status filter
+  List<PaymentRequestModel> _getFilteredRequests(List<PaymentRequestModel> requests) {
+    var filtered = requests;
+
+    /// Apply search filter
+    if (_searchQuery.isNotEmpty) {
+      filtered = filtered.where((request) {
+        return request.description.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+            request.payer.toLowerCase().contains(_searchQuery.toLowerCase());
+      }).toList();
+    }
+
+    /// Apply status filter
+    if (_statusFilter != 'All') {
+      filtered = filtered.where((request) {
+        return request.status.toLowerCase() == _statusFilter.toLowerCase();
+      }).toList();
+    }
+
+    return filtered;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<PaymentRequestBloc, PaymentRequestState>(
+      builder: (context, state) {
+        return Column(
+          children: [
+            SlideTransition(
+              position: _slideAnimation,
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: _buildSearch(context),
+              ),
+            ),
+            SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0, 0.2),
+                end: Offset.zero,
+              ).animate(CurvedAnimation(
+                parent: _slideController,
+                curve: const Interval(0.2, 1.0, curve: Curves.easeOutCubic),
+              )),
+              child: ScaleTransition(
+                scale: _filterAnimation,
+                child: _buildFilterChips(context),
+              ),
+            ),
+            Expanded(
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, 0.1),
+                  end: Offset.zero,
+                ).animate(CurvedAnimation(
+                  parent: _slideController,
+                  curve: const Interval(0.4, 1.0, curve: Curves.easeOutCubic),
+                )),
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: _buildBody(context, state),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildSearch(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 600),
+      tween: Tween(begin: 0.0, end: 1.0),
+      builder: (context, value, child) {
+        return Transform.scale(
+          scale: 0.95 + (0.05 * value),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: TextField(
+              controller: _search,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                hintText: 'Search requests...',
+                border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                prefixIcon: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  child: const Icon(Icons.search),
+                ),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? TweenAnimationBuilder<double>(
+                  duration: const Duration(milliseconds: 200),
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  builder: (context, clearValue, child) {
+                    return Transform.scale(
+                      scale: clearValue,
+                      child: IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _search.clear();
+                          setState(() {
+                            _searchQuery = '';
+                          });
+                        },
+                      ),
+                    );
+                  },
+                )
+                    : null,
+              ),
+              onChanged: (q) {
+                _debounce?.cancel();
+                _debounce = Timer(const Duration(milliseconds: 400), () {
+                  setState(() {
+                    _searchQuery = q;
+                  });
+                });
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildFilterChips(BuildContext context) {
+    Widget chip(String label, int index) => TweenAnimationBuilder<double>(
+      duration: Duration(milliseconds: 300 + (index * 100)),
+      tween: Tween(begin: 0.0, end: 1.0),
+      builder: (context, value, child) {
+        return Transform.translate(
+          offset: Offset(20 * (1 - value), 0),
+          child: Opacity(
+            opacity: value,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                child: FilterChip(
+                  selected: _statusFilter == label,
+                  label: Text(label,style: TextStyle(color: _statusFilter == label ? Colors.white : Colors.black),),
+                  selectedColor: MyTheme.secondaryColor,
+                  onSelected: (_) {
+                    setState(() {
+                      _statusFilter = label;
+                    });
+                  },
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    final filters = ['All', 'Pending', 'Completed', 'Expired', 'Declined'];
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: Row(
+        children: filters
+            .asMap()
+            .entries
+            .map((entry) => chip(entry.value, entry.key))
+            .toList(),
+      ),
+    );
+  }
+
+  Widget _buildBody(BuildContext context, PaymentRequestState state) {
+    if (state.status == PaymentRequestStatus.loading) {
+      return _buildLoadingState();
+    }
+
+    if (state.status == PaymentRequestStatus.failure) {
+      return _buildErrorState(state);
+    }
+
+    if (state.requests.isEmpty) {
+      return _empty(context);
+    }
+
+    final filteredRequests = _getFilteredRequests(state.requests);
+
+    if (filteredRequests.isEmpty && (_searchQuery.isNotEmpty || _statusFilter != 'All')) {
+      return _buildNoResultsState();
+    }
+
+    return RefreshIndicator(
+      onRefresh: () async {
+        context.read<PaymentRequestBloc>().add(const LoadPaymentRequests());
+        await Future.delayed(const Duration(milliseconds: 350));
+      },
+      child: ListView.builder(
+        padding: const EdgeInsets.all(12),
+        itemCount: filteredRequests.length,
+        itemBuilder: (_, i) => TweenAnimationBuilder<double>(
+          duration: Duration(milliseconds: 300 + (i * 100)),
+          tween: Tween(begin: 0.0, end: 1.0),
+          builder: (context, value, child) {
+            return Transform.translate(
+              offset: Offset(0, 50 * (1 - value)),
+              child: Opacity(
+                opacity: value,
+                child: _tile(filteredRequests[i]),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return Center(
+      child: TweenAnimationBuilder<double>(
+        duration: const Duration(milliseconds: 1000),
+        tween: Tween(begin: 0.0, end: 1.0),
+        builder: (context, value, child) {
+          return Transform.rotate(
+            angle: value * 2 * 3.14159,
+            child: const CircularProgressIndicator(
+              color: MyTheme.secondaryColor,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildErrorState(PaymentRequestState state) {
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 600),
+      tween: Tween(begin: 0.0, end: 1.0),
+      builder: (context, value, child) {
+        return Transform.scale(
+          scale: 0.8 + (0.2 * value),
+          child: Opacity(
+            opacity: value,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: Colors.red.withOpacity(value),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    state.errorMessage ?? 'An error occurred',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<PaymentRequestBloc>().add(const LoadPaymentRequests());
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildNoResultsState() {
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 500),
+      tween: Tween(begin: 0.0, end: 1.0),
+      builder: (context, value, child) {
+        return Transform.translate(
+          offset: Offset(0, 30 * (1 - value)),
+          child: Opacity(
+            opacity: value,
+            child: const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.search_off, size: 64, color: Colors.grey),
+                  SizedBox(height: 16),
+                  Text('No matching requests'),
+                  SizedBox(height: 8),
+                  Text('Try adjusting your search or filters'),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _tile(PaymentRequestModel r) {
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 400),
+      tween: Tween(begin: 0.0, end: 1.0),
+      builder: (context, value, child) {
+        return Transform.scale(
+          scale: 0.95 + (0.05 * value),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            margin: const EdgeInsets.only(bottom: 10),
+            decoration: BoxDecoration(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              borderRadius: BorderRadius.circular(16.r),
+              boxShadow: [
+                const BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 5,
+                  offset: Offset(1, 1),
+                ),
+              ],
+            ),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () {
+                _showRequestDetails(context, r);
+              },
+              child: ListTile(
+                contentPadding: const EdgeInsets.all(16),
+                leading: Hero(
+                  tag: 'avatar_${r.id}',
+                  child: r.payerImageUrl != null
+                      ? CircleAvatar(
+                    backgroundImage: NetworkImage(r.payerImageUrl!),
+                    radius: 24,
+                  )
+                      : const CircleAvatar(
+                    child: Icon(Icons.person),
+                    radius: 24,
+                  ),
+                ),
+                title: Text(
+                  r.description,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 4),
+                    Text('From: ${r.payer}'),
+                    const SizedBox(height: 2),
+                    Text(
+                      _formatDate(r.createdAt),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+                trailing: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    TweenAnimationBuilder<double>(
+                      duration: const Duration(milliseconds: 600),
+                      tween: Tween(begin: 0.0, end: 1.0),
+                      builder: (context, amountValue, child) {
+                        return Transform.scale(
+                          scale: 0.8 + (0.2 * amountValue),
+                          child: Text(
+                            '${r.currencyCode} ${r.amount.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: MyTheme.secondaryColor,
+                              fontSize: 16,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 4),
+                    _statusChip(r.status),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _statusChip(String s) {
+    Color c;
+    switch (s.toLowerCase()) {
+      case 'completed':
+        c = Colors.green;
+        break;
+      case 'pending':
+        c = Colors.orange;
+        break;
+      case 'declined':
+        c = Colors.red;
+        break;
+      case 'expired':
+        c = Colors.grey;
+        break;
+      default:
+        c = Colors.blue;
+    }
+
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 500),
+      tween: Tween(begin: 0.0, end: 1.0),
+      builder: (context, value, child) {
+        return Transform.scale(
+          scale: value,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: c.withOpacity(.1),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: c.withOpacity(.3)),
+            ),
+            child: Text(
+              s,
+              style: TextStyle(
+                color: c,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _empty(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 800),
+      tween: Tween(begin: 0.0, end: 1.0),
+      builder: (context, value, child) {
+        return Transform.translate(
+          offset: Offset(0, 50 * (1 - value)),
+          child: Opacity(
+            opacity: value,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TweenAnimationBuilder<double>(
+                    duration: const Duration(milliseconds: 1000),
+                    tween: Tween(begin: 0.0, end: 1.0),
+                    builder: (context, iconValue, child) {
+                      return Transform.scale(
+                        scale: 0.5 + (0.5 * iconValue),
+                        child: Icon(
+                          Icons.receipt_long_outlined,
+                          size: 64,
+                          color: MyTheme.secondaryColor.withOpacity(iconValue),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 14),
+                  const Text(
+                    'No payment requests yet',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Create a new payment request to get started.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  const SizedBox(height: 18),
+                  TweenAnimationBuilder<double>(
+                    duration: const Duration(milliseconds: 600),
+                    tween: Tween(begin: 0.0, end: 1.0),
+                    builder: (context, buttonValue, child) {
+                      return Transform.scale(
+                        scale: 0.8 + (0.2 * buttonValue),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: MyTheme.secondaryColor,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ReceiveMoneyPaymentScreen(),
+                            ),
+                          ),
+                          child: const Text('Create Request'),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  String _formatDate(String isoDate) {
+    try {
+      final date = DateTime.parse(isoDate);
+      final now = DateTime.now();
+      final difference = now.difference(date);
+
+      if (difference.inDays == 0) {
+        return 'Today';
+      } else if (difference.inDays == 1) {
+        return 'Yesterday';
+      } else if (difference.inDays < 7) {
+        return '${difference.inDays} days ago';
+      } else {
+        return '${date.day}/${date.month}/${date.year}';
+      }
+    } catch (e) {
+      return 'Unknown';
+    }
+  }
+
+  void _showRequestDetails(BuildContext context, PaymentRequestModel request) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => TweenAnimationBuilder<double>(
+        duration: const Duration(milliseconds: 400),
+        tween: Tween(begin: 0.0, end: 1.0),
+        builder: (context, value, child) {
+          return Transform.translate(
+            offset: Offset(0, 200 * (1 - value)),
+            child: Opacity(
+              opacity: value,
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                ),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Handle bar
+                    Center(
+                      child: TweenAnimationBuilder<double>(
+                        duration: const Duration(milliseconds: 300),
+                        tween: Tween(begin: 0.0, end: 1.0),
+                        builder: (context, handleValue, child) {
+                          return Container(
+                            width: 40 * handleValue,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Title with animation
+                    TweenAnimationBuilder<double>(
+                      duration: const Duration(milliseconds: 500),
+                      tween: Tween(begin: 0.0, end: 1.0),
+                      builder: (context, titleValue, child) {
+                        return Transform.translate(
+                          offset: Offset(20 * (1 - titleValue), 0),
+                          child: Opacity(
+                            opacity: titleValue,
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.receipt_long,
+                                  color: MyTheme.secondaryColor.withOpacity(titleValue),
+                                ),
+                                const SizedBox(width: 8),
+                                const Text(
+                                  'Payment Request Details',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Amount (highlighted) with animation
+                    TweenAnimationBuilder<double>(
+                      duration: const Duration(milliseconds: 700),
+                      tween: Tween(begin: 0.0, end: 1.0),
+                      builder: (context, amountValue, child) {
+                        return Transform.scale(
+                          scale: 0.9 + (0.1 * amountValue),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: MyTheme.secondaryColor.withOpacity(0.1 * amountValue),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: MyTheme.secondaryColor.withOpacity(0.3 * amountValue),
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  'Amount',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey.withOpacity(amountValue),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '${request.currencyCode} ${request.amount.toStringAsFixed(2)}',
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                    color: MyTheme.secondaryColor.withOpacity(amountValue),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Details with staggered animation
+                    ..._buildAnimatedDetails(request),
+
+                    // Bottom padding for safe area
+                    SizedBox(height: MediaQuery.of(context).padding.bottom),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  List<Widget> _buildAnimatedDetails(PaymentRequestModel request) {
+    final details = [
+      ('From', request.payer),
+      ('Description', request.description),
+      ('Status', request.status),
+      ('Created', _formatDate(request.createdAt)),
+      ('Expires', _formatDate(request.expiresAt)),
+    ];
+
+    if (request.completedAt != null) {
+      details.add(('Completed', _formatDate(request.completedAt!)));
+    }
+    if (request.declinedAt != null) {
+      details.add(('Declined', _formatDate(request.declinedAt!)));
+    }
+    if (request.recipientInstitution != null) {
+      details.add(('Institution', request.recipientInstitution!));
+    }
+
+    return details.asMap().entries.map((entry) {
+      final index = entry.key;
+      final detail = entry.value;
+
+      return TweenAnimationBuilder<double>(
+        duration: Duration(milliseconds: 400 + (index * 100)),
+        tween: Tween(begin: 0.0, end: 1.0),
+        builder: (context, value, child) {
+          return Transform.translate(
+            offset: Offset(30 * (1 - value), 0),
+            child: Opacity(
+              opacity: value,
+              child: _detailRow(detail.$1, detail.$2),
+            ),
+          );
+        },
+      );
+    }).toList();
+  }
+
+  Widget _detailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 90,
+            child: Text(
+              '$label:',
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Colors.grey,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
