@@ -26,7 +26,6 @@ import '../../logic/blocs/add_card/card_event.dart';
 import '../../logic/blocs/add_card/card_state.dart';
 import '../widgets/home_widgets/custom_credit_card.dart';
 import '../widgets/home_widgets/custom_empty_card.dart';
-import '../widgets/home_widgets/home_custom_action_button.dart';
 import '../widgets/home_widgets/transaction_item.dart';
 import '../widgets/home_widgets/transaction_items_header.dart';
 import 'apply_card/apply_card_screen.dart';
@@ -148,12 +147,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   DateTime _getStartOfDay() {
-    final now = DateTime.now();
+    final DateTime now = DateTime.now();
     return DateTime(now.year, now.month, now.day);
   }
 
   DateTime _getEndOfDay() {
-    final now = DateTime.now();
+    final DateTime now = DateTime.now();
     return DateTime(now.year, now.month, now.day, 23, 59, 59);
   }
 
@@ -224,6 +223,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                 cvc: "${card.expMonth}/${card.expYear}",
                                                 cardColor: AppColors.cardColor[index % AppColors.cardColor.length],
                                                 cardBrand: card.brand,
+                                                cardHolder: 'Ilyas Khan',
+                                                expiryDate:"${card.expMonth}/${card.expYear}",
+                                                balance: '\$ 10000',
                                               ),
                                             ),
                                           ),
@@ -242,7 +244,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               Center(
                                 child: Text(
                                   state.message,
-                                  style: TextStyle(color: Colors.red),
+                                  style: const TextStyle(color: Colors.red),
                                 ),
                               ),
                             ],
@@ -284,7 +286,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
 
-              // Animated Action Buttons
+              SizedBox(height: 30.h,),
+
+              /// Animated Action Buttons
               FadeTransition(
                 opacity: _actionButtonsAnimation,
                 child: SlideTransition(
@@ -295,18 +299,128 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     parent: _actionButtonsController,
                     curve: Curves.easeOutCubic,
                   )),
-                  child: _buildActionButtons(context),
+                  child: Column(
+                    spacing: 10,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          BoxWidget(
+                            title: "Send Money",
+                            imageURL: TImageUrl.sendMoney,
+                            onTap: () => {
+                              showDialog(
+                                context: context,
+                                builder: (context){
+                                  return AlertDialog(
+                                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                                    content: const Text('Send Money To'),
+                                    actions: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: [
+                                          BoxWidget(
+                                            title: "PayFussion Transfer",
+                                            imageURL: TImageUrl.bankTransfer,
+                                            onTap: (){
+                                              context.push(RouteNames.sendMoneyHome);
+                                            },
+                                          ),
+                                          BoxWidget(
+                                            title: "Bank Transfer",
+                                            imageURL: TImageUrl.bankTransfer,
+                                            onTap: (){
+                                              Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => SelectBankScreen()));
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: 10,),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: [
+                                          BoxWidget(
+                                            title: "Other Wallet",
+                                            imageURL: TImageUrl.otherWallet,
+                                            onTap: (){
+                                              Navigator.push(context, MaterialPageRoute(builder: (context) => SelectLocalBankScreen()));
+                                            },
+                                          ),
+                                          BoxWidget(
+                                            title: "Scanner QR",
+                                            imageURL: TImageUrl.scanner,
+                                            onTap: (){
+                                              Navigator.push(context, MaterialPageRoute(builder: (context) => ScanToPayHomeScreen()));
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                },
+                              )
+                            },
+                          ),
+                          BoxWidget(
+                            title: "Recived Money",
+                            imageURL: TImageUrl.recivedMoney,
+                            onTap: (){
+                              context.push(RouteNames.receiveMoneyScreen);
+                            },
+                          ),
+                          BoxWidget(
+                            title: "Pay Bills",
+                            imageURL: TImageUrl.payBill,
+                            onTap: (){
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const PayBillScreen()));
+                            },
+                          ),
+                          BoxWidget(
+                            title: "Convert Currency",
+                            imageURL: TImageUrl.convertCurrency,
+                            onTap: (){
+                              context.push(RouteNames.currencyExchangeView);
+                            },
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          BoxWidget(
+                            title: "Ticket Booking",
+                            imageURL: TImageUrl.ticketBooking,
+                            onTap: (){
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => TicketBookingScreen()));
+                            },
+                          ),
+                          BoxWidget(
+                            title: "Insurance",
+                            imageURL: TImageUrl.insurance,
+                            onTap: (){
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => InsuranceScreen()));                            },
+                          ),
+                          BoxWidget(
+                            title: "Apply Card",
+                            imageURL: TImageUrl.applyCard,
+                            onTap: (){
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const ApplyCardScreen()));
+                            },
+                          ),
+                          BoxWidget(
+                            title: "Government Fees",
+                            imageURL: TImageUrl.governmentFee,
+                            onTap: (){
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => GovernmentFeesScreen()));
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
                 ),
               ),
 
-              // Animated Transaction Section
-              SlideTransition(
-                position: _transactionSlideAnimation,
-                child: FadeTransition(
-                  opacity: _transactionController,
-                  child: _buildTransactionSection(),
-                ),
-              ),
             ],
           ),
         ),
@@ -315,281 +429,281 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
 
-  Widget _buildActionButtons(BuildContext context) {
-    final actionButtons = [
-      {
-        'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
-        'iconPath': TImageUrl.sendMoney,
-        'iconBackgroundColor': MyTheme.primaryColor,
-        'text': "Send Money",
-        'onPressed': () => {
-          showDialog(
-            context: context,
-            builder: (context){
-              return AlertDialog(
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                content: const Text('Send Money To'),
-                actions: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      SendMoneyWidget(
-                        title: "PayFussion Transfer",
-                        imageUrl: TImageUrl.bankTransfer,
-                        onTap: (){
-                          context.push(RouteNames.sendMoneyHome);
-                        },
-                      ),
-                      SendMoneyWidget(
-                        title: "Bank Transfer",
-                        imageUrl: TImageUrl.bankTransfer,
-                        onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => SelectBankScreen()));
-                        },
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10,),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      SendMoneyWidget(
-                        title: "Other Wallet",
-                        imageUrl: TImageUrl.otherWallet,
-                        onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => SelectLocalBankScreen()));
-                        },
-                      ),
-                      SendMoneyWidget(
-                        title: "Scanner QR",
-                        imageUrl: TImageUrl.scanner,
-                        onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => ScanToPayHomeScreen()));
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              );
-            },
-          )
-        },
-      },
-      {
-        'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
-        'iconPath': TImageUrl.recivedMoney,
-        'iconBackgroundColor': MyTheme.secondaryColor,
-        'text': "Receive Money",
-        'onPressed': () => context.push(RouteNames.receiveMoneyScreen),
-      },
-      {
-        'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
-        'iconPath': TImageUrl.payBill,
-        'iconBackgroundColor': MyTheme.primaryColor,
-        'text': "Pay Bills",
-        'onPressed': () => Navigator.push(context, MaterialPageRoute(builder: (context) => PayBillScreen())),
-      },
-      {
-        'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
-        'iconPath': TImageUrl.convertCurrency,
-        'iconBackgroundColor': MyTheme.secondaryColor,
-        'text': "Convert Currency",
-        'onPressed': () => context.push(RouteNames.currencyExchangeView),
-      },
-      {
-        'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
-        'iconPath': TImageUrl.ticketBooking,
-        'iconBackgroundColor': MyTheme.primaryColor,
-        'text': "Ticket Booking",
-        'onPressed': () => Navigator.push(context, MaterialPageRoute(builder: (context) => TicketBookingScreen())),
-      },
-      {
-        'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
-        'iconPath': TImageUrl.insurance,
-        'iconBackgroundColor': MyTheme.secondaryColor,
-        'text': "Insurance",
-        'onPressed': () => Navigator.push(context, MaterialPageRoute(builder: (context) => InsuranceScreen())),
-      },
-      {
-        'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
-        'iconPath': TImageUrl.applyCard,
-        'iconBackgroundColor': MyTheme.primaryColor,
-        'text': "Apply Card",
-        'onPressed': () => Navigator.push(context, MaterialPageRoute(builder: (context) => ApplyCardScreen())),
-
-      },
-      {
-        'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
-        'iconPath': TImageUrl.governmentFee,
-        'iconBackgroundColor': MyTheme.secondaryColor,
-        'text': "Government Fees",
-        'onPressed': () => Navigator.push(context, MaterialPageRoute(builder: (context) => GovernmentFeesScreen())),
-      },
-    ];
-
-    return Column(
-      children: [
-        SizedBox(height: 20.h),
-        AnimationLimiter(
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  AnimationConfiguration.staggeredList(
-                    position: 0,
-                    duration: const Duration(milliseconds: 300),
-                    child: SlideAnimation(
-                      verticalOffset: 30.0,
-                      child: FadeInAnimation(
-                        child: CustomActionButton(
-                          backgroundColor: actionButtons[0]['backgroundColor'] as Color,
-                          iconPath: actionButtons[0]['iconPath'] as String,
-                          iconBackgroundColor: actionButtons[0]['iconBackgroundColor'] as Color,
-                          text: actionButtons[0]['text'] as String,
-                          onPressed: actionButtons[0]['onPressed'] as VoidCallback,
-                        ),
-                      ),
-                    ),
-                  ),
-                  AnimationConfiguration.staggeredList(
-                    position: 1,
-                    duration: const Duration(milliseconds: 300),
-                    child: SlideAnimation(
-                      verticalOffset: 30.0,
-                      child: FadeInAnimation(
-                        child: CustomActionButton(
-                          backgroundColor: actionButtons[1]['backgroundColor'] as Color,
-                          iconPath: actionButtons[1]['iconPath'] as String,
-                          iconBackgroundColor: actionButtons[1]['iconBackgroundColor'] as Color,
-                          text: actionButtons[1]['text'] as String,
-                          onPressed: actionButtons[1]['onPressed'] as VoidCallback,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 10.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  AnimationConfiguration.staggeredList(
-                    position: 2,
-                    duration: const Duration(milliseconds: 300),
-                    child: SlideAnimation(
-                      verticalOffset: 30.0,
-                      child: FadeInAnimation(
-                        child: CustomActionButton(
-                          backgroundColor: actionButtons[2]['backgroundColor'] as Color,
-                          iconPath: actionButtons[2]['iconPath'] as String,
-                          iconBackgroundColor: actionButtons[2]['iconBackgroundColor'] as Color,
-                          text: actionButtons[2]['text'] as String,
-                          onPressed: actionButtons[2]['onPressed'] as VoidCallback,
-                        ),
-                      ),
-                    ),
-                  ),
-                  AnimationConfiguration.staggeredList(
-                    position: 3,
-                    duration: const Duration(milliseconds: 300),
-                    child: SlideAnimation(
-                      verticalOffset: 30.0,
-                      child: FadeInAnimation(
-                        child: CustomActionButton(
-                          backgroundColor: actionButtons[3]['backgroundColor'] as Color,
-                          iconPath: actionButtons[3]['iconPath'] as String,
-                          iconBackgroundColor: actionButtons[3]['iconBackgroundColor'] as Color,
-                          text: actionButtons[3]['text'] as String,
-                          onPressed: actionButtons[3]['onPressed'] as VoidCallback,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 10.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  AnimationConfiguration.staggeredList(
-                    position: 2,
-                    duration: const Duration(milliseconds: 300),
-                    child: SlideAnimation(
-                      verticalOffset: 30.0,
-                      child: FadeInAnimation(
-                        child: CustomActionButton(
-                          backgroundColor: actionButtons[4]['backgroundColor'] as Color,
-                          iconPath: actionButtons[4]['iconPath'] as String,
-                          iconBackgroundColor: actionButtons[4]['iconBackgroundColor'] as Color,
-                          text: actionButtons[4]['text'] as String,
-                          onPressed: actionButtons[4]['onPressed'] as VoidCallback,
-                        ),
-                      ),
-                    ),
-                  ),
-                  AnimationConfiguration.staggeredList(
-                    position: 3,
-                    duration: const Duration(milliseconds: 300),
-                    child: SlideAnimation(
-                      verticalOffset: 30.0,
-                      child: FadeInAnimation(
-                        child: CustomActionButton(
-                          backgroundColor: actionButtons[5]['backgroundColor'] as Color,
-                          iconPath: actionButtons[5]['iconPath'] as String,
-                          iconBackgroundColor: actionButtons[5]['iconBackgroundColor'] as Color,
-                          text: actionButtons[5]['text'] as String,
-                          onPressed: actionButtons[5]['onPressed'] as VoidCallback,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 10.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  AnimationConfiguration.staggeredList(
-                    position: 2,
-                    duration: const Duration(milliseconds: 300),
-                    child: SlideAnimation(
-                      verticalOffset: 30.0,
-                      child: FadeInAnimation(
-                        child: CustomActionButton(
-                          backgroundColor: actionButtons[6]['backgroundColor'] as Color,
-                          iconPath: actionButtons[6]['iconPath'] as String,
-                          iconBackgroundColor: actionButtons[6]['iconBackgroundColor'] as Color,
-                          text: actionButtons[6]['text'] as String,
-                          onPressed: actionButtons[6]['onPressed'] as VoidCallback,
-                        ),
-                      ),
-                    ),
-                  ),
-                  AnimationConfiguration.staggeredList(
-                    position: 3,
-                    duration: const Duration(milliseconds: 300),
-                    child: SlideAnimation(
-                      verticalOffset: 30.0,
-                      child: FadeInAnimation(
-                        child: CustomActionButton(
-                          backgroundColor: actionButtons[7]['backgroundColor'] as Color,
-                          iconPath: actionButtons[7]['iconPath'] as String,
-                          iconBackgroundColor: actionButtons[7]['iconBackgroundColor'] as Color,
-                          text: actionButtons[7]['text'] as String,
-                          onPressed: actionButtons[7]['onPressed'] as VoidCallback,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _buildActionButtons(BuildContext context) {
+  //   final List<Map<String, Object>> actionButtons = [
+  //     {
+  //       'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
+  //       'iconPath': TImageUrl.sendMoney,
+  //       'iconBackgroundColor': MyTheme.primaryColor,
+  //       'text': "Send Money",
+  //       'onPressed': () => {
+  //         showDialog(
+  //           context: context,
+  //           builder: (context){
+  //             return AlertDialog(
+  //               backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+  //               content: const Text('Send Money To'),
+  //               actions: [
+  //                 Row(
+  //                   mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //                   children: [
+  //                     SendMoneyWidget(
+  //                       title: "PayFussion Transfer",
+  //                       imageUrl: TImageUrl.bankTransfer,
+  //                       onTap: (){
+  //                         context.push(RouteNames.sendMoneyHome);
+  //                       },
+  //                     ),
+  //                     SendMoneyWidget(
+  //                       title: "Bank Transfer",
+  //                       imageUrl: TImageUrl.bankTransfer,
+  //                       onTap: (){
+  //                         Navigator.push(context, MaterialPageRoute(builder: (context) => SelectBankScreen()));
+  //                       },
+  //                     ),
+  //                   ],
+  //                 ),
+  //                 SizedBox(height: 10,),
+  //                 Row(
+  //                   mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //                   children: [
+  //                     SendMoneyWidget(
+  //                       title: "Other Wallet",
+  //                       imageUrl: TImageUrl.otherWallet,
+  //                       onTap: (){
+  //                         Navigator.push(context, MaterialPageRoute(builder: (context) => SelectLocalBankScreen()));
+  //                       },
+  //                     ),
+  //                     SendMoneyWidget(
+  //                       title: "Scanner QR",
+  //                       imageUrl: TImageUrl.scanner,
+  //                       onTap: (){
+  //                         Navigator.push(context, MaterialPageRoute(builder: (context) => ScanToPayHomeScreen()));
+  //                       },
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ],
+  //             );
+  //           },
+  //         )
+  //       },
+  //     },
+  //     {
+  //       'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
+  //       'iconPath': TImageUrl.recivedMoney,
+  //       'iconBackgroundColor': MyTheme.secondaryColor,
+  //       'text': "Receive Money",
+  //       'onPressed': () => context.push(RouteNames.receiveMoneyScreen),
+  //     },
+  //     {
+  //       'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
+  //       'iconPath': TImageUrl.payBill,
+  //       'iconBackgroundColor': MyTheme.primaryColor,
+  //       'text': "Pay Bills",
+  //       'onPressed': () => Navigator.push(context, MaterialPageRoute(builder: (context) => PayBillScreen())),
+  //     },
+  //     {
+  //       'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
+  //       'iconPath': TImageUrl.convertCurrency,
+  //       'iconBackgroundColor': MyTheme.secondaryColor,
+  //       'text': "Convert Currency",
+  //       'onPressed': () => context.push(RouteNames.currencyExchangeView),
+  //     },
+  //     {
+  //       'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
+  //       'iconPath': TImageUrl.ticketBooking,
+  //       'iconBackgroundColor': MyTheme.primaryColor,
+  //       'text': "Ticket Booking",
+  //       'onPressed': () => Navigator.push(context, MaterialPageRoute(builder: (context) => TicketBookingScreen())),
+  //     },
+  //     {
+  //       'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
+  //       'iconPath': TImageUrl.insurance,
+  //       'iconBackgroundColor': MyTheme.secondaryColor,
+  //       'text': "Insurance",
+  //       'onPressed': () => Navigator.push(context, MaterialPageRoute(builder: (context) => InsuranceScreen())),
+  //     },
+  //     {
+  //       'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
+  //       'iconPath': TImageUrl.applyCard,
+  //       'iconBackgroundColor': MyTheme.primaryColor,
+  //       'text': "Apply Card",
+  //       'onPressed': () => Navigator.push(context, MaterialPageRoute(builder: (context) => ApplyCardScreen())),
+  //
+  //     },
+  //     {
+  //       'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
+  //       'iconPath': TImageUrl.governmentFee,
+  //       'iconBackgroundColor': MyTheme.secondaryColor,
+  //       'text': "Government Fees",
+  //       'onPressed': () => Navigator.push(context, MaterialPageRoute(builder: (context) => GovernmentFeesScreen())),
+  //     },
+  //   ];
+  //
+  //   return Column(
+  //     children: [
+  //       SizedBox(height: 20.h),
+  //       AnimationLimiter(
+  //         child: Column(
+  //           children: [
+  //             Row(
+  //               mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //               children: [
+  //                 AnimationConfiguration.staggeredList(
+  //                   position: 0,
+  //                   duration: const Duration(milliseconds: 300),
+  //                   child: SlideAnimation(
+  //                     verticalOffset: 30.0,
+  //                     child: FadeInAnimation(
+  //                       child: CustomActionButton(
+  //                         backgroundColor: actionButtons[0]['backgroundColor'] as Color,
+  //                         iconPath: actionButtons[0]['iconPath'] as String,
+  //                         iconBackgroundColor: actionButtons[0]['iconBackgroundColor'] as Color,
+  //                         text: actionButtons[0]['text'] as String,
+  //                         onPressed: actionButtons[0]['onPressed'] as VoidCallback,
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 AnimationConfiguration.staggeredList(
+  //                   position: 1,
+  //                   duration: const Duration(milliseconds: 300),
+  //                   child: SlideAnimation(
+  //                     verticalOffset: 30.0,
+  //                     child: FadeInAnimation(
+  //                       child: CustomActionButton(
+  //                         backgroundColor: actionButtons[1]['backgroundColor'] as Color,
+  //                         iconPath: actionButtons[1]['iconPath'] as String,
+  //                         iconBackgroundColor: actionButtons[1]['iconBackgroundColor'] as Color,
+  //                         text: actionButtons[1]['text'] as String,
+  //                         onPressed: actionButtons[1]['onPressed'] as VoidCallback,
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //             SizedBox(height: 10.h),
+  //             Row(
+  //               mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //               children: [
+  //                 AnimationConfiguration.staggeredList(
+  //                   position: 2,
+  //                   duration: const Duration(milliseconds: 300),
+  //                   child: SlideAnimation(
+  //                     verticalOffset: 30.0,
+  //                     child: FadeInAnimation(
+  //                       child: CustomActionButton(
+  //                         backgroundColor: actionButtons[2]['backgroundColor'] as Color,
+  //                         iconPath: actionButtons[2]['iconPath'] as String,
+  //                         iconBackgroundColor: actionButtons[2]['iconBackgroundColor'] as Color,
+  //                         text: actionButtons[2]['text'] as String,
+  //                         onPressed: actionButtons[2]['onPressed'] as VoidCallback,
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 AnimationConfiguration.staggeredList(
+  //                   position: 3,
+  //                   duration: const Duration(milliseconds: 300),
+  //                   child: SlideAnimation(
+  //                     verticalOffset: 30.0,
+  //                     child: FadeInAnimation(
+  //                       child: CustomActionButton(
+  //                         backgroundColor: actionButtons[3]['backgroundColor'] as Color,
+  //                         iconPath: actionButtons[3]['iconPath'] as String,
+  //                         iconBackgroundColor: actionButtons[3]['iconBackgroundColor'] as Color,
+  //                         text: actionButtons[3]['text'] as String,
+  //                         onPressed: actionButtons[3]['onPressed'] as VoidCallback,
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //             SizedBox(height: 10.h),
+  //             Row(
+  //               mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //               children: [
+  //                 AnimationConfiguration.staggeredList(
+  //                   position: 2,
+  //                   duration: const Duration(milliseconds: 300),
+  //                   child: SlideAnimation(
+  //                     verticalOffset: 30.0,
+  //                     child: FadeInAnimation(
+  //                       child: CustomActionButton(
+  //                         backgroundColor: actionButtons[4]['backgroundColor'] as Color,
+  //                         iconPath: actionButtons[4]['iconPath'] as String,
+  //                         iconBackgroundColor: actionButtons[4]['iconBackgroundColor'] as Color,
+  //                         text: actionButtons[4]['text'] as String,
+  //                         onPressed: actionButtons[4]['onPressed'] as VoidCallback,
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 AnimationConfiguration.staggeredList(
+  //                   position: 3,
+  //                   duration: const Duration(milliseconds: 300),
+  //                   child: SlideAnimation(
+  //                     verticalOffset: 30.0,
+  //                     child: FadeInAnimation(
+  //                       child: CustomActionButton(
+  //                         backgroundColor: actionButtons[5]['backgroundColor'] as Color,
+  //                         iconPath: actionButtons[5]['iconPath'] as String,
+  //                         iconBackgroundColor: actionButtons[5]['iconBackgroundColor'] as Color,
+  //                         text: actionButtons[5]['text'] as String,
+  //                         onPressed: actionButtons[5]['onPressed'] as VoidCallback,
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //             SizedBox(height: 10.h),
+  //             Row(
+  //               mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //               children: [
+  //                 AnimationConfiguration.staggeredList(
+  //                   position: 2,
+  //                   duration: const Duration(milliseconds: 300),
+  //                   child: SlideAnimation(
+  //                     verticalOffset: 30.0,
+  //                     child: FadeInAnimation(
+  //                       child: CustomActionButton(
+  //                         backgroundColor: actionButtons[6]['backgroundColor'] as Color,
+  //                         iconPath: actionButtons[6]['iconPath'] as String,
+  //                         iconBackgroundColor: actionButtons[6]['iconBackgroundColor'] as Color,
+  //                         text: actionButtons[6]['text'] as String,
+  //                         onPressed: actionButtons[6]['onPressed'] as VoidCallback,
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 AnimationConfiguration.staggeredList(
+  //                   position: 3,
+  //                   duration: const Duration(milliseconds: 300),
+  //                   child: SlideAnimation(
+  //                     verticalOffset: 30.0,
+  //                     child: FadeInAnimation(
+  //                       child: CustomActionButton(
+  //                         backgroundColor: actionButtons[7]['backgroundColor'] as Color,
+  //                         iconPath: actionButtons[7]['iconPath'] as String,
+  //                         iconBackgroundColor: actionButtons[7]['iconBackgroundColor'] as Color,
+  //                         text: actionButtons[7]['text'] as String,
+  //                         onPressed: actionButtons[7]['onPressed'] as VoidCallback,
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _buildTransactionSection() {
     return Column(
@@ -950,12 +1064,12 @@ class SendMoneyWidget extends StatelessWidget {
         padding: EdgeInsets.all(8.r),
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: BorderRadius.circular(16.r),
+          borderRadius: BorderRadius.circular(5.r),
           boxShadow: [
-            const BoxShadow(
-              color: Colors.black26,
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
               blurRadius: 5,
-              offset: Offset(1, 1),
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -975,3 +1089,43 @@ class SendMoneyWidget extends StatelessWidget {
     );
   }
 }
+
+
+class BoxWidget extends StatelessWidget {
+  const BoxWidget({super.key, required this.title, required this.imageURL, required this.onTap});
+  final String title;
+  final String imageURL;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 95.h,
+        width: 80.h,
+        padding: EdgeInsets.all(5.w),
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          // spacing: 10,
+          children: [
+            SvgPicture.asset(imageURL, height: 27.h, width: 30.w,color: MyTheme.primaryColor,),
+            Text(title,style: const TextStyle(fontSize: 10,fontWeight: FontWeight.w500),textAlign: TextAlign.center,),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
