@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hive/hive.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/presentations/setting/avalible_limit_screen.dart';
 import 'package:payfussion/presentations/setting/community_forum/community_forum_screen.dart';
@@ -126,10 +125,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
 
   Future<void> updateTransactionStatus(String userID, bool transactionValue) async {
     try {
-      await FirebaseFirestore.instance
-          .collection("users")
-          .doc(userID)
-          .update({
+      await FirebaseFirestore.instance.collection("users").doc(userID).update({
         "transaction": transactionValue,
       });
 
@@ -146,9 +142,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isBiometricEnabled = SessionController.isBiometric ??
-        context.select((SettingsBloc b) => b.state.security['fingerprint']);
-
+    final isBiometricEnabled = SessionController.isBiometric ?? context.select((SettingsBloc b) => b.state.security['fingerprint']);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -226,7 +220,6 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                     LimitSettingContainer(),
 
                     SizedBox(height: 35.h),
-                    SizedBox(height: 35.h),
                     // Linked Accounts
                     _buildLinkedAccountsSection(),
                     SizedBox(height: 35.h),
@@ -290,6 +283,12 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
           itemHeaderSideButton: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             child: TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: MyTheme.primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+              ),
               onPressed: () {
                 PaymentService().saveCard(context);
               },
@@ -668,7 +667,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                     subtitle: 'Ask and answer common issues with\nthe other members of our app',
                     trailingBuilder: (ctx) => _animatedArrow(() {
                       context.push(
-                        '/communityForum',
+                        RouteNames.communityForum,
                         extra: const CommunityForumScreen(),
                       );
                     }),
@@ -701,7 +700,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
       child: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: const Color(0xff2D9CDB),
+        activeColor: MyTheme.primaryColor,
       ),
     );
   }
