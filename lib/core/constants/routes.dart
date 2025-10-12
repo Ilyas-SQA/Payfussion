@@ -100,18 +100,15 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: RouteNames.liveChat,
-      builder: (BuildContext context, GoRouterState state) =>
-          const LiveChatScreen(),
+      builder: (BuildContext context, GoRouterState state) => const LiveChatScreen(),
     ),
     GoRoute(
       path: RouteNames.communityForum,
-      builder: (BuildContext context, GoRouterState state) =>
-          const CommunityForumScreen(),
+      builder: (BuildContext context, GoRouterState state) => const CommunityForumScreen(),
     ),
     GoRoute(
       path: RouteNames.createPost,
-      builder: (BuildContext context, GoRouterState state) =>
-          CreatePostScreen(),
+      builder: (BuildContext context, GoRouterState state) => CreatePostScreen(),
     ),
     GoRoute(
       path: RouteNames.profile,
