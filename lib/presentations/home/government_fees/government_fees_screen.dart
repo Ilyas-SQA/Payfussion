@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
-
 import 'governement_pay_fee_screen.dart';
 
 class GovernmentFeesScreen extends StatefulWidget {
@@ -21,7 +19,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "IRS Tax Payment",
       subtitle: "Federal income tax & penalties",
       type: "irs",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "Federal",
     ),
@@ -30,7 +28,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "Social Security",
       subtitle: "SSA services & benefits",
       type: "ssa",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "Federal",
     ),
@@ -39,7 +37,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "Medicare Services",
       subtitle: "Healthcare premium payments",
       type: "medicare",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "Federal",
     ),
@@ -48,7 +46,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "TSA PreCheck",
       subtitle: "Airport security services",
       type: "tsa",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "Federal",
     ),
@@ -57,7 +55,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "Passport Services",
       subtitle: "US State Department fees",
       type: "passport",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "Federal",
     ),
@@ -66,7 +64,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "SBA Loans",
       subtitle: "Small Business Administration",
       type: "sba",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "Federal",
     ),
@@ -77,7 +75,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "DMV Services",
       subtitle: "License renewal & registration",
       type: "dmv",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "State",
     ),
@@ -86,7 +84,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "State Tax Board",
       subtitle: "State income tax payments",
       type: "state_tax",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "State",
     ),
@@ -95,7 +93,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "Employment Dept",
       subtitle: "Unemployment & workforce",
       type: "employment",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "State",
     ),
@@ -104,7 +102,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "Health Department",
       subtitle: "Permits & health services",
       type: "health_dept",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "State",
     ),
@@ -113,7 +111,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "Education Dept",
       subtitle: "Student loans & services",
       type: "education",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "State",
     ),
@@ -124,7 +122,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "Police Department",
       subtitle: "Fines, permits & services",
       type: "police",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "Local",
     ),
@@ -133,7 +131,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "Traffic Citations",
       subtitle: "Parking & traffic fines",
       type: "traffic",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "Local",
     ),
@@ -142,7 +140,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "Waste Management",
       subtitle: "Garbage & recycling fees",
       type: "waste",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "Local",
     ),
@@ -151,7 +149,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "Water Department",
       subtitle: "Water & sewer services",
       type: "water",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "Local",
     ),
@@ -160,7 +158,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "Property Tax",
       subtitle: "Real estate tax payments",
       type: "property_tax",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "Local",
     ),
@@ -169,7 +167,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "Building Permits",
       subtitle: "Construction & zoning",
       type: "permits",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "Local",
     ),
@@ -178,7 +176,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "Fire Department",
       subtitle: "Fire safety & permits",
       type: "fire_dept",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "Local",
     ),
@@ -187,7 +185,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "Parks & Recreation",
       subtitle: "Park permits & activities",
       type: "parks",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "Local",
     ),
@@ -198,7 +196,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "Court Services",
       subtitle: "Filing fees & fines",
       type: "court",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "Judicial",
     ),
@@ -207,7 +205,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       label: "Legal Services",
       subtitle: "Attorney general services",
       type: "legal",
-      gradient: MyTheme.secondaryColor,
+      gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
       category: "Judicial",
     ),
@@ -352,18 +350,6 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
             ),
           ),
         ),
-        leading: FadeTransition(
-          opacity: _headerFade,
-          child: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: theme.primaryColor != Colors.white
-                  ? Colors.white
-                  : const Color(0xff2D3748),
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ),
       ),
       body: FadeTransition(
         opacity: _feesFade,
@@ -385,6 +371,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
                       "US Government",
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.w300,
+                        fontSize: 18,
                         color: theme.primaryColor != Colors.white
                             ? Colors.white.withOpacity(0.8)
                             : const Color(0xff718096),
@@ -394,6 +381,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
                       "Service Payments",
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
+                        fontSize: 16,
                         color: theme.primaryColor != Colors.white
                             ? Colors.white
                             : const Color(0xff2D3748),
@@ -403,6 +391,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
                     Text(
                       "Pay federal, state, and local government fees",
                       style: theme.textTheme.bodyMedium?.copyWith(
+                        fontSize: 12,
                         color: theme.primaryColor != Colors.white
                             ? Colors.white.withOpacity(0.7)
                             : const Color(0xff718096),
@@ -449,7 +438,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
                     decoration: BoxDecoration(
-                      color: isSelected ? MyTheme.secondaryColor : theme.cardColor,
+                      color: isSelected ? MyTheme.primaryColor : theme.cardColor,
                       borderRadius: BorderRadius.circular(25.r),
                       boxShadow: [
                         BoxShadow(
@@ -484,8 +473,14 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: AnimationLimiter(
-        child: ListView.builder(
+        child: GridView.builder(
           physics: const BouncingScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            mainAxisSpacing: 10.h,
+            crossAxisSpacing: 10.w,
+            childAspectRatio: 9 / 12,
+          ),
           itemCount: filteredItems.length,
           itemBuilder: (context, index) {
             return AnimationConfiguration.staggeredList(
@@ -510,105 +505,48 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
 
   Widget _buildGovernmentServiceItem(GovernmentFeeItem item, ThemeData theme, int index) {
     return Container(
-      margin: EdgeInsets.only(bottom: 16.h),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(5.r),
         boxShadow: [
-          const BoxShadow(
-            color: Colors.black26,
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
-            offset: Offset(1, 1),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const GovernmentPayFeeScreen()));
-          },
-          borderRadius: BorderRadius.circular(16.r),
-          child: Padding(
-            padding: EdgeInsets.all(20.w),
-            child: Row(
-              children: [
-                // Icon Container
-                Container(
-                  height: 60.h,
-                  width: 60.w,
-                  decoration: BoxDecoration(
-                    color: item.gradient,
-                    borderRadius: BorderRadius.circular(16.r),
-                  ),
-                  child: Icon(
-                    item.icon,
-                    size: 32.sp,
-                    color: item.iconColor,
-                  ),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const GovernmentPayFeeScreen()));
+        },
+        borderRadius: BorderRadius.circular(16.r),
+        child: Padding(
+          padding: EdgeInsets.all(10.w),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              // Icon Container
+              Icon(
+                item.icon,
+                size: 32.sp,
+                color: MyTheme.primaryColor,
+              ),
+
+              SizedBox(height: 16.w),
+
+              /// Text Content
+              Text(
+                item.label,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                  color: theme.primaryColor != Colors.white ? const Color(0xffffffff) : const Color(0xff2D3748),
                 ),
+              ),
 
-                SizedBox(width: 16.w),
-
-                // Text Content
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              item.label,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: theme.primaryColor != Colors.white
-                                    ? const Color(0xffffffff)
-                                    : const Color(0xff2D3748),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                            decoration: BoxDecoration(
-                              color: item.gradient.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                            child: Text(
-                              item.category,
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: item.gradient,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        item.subtitle,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.primaryColor != Colors.white
-                              ? const Color(0xffffffff).withOpacity(0.7)
-                              : const Color(0xff718096),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                SizedBox(width: 8.w),
-
-                // Arrow Icon
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 16.sp,
-                  color: theme.primaryColor != Colors.white
-                      ? const Color(0xffffffff).withOpacity(0.5)
-                      : const Color(0xffA0AEC0),
-                ),
-              ],
-            ),
+            ],
           ),
         ),
       ),

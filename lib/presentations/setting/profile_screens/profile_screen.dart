@@ -8,9 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:payfussion/core/constants/routes_name.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/logic/blocs/setting/user_profile/profile_state.dart';
-
-import '../../../logic/blocs/setting/device_manager/device_manager_bloc.dart';
-import '../../../logic/blocs/setting/device_manager/device_manager_event.dart';
 import '../../../logic/blocs/setting/user_profile/profile_bloc.dart';
 import '../../../logic/blocs/setting/user_profile/profile_event.dart';
 import '../../../services/session_manager_service.dart';
@@ -167,30 +164,15 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
       builder: (context, state) {
         return Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          appBar: AppBar(
+            title: const Text("Profile"),
+            elevation: 0,
+          ),
           body: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 20.h),
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  SizedBox(height: 15.h),
-
-                  // Animated back button and title
-                  SlideTransition(
-                    position: _headerSlide,
-                    child: FadeTransition(
-                      opacity: _headerFade,
-                      child: _buildBackButton(),
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
-
-                  SlideTransition(
-                    position: _headerSlide,
-                    child: FadeTransition(
-                      opacity: _headerFade,
-                      child: _buildTitle(context),
-                    ),
-                  ),
                   SizedBox(height: 15.h),
 
                   // Animated profile image
@@ -252,43 +234,6 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
     );
   }
 
-  Widget _buildBackButton() {
-    return InkWell(
-      onTap: () => context.go('/'),
-      child: Row(
-        children: [
-          Icon(
-            Icons.arrow_back_ios_new,
-            color: MyTheme.primaryColor,
-            size: 20.r,
-          ),
-          SizedBox(width: 2.w),
-          Text(
-            'Back',
-            style: TextStyle(
-              fontFamily: 'Montserrat',
-              fontSize: 15.sp,
-              color: MyTheme.primaryColor,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTitle(BuildContext context) {
-    return Text(
-      'Profile',
-      style: TextStyle(
-        fontFamily: 'Montserrat',
-        fontSize: 20.sp,
-        color: Theme.of(context).secondaryHeaderColor,
-        fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-
   Widget _buildProfileImage() {
     return Stack(
       children: [
@@ -343,7 +288,7 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
 
   Widget _buildUserName() {
     return Padding(
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.all(10.0),
       child: Text(
         _userName,
         style: TextStyle(
@@ -357,7 +302,7 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
   }
 
   Widget _buildEditableCards() {
-    final cards = [
+    final List<Map<String, Object>> cards = [
       {
         'title': 'First Name',
         'value': _userFirstName,
@@ -394,7 +339,7 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
             verticalOffset: 20.0,
             child: FadeInAnimation(child: widget),
           ),
-          children: cards.map((card) {
+          children: cards.map((Map<String, Object> card) {
             return Column(
               children: [
                 EditableCard(
@@ -423,15 +368,7 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
           height: 63.h,
           decoration: BoxDecoration(
             color: MyTheme.primaryColor,
-            borderRadius: BorderRadius.circular(8.r),
-            boxShadow: [
-              BoxShadow(
-                color:  MyTheme.primaryColor.withOpacity(0.5),
-                spreadRadius: 1,
-                blurRadius: 5,
-                offset: const Offset(0, 3),
-              ),
-            ],
+            borderRadius: BorderRadius.circular(5.r),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -470,15 +407,7 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
           height: 63.h,
           decoration: BoxDecoration(
             color: const Color(0xffDB2D30),
-            borderRadius: BorderRadius.circular(8.r),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xffDB2D30).withOpacity(0.5),
-                spreadRadius: 1,
-                blurRadius: 5,
-                offset: const Offset(0, 3),
-              ),
-            ],
+            borderRadius: BorderRadius.circular(5.r),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

@@ -53,19 +53,19 @@ class _SelectBankScreenState extends State<SelectBankScreen> {
         bottom: 12.h,
       ),
       decoration: BoxDecoration(
-        gradient: isSelected
-            ? LinearGradient(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        gradient: isSelected ?
+        LinearGradient(
           colors: [MyTheme.primaryColor, MyTheme.primaryColor.withOpacity(0.8)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-        )
-            : null,
+        ) : null,
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: isSelected ? MyTheme.primaryColor.withOpacity(0.3) : Colors.grey.withOpacity(0.1),
-            blurRadius: isSelected ? 8 : 4,
-            offset: Offset(0, isSelected ? 4 : 2),
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -198,7 +198,7 @@ class _SelectBankScreenState extends State<SelectBankScreen> {
                     Text(
                       'Choose your bank',
                       style: TextStyle(
-                        fontSize: 24.sp,
+                        fontSize: 20.sp,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -206,7 +206,7 @@ class _SelectBankScreenState extends State<SelectBankScreen> {
                     Text(
                       'Select a bank from the list below (tap again to unselect)',
                       style: TextStyle(
-                        fontSize: 14.sp,
+                        fontSize: 12.sp,
                       ),
                     ),
                   ],

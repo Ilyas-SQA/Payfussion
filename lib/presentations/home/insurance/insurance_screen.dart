@@ -199,8 +199,6 @@ class _InsuranceScreenState extends State<InsuranceScreen>
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
         title: FadeTransition(
           opacity: _headerFade,
           child: SlideTransition(
@@ -209,23 +207,9 @@ class _InsuranceScreenState extends State<InsuranceScreen>
               "Insurance Companies",
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: theme.primaryColor != Colors.white
-                    ? Colors.white
-                    : const Color(0xff2D3748),
+                color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
               ),
             ),
-          ),
-        ),
-        leading: FadeTransition(
-          opacity: _headerFade,
-          child: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: theme.primaryColor != Colors.white
-                  ? Colors.white
-                  : const Color(0xff2D3748),
-            ),
-            onPressed: () => Navigator.of(context).pop(),
           ),
         ),
       ),
@@ -244,27 +228,24 @@ class _InsuranceScreenState extends State<InsuranceScreen>
                     "Choose Your",
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w300,
-                      color: theme.primaryColor != Colors.white
-                          ? Colors.white.withOpacity(0.8)
-                          : const Color(0xff718096),
+                      color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.8) : const Color(0xff718096),
+                      fontSize: 18,
                     ),
                   ),
                   Text(
                     "Insurance Provider",
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: theme.primaryColor != Colors.white
-                          ? Colors.white
-                          : const Color(0xff2D3748),
+                      color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+                      fontSize: 16,
                     ),
                   ),
                   SizedBox(height: 8.h),
                   Text(
                     "Protect what matters most with trusted insurance companies",
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.primaryColor != Colors.white
-                          ? Colors.white.withOpacity(0.7)
-                          : const Color(0xff718096),
+                      color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.7) : const Color(0xff718096),
+                      fontSize: 12,
                     ),
                   ),
                 ],
@@ -285,8 +266,14 @@ class _InsuranceScreenState extends State<InsuranceScreen>
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: AnimationLimiter(
-        child: ListView.builder(
+        child: GridView.builder(
           physics: const BouncingScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            mainAxisSpacing: 10.h,
+            crossAxisSpacing: 10.w,
+            childAspectRatio: 8 / 12,
+          ),
           itemCount: insuranceCompanies.length,
           itemBuilder: (context, index) {
             return AnimationConfiguration.staggeredList(
@@ -314,131 +301,74 @@ class _InsuranceScreenState extends State<InsuranceScreen>
       margin: EdgeInsets.only(bottom: 16.h),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(5.r),
         boxShadow: [
-          const BoxShadow(
-            color: Colors.black26,
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
-            offset: Offset(1, 1),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              PageRouteBuilder(
-                pageBuilder: (context, animation, secondaryAnimation) =>
-                    InsuranceTypeScreen(
-                      companyName: company['name'],
-                      types: List<String>.from(company['types']),
-                      icon: company['icon'],
-                      color: company['color'],
-                    ),
-                transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                  return SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(1.0, 0.0),
-                      end: Offset.zero,
-                    ).animate(animation),
-                    child: child,
-                  );
-                },
-              ),
-            );
-          },
-          borderRadius: BorderRadius.circular(20.r),
-          child: Padding(
-            padding: EdgeInsets.all(20.w),
-            child: Row(
-              children: [
-                // Icon Container
-                Hero(
-                  tag: 'insurance_icon_${company['name']}',
-                  child: Container(
-                    height: 65.h,
-                    width: 65.w,
-                    decoration: BoxDecoration(
-                      color: (company['color'] as Color).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(18.r),
-                      border: Border.all(
-                        color: (company['color'] as Color).withOpacity(0.2),
-                        width: 1,
-                      ),
-                    ),
-                    child: Icon(
-                      company['icon'] as IconData,
-                      size: 28.sp,
-                      color: company['color'] as Color,
-                    ),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  InsuranceTypeScreen(
+                    companyName: company['name'],
+                    types: List<String>.from(company['types']),
+                    icon: company['icon'],
+                    color: company['color'],
                   ),
-                ),
-
-                SizedBox(width: 16.w),
-
-                // Content
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        company['name'] as String,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: theme.primaryColor != Colors.white
-                              ? Colors.white
-                              : const Color(0xff2D3748),
-                        ),
-                      ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        company['description'] as String,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.primaryColor != Colors.white
-                              ? Colors.white.withOpacity(0.7)
-                              : const Color(0xff718096),
-                        ),
-                      ),
-                      SizedBox(height: 8.h),
-                      // Insurance types count
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.list_alt,
-                            size: 14.sp,
-                            color: company['color'] as Color,
-                          ),
-                          SizedBox(width: 4.w),
-                          Text(
-                            "${(company['types'] as List).length} Insurance Types",
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: company['color'] as Color,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Arrow Icon
-                Container(
-                  padding: EdgeInsets.all(8.w),
-                  decoration: BoxDecoration(
-                    color: (company['color'] as Color).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  child: Icon(
-                    Icons.arrow_forward_ios,
-                    size: 14.sp,
-                    color: company['color'] as Color,
-                  ),
-                ),
-              ],
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(1.0, 0.0),
+                    end: Offset.zero,
+                  ).animate(animation),
+                  child: child,
+                );
+              },
             ),
+          );
+        },
+        borderRadius: BorderRadius.circular(20.r),
+        child: Padding(
+          padding: EdgeInsets.all(10.w),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              // Icon Container
+              Hero(
+                tag: 'insurance_icon_${company['name']}',
+                child: Icon(
+                  company['icon'] as IconData,
+                  size: 28.sp,
+                  color: MyTheme.primaryColor,
+                ),
+              ),
+
+              SizedBox(width: 16.w),
+
+              // Content
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    company['name'] as String,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+                    ),
+                  ),
+                ],
+              ),
+
+            ],
           ),
         ),
       ),

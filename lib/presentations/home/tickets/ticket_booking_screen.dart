@@ -4,7 +4,6 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/constants/routes_name.dart';
 import 'package:payfussion/presentations/pay_bills/widgets/section_header.dart';
-
 import '../../../core/constants/image_url.dart';
 import '../../../core/theme/theme.dart';
 import 'bus/bus_screen.dart';
@@ -22,12 +21,11 @@ class TicketBookingScreen extends StatefulWidget {
 class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerProviderStateMixin {
   // Animation controllers
   late AnimationController _headerController;
-  late AnimationController _cardController;
-  late AnimationController _quickAccessController;
-  late AnimationController _billsController;
-  late AnimationController _ticketsController;
+  late AnimationController _listController;
 
-  late Animation<double> _ticketsFade;
+  late Animation<double> _headerFade;
+  late Animation<Offset> _headerSlide;
+  late Animation<double> _listFade;
 
   @override
   void initState() {
@@ -38,98 +36,115 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
 
   void _initAnimations() {
     _headerController = AnimationController(
-      duration: const Duration(milliseconds: 400),
-      vsync: this,
-    );
-
-    _cardController = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
-
-    _quickAccessController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
 
-    _billsController = AnimationController(
-      duration: const Duration(milliseconds: 700),
-      vsync: this,
-    );
-
-    _ticketsController = AnimationController(
+    _listController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
 
-    _ticketsFade = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _ticketsController, curve: Curves.easeOut),
+    _headerFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _headerController, curve: Curves.easeOut),
+    );
+
+    _headerSlide = Tween<Offset>(
+      begin: const Offset(0, -0.5),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _headerController, curve: Curves.easeOut));
+
+    _listFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _listController, curve: Curves.easeOut),
     );
   }
 
   void _startAnimationSequence() async {
-    await Future.delayed(const Duration(milliseconds: 100));
+    await Future.delayed(const Duration(milliseconds: 200));
     _headerController.forward();
 
-    await Future.delayed(const Duration(milliseconds: 100));
-    _cardController.forward();
-
-    await Future.delayed(const Duration(milliseconds: 100));
-    _quickAccessController.forward();
-
-    await Future.delayed(const Duration(milliseconds: 100));
-    _billsController.forward();
-
-    await Future.delayed(const Duration(milliseconds: 100));
-    _ticketsController.forward();
+    await Future.delayed(const Duration(milliseconds: 300));
+    _listController.forward();
   }
 
   @override
   void dispose() {
     _headerController.dispose();
-    _cardController.dispose();
-    _quickAccessController.dispose();
-    _billsController.dispose();
-    _ticketsController.dispose();
+    _listController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text("Book Ticket"),
+        title: FadeTransition(
+          opacity: _headerFade,
+          child: SlideTransition(
+            position: _headerSlide,
+            child: Text(
+              "Book Ticket",
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+              ),
+            ),
+          ),
+        ),
       ),
       body: FadeTransition(
-        opacity: _ticketsFade,
-        child: SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0, 0.3),
-            end: Offset.zero,
-          ).animate(_ticketsController),
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: SectionHeader(
-                  title: "Ticket Booking",
-                  onActionPressed: () {},
-                ),
+        opacity: _listFade,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Section
+            Padding(
+              padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Choose Your",
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.w300,
+                      color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.8) : const Color(0xff718096),
+                      fontSize: 18,
+                    ),
+                  ),
+                  Text(
+                    "Ticket Booking",
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+                      fontSize: 16,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    "Book your tickets easily and conveniently",
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.7) : const Color(0xff718096),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
-              SizedBox(height: 16.h),
-              Expanded(
-                child: _buildTicketBookingList(),
-              ),
-            ],
-          ),
+            ),
+
+            // Ticket List
+            Expanded(
+              child: _buildTicketBookingList(theme),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildTicketBookingList() {
-    final ThemeData theme = Theme.of(context);
-
+  Widget _buildTicketBookingList(ThemeData theme) {
     final ticketItems = [
       {
         'icon': TImageUrl.iconMovies,
@@ -176,16 +191,23 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: AnimationLimiter(
-        child: ListView.builder(
+        child: GridView.builder(
+          physics: const BouncingScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            mainAxisSpacing: 10.h,
+            crossAxisSpacing: 10.w,
+            childAspectRatio: 8 / 12,
+          ),
           itemCount: ticketItems.length,
           itemBuilder: (context, index) {
             return AnimationConfiguration.staggeredList(
               position: index,
-              duration: const Duration(milliseconds: 375),
+              duration: const Duration(milliseconds: 500),
               child: SlideAnimation(
                 verticalOffset: 50.0,
                 child: FadeInAnimation(
-                  child: _buildTicketListItem(
+                  child: _buildTicketCard(
                     ticketItems[index],
                     theme,
                     index,
@@ -199,86 +221,57 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
     );
   }
 
-  Widget _buildTicketListItem(Map<String, dynamic> item, ThemeData theme, int index) {
+  Widget _buildTicketCard(Map<String, dynamic> item, ThemeData theme, int index) {
     return Container(
       margin: EdgeInsets.only(bottom: 16.h),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(5.r),
         boxShadow: [
-          const BoxShadow(
-            color: Colors.black26,
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
-            offset: Offset(1, 1),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: item['onTap'] as VoidCallback,
-          borderRadius: BorderRadius.circular(16.r),
-          child: Padding(
-            padding: EdgeInsets.all(20.w),
-            child: Row(
-              children: [
-                // Icon Container
-                Container(
-                  height: 60.h,
-                  width: 60.w,
-                  decoration: BoxDecoration(
-                    color: item['color'] as Color,
-                    borderRadius: BorderRadius.circular(16.r),
-                  ),
-                  child: Center(
-                    child: Image.asset(
-                      item['icon'] as String,
-                      height: 32.h,
-                      width: 32.w,
-                      color: item['iconColor'] as Color,
+      child: InkWell(
+        onTap: item['onTap'] as VoidCallback,
+        borderRadius: BorderRadius.circular(20.r),
+        child: Padding(
+          padding: EdgeInsets.all(10.w),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              // Icon Container
+              Hero(
+                tag: 'ticket_icon_${item['label']}',
+                child: Image.asset(
+                  item['icon'] as String,
+                  height: 28.h,
+                  width: 28.w,
+                  color: MyTheme.primaryColor,
+                ),
+              ),
+
+              SizedBox(width: 16.w),
+
+              // Content
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item['label'] as String,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
                     ),
                   ),
-                ),
-
-                SizedBox(width: 16.w),
-
-                // Text Content
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item['label'] as String,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: theme.primaryColor != Colors.white
-                              ? const Color(0xffffffff)
-                              : const Color(0xff2D3748),
-                        ),
-                      ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        item['subtitle'] as String,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.primaryColor != Colors.white
-                              ? const Color(0xffffffff).withOpacity(0.7)
-                              : const Color(0xff718096),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Arrow Icon
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 16.sp,
-                  color: theme.primaryColor != Colors.white
-                      ? const Color(0xffffffff).withOpacity(0.5)
-                      : const Color(0xffA0AEC0),
-                ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ),
         ),
       ),

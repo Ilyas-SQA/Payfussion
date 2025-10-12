@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
-import 'package:payfussion/core/constants/app_colors.dart';
 import 'package:shimmer/shimmer.dart';
 
 class FaqsScreen extends StatefulWidget {
@@ -81,57 +80,19 @@ class _FaqsScreenState extends State<FaqsScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "FAQs",
+          style: TextStyle(
+            fontFamily: 'Montserrat',
+            fontSize: 18.sp,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
+      ),
       body: Column(
         children: [
-          SizedBox(height: 40.h),
-
-          // Animated back button
-          SlideTransition(
-            position: _headerSlide,
-            child: FadeTransition(
-              opacity: _headerFade,
-              child: GestureDetector(
-                onTap: () => context.go('/'),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.arrow_back_ios_new,
-                      color: const Color(0xff2D9CDB),
-                      size: 24.r,
-                    ),
-                    SizedBox(width: 2.w),
-                    Text(
-                      'Back',
-                      style: TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontSize: 20.sp,
-                        color: const Color(0xff2D9CDB),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          SizedBox(height: 10.h),
-
-          // Animated title
-          ScaleTransition(
-            scale: _titleScale,
-            child: FadeTransition(
-              opacity: _headerFade,
-              child: Text(
-                "FAQS",
-                style: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
 
           SizedBox(height: 10.h),
 
@@ -158,12 +119,12 @@ class _FaqsScreenState extends State<FaqsScreen> with TickerProviderStateMixin {
                                   child: Container(
                                     decoration: BoxDecoration(
                                       color: Theme.of(context).scaffoldBackgroundColor,
-                                      borderRadius: BorderRadius.circular(16.r),
+                                      borderRadius: BorderRadius.circular(5.r),
                                       boxShadow: [
-                                        const BoxShadow(
-                                          color: Colors.black26,
+                                        BoxShadow(
+                                          color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                                           blurRadius: 5,
-                                          offset: Offset(1, 1),
+                                          offset: const Offset(0, 4),
                                         ),
                                       ],
                                     ),

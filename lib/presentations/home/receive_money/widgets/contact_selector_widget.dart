@@ -54,7 +54,6 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -88,7 +87,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                     Text(
                       'Change Recipient',
                       style: TextStyle(
-                        color: MyTheme.secondaryColor,
+                        color: MyTheme.primaryColor,
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w500,
                       ),
@@ -96,7 +95,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                     SizedBox(width: 4.w),
                     Icon(
                       Icons.arrow_drop_down,
-                      color: MyTheme.secondaryColor,
+                      color: MyTheme.primaryColor,
                       size: 20.sp,
                     ),
                   ],
@@ -111,7 +110,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                 child: Container(
                   padding: EdgeInsets.all(16.r),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(12.r),
                     boxShadow: <BoxShadow>[
                       BoxShadow(
@@ -120,21 +119,21 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                         spreadRadius: -2,
                       ),
                     ],
-                    border: Border.all(color: Colors.grey[300]!, width: 1.0),
+                    border: Border.all(color: MyTheme.primaryColor, width: 1.0),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
                         Icons.person_add_rounded,
-                        color: MyTheme.secondaryColor,
+                        color: MyTheme.primaryColor,
                         size: 24.sp,
                       ),
                       SizedBox(width: 8.w),
                       Text(
                         'Select Recipient',
                         style: TextStyle(
-                          color: MyTheme.secondaryColor,
+                          color: MyTheme.primaryColor,
                           fontWeight: FontWeight.w600,
                           fontSize: 16.sp,
                         ),
@@ -164,7 +163,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
           ),
         ],
         border: Border.all(
-          color: MyTheme.secondaryColor.withOpacity(0.3),
+          color: MyTheme.primaryColor.withOpacity(0.3),
           width: 1.5,
         ),
       ),
@@ -176,7 +175,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
             height: 48.r,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: MyTheme.secondaryColor.withOpacity(0.1),
+              color: MyTheme.primaryColor.withOpacity(0.1),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(24.r),
@@ -217,7 +216,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
             ),
           ),
           // Check icon
-          Icon(Icons.check_circle, color: MyTheme.secondaryColor, size: 24.sp),
+          Icon(Icons.check_circle, color: MyTheme.primaryColor, size: 24.sp),
         ],
       ),
     );
@@ -228,7 +227,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
       child: Text(
         recipient.name.isNotEmpty ? recipient.name[0].toUpperCase() : '?',
         style: TextStyle(
-          color: MyTheme.secondaryColor,
+          color: MyTheme.primaryColor,
           fontSize: 20.sp,
           fontWeight: FontWeight.bold,
         ),
@@ -256,7 +255,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
             return Container(
               height: MediaQuery.of(context).size.height * 0.7,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
                 boxShadow: <BoxShadow>[
                   BoxShadow(
@@ -285,7 +284,6 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                     style: TextStyle(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
                     ),
                     semanticsLabel: 'Select payment recipient',
                   ),
@@ -313,7 +311,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12.r),
-                          borderSide: BorderSide(color: MyTheme.secondaryColor),
+                          borderSide: BorderSide(color: MyTheme.primaryColor),
                         ),
                       ),
                     ),
@@ -332,7 +330,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                           if (blocState.recipientsStatus == RecipientsStatus.loading) {
                             return const Center(
                               child: CircularProgressIndicator(
-                                color: MyTheme.secondaryColor,
+                                color: MyTheme.primaryColor,
                               ),
                             );
                           }
@@ -362,7 +360,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                                         RecipientsSubscriptionRequested(),
                                       );
                                     },
-                                    child: Text('Retry'),
+                                    child: const Text('Retry'),
                                   ),
                                 ],
                               ),
@@ -403,7 +401,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
 
                               return Material(
                                 color: isSelected
-                                    ? MyTheme.secondaryColor.withOpacity(0.08)
+                                    ? MyTheme.primaryColor.withOpacity(0.08)
                                     : Colors.transparent,
                                 child: InkWell(
                                   onTap: () {
@@ -423,8 +421,8 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
                                           color: isSelected
-                                              ? MyTheme.secondaryColor.withOpacity(0.15)
-                                              : MyTheme.secondaryColor.withOpacity(0.1),
+                                              ? MyTheme.primaryColor.withOpacity(0.15)
+                                              : MyTheme.primaryColor.withOpacity(0.1),
                                         ),
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.circular(24.r),
@@ -443,7 +441,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                                         style: TextStyle(
                                           fontWeight: FontWeight.w600,
                                           color: isSelected
-                                              ? MyTheme.secondaryColor
+                                              ? MyTheme.primaryColor
                                               : AppColors.textPrimary,
                                           fontSize: 16.sp,
                                         ),
@@ -458,7 +456,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                                       trailing: isSelected
                                           ? Icon(
                                         Icons.check_circle,
-                                        color: MyTheme.secondaryColor,
+                                        color: MyTheme.primaryColor,
                                         size: 20.sp,
                                       )
                                           : null,

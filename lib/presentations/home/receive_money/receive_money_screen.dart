@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/theme.dart';
@@ -42,8 +43,8 @@ class ReceiveMoneyScreen extends StatelessWidget {
                         MaterialPageRoute(builder: (_) => const ReceiveMoneyPaymentScreen()),
                       );
                     },
-                    icon: const Icon(Icons.add_circle_outline, color: MyTheme.secondaryColor),
-                    label: const Text('New Request', style: TextStyle(fontSize: 12,color: MyTheme.secondaryColor)),
+                    icon: const Icon(Icons.add_circle_outline, color: MyTheme.primaryColor),
+                    label: const Text('New Request', style: TextStyle(fontSize: 12,color: MyTheme.primaryColor)),
                   ),
                 ),
               );
@@ -230,41 +231,8 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
           scale: 0.95 + (0.05 * value),
           child: Padding(
             padding: const EdgeInsets.all(12),
-            child: TextField(
+            child: AppTextormField(
               controller: _search,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                hintText: 'Search requests...',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                prefixIcon: AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  child: const Icon(Icons.search),
-                ),
-                suffixIcon: _searchQuery.isNotEmpty
-                    ? TweenAnimationBuilder<double>(
-                  duration: const Duration(milliseconds: 200),
-                  tween: Tween(begin: 0.0, end: 1.0),
-                  builder: (context, clearValue, child) {
-                    return Transform.scale(
-                      scale: clearValue,
-                      child: IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _search.clear();
-                          setState(() {
-                            _searchQuery = '';
-                          });
-                        },
-                      ),
-                    );
-                  },
-                )
-                    : null,
-              ),
               onChanged: (q) {
                 _debounce?.cancel();
                 _debounce = Timer(const Duration(milliseconds: 400), () {
@@ -273,6 +241,8 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
                   });
                 });
               },
+              isPasswordField: false,
+              helpText: 'Search requests...',
             ),
           ),
         );
@@ -296,7 +266,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
                 child: FilterChip(
                   selected: _statusFilter == label,
                   label: Text(label,style: TextStyle(color: _statusFilter == label ? Colors.white : Colors.black),),
-                  selectedColor: MyTheme.secondaryColor,
+                  selectedColor: MyTheme.primaryColor,
                   onSelected: (_) {
                     setState(() {
                       _statusFilter = label;
@@ -377,7 +347,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
           return Transform.rotate(
             angle: value * 2 * 3.14159,
             child: const CircularProgressIndicator(
-              color: MyTheme.secondaryColor,
+              color: MyTheme.primaryColor,
             ),
           );
         },
@@ -530,7 +500,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
                             '${r.currencyCode} ${r.amount.toStringAsFixed(2)}',
                             style: const TextStyle(
                               fontWeight: FontWeight.w700,
-                              color: MyTheme.secondaryColor,
+                              color: MyTheme.primaryColor,
                               fontSize: 16,
                             ),
                           ),
@@ -618,7 +588,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
                         child: Icon(
                           Icons.receipt_long_outlined,
                           size: 64,
-                          color: MyTheme.secondaryColor.withOpacity(iconValue),
+                          color: MyTheme.primaryColor.withOpacity(iconValue),
                         ),
                       );
                     },
@@ -646,7 +616,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
                         scale: 0.8 + (0.2 * buttonValue),
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: MyTheme.secondaryColor,
+                            backgroundColor: MyTheme.primaryColor,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                             shape: RoundedRectangleBorder(
@@ -748,7 +718,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
                               children: [
                                 Icon(
                                   Icons.receipt_long,
-                                  color: MyTheme.secondaryColor.withOpacity(titleValue),
+                                  color: MyTheme.primaryColor.withOpacity(titleValue),
                                 ),
                                 const SizedBox(width: 8),
                                 const Text(
@@ -777,10 +747,10 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
                             width: double.infinity,
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: MyTheme.secondaryColor.withOpacity(0.1 * amountValue),
+                              color: MyTheme.primaryColor.withOpacity(0.1 * amountValue),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                color: MyTheme.secondaryColor.withOpacity(0.3 * amountValue),
+                                color: MyTheme.primaryColor.withOpacity(0.3 * amountValue),
                               ),
                             ),
                             child: Column(
@@ -798,7 +768,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
                                   style: TextStyle(
                                     fontSize: 28,
                                     fontWeight: FontWeight.bold,
-                                    color: MyTheme.secondaryColor.withOpacity(amountValue),
+                                    color: MyTheme.primaryColor.withOpacity(amountValue),
                                   ),
                                 ),
                               ],

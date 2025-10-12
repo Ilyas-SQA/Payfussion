@@ -82,7 +82,7 @@ class MyTheme {
               fontSize: 20.sp,
               fontWeight: FontWeight.bold),
           shadowColor: Colors.transparent,
-          iconTheme: const IconThemeData(color: Colors.black),
+          iconTheme: const IconThemeData(color: MyTheme.primaryColor),
         ),
         dialogTheme: const DialogThemeData(backgroundColor: Colors.white),
         fontFamilyFallback: const ['Montserrat'],
@@ -97,7 +97,7 @@ class MyTheme {
               ),
             ),
             backgroundColor: WidgetStateProperty.all(
-              Colors.blue.shade300,
+              MyTheme.primaryColor,
             ),
             shape: WidgetStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
@@ -109,14 +109,13 @@ class MyTheme {
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
           elevation: 20,
           backgroundColor: Colors.transparent,
-          selectedItemColor: Colors.blue,
+          selectedItemColor: MyTheme.primaryColor,
           unselectedItemColor: Colors.grey[500],
         ),
         brightness: Brightness.light,
         primaryColor: Colors.white,
         secondaryHeaderColor: Colors.black,
         canvasColor: backgroundColor,
-        iconTheme: const IconThemeData(color: CupertinoColors.black),
         colorScheme: const ColorScheme(
           primaryContainer: Colors.white,
           onSecondary: backgroundColor,
@@ -192,14 +191,15 @@ class MyTheme {
 
         appBarTheme: AppBarTheme(
           backgroundColor: MyTheme.darkBackgroundColor,
-          actionsIconTheme: const IconThemeData(color: Colors.black),
           titleTextStyle: TextStyle(
             fontFamily: 'Montserrat',
             color: Colors.white,
             fontSize: 20.sp,
             fontWeight: FontWeight.bold,
           ),
+          iconTheme: const IconThemeData(color: MyTheme.primaryColor),
         ),
+
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
             textStyle: WidgetStateProperty.all(
@@ -210,7 +210,7 @@ class MyTheme {
                 fontWeight: FontWeight.w700,
               ),
             ),
-            backgroundColor: WidgetStateProperty.all(Colors.blue.shade300),
+            backgroundColor: WidgetStateProperty.all(MyTheme.primaryColor),
             shape: WidgetStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4.0.r),
@@ -218,6 +218,7 @@ class MyTheme {
             ),
           ),
         ),
+
         dialogTheme: const DialogThemeData(backgroundColor: Colors.black),
         secondaryHeaderColor: Colors.white,
         brightness: Brightness.dark,
@@ -233,6 +234,7 @@ class MyTheme {
         //to be implemented
         primaryColor: const Color(0xff666666),
         canvasColor: backgroundColor,
+        iconTheme: const IconThemeData(color: MyTheme.primaryColor),
         colorScheme: const ColorScheme(
           onSecondary: backgroundColor,
           onPrimary: Colors.white,
@@ -248,7 +250,7 @@ class MyTheme {
 
   static const Color backgroundColor = Color(0xffF9F8F4);
   static const Color darkBackgroundColor = Color(0xFF323C46);
-  static const Color primaryColor = Color(0xFF2e9cdb);
+  static const Color primaryColor = Color(0xFF55d2df);
   static const Color secondaryColor = Color(0xFF27ad60);
   static const Color _warningColor = Color(0xFFF2C94C); // For specific warnings or info
   static const Color _errorColor = Color(0xFFEB5757);

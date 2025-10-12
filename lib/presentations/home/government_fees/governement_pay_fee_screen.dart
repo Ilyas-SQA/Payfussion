@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 
 class GovernmentPayFeeScreen extends StatefulWidget {
   const GovernmentPayFeeScreen({super.key});
@@ -260,9 +261,8 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
                       "Enter Service ID",
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: theme.primaryColor != Colors.white
-                            ? Colors.white
-                            : const Color(0xff2D3748),
+                        color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+                        fontSize: 18,
                       ),
                     ),
                     SizedBox(height: 8.h),
@@ -272,6 +272,7 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
                         color: theme.primaryColor != Colors.white
                             ? Colors.white.withOpacity(0.7)
                             : const Color(0xff718096),
+                        fontSize: 14,
                       ),
                     ),
                   ],
@@ -293,39 +294,16 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
                       ),
                     ],
                   ),
-                  child: TextField(
+                  child: AppTextormField(
                     controller: _textIdController,
-                    focusNode: _textIdFocusNode,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.primaryColor != Colors.white
-                          ? Colors.white
-                          : const Color(0xff2D3748),
-                    ),
-                    decoration: InputDecoration(
-                      hintText: "Enter Text ID or service name...",
-                      hintStyle: theme.textTheme.bodyLarge?.copyWith(
-                        color: theme.primaryColor != Colors.white
-                            ? Colors.white.withOpacity(0.5)
-                            : const Color(0xff718096),
-                      ),
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: theme.primaryColor != Colors.white
-                            ? Colors.white.withOpacity(0.7)
-                            : MyTheme.primaryColor,
-                        size: 24.sp,
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 20.w,
-                        vertical: 18.h,
-                      ),
-                    ),
+                    prefixIcon: Icon(Icons.search),
+                    isPasswordField: false,
+                    helpText: "Enter Text ID or service name...",
                   ),
                 ),
               ),
 
-              SizedBox(height: 24.h),
+              SizedBox(height: 10.h),
 
               // Suggestions List
               if (showSuggestions) ...[

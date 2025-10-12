@@ -55,13 +55,11 @@ class AppStyles {
   static TextStyle get title => const TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.w700,
-    color: AppColors.textPrimary,
   );
 
   static TextStyle get subtitle => const TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
   );
 
   static TextStyle get body => const TextStyle(

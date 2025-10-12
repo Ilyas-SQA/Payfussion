@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/presentations/my_reward/specific_reward_screen.dart';
 
@@ -88,11 +89,7 @@ class MyRewardScreen extends StatelessWidget {
                       ),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
-                      Icons.card_giftcard,
-                      color: Colors.white,
-                      size: 40,
-                    ),
+                    child: Center(child: SvgPicture.asset("assets/images/home/reward.svg",height: 40,width: 40,color: Colors.white,)),
                   ),
                   // Gold coin
                   Positioned(
@@ -225,12 +222,12 @@ class MyRewardScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: BorderRadius.circular(16.r),
+          borderRadius: BorderRadius.circular(5.r),
           boxShadow: [
-            const BoxShadow(
-              color: Colors.black26,
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
-              offset: Offset(1, 1),
+              offset: const Offset(0, 4),
             ),
           ],
         ),

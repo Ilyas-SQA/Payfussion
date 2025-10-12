@@ -59,94 +59,92 @@ class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> {
         right: 16.w,
         bottom: 12.h,
       ),
+
       decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
         gradient: isSelected ?
         LinearGradient(
           colors: [MyTheme.primaryColor, MyTheme.primaryColor.withOpacity(0.8)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-        )
-            : null,
+        ) : null,
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: isSelected ? MyTheme.primaryColor.withOpacity(0.3) : Colors.grey.withOpacity(0.1),
-            blurRadius: isSelected ? 8 : 4,
-            offset: Offset(0, isSelected ? 4 : 2),
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12.r),
-          onTap: () => _toggleAppSelection(app['name']!, isSelected),
-          child: Padding(
-            padding: EdgeInsets.all(16.w),
-            child: Row(
-              children: [
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12.r),
+        onTap: () => _toggleAppSelection(app['name']!, isSelected),
+        child: Padding(
+          padding: EdgeInsets.all(16.w),
+          child: Row(
+            children: [
+              Container(
+                width: 50.w,
+                height: 50.w,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(25.r),
+                ),
+                child: ClipRRect(borderRadius: BorderRadius.circular(50),child: Image.asset(app["imageUrl"].toString(),fit: BoxFit.contain,))
+              ),
+              SizedBox(width: 16.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      app['name']!,
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      app['type']!,
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: isSelected
+                            ? Colors.white.withOpacity(0.8)
+                            : Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (isSelected)
                 Container(
-                  width: 50.w,
-                  height: 50.w,
+                  width: 24.w,
+                  height: 24.w,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(25.r),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
-                  child: ClipRRect(borderRadius: BorderRadius.circular(50),child: Image.asset(app["imageUrl"].toString(),fit: BoxFit.contain,))
-                ),
-                SizedBox(width: 16.w),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        app['name']!,
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        app['type']!,
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          color: isSelected
-                              ? Colors.white.withOpacity(0.8)
-                              : Colors.grey.shade600,
-                        ),
-                      ),
-                    ],
+                  child: Icon(
+                    Icons.check,
+                    color: MyTheme.primaryColor,
+                    size: 16.sp,
+                  ),
+                )
+              else
+                Container(
+                  width: 24.w,
+                  height: 24.w,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.grey.shade400,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                 ),
-                if (isSelected)
-                  Container(
-                    width: 24.w,
-                    height: 24.w,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: Icon(
-                      Icons.check,
-                      color: MyTheme.primaryColor,
-                      size: 16.sp,
-                    ),
-                  )
-                else
-                  Container(
-                    width: 24.w,
-                    height: 24.w,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey.shade400,
-                        width: 2,
-                      ),
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                  ),
-              ],
-            ),
+            ],
           ),
         ),
       ),
@@ -182,7 +180,7 @@ class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> {
                 Text(
                   'Choose your Other Wallet',
                   style: TextStyle(
-                    fontSize: 24.sp,
+                    fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -191,7 +189,7 @@ class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> {
                   'Select a Other Wallet from the list below (tap again to unselect)',
                   style: TextStyle(
                     fontSize: 14.sp,
-                    color: Colors.grey.shade600,
+                    color: Colors.grey.shade400,
                   ),
                 ),
               ],
@@ -221,8 +219,7 @@ class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> {
                   ),
                 ],
               ),
-            )
-                : ListView.builder(
+            ) : ListView.builder(
               padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
               itemCount: financialApps.length,
               itemBuilder: (context, index) {

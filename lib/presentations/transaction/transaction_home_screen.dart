@@ -584,10 +584,13 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen>
   Widget build(BuildContext context) {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Transactions"),
+        centerTitle: true,
+      ),
       body: Column(
         children: [
           SizedBox(height: 20.h),
-          SizedBox(height: 41.h),
           // Animated header
           SlideTransition(
             position: _headerSlideAnimation,
@@ -695,7 +698,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen>
                     hintText: 'Search ${_getCategoryTitle().toLowerCase()}...',
                     prefixIcon: const Icon(
                       Icons.search,
-                      color: Color(0xff8CB7FF),
+                      color: MyTheme.primaryColor,
                     ),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
@@ -739,8 +742,8 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen>
         children: [
           Expanded(
             flex: 6,
-            child: selectedCategory == TransactionCategory.transaction
-                ? PaymentCardSelector(
+            child: selectedCategory == TransactionCategory.transaction ?
+            PaymentCardSelector(
               userId: FirebaseAuth.instance.currentUser?.uid ?? '',
               onCardSelect: (PaymentCard card) {
                 debugPrint('Selected card last4: ${card.last4}');
@@ -804,7 +807,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen>
           color: const Color(0xffFFFFFF),
           borderRadius: BorderRadius.circular(8.r),
         ),
-        child: icon != null ? Icon(icon, color: const Color(0xff8CB7FF)) : SvgPicture.asset(iconPath),
+        child: icon != null ? Icon(icon, color: MyTheme.primaryColor) : SvgPicture.asset(iconPath),
       ),
     );
   }
@@ -823,11 +826,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen>
                   curve: Curves.elasticOut,
                 ),
               ),
-              child: SvgPicture.asset(
-                TImageUrl.wallet,
-                height: 200.h,
-                width: 200.w,
-              ),
+              child: const Icon(Icons.wallet,size: 150,color: MyTheme.primaryColor,),
             ),
             SizedBox(height: 20.h),
             SlideTransition(
@@ -874,7 +873,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen>
       child: ListView.builder(
         padding: EdgeInsets.symmetric(vertical: 10.h),
         itemCount: groupedTransactions.length,
-        itemBuilder: (context, index) {
+        itemBuilder: (BuildContext context, int index) {
           final dateKey = groupedTransactions.keys.elementAt(index);
           final transactionsForDate = groupedTransactions[dateKey]!;
 
@@ -943,8 +942,7 @@ class _ShimmerAnimation extends StatefulWidget {
   _ShimmerAnimationState createState() => _ShimmerAnimationState();
 }
 
-class _ShimmerAnimationState extends State<_ShimmerAnimation>
-    with SingleTickerProviderStateMixin {
+class _ShimmerAnimationState extends State<_ShimmerAnimation> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
 
@@ -991,7 +989,7 @@ class _ShimmerAnimationState extends State<_ShimmerAnimation>
                 _animation.value,
                 _animation.value + 0.3,
               ],
-              transform: GradientRotation(0),
+              transform: const GradientRotation(0),
             ).createShader(bounds);
           },
           child: widget.child,
@@ -1016,8 +1014,7 @@ class TransactionFilterSheet extends StatefulWidget {
   State<TransactionFilterSheet> createState() => _TransactionFilterSheetState();
 }
 
-class _TransactionFilterSheetState extends State<TransactionFilterSheet>
-    with SingleTickerProviderStateMixin {
+class _TransactionFilterSheetState extends State<TransactionFilterSheet> with SingleTickerProviderStateMixin {
   late Map<String, dynamic> filters;
   final List<String> periodOptions = ['All time', 'Today', 'This week', 'This month'];
   final List<String> statusOptions = ['Completed', 'Pending', 'Failed'];
@@ -1128,7 +1125,7 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet>
                     builder: (context, child) {
                       return Theme(
                         data: Theme.of(context).copyWith(
-                          colorScheme:  ColorScheme.light(primary: MyTheme.primaryColor),
+                          colorScheme:  const ColorScheme.light(primary: MyTheme.primaryColor),
                         ),
                         child: child!,
                       );

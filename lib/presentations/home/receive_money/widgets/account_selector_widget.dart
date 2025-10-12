@@ -44,7 +44,6 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
           style: TextStyle(
             fontSize: 16.sp,
             fontWeight: FontWeight.w600,
-            color: AppColors.textSecondary,
           ),
         ),
         SizedBox(height: 12.h),
@@ -84,7 +83,18 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
   Widget _buildLoadingState() {
     return Container(
       padding: EdgeInsets.all(24.r),
-      decoration: _containerDecoration(),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(12.r),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            spreadRadius: -2,
+          ),
+        ],
+        border: Border.all(color: MyTheme.primaryColor, width: 1.0),
+      ),
       child: const Center(
         child: CircularProgressIndicator(),
       ),
@@ -94,7 +104,18 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
   Widget _buildErrorState(String error) {
     return Container(
       padding: EdgeInsets.all(24.r),
-      decoration: _containerDecoration(borderColor: Colors.red[300]),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(12.r),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            spreadRadius: -2,
+          ),
+        ],
+        border: Border.all(color: MyTheme.primaryColor, width: 1.0),
+      ),
       child: Column(
         children: <Widget>[
           Icon(
@@ -126,7 +147,7 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
               context.read<CardBloc>().add(LoadCards());
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: MyTheme.secondaryColor,
+              backgroundColor: MyTheme.primaryColor,
               foregroundColor: Colors.white,
             ),
             child: const Text('Retry'),
@@ -140,7 +161,18 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
     return Column(
       children: <Widget>[
         Container(
-          decoration: _containerDecoration(),
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: BorderRadius.circular(12.r),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 8,
+                spreadRadius: -2,
+              ),
+            ],
+            border: Border.all(color: MyTheme.primaryColor, width: 1.0),
+          ),
           child: ListView.separated(
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
@@ -180,10 +212,15 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
       child: Container(
         padding: EdgeInsets.all(16.r),
         decoration: BoxDecoration(
-          color: isSelected
-              ? MyTheme.secondaryColor.withOpacity(0.05)
-              : Colors.white,
-          borderRadius: _getItemBorderRadius(index, totalCards),
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(12.r),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              spreadRadius: -2,
+            ),
+          ],
         ),
         child: Row(
           children: <Widget>[
@@ -210,17 +247,15 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
           Text(
             '${card.brand.toUpperCase()} ${card.cardEnding}',
             style: TextStyle(
-              fontSize: 16.sp,
+              fontSize: 12.sp,
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
             ),
           ),
           SizedBox(height: 4.h),
           Text(
             'Expires ${card.formattedExpiry}',
             style: TextStyle(
-              fontSize: 14.sp,
-              color: AppColors.textSecondary,
+              fontSize: 10.sp,
             ),
           ),
         ],
@@ -239,7 +274,7 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
               vertical: 4.h,
             ),
             decoration: BoxDecoration(
-              color: MyTheme.secondaryColor,
+              color: MyTheme.primaryColor,
               borderRadius: BorderRadius.circular(4.r),
             ),
             child: Text(
@@ -263,19 +298,23 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
       child: Container(
         padding: EdgeInsets.all(16.r),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(
-            color: MyTheme.secondaryColor,
-            width: 2,
-          ),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              spreadRadius: -2,
+            ),
+          ],
+          border: Border.all(color: MyTheme.primaryColor, width: 1.0),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               Icons.add_circle_outline,
-              color: MyTheme.secondaryColor,
+              color: MyTheme.primaryColor,
               size: 24.r,
             ),
             SizedBox(width: 12.w),
@@ -284,7 +323,7 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
               style: TextStyle(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w600,
-                color: MyTheme.secondaryColor,
+                color: MyTheme.primaryColor,
               ),
             ),
           ],
@@ -296,7 +335,18 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
   Widget _buildEmptyCardsState() {
     return Container(
       padding: EdgeInsets.all(24.r),
-      decoration: _containerDecoration(),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(12.r),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            spreadRadius: -2,
+          ),
+        ],
+        border: Border.all(color: MyTheme.primaryColor, width: 1.0),
+      ),
       child: Column(
         children: <Widget>[
           Icon(
@@ -330,30 +380,11 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
             icon: const Icon(Icons.add),
             label: const Text('Add Card'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: MyTheme.secondaryColor,
+              backgroundColor: MyTheme.primaryColor,
               foregroundColor: Colors.white,
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  // Helper methods
-  BoxDecoration _containerDecoration({Color? borderColor}) {
-    return BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(12.r),
-      boxShadow: <BoxShadow>[
-        BoxShadow(
-          color: Colors.black.withOpacity(0.05),
-          blurRadius: 8,
-          spreadRadius: -2,
-        ),
-      ],
-      border: Border.all(
-          color: borderColor ?? Colors.grey[300]!,
-          width: 1.0
       ),
     );
   }

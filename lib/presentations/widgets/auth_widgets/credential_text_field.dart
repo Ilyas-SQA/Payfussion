@@ -4,16 +4,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
-class CredentialsFields extends StatelessWidget {
+class AppTextormField extends StatelessWidget {
   final bool isPasswordField;
   final String helpText;
   final TextEditingController controller;
+  final void Function(String)? onChanged;
+  final Widget? prefixIcon;
 
-  const CredentialsFields({
+  const AppTextormField({
     super.key,
     required this.isPasswordField,
     required this.helpText,
-    required this.controller,
+    required this.controller, this.onChanged,
+    this.prefixIcon,
   });
 
   TextInputType _getKeyboardType() {
@@ -54,7 +57,7 @@ class CredentialsFields extends StatelessWidget {
                 color: Colors.grey.shade500,
                 fontSize: 14.sp,
               ),
-
+              prefixIcon: prefixIcon,
               /// Normal Border
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(8.r)),
@@ -104,6 +107,7 @@ class CredentialsFields extends StatelessWidget {
               )
                   : const SizedBox(),
             ),
+            onChanged: onChanged,
           );
         },
       ),

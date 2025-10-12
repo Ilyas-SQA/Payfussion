@@ -52,7 +52,7 @@ class CardModel {
   }
 
   // Get card ending format
-  String get cardEnding => '***$last4';
+  String get cardEnding => '**** **** **** $last4';
 
   // Get brand icon path
   String get brandIconPath {

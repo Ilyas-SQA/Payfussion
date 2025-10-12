@@ -25,7 +25,6 @@ class ExpirySelectorWidget extends StatelessWidget {
           style: TextStyle(
             fontSize: 16.sp,
             fontWeight: FontWeight.w500,
-            color: Colors.black87,
           ),
         ),
         SizedBox(height: 12.h),
@@ -64,12 +63,12 @@ class ExpirySelectorWidget extends StatelessWidget {
             ),
           ),
           selected: isSelected,
-          selectedColor: MyTheme.secondaryColor,
+          selectedColor: MyTheme.primaryColor,
           backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16.r),
             side: BorderSide(
-              color: isSelected ? MyTheme.secondaryColor : Colors.grey.shade300,
+              color: isSelected ? MyTheme.primaryColor : Colors.grey.shade300,
               width: 1.5,
             ),
           ),

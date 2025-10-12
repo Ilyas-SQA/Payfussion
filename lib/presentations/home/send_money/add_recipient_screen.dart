@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:payfussion/presentations/home/send_money/bank_widget.dart';
+import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/theme.dart';
@@ -51,22 +52,14 @@ class AddRecipientScreen extends StatelessWidget {
         userId: _userId(),
       ),
       child: Scaffold(
-        backgroundColor: AppColors.backgroundLight,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
           centerTitle: true,
           elevation: 0,
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: AppColors.primaryBlue),
-            tooltip: 'Go back',
-            onPressed: () {
-              HapticFeedback.lightImpact();
-              Navigator.of(context).pop();
-            },
-          ),
-          title: Text(RecipientStrings.addRecipient, style: AppStyles.title),
+          title: const Text(RecipientStrings.addRecipient),
         ),
-        body: const SafeArea(child: RecipientForm()),
+        body: const RecipientForm(),
       ),
     );
   }
@@ -246,9 +239,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                           label: RecipientStrings.fullName,
                           hintText: RecipientStrings.enterFullName,
                           prefix: Icons.person_outline,
-                          errorText: state.nameError,
                           onChanged: (v) => context.read<RecipientBloc>().add(NameChanged(v)),
-                          showSuccess: state.name.isNotEmpty && state.nameError == null,
                         ),
                         SizedBox(height: 16.h),
 
@@ -304,9 +295,8 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                           label: Text(
                             RecipientStrings.saveAndAddAnother,
                             style: TextStyle(
-                                fontSize: 14.sp,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w600,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -329,13 +319,13 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
     return Container(
       padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.r),
-        boxShadow: <BoxShadow>[
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
           BoxShadow(
-              color: AppColors.secondaryBlue.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2)
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -344,8 +334,8 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
           Container(
             padding: EdgeInsets.all(10.r),
             decoration: BoxDecoration(
-                color: MyTheme.primaryColor.withOpacity(0.1),
-                shape: BoxShape.circle
+              color: MyTheme.primaryColor.withOpacity(0.1),
+              shape: BoxShape.circle,
             ),
             child: Icon(Icons.person_add_outlined, color: MyTheme.primaryColor, size: 24.sp),
           ),
@@ -381,26 +371,24 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                   color: MyTheme.primaryColor.withOpacity(0.3),
                   width: 2
               ),
-              image: state.imageFile != null
-                  ? DecorationImage(
+              image: state.imageFile != null ? DecorationImage(
                   image: FileImage(state.imageFile as File),
                   fit: BoxFit.cover
-              )
-                  : null,
+              ) : null,
             ),
-            child: state.imageFile == null
-                ? Column(
+            child: state.imageFile == null ?
+            Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.add_a_photo, color: MyTheme.primaryColor, size: 32.sp),
                 SizedBox(height: 6.h),
                 Text(
-                    RecipientStrings.addPhoto,
-                    style: TextStyle(
-                        color: MyTheme.primaryColor,
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w500
-                    )
+                  RecipientStrings.addPhoto,
+                  style: TextStyle(
+                    color: MyTheme.primaryColor,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
             )
@@ -495,11 +483,6 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
     required String hintText,
     required IconData prefix,
     required Function(String) onChanged,
-    String? errorText,
-    String? semanticLabel,
-    bool showSuccess = false,
-    TextInputAction? action,
-    TextInputType type = TextInputType.text,
   }) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
@@ -509,17 +492,17 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
           Padding(
             padding: EdgeInsets.only(left: 4.w, bottom: 8.h),
             child: Text(
-                label,
-                style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary
-                )
+              label,
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textSecondary,
+              ),
             ),
           ),
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
                 BoxShadow(
@@ -529,41 +512,12 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                 )
               ],
             ),
-            child: TextField(
+            child: AppTextormField(
               controller: controller,
               onChanged: onChanged,
-              textInputAction: action,
-              keyboardType: type,
-              decoration: InputDecoration(
-                hintText: hintText,
-                errorText: errorText,
-                prefixIcon: Icon(prefix, color: MyTheme.primaryColor, size: 22.sp),
-                suffixIcon: showSuccess
-                    ? Icon(Icons.check_circle, color: Colors.green, size: 18.sp)
-                    : null,
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                    borderSide: BorderSide.none
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                  borderSide: BorderSide(
-                      color: MyTheme.primaryColor.withOpacity(0.3),
-                      width: 1.2
-                  ),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                  borderSide: BorderSide(
-                      color: AppColors.errorRed.withOpacity(0.5),
-                      width: 1.2
-                  ),
-                ),
-              ),
-              style: TextStyle(fontSize: 15.sp, color: AppColors.textPrimary),
+              isPasswordField: false,
+              helpText: hintText,
+              prefixIcon: Icon(prefix,color: MyTheme.primaryColor,),
             ),
           ),
         ],
@@ -584,17 +538,17 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
           Padding(
             padding: EdgeInsets.only(left: 4.w, bottom: 8.h),
             child: Text(
-                RecipientStrings.accountNumber,
-                style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary
-                )
+              RecipientStrings.accountNumber,
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textSecondary,
+              ),
             ),
           ),
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
                 BoxShadow(
@@ -616,19 +570,20 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                 LengthLimitingTextInputFormatter(16),
               ],
               onEditingComplete: () {
-                if (state.accountError == null &&
-                    state.accountNumber.isNotEmpty &&
-                    state.verifyStatus != VerifyStatus.verified) {
+                if (state.accountError == null && state.accountNumber.isNotEmpty && state.verifyStatus != VerifyStatus.verified) {
                   bloc.add(VerifyAccountRequested());
                 }
                 FocusScope.of(context).unfocus();
               },
               decoration: InputDecoration(
                 hintText: RecipientStrings.enterAccountNumber,
+                hintStyle: const TextStyle(
+                  fontSize: 14,
+                ),
                 errorText: state.accountError,
                 prefixIcon: Icon(Icons.credit_card_outlined, color: MyTheme.primaryColor, size: 22.sp),
-                suffixIcon: verifying
-                    ? Padding(
+                suffixIcon: verifying ?
+                Padding(
                   padding: EdgeInsets.all(12.r),
                   child: SizedBox(
                     width: 20.w,
@@ -638,9 +593,9 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                         color: MyTheme.primaryColor
                     ),
                   ),
-                )
-                    : verified
-                    ? Row(
+                ) :
+                verified ?
+                Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.check_circle, color: Colors.green, size: 18.sp),
@@ -655,9 +610,9 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                       ),
                       SizedBox(width: 8.w),
                     ]
-                )
-                    : (state.accountNumber.isNotEmpty && state.accountError == null)
-                    ? InkWell(
+                ) :
+                (state.accountNumber.isNotEmpty && state.accountError == null) ?
+                InkWell(
                   onTap: () {
                     bloc.add(VerifyAccountRequested());
                     HapticFeedback.mediumImpact();
@@ -665,28 +620,25 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8.w),
                     child: Text(
-                        'Verify',
-                        style: TextStyle(
-                            color: MyTheme.primaryColor,
-                            fontSize: 13.sp,
-                            fontWeight: FontWeight.w600
-                        )
+                      'Verify',
+                      style: TextStyle(
+                        color: MyTheme.primaryColor,
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                )
-                    : null,
-                filled: true,
-                fillColor: Colors.white,
+                ) : null,
                 contentPadding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                    borderSide: BorderSide.none
+                  borderRadius: BorderRadius.circular(12.r),
+                  borderSide: BorderSide.none,
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.r),
                   borderSide: BorderSide(
-                      color: MyTheme.primaryColor.withOpacity(0.3),
-                      width: 1.2
+                    color: MyTheme.primaryColor.withOpacity(0.3),
+                    width: 1.2,
                   ),
                 ),
                 errorBorder: OutlineInputBorder(
@@ -697,10 +649,9 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                   ),
                 ),
               ),
-              style: TextStyle(
-                  fontSize: 15.sp,
-                  color: AppColors.textPrimary,
-                  letterSpacing: 1.2
+              style: const TextStyle(
+                  fontSize: 14,
+                  letterSpacing: 1.2,
               ),
             ),
           ),
@@ -749,6 +700,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: MyTheme.primaryColor,
+          padding: EdgeInsets.zero,
           disabledBackgroundColor: MyTheme.primaryColor.withOpacity(0.6),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
           elevation: 0,
@@ -765,7 +717,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
             : Text(
             RecipientStrings.addButtonText,
             style: TextStyle(
-                fontSize: 16.sp,
+                fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
                 color: Colors.white
             )

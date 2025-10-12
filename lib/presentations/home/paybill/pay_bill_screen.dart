@@ -318,18 +318,6 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
             ),
           ),
         ),
-        leading: FadeTransition(
-          opacity: _headerFade,
-          child: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: theme.primaryColor != Colors.white
-                  ? Colors.white
-                  : const Color(0xff2D3748),
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ),
       ),
       body: FadeTransition(
         opacity: _billsFade,
@@ -351,27 +339,24 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
                       "Quick & Easy",
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.w300,
-                        color: theme.primaryColor != Colors.white
-                            ? Colors.white.withOpacity(0.8)
-                            : const Color(0xff718096),
+                        fontSize: 18,
+                        color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.8) : const Color(0xff718096),
                       ),
                     ),
                     Text(
                       "Bill Payments",
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: theme.primaryColor != Colors.white
-                            ? Colors.white
-                            : const Color(0xff2D3748),
+                        color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+                        fontSize: 16,
                       ),
                     ),
                     SizedBox(height: 8.h),
                     Text(
                       "Pay all your bills in one place, anytime",
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.primaryColor != Colors.white
-                            ? Colors.white.withOpacity(0.7)
-                            : const Color(0xff718096),
+                        color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.7) : const Color(0xff718096),
+                        fontSize: 12,
                       ),
                     ),
                   ],
@@ -393,8 +378,14 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: AnimationLimiter(
-        child: ListView.builder(
+        child: GridView.builder(
           physics: const BouncingScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            mainAxisSpacing: 10.h,
+            crossAxisSpacing: 10.w,
+            childAspectRatio: 9 / 10,
+          ),
           itemCount: billItems.length,
           itemBuilder: (context, index) {
             return AnimationConfiguration.staggeredList(
@@ -423,12 +414,12 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: BorderRadius.circular(16.r),
+          borderRadius: BorderRadius.circular(5.r),
           boxShadow: [
-            const BoxShadow(
-              color: Colors.black26,
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
-              offset: Offset(1, 1),
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -440,63 +431,29 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
           },
           borderRadius: BorderRadius.circular(16.r),
           child: Padding(
-            padding: EdgeInsets.all(20.w),
-            child: Row(
+            padding: EdgeInsets.all(10.w),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // Icon Container
-                Container(
-                  height: 60.h,
-                  width: 60.w,
-                  decoration: BoxDecoration(
-                    color: item.gradient,
-                    borderRadius: BorderRadius.circular(16.r),
-                  ),
-                  child: Center(
-                    child: SvgPicture.asset(
-                      item.icon,
-                      height: 32.h,
-                      width: 32.w,
-                      color: item.iconColor,
-                    ),
+                Center(
+                  child: SvgPicture.asset(
+                    item.icon,
+                    height: 25.h,
+                    width: 25.w,
+                    color: MyTheme.primaryColor,
                   ),
                 ),
-
-                SizedBox(width: 16.w),
-
-                // Text Content
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.label,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: theme.primaryColor != Colors.white
-                              ? const Color(0xffffffff)
-                              : const Color(0xff2D3748),
-                        ),
-                      ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        item.subtitle,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.primaryColor != Colors.white
-                              ? const Color(0xffffffff).withOpacity(0.7)
-                              : const Color(0xff718096),
-                        ),
-                      ),
-                    ],
+                SizedBox(height: 10.w),
+                Text(
+                  item.label,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: theme.primaryColor != Colors.white
+                        ? const Color(0xffffffff)
+                        : const Color(0xff2D3748),
                   ),
-                ),
-
-                // Arrow Icon
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 16.sp,
-                  color: theme.primaryColor != Colors.white
-                      ? const Color(0xffffffff).withOpacity(0.5)
-                      : const Color(0xffA0AEC0),
                 ),
               ],
             ),

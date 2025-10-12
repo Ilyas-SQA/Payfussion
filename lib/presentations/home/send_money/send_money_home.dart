@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:payfussion/data/models/recipient/recipient_model.dart';
 import 'package:payfussion/presentations/home/send_money/payment_screen.dart' hide AppStyles, AppDurations;
+import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../core/constants/app_colors.dart';
@@ -36,15 +37,7 @@ class SendMoneyHome extends StatelessWidget {
         appBar: AppBar(
           centerTitle: true,
           elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: MyTheme.primaryColor),
-            tooltip: 'Go back',
-            onPressed: () {
-              HapticFeedback.lightImpact();
-              Navigator.of(context).pop();
-            },
-          ),
-          title: Text(
+          title: const Text(
             AppStrings.sendMoney,
             semanticsLabel: 'Send Money Screen',
           ),
@@ -54,7 +47,7 @@ class SendMoneyHome extends StatelessWidget {
             ),
           ],
         ),
-        body: const SafeArea(child: RecipientsList()),
+        body: const RecipientsList(),
       ),
     );
   }
@@ -131,7 +124,7 @@ class _RecipientsListState extends State<RecipientsList> {
       child: AnimatedContainer(
         duration: AppDurations.quickAnimation,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(12.r),
           boxShadow: [
             BoxShadow(
@@ -142,7 +135,7 @@ class _RecipientsListState extends State<RecipientsList> {
             ),
           ],
         ),
-        child: TextField(
+        child: AppTextormField(
           controller: _searchController,
           onChanged: (q) {
             if (_debounce?.isActive ?? false) _debounce!.cancel();
@@ -152,39 +145,13 @@ class _RecipientsListState extends State<RecipientsList> {
               if (mounted) setState(() {});
             });
           },
-          cursorColor: MyTheme.primaryColor,
-          style: TextStyle(fontSize: 15.sp, color: AppColors.textPrimary),
-          decoration: InputDecoration(
-            hintText: AppStrings.searchRecipients,
-            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 15.sp),
-            prefixIcon: Padding(
-              padding: EdgeInsets.only(left: 4.w, right: 8.w),
-              child: Icon(
-                Icons.search_rounded,
-                color: MyTheme.primaryColor,
-                size: 22.sp,
-              ),
-            ),
-            suffixIcon: _searchController.text.isNotEmpty ? _buildClearButton() : null,
-            filled: true,
-            fillColor: Colors.white,
-            contentPadding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 16.w),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.r),
-              borderSide: BorderSide.none,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.r),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.r),
-              borderSide: BorderSide(
-                color: MyTheme.primaryColor.withOpacity(0.3),
-                width: 1.2,
-              ),
-            ),
+          prefixIcon: Icon(
+            Icons.search,
+            size: 20.sp,
+            color: MyTheme.primaryColor,
           ),
+          isPasswordField: false,
+          helpText: 'Search recipients',
         ),
       ),
     );
@@ -297,13 +264,13 @@ class _RecipientsListState extends State<RecipientsList> {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16.r),
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 12,
-              spreadRadius: -5,
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -482,17 +449,17 @@ class RecipientTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final masked = _mask(recipient.accountNumber);
 
     return Container(
       margin: EdgeInsets.only(bottom: 12.h),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12.r),
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
         boxShadow: [
           BoxShadow(
-            color: AppColors.secondaryBlue.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -524,7 +491,7 @@ class RecipientTile extends StatelessWidget {
                         ),
                         SizedBox(height: 2.h),
                         Text(
-                          masked,
+                          "**** **** **** ${recipient.accountNumber.substring(recipient.accountNumber.length - 4)}",
                         ),
                       ],
                     ),
@@ -582,12 +549,5 @@ class RecipientTile extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _mask(String account) {
-    final digits = account.replaceAll(RegExp(r'\D'), '');
-    if (digits.isEmpty) return '••••';
-    final last = digits.length >= 4 ? digits.substring(digits.length - 4) : digits;
-    return '•••• $last';
   }
 }

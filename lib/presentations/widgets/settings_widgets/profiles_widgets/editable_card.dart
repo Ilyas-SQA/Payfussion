@@ -123,9 +123,7 @@ class _EditableCardState extends State<EditableCard> {
       Color iconEditColor,
       ) {
     return InkWell(
-      onTap: widget.isShowTralingIcon && !_isLoading
-          ? () => setState(() => _isEditing = true)
-          : null,
+      onTap: widget.isShowTralingIcon && !_isLoading ? () => setState(() => _isEditing = true) : null,
       child: Row(
         children: [
           if (widget.leadingIcon != null) ...[
@@ -173,7 +171,7 @@ class _EditableCardState extends State<EditableCard> {
               color: MyTheme.primaryColor,
               size: 20.r,
             )
-                : SizedBox.shrink()
+                : const SizedBox.shrink()
           else
             SizedBox(
               width: 18.r,

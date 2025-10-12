@@ -21,20 +21,13 @@ class RouteNames {
   static const String receiveMoneyScreen = '/receiveMoneyScreen';
   static const String payBillsHome = '/payBillsHome';
   static const String payBillsDetailView = '/payBillDetailView';
-
   static const String receiptView = '/receiptView';
-
   static const String currencyExchangeView = '/currencyExchangeView';
-
   static const String currencyExchangeHistoryView = '/currencyExchangeHistoryView';
   static const String calculatorView = '/calculatorView';
-
   static const String calculatorHistoryView = '/calculatorHistoryView';
-
   static const String root = '/';
   static const String transactionHistory = '/transactionHistory';
-
-
   static const String mobileRechargeScreen = '/mobileRechargeScreen';
   static const String electricCityBillScreen = '/electricCityBillScreen';
   static const String internetBillScreen = '/internetBillScreen';

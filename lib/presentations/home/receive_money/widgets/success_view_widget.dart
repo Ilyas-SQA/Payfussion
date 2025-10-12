@@ -48,7 +48,7 @@ class PaymentSuccessView extends StatelessWidget {
                     text: provider.getFormattedAmount(),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: MyTheme.secondaryColor,
+                      color: MyTheme.primaryColor,
                       fontSize: 18.sp,
                     ),
                   ),
@@ -268,7 +268,7 @@ class PaymentSuccessView extends StatelessWidget {
             label: Text('Share', style: TextStyle(fontSize: 16.sp)),
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: 16.h),
-              backgroundColor: MyTheme.secondaryColor,
+              backgroundColor: MyTheme.primaryColor,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.r),
@@ -294,7 +294,7 @@ class PaymentSuccessView extends StatelessWidget {
         style: TextStyle(
           fontSize: 16.sp,
           fontWeight: FontWeight.w600,
-          color: MyTheme.secondaryColor,
+          color: MyTheme.primaryColor,
         ),
       ),
     );

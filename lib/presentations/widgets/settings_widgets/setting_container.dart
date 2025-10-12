@@ -9,28 +9,24 @@ class SettingContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Material(
-      color: theme.cardColor,
-      borderRadius: BorderRadius.circular(16.r),
-      child: Container(
-        width: 362.w,
-        padding: EdgeInsets.symmetric(
-          vertical: 20.h,
-          horizontal: 16.w,
-        ),
-        decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: BorderRadius.circular(16.r),
-          boxShadow: [
-            const BoxShadow(
-              color: Colors.black26,
-              blurRadius: 5,
-              offset: Offset(1, 1),
-            ),
-          ],
-        ),
-        child: child,
+    return Container(
+      width: 362.w,
+      padding: EdgeInsets.symmetric(
+        vertical: 20.h,
+        horizontal: 16.w,
       ),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: child,
     );
   }
 }

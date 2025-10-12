@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:payfussion/core/constants/routes_name.dart';
 import 'package:payfussion/logic/blocs/setting/community_forum/community_form_bloc.dart';
 import 'package:payfussion/logic/blocs/setting/community_forum/community_form_state.dart';
 
 import '../../../core/constants/image_url.dart';
+import '../../../core/widget/appbutton/app_button.dart';
 import '../../../logic/blocs/setting/community_forum/community_form_event.dart';
-import '../../widgets/settings_widgets/community_forum_widgets/back_button_widget.dart';
-import '../../widgets/settings_widgets/community_forum_widgets/create_forum_input_widget.dart';
+import '../../widgets/auth_widgets/credential_text_field.dart';
+
 
 class CreatePostScreen extends StatefulWidget {
 
@@ -33,17 +33,16 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
+      appBar: AppBar(
+        title: const Text('Create Posts',),
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
         child: Column(
           children: [
-            SizedBox(height: 25.h),
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                createBackButton(RouteNames.communityForum, context),
-                SizedBox(height: 25.h),
                 Hero(
                   tag: 'logo',
                   child: Image.asset(TImageUrl.iconLogo, height: 100.h),
@@ -75,15 +74,16 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    InputFieldWidget(
+                    AppTextormField(
                       controller: _titleController,
-                      label: 'Title',
+                      isPasswordField: false,
+                      helpText: 'Tile',
                     ),
                     SizedBox(height: 20.h),
-                    InputFieldWidget(
+                    AppTextormField(
                       controller: _contentController,
-                      label: 'Content',
-                      maxLines: 8,
+                      isPasswordField: false,
+                      helpText: 'Content',
                     ),
                   ],
                 ),
@@ -108,8 +108,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 }
               },
               builder: (context, state) {
-                return ElevatedButton(
-                  onPressed: state is PostLoading ? null : () {
+                return AppButton(
+                  text: 'Post',
+                  loading: state is PostLoading,
+                  width: double.infinity,
+                  onTap: () {
                     if (_titleController.text.trim().isEmpty ||
                         _contentController.text.trim().isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -120,40 +123,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
                     context.read<CommunityFormBloc>().add(
                       AddPostEvent(
-                        question:  _titleController.text.trim(),
+                        question: _titleController.text.trim(),
                         content: _contentController.text.trim(),
                       ),
                     );
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xff2D9CDB),
-                    minimumSize: const Size(double.infinity, 50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.r),
-                    ),
-                  ),
-                  child: state is PostLoading ?
-                  SizedBox(
-                    width: 20.w,
-                    height: 20.h,
-                    child: const CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
-                  )
-                      : Text(
-                    'Post',
-                    style: TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
                 );
               },
-            ),
-            SizedBox(height: 20.h),
+            )
           ],
         ),
       ),

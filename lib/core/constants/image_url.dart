@@ -77,14 +77,14 @@ class TImageUrl {
   static Widget getCardBrandLogo(String cardBrand) {
     switch (cardBrand.toLowerCase()) {
       case 'visa':
-        return SvgPicture.asset(visa, height: 14.h, width: 14.w);
+        return SvgPicture.asset(visa, height: 40.h, width: 40.w,color: Colors.white,);
       case 'mastercard':
         return SvgPicture.asset(masterCard, height: 14.h,width: 14.w,);
       case 'amex':
       case 'american express':
         return SvgPicture.asset(amex, height: 14.h,width: 14.w,);
       default:
-        return Icon(Icons.credit_card, size: 40); // fallback icon
+        return const Icon(Icons.credit_card, size: 40); // fallback icon
     }
   }
 

@@ -3,16 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:password_strength_indicator_plus/password_strength_indicator_plus.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
-
 import '../../../core/constants/routes_name.dart';
 import '../../../core/widget/text_field/phone_textfield.dart';
 import '../../../logic/blocs/auth/auth_bloc.dart';
 import '../../../logic/blocs/auth/auth_event.dart';
-import '../../widgets/auth_widgets/auth_button.dart';
 import '../../widgets/auth_widgets/credential_text_field.dart';
 import '../../widgets/helper_widgets/error_dialog.dart';
 
@@ -30,13 +27,55 @@ class SignUpForm extends StatefulWidget {
   State<SignUpForm> createState() => _SignUpFormState();
 }
 
-class _SignUpFormState extends State<SignUpForm> {
+class _SignUpFormState extends State<SignUpForm>
+    with SingleTickerProviderStateMixin {
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneNumberController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+
+  late AnimationController _controller;
+  late List<Animation<double>> _fadeAnimations;
+  late List<Animation<Offset>> _slideAnimations;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+
+    // Create staggered animations for each form field
+    _fadeAnimations = List.generate(8, (index) {
+      final start = 0.1 + (index * 0.08);
+      final end = start + 0.15;
+      return Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+          parent: _controller,
+          curve: Interval(start, end, curve: Curves.easeOut),
+        ),
+      );
+    });
+
+    _slideAnimations = List.generate(8, (index) {
+      final start = 0.1 + (index * 0.08);
+      final end = start + 0.15;
+      return Tween<Offset>(
+        begin: const Offset(0, 0.3),
+        end: Offset.zero,
+      ).animate(
+        CurvedAnimation(
+          parent: _controller,
+          curve: Interval(start, end, curve: Curves.easeOut),
+        ),
+      );
+    });
+
+    _controller.forward();
+  }
 
   @override
   void dispose() {
@@ -46,6 +85,7 @@ class _SignUpFormState extends State<SignUpForm> {
     phoneNumberController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -122,6 +162,15 @@ class _SignUpFormState extends State<SignUpForm> {
     );
   }
 
+  Widget _buildAnimatedField(int index, Widget child) {
+    return SlideTransition(
+      position: _slideAnimations[index],
+      child: FadeTransition(
+        opacity: _fadeAnimations[index],
+        child: child,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -130,70 +179,97 @@ class _SignUpFormState extends State<SignUpForm> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: [
-          CredentialsFields(
-            controller: firstNameController,
-            isPasswordField: false,
-            helpText: "First Name",
+          _buildAnimatedField(
+            0,
+            AppTextormField(
+              controller: firstNameController,
+              isPasswordField: false,
+              helpText: "First Name",
+            ),
           ),
           SizedBox(height: 20.h),
-          CredentialsFields(
-            controller: lastNameController,
-            isPasswordField: false,
-            helpText: "Last Name",
+          _buildAnimatedField(
+            1,
+            AppTextormField(
+              controller: lastNameController,
+              isPasswordField: false,
+              helpText: "Last Name",
+            ),
           ),
           SizedBox(height: 20.h),
-          CredentialsFields(
-            controller: emailController,
-            isPasswordField: false,
-            helpText: "Enter Your Email",
+          _buildAnimatedField(
+            2,
+            AppTextormField(
+              controller: emailController,
+              isPasswordField: false,
+              helpText: "Enter Your Email",
+            ),
           ),
           SizedBox(height: 20.h),
-          PhoneCredentialsField(
-            controller: phoneNumberController,
-            helpText: "Enter Your Phone No",
+          _buildAnimatedField(
+            3,
+            PhoneCredentialsField(
+              controller: phoneNumberController,
+              helpText: "Enter Your Phone No",
+            ),
           ),
           SizedBox(height: 20.h),
-          CredentialsFields(
-            controller: passwordController,
-            isPasswordField: true,
-            helpText: "Enter Password",
+          _buildAnimatedField(
+            4,
+            AppTextormField(
+              controller: passwordController,
+              isPasswordField: true,
+              helpText: "Enter Password",
+            ),
           ),
-          PasswordStrengthIndicatorPlus(
-            textController: passwordController,
+          _buildAnimatedField(
+            4,
+            PasswordStrengthIndicatorPlus(
+              textController: passwordController,
+            ),
           ),
           SizedBox(height: 20.h),
-          CredentialsFields(
-            controller: confirmPasswordController,
-            isPasswordField: true,
-            helpText: "Confirm Password",
+          _buildAnimatedField(
+            5,
+            AppTextormField(
+              controller: confirmPasswordController,
+              isPasswordField: true,
+              helpText: "Confirm Password",
+            ),
           ),
           SizedBox(height: 34.h),
-          AppButton(
-            onTap: _handleSignUp,
-            text: 'Sign Up',
+          _buildAnimatedField(
+            6,
+            AppButton(
+              onTap: _handleSignUp,
+              text: 'Sign Up',
+            ),
           ),
           SizedBox(height: 24.h),
-          RichText(
-            text: TextSpan(
-              text: 'Already have an account? ',
-              style: TextStyle(
-                fontFamily: 'Roboto',
-                fontSize: 14.sp,
-                color: theme.secondaryHeaderColor,
-              ),
-              children: [
-                TextSpan(
-                  text: ' Sign In.',
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () => context.go(RouteNames.signIn),
-                  style: TextStyle(
-                    fontFamily: 'Roboto',
-                    fontSize: 14.sp,
-                    color: MyTheme.secondaryColor,
-                    fontWeight: FontWeight.w700,
-                  ),
+          _buildAnimatedField(
+            7,
+            RichText(
+              text: TextSpan(
+                text: 'Already have an account? ',
+                style: TextStyle(
+                  fontFamily: 'Roboto',
+                  fontSize: 14.sp,
+                  color: theme.secondaryHeaderColor,
                 ),
-              ],
+                children: [
+                  TextSpan(
+                    text: ' Sign In.',
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () => context.go(RouteNames.signIn),
+                    style: TextStyle(
+                      fontFamily: 'Roboto',
+                      fontSize: 14.sp,
+                      color: MyTheme.secondaryColor,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           SizedBox(height: 50.h),

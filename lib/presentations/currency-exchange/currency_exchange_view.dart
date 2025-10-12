@@ -13,7 +13,6 @@ import '../../data/models/currency_model.dart';
 import '../../logic/blocs/currency_convert/currency_convert_bloc.dart';
 import '../../logic/blocs/currency_convert/currency_convert_event.dart';
 import '../../logic/blocs/currency_convert/currency_convert_state.dart';
-import '../widgets/custom_button.dart';
 import '../widgets/payment_selector_widget.dart';
 import '../widgets/profile_app_bar.dart';
 import 'currency_graph_screen.dart';
@@ -84,55 +83,6 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> {
     }
   }
 
-  void _altertDialogBox() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          title: const Text(
-            'Graph',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          content: SizedBox(
-            width: double.maxFinite,
-            height: 250.h,
-            child: const SingleChildScrollView(
-              child: GraphWidget(
-                dataPoints: [
-                  FlSpot(0, 3.65),
-                  FlSpot(2, 3.71),
-                  FlSpot(2.5, 3.75),
-                  FlSpot(3, 3.85),
-                  FlSpot(5, 3.80),
-                  FlSpot(6, 3.85),
-                ],
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                'Close',
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,10 +91,14 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> {
     final isLoading = selectedCurrencyFrom == null || availableCurrencies.isEmpty;
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        title: Text('Currency Exchange', style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600)),
+        centerTitle: true,
+        elevation: 0,
+      ),
       resizeToAvoidBottomInset: true,
-      body: isLoading ?
-      _buildLoadingView() :
-      _buildMainView(isDark),
+      body: isLoading ? _buildLoadingView() : _buildMainView(isDark),
     );
   }
 
@@ -152,8 +106,6 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          50.verticalSpace,
-          ProfileAppBar(),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.6,
             child: Center(
@@ -195,8 +147,6 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
-                ProfileAppBar(),
                 const SizedBox(height: 15),
                 PaymentCardSelector(
                   userId: FirebaseAuth.instance.currentUser?.uid ?? '',

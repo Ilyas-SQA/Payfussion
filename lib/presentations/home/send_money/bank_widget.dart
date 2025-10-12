@@ -7,6 +7,7 @@ import 'package:payfussion/data/models/recipient/recipient_model.dart';
 import 'package:payfussion/logic/blocs/recipient/recipient_bloc.dart';
 import 'package:payfussion/logic/blocs/recipient/recipient_event.dart';
 import 'package:payfussion/logic/blocs/recipient/recipient_state.dart';
+import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 
 import '../../../core/theme/theme.dart';
 import 'add_recipient_screen.dart';
@@ -57,11 +58,9 @@ class BankDropdownWidget extends StatelessWidget {
             width: double.infinity,
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(12.r),
-              border: state.bankError != null
-                  ? Border.all(color: Colors.red, width: 1)
-                  : Border.all(color: Colors.grey.shade300, width: 1),
+              border: state.bankError != null ? Border.all(color: Colors.red, width: 1) : Border.all(color: Colors.grey.shade300, width: 1),
               boxShadow: [
                 BoxShadow(
                   color: AppColors.secondaryBlue.withOpacity(0.1),
@@ -83,9 +82,6 @@ class BankDropdownWidget extends StatelessWidget {
                     state.selectedBank?.name ?? RecipientStrings.selectBank,
                     style: TextStyle(
                       fontSize: 15.sp,
-                      color: state.selectedBank != null
-                          ? AppColors.textPrimary
-                          : AppColors.textSecondary,
                     ),
                   ),
                 ),
@@ -231,7 +227,6 @@ class BankDropdownWidget extends StatelessWidget {
             '$label:',
             style: TextStyle(
               fontSize: 12.sp,
-              color: AppColors.textSecondary,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -242,7 +237,6 @@ class BankDropdownWidget extends StatelessWidget {
             value,
             style: TextStyle(
               fontSize: 12.sp,
-              color: AppColors.textPrimary,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -257,8 +251,8 @@ class BankDropdownWidget extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => BlocProvider.value(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      builder: (BuildContext context) => BlocProvider.value(
         value: bloc,
         child: BankSelectionModal(
           selectedBank: state.selectedBank,
@@ -316,7 +310,7 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
       builder: (context, scrollController) {
         return Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).scaffoldBackgroundColor,
             borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
           ),
           child: Column(
@@ -334,9 +328,6 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
   Widget _buildModalHeader() {
     return Container(
       padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
-      ),
       child: Row(
         children: [
           Icon(
@@ -351,7 +342,6 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
               ),
             ),
           ),
@@ -372,42 +362,19 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
   Widget _buildSearchField() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-      child: TextField(
+      child: AppTextormField(
         controller: _searchController,
-        focusNode: _searchFocusNode,
         onChanged: (query) {
           context.read<RecipientBloc>().add(BankSearchChanged(query));
         },
-        decoration: InputDecoration(
-          hintText: 'Search banks...',
-          prefixIcon: Icon(
-            Icons.search,
-            color: MyTheme.primaryColor,
-            size: 20.sp,
-          ),
-          suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(
-            onPressed: () {
-              _searchController.clear();
-              context.read<RecipientBloc>().add(const BankSearchChanged(''));
-            },
-            icon: Icon(
-              Icons.clear,
-              color: AppColors.textSecondary,
-              size: 20.sp,
-            ),
-          )
-              : null,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.r),
-            borderSide: BorderSide(color: Colors.grey.shade300),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.r),
-            borderSide: BorderSide(color: MyTheme.primaryColor, width: 2),
-          ),
-          contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+
+        prefixIcon: Icon(
+          Icons.search,
+          color: MyTheme.primaryColor,
+          size: 20.sp,
         ),
+        isPasswordField: false,
+        helpText: 'Search banks....',
       ),
     );
   }
@@ -437,13 +404,12 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
                     'No banks found',
                     style: TextStyle(
                       fontSize: 16.sp,
-                      color: AppColors.textSecondary,
                     ),
                   ),
                   SizedBox(height: 8.h),
                   TextButton(
                     onPressed: () => _showAddBankModal(context),
-                    child: Text(
+                    child: const Text(
                       'Add New Bank',
                       style: TextStyle(color: MyTheme.primaryColor),
                     ),
@@ -478,8 +444,7 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
                   bank.name,
                   style: TextStyle(
                     fontSize: 15.sp,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 subtitle: bank.code.isNotEmpty

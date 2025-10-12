@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:payfussion/core/theme/theme.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../payment_strings.dart';
@@ -29,13 +30,12 @@ class NoteInputWidget extends StatelessWidget {
           style: TextStyle(
             fontSize: 16.sp,
             fontWeight: FontWeight.w600,
-            color: AppColors.textSecondary,
           ),
         ),
         SizedBox(height: 12.h),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).scaffoldBackgroundColor,
             borderRadius: BorderRadius.circular(12.r),
             boxShadow: <BoxShadow>[
               BoxShadow(
@@ -44,7 +44,7 @@ class NoteInputWidget extends StatelessWidget {
                 spreadRadius: -2,
               ),
             ],
-            border: Border.all(color: Colors.grey[300]!, width: 1.0),
+            border: Border.all(color: MyTheme.primaryColor, width: 1.0),
           ),
           child: TextField(
             controller: controller,

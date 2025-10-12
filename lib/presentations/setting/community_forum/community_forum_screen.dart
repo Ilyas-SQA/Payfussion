@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/constants/routes_name.dart';
+import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/data/models/community_form/community_form_model.dart';
 import 'package:payfussion/data/models/user/user_model.dart';
 import '../../../core/utils/dates_utils.dart';
+import 'create_forum_post.dart';
 
 class CommunityForumScreen extends StatefulWidget {
   const CommunityForumScreen({super.key});
@@ -95,7 +97,33 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(context),
+      appBar: AppBar(
+        title: const Text("Community Forum",),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+            child: Container(
+              decoration: BoxDecoration(
+                color: MyTheme.primaryColor,
+                borderRadius: BorderRadius.circular(20.r),
+              ),
+              child: IconButton(
+                icon: Icon(
+                  Icons.add,
+                  color: Colors.white,
+                  size: 22.sp,
+                ),
+                onPressed: () {
+                  context.push(
+                    RouteNames.createPost,
+                    extra: CreatePostScreen(),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
       body: StreamBuilder<List<CommunityFormModel>>(
         stream: postsStream,
         builder: (context, snapshot) {
@@ -115,59 +143,6 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
           return _buildPostsList(posts);
         },
       ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
-      leading: IconButton(
-        onPressed: (){
-          context.pop();
-        },
-        icon: Icon(Icons.arrow_back_ios),
-      ),
-      title: Column(
-        children: [
-          Text(
-            'PayFussion',
-            style: TextStyle(
-              fontFamily: 'Montserrat',
-              fontSize: 18.sp,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text(
-            'Community Forum',
-            style: TextStyle(
-              fontFamily: 'Montserrat',
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w500,
-              color: const Color(0xff2D9CDB),
-            ),
-          ),
-        ],
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color(0xff1877f2),
-              borderRadius: BorderRadius.circular(20.r),
-            ),
-            child: IconButton(
-              icon: Icon(
-                Icons.add,
-                color: Colors.white,
-                size: 22.sp,
-              ),
-              onPressed: () {
-                context.go(RouteNames.createPost);
-              },
-            ),
-          ),
-        ),
-      ],
     );
   }
 

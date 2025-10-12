@@ -414,14 +414,14 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
             height: 80.r,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: MyTheme.secondaryColor.withOpacity(0.1),
+              color: MyTheme.primaryColor.withOpacity(0.1),
               border: Border.all(
-                color: MyTheme.secondaryColor.withOpacity(0.3 * value),
+                color: MyTheme.primaryColor.withOpacity(0.3 * value),
                 width: 2,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: MyTheme.secondaryColor.withOpacity(0.1 * value),
+                  color: MyTheme.primaryColor.withOpacity(0.1 * value),
                   blurRadius: 10 * value,
                   spreadRadius: 2 * value,
                 ),
@@ -436,7 +436,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                   child: Icon(
                     Icons.account_balance_wallet,
                     size: 40.r,
-                    color: MyTheme.secondaryColor.withOpacity(iconValue),
+                    color: MyTheme.primaryColor.withOpacity(iconValue),
                   ),
                 );
               },
@@ -462,15 +462,15 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
               width: double.infinity,
               padding: EdgeInsets.all(16.w),
               decoration: BoxDecoration(
-                color: MyTheme.secondaryColor.withOpacity(0.05),
+                color: MyTheme.primaryColor.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(12.r),
                 border: Border.all(
-                  color: MyTheme.secondaryColor.withOpacity(0.1),
+                  color: MyTheme.primaryColor.withOpacity(0.1),
                   width: 1,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: MyTheme.secondaryColor.withOpacity(0.05 * value),
+                    color: MyTheme.primaryColor.withOpacity(0.05 * value),
                     blurRadius: 8 * value,
                     offset: Offset(0, 2 * value),
                   ),
@@ -492,7 +492,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w600,
-                              color: MyTheme.secondaryColor,
+                              color: MyTheme.primaryColor,
                             ),
                           ),
                         ),
@@ -530,7 +530,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                               'and ${requests.length - 3} more...',
                               style: TextStyle(
                                 fontSize: 12.sp,
-                                color: MyTheme.secondaryColor.withOpacity(0.7),
+                                color: MyTheme.primaryColor.withOpacity(0.7),
                                 fontStyle: FontStyle.italic,
                               ),
                             ),
@@ -753,7 +753,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                   boxShadow: isValid && !isLoading
                       ? [
                     BoxShadow(
-                      color: MyTheme.secondaryColor.withOpacity(0.3),
+                      color: MyTheme.primaryColor.withOpacity(0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -767,8 +767,8 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                     await _handleCreatePaymentRequest(provider);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: MyTheme.secondaryColor,
-                    disabledBackgroundColor: MyTheme.secondaryColor.withOpacity(0.6),
+                    backgroundColor: MyTheme.primaryColor,
+                    disabledBackgroundColor: MyTheme.primaryColor.withOpacity(0.6),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12.r),
                     ),

@@ -305,7 +305,7 @@ class ReceiveMoneyPaymentScreen extends StatelessWidget {
           centerTitle: true,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: MyTheme.secondaryColor),
+            icon: const Icon(Icons.arrow_back, color: MyTheme.primaryColor),
             tooltip: 'Go back',
             onPressed: () {
               Navigator.of(context).pop();

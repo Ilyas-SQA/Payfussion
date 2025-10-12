@@ -32,7 +32,17 @@ class CustomBottomNavBar extends StatelessWidget {
         shadowColor: Colors.black.withOpacity(0.25),
         child: Container(
           height: 90.h,
-          color: theme.primaryColor,
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: BorderRadius.circular(5.r),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                blurRadius: 5,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
           padding: EdgeInsets.symmetric(horizontal: 25.w),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -56,8 +66,7 @@ class CustomBottomNavBar extends StatelessWidget {
                         fontFamily: "Montserrat",
                         fontWeight: FontWeight.w500,
                         fontSize: 12.sp,
-                        color:
-                            isSelected ? MyTheme.primaryColor : Colors.grey,
+                        color: isSelected ? MyTheme.primaryColor : Colors.grey,
                       ),
                     ),
                   ],
