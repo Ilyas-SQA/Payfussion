@@ -3,8 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:password_strength_indicator_plus/password_strength_indicator_plus.dart';
-import 'package:payfussion/core/constants/routes_name.dart';
-
+import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import '../../../core/constants/image_url.dart';
 import '../../../logic/blocs/setting/change-password/change_password_bloc.dart';
 import '../../../logic/blocs/setting/change-password/change_pasword_event.dart';
@@ -75,34 +74,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
     _fadeAnimationController.forward();
     _slideAnimationController.forward();
 
-    // Add listeners to focus nodes for auto-scroll
-    _oldPasswordFocus.addListener(_handleFocusChange);
-    _newPasswordFocus.addListener(_handleFocusChange);
-    _confirmPasswordFocus.addListener(_handleFocusChange);
-  }
-
-  void _handleFocusChange() {
-    if (_oldPasswordFocus.hasFocus ||
-        _newPasswordFocus.hasFocus ||
-        _confirmPasswordFocus.hasFocus) {
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (mounted) {
-          _scrollToActiveField();
-        }
-      });
-    }
-  }
-
-  void _scrollToActiveField() {
-    final RenderBox? renderBox = _formKey.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox != null) {
-      const offset = 200.0; // Adjust this value as needed
-      _scrollController.animateTo(
-        _scrollController.position.pixels + offset,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
+    // REMOVED: Focus listeners that were causing scroll issues
+    // Focus listeners ko comment kar diya hai
   }
 
   @override
@@ -155,7 +128,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
           offset: Offset(0, 50 * (1 - value)),
           child: Opacity(
             opacity: value,
-            child: CredentialsFields(
+            child: AppTextormField(
               controller: controller,
               isPasswordField: isPasswordField,
               helpText: helpText,
@@ -169,7 +142,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ChangePasswordBloc, ChangePasswordState>(
-      listener: (context, state) {
+      listener: (BuildContext context, ChangePasswordState state) {
         // Handle loading state with animated dialog
         if (state.isLoading) {
           showDialog(
@@ -243,308 +216,280 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
         }
       },
       builder: (context, state) {
-        return SafeArea(
-          child: Scaffold(
-            resizeToAvoidBottomInset: true, // Changed to true
-            body: SingleChildScrollView(
-              controller: _scrollController,
-              physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom + 20.h,
+        return Scaffold(
+          // IMPORTANT: resizeToAvoidBottomInset ko false karna keyboard issue fix karta hai
+          resizeToAvoidBottomInset: true,
+          appBar: AppBar(
+            title: Text(
+              'Change Password',
+              style: TextStyle(
+                fontFamily: 'Montserrat',
+                fontSize: 20.sp,
+                fontWeight: FontWeight.w600,
               ),
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: SlideTransition(
-                  position: _slideAnimation,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(height: 15.h),
+            ),
+          ),
+          body: SingleChildScrollView(
+            controller: _scrollController,
+            // CHANGED: ClampingScrollPhysics use kiya for better keyboard handling
+            physics: const ClampingScrollPhysics(),
+            // CHANGED: Simplified padding - MediaQuery.viewInsets automatically handle keyboard
+            padding: EdgeInsets.only(
+              left: 45.w,
+              right: 45.w,
+              top: 25.h,
+              bottom: 20.h,
+            ),
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: SlideTransition(
+                position: _slideAnimation,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Animated logo
+                    TweenAnimationBuilder<double>(
+                      duration: const Duration(milliseconds: 1200),
+                      tween: Tween<double>(begin: 0.0, end: 1.0),
+                      curve: Curves.bounceOut,
+                      builder: (context, value, child) {
+                        return Transform.scale(
+                          scale: value,
+                          child: Transform.rotate(
+                            angle: (1 - value) * 0.5,
+                            child: Hero(
+                              tag: 'logo',
+                              child: Image.asset(TImageUrl.iconLogo, height: 100.h),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
 
-                      // Animated back button
-                      TweenAnimationBuilder<double>(
-                        duration: const Duration(milliseconds: 800),
-                        tween: Tween<double>(begin: -100.0, end: 0.0),
-                        curve: Curves.elasticOut,
-                        builder: (context, value, child) {
-                          return Transform.translate(
-                            offset: Offset(value, 0),
-                            child: InkWell(
-                              onTap: () => context.pop(),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.arrow_back_ios_new,
-                                    color: const Color(0xff2D9CDB),
-                                    size: 24.r,
-                                  ),
-                                  SizedBox(width: 2.w),
-                                  Text(
-                                    'Back',
+                    SizedBox(height: 20.h),
+
+                    // Animated app name
+                    TweenAnimationBuilder<double>(
+                      duration: const Duration(milliseconds: 1000),
+                      tween: Tween<double>(begin: 0.0, end: 1.0),
+                      curve: Curves.easeInOut,
+                      builder: (context, value, child) {
+                        return Opacity(
+                          opacity: value,
+                          child: Text(
+                            'PayFussion',
+                            style: TextStyle(
+                              fontFamily: 'Montserrat',
+                              fontSize: 22.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+
+                    SizedBox(height: 10.h),
+
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Animated title
+                          TweenAnimationBuilder<double>(
+                            duration: const Duration(milliseconds: 800),
+                            tween: Tween<double>(begin: 0.0, end: 1.0),
+                            curve: Curves.easeOutBack,
+                            builder: (context, value, child) {
+                              return Transform.translate(
+                                offset: Offset(0, 30 * (1 - value)),
+                                child: Opacity(
+                                  opacity: value,
+                                  child: Text(
+                                    'Change Password',
                                     style: TextStyle(
                                       fontFamily: 'Montserrat',
-                                      fontSize: 20.sp,
-                                      color: const Color(0xff2D9CDB),
-                                      fontWeight: FontWeight.w600,
+                                      fontSize: 22.sp,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                                ),
+                              );
+                            },
+                          ),
 
-                      SizedBox(height: 25.h),
+                          SizedBox(height: 56.h),
 
-                      // Animated logo
-                      TweenAnimationBuilder<double>(
-                        duration: const Duration(milliseconds: 1200),
-                        tween: Tween<double>(begin: 0.0, end: 1.0),
-                        curve: Curves.bounceOut,
-                        builder: (context, value, child) {
-                          return Transform.scale(
-                            scale: value,
-                            child: Transform.rotate(
-                              angle: (1 - value) * 0.5,
-                              child: Hero(
-                                tag: 'logo',
-                                child: Image.asset(TImageUrl.iconLogo, height: 100.h),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                          // Animated text fields
+                          _buildAnimatedField(
+                            controller: oldPasswordController,
+                            focusNode: _oldPasswordFocus,
+                            helpText: 'Enter Old Password',
+                            isPasswordField: true,
+                            animationDelay: 0,
+                          ),
 
-                      SizedBox(height: 40.h),
+                          SizedBox(height: 20.h),
 
-                      // Animated app name
-                      TweenAnimationBuilder<double>(
-                        duration: const Duration(milliseconds: 1000),
-                        tween: Tween<double>(begin: 0.0, end: 1.0),
-                        curve: Curves.easeInOut,
-                        builder: (context, value, child) {
-                          return Opacity(
-                            opacity: value,
-                            child: Text(
-                              'PayFussion',
-                              style: TextStyle(
-                                fontFamily: 'Montserrat',
-                                fontSize: 22.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                          _buildAnimatedField(
+                            controller: newPasswordController,
+                            focusNode: _newPasswordFocus,
+                            helpText: 'Enter New Password',
+                            isPasswordField: true,
+                            animationDelay: 1,
+                          ),
 
-                      SizedBox(height: 67.h),
+                          // Animated password strength indicator
+                          TweenAnimationBuilder<double>(
+                            duration: const Duration(milliseconds: 1000),
+                            tween: Tween<double>(begin: 0.0, end: 1.0),
+                            curve: Curves.easeInOut,
+                            builder: (context, value, child) {
+                              return Transform.translate(
+                                offset: Offset(0, 20 * (1 - value)),
+                                child: Opacity(
+                                  opacity: value,
+                                  child: SizedBox(
+                                    width: 280.w,
+                                    child: PasswordStrengthIndicatorPlus(
+                                      textController: newPasswordController,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
 
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 45.w),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              // Animated title
-                              TweenAnimationBuilder<double>(
-                                duration: const Duration(milliseconds: 800),
-                                tween: Tween<double>(begin: 0.0, end: 1.0),
-                                curve: Curves.easeOutBack,
-                                builder: (context, value, child) {
-                                  return Transform.translate(
-                                    offset: Offset(0, 30 * (1 - value)),
-                                    child: Opacity(
-                                      opacity: value,
+                          SizedBox(height: 20.h),
+
+                          _buildAnimatedField(
+                            controller: confirmNewPasswordController,
+                            focusNode: _confirmPasswordFocus,
+                            helpText: 'Confirm New Password',
+                            isPasswordField: true,
+                            animationDelay: 2,
+                          ),
+
+                          // Animated error message
+                          if (state.passwordsDoNotMatchError)
+                            TweenAnimationBuilder<double>(
+                              duration: const Duration(milliseconds: 400),
+                              tween: Tween<double>(begin: 0.0, end: 1.0),
+                              builder: (context, value, child) {
+                                return Transform.translate(
+                                  offset: Offset(0, 10 * (1 - value)),
+                                  child: Opacity(
+                                    opacity: value,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 8.0),
                                       child: Text(
-                                        'Change Password',
+                                        'Passwords do not match.',
                                         style: TextStyle(
-                                          fontFamily: 'Montserrat',
-                                          fontSize: 22.sp,
-                                          fontWeight: FontWeight.bold,
+                                          color: Colors.red,
+                                          fontSize: 12.sp,
                                         ),
                                       ),
                                     ),
-                                  );
-                                },
-                              ),
+                                  ),
+                                );
+                              },
+                            ),
 
-                              SizedBox(height: 56.h),
+                          SizedBox(height: 40.h),
 
-                              // Animated text fields
-                              _buildAnimatedField(
-                                controller: oldPasswordController,
-                                focusNode: _oldPasswordFocus,
-                                helpText: 'Enter Old Password',
-                                isPasswordField: true,
-                                animationDelay: 0,
-                              ),
+                          // Animated save button
+                          TweenAnimationBuilder<double>(
+                            duration: const Duration(milliseconds: 1200),
+                            tween: Tween<double>(begin: 0.0, end: 1.0),
+                            curve: Curves.elasticOut,
+                            builder: (context, value, child) {
+                              return Transform.scale(
+                                scale: value,
+                                child: AppButton(
+                                  onTap: () {
+                                    // Hide any existing snackbar
+                                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
-                              SizedBox(height: 20.h),
+                                    final oldPassword = oldPasswordController.text.trim();
+                                    final newPassword = newPasswordController.text.trim();
+                                    final confirmNewPassword =
+                                    confirmNewPasswordController.text.trim();
 
-                              _buildAnimatedField(
-                                controller: newPasswordController,
-                                focusNode: _newPasswordFocus,
-                                helpText: 'Enter New Password',
-                                isPasswordField: true,
-                                animationDelay: 1,
-                              ),
-
-                              // Animated password strength indicator
-                              TweenAnimationBuilder<double>(
-                                duration: const Duration(milliseconds: 1000),
-                                tween: Tween<double>(begin: 0.0, end: 1.0),
-                                curve: Curves.easeInOut,
-                                builder: (context, value, child) {
-                                  return Transform.translate(
-                                    offset: Offset(0, 20 * (1 - value)),
-                                    child: Opacity(
-                                      opacity: value,
-                                      child: SizedBox(
-                                        width: 280.w,
-                                        child: PasswordStrengthIndicatorPlus(
-                                          textController: newPasswordController,
+                                    // Validate empty fields
+                                    if (oldPassword.isEmpty ||
+                                        newPassword.isEmpty ||
+                                        confirmNewPassword.isEmpty) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Please fill all fields'),
+                                          backgroundColor: Colors.red,
+                                          behavior: SnackBarBehavior.floating,
                                         ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
+                                      );
+                                      return;
+                                    }
 
-                              SizedBox(height: 20.h),
+                                    // Validate password match
+                                    if (newPassword != confirmNewPassword) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Passwords do not match'),
+                                          backgroundColor: Colors.red,
+                                          behavior: SnackBarBehavior.floating,
+                                        ),
+                                      );
+                                      return;
+                                    }
 
-                              _buildAnimatedField(
-                                controller: confirmNewPasswordController,
-                                focusNode: _confirmPasswordFocus,
-                                helpText: 'Confirm New Password',
-                                isPasswordField: true,
-                                animationDelay: 2,
-                              ),
-
-                              // Animated error message
-                              if (state.passwordsDoNotMatchError)
-                                TweenAnimationBuilder<double>(
-                                  duration: const Duration(milliseconds: 400),
-                                  tween: Tween<double>(begin: 0.0, end: 1.0),
-                                  builder: (context, value, child) {
-                                    return Transform.translate(
-                                      offset: Offset(0, 10 * (1 - value)),
-                                      child: Opacity(
-                                        opacity: value,
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(top: 8.0),
-                                          child: Text(
-                                            'Passwords do not match.',
-                                            style: TextStyle(
-                                              color: Colors.red,
-                                              fontSize: 12.sp,
-                                            ),
+                                    // Validate password strength
+                                    final passwordStrength = _checkPasswordStrength(newPassword);
+                                    if (passwordStrength != PasswordStrength.strong) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Password must be at least 8 characters, include uppercase, lowercase, digit, and special character.',
                                           ),
+                                          backgroundColor: Colors.red,
+                                          behavior: SnackBarBehavior.floating,
+                                          duration: Duration(seconds: 4),
                                         ),
+                                      );
+                                      return;
+                                    }
+
+                                    // Validate if new password is different from old password
+                                    if (oldPassword == newPassword) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'New password must be different from old password',
+                                          ),
+                                          backgroundColor: Colors.red,
+                                          behavior: SnackBarBehavior.floating,
+                                        ),
+                                      );
+                                      return;
+                                    }
+
+                                    // All validations passed, submit the change password request
+                                    context.read<ChangePasswordBloc>().add(
+                                      SubmitChangePasswordEvent(
+                                        oldPassword: oldPassword,
+                                        newPassword: newPassword,
                                       ),
                                     );
                                   },
+                                  text: 'Save',
                                 ),
-
-                              SizedBox(height: 40.h), // Increased for better spacing
-
-                              // Animated save button
-                              TweenAnimationBuilder<double>(
-                                duration: const Duration(milliseconds: 1200),
-                                tween: Tween<double>(begin: 0.0, end: 1.0),
-                                curve: Curves.elasticOut,
-                                builder: (context, value, child) {
-                                  return Transform.scale(
-                                    scale: value,
-                                    child: AuthButton(
-                                      colors: const [Color(0xff2D9CDB), Color(0xff56CCF2)],
-                                      onTap: () {
-                                        // Hide any existing snackbar
-                                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-                                        final oldPassword = oldPasswordController.text.trim();
-                                        final newPassword = newPasswordController.text.trim();
-                                        final confirmNewPassword =
-                                        confirmNewPasswordController.text.trim();
-
-                                        // Validate empty fields
-                                        if (oldPassword.isEmpty ||
-                                            newPassword.isEmpty ||
-                                            confirmNewPassword.isEmpty) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(
-                                              content: Text('Please fill all fields'),
-                                              backgroundColor: Colors.red,
-                                              behavior: SnackBarBehavior.floating,
-                                            ),
-                                          );
-                                          return;
-                                        }
-
-                                        // Validate password match
-                                        if (newPassword != confirmNewPassword) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(
-                                              content: Text('Passwords do not match'),
-                                              backgroundColor: Colors.red,
-                                              behavior: SnackBarBehavior.floating,
-                                            ),
-                                          );
-                                          return;
-                                        }
-
-                                        // Validate password strength
-                                        final passwordStrength = _checkPasswordStrength(newPassword);
-                                        if (passwordStrength != PasswordStrength.strong) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                'Password must be at least 8 characters, include uppercase, lowercase, digit, and special character.',
-                                              ),
-                                              backgroundColor: Colors.red,
-                                              behavior: SnackBarBehavior.floating,
-                                              duration: Duration(seconds: 4),
-                                            ),
-                                          );
-                                          return;
-                                        }
-
-                                        // Validate if new password is different from old password
-                                        if (oldPassword == newPassword) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                'New password must be different from old password',
-                                              ),
-                                              backgroundColor: Colors.red,
-                                              behavior: SnackBarBehavior.floating,
-                                            ),
-                                          );
-                                          return;
-                                        }
-
-                                        // All validations passed, submit the change password request
-                                        context.read<ChangePasswordBloc>().add(
-                                          SubmitChangePasswordEvent(
-                                            oldPassword: oldPassword,
-                                            newPassword: newPassword,
-                                          ),
-                                        );
-                                      },
-                                      text: 'Save',
-                                    ),
-                                  );
-                                },
-                              ),
-
-                              SizedBox(height: 50.h), // Extra spacing at bottom
-                            ],
+                              );
+                            },
                           ),
-                        ),
+
+                          SizedBox(height: 50.h),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
