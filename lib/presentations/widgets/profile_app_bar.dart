@@ -27,7 +27,7 @@ class ProfileAppBar extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
 
           // Profile Avatar
@@ -99,7 +99,7 @@ class ProfileAppBar extends StatelessWidget {
                     unreadCount = state.unreadCount;
                   }
 
-                  final icon = IconButton(
+                  final IconButton icon = IconButton(
                     icon: const Icon(CupertinoIcons.bell_fill, color: MyTheme.primaryColor,),
                     onPressed: () {
                       Navigator.push(
@@ -111,8 +111,8 @@ class ProfileAppBar extends StatelessWidget {
                     },
                   );
 
-                  return unreadCount > 0
-                      ? badges.Badge(
+                  return unreadCount > 0 ?
+                  badges.Badge(
                     position: badges.BadgePosition.topEnd(top: 3, end: 3),
                     badgeContent: Text(
                       unreadCount.toString(),
@@ -132,12 +132,12 @@ class ProfileAppBar extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const MyRewardScreen()));
+                  Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const MyRewardScreen()));
                 },
                 child: SvgPicture.asset(
-                  "assets/images/reward.svg",
-                  height: 25.r,
-                  width: 25.r,
+                  "assets/images/home/reward.svg",
+                  height: 22.r,
+                  width: 22.r,
                   color: MyTheme.primaryColor,
                 ),
               ),
