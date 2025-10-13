@@ -29,7 +29,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "name": "PG&E (Pacific Gas & Electric)",
       "description": "California's largest gas & electric utility",
       "icon": Icons.local_gas_station,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "region": "Northern California",
       "averageRate": "\$1.15/therm",
       "customers": "16M+",
@@ -38,7 +38,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "name": "Southern California Gas Company (SoCalGas)",
       "description": "Largest natural gas utility in US",
       "icon": Icons.whatshot,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "region": "Southern California",
       "averageRate": "\$1.20/therm",
       "customers": "22M+",
@@ -47,7 +47,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "name": "Con Edison",
       "description": "New York's primary gas utility",
       "icon": Icons.fireplace,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "region": "New York",
       "averageRate": "\$1.35/therm",
       "customers": "1.2M+",
@@ -56,7 +56,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "name": "Dominion Energy",
       "description": "Multi-state energy provider",
       "icon": Icons.factory,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "region": "Virginia & Ohio",
       "averageRate": "\$1.05/therm",
       "customers": "2.5M+",
@@ -65,7 +65,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "name": "National Grid",
       "description": "Northeast gas & electric utility",
       "icon": Icons.grid_on,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "region": "Northeast US",
       "averageRate": "\$1.28/therm",
       "customers": "3.4M+",
@@ -74,7 +74,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "name": "Atmos Energy",
       "description": "Nation's largest gas-only distributor",
       "icon": Icons.cloud,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "region": "Texas & Midwest",
       "averageRate": "\$0.95/therm",
       "customers": "3.2M+",
@@ -83,7 +83,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "name": "CenterPoint Energy",
       "description": "Texas & Minnesota gas provider",
       "icon": Icons.center_focus_strong,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "region": "Texas & Minnesota",
       "averageRate": "\$1.08/therm",
       "customers": "7M+",
@@ -92,7 +92,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "name": "Xcel Energy",
       "description": "Multi-state utility company",
       "icon": Icons.wind_power,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "region": "Midwest US",
       "averageRate": "\$1.02/therm",
       "customers": "3.7M+",
@@ -101,7 +101,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "name": "Duke Energy",
       "description": "Southeast energy corporation",
       "icon": Icons.business,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "region": "Southeast US",
       "averageRate": "\$1.12/therm",
       "customers": "1.6M+",
@@ -110,7 +110,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "name": "NiSource (Columbia Gas)",
       "description": "Midwest natural gas distributor",
       "icon": Icons.propane_tank,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "region": "Midwest US",
       "averageRate": "\$1.18/therm",
       "customers": "3.5M+",
@@ -119,7 +119,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "name": "PPL Gas Utilities",
       "description": "Pennsylvania gas services",
       "icon": Icons.energy_savings_leaf,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "region": "Pennsylvania",
       "averageRate": "\$1.22/therm",
       "customers": "350K+",
@@ -128,7 +128,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "name": "Eversource Energy",
       "description": "New England's gas utility",
       "icon": Icons.cottage,
-      "color": Colors.amber,
+      "color": MyTheme.primaryColor,
       "region": "New England",
       "averageRate": "\$1.32/therm",
       "customers": "1.3M+",
@@ -137,7 +137,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "name": "Washington Gas",
       "description": "DC metro area gas provider",
       "icon": Icons.account_balance,
-      "color": Colors.deepPurple,
+      "color": MyTheme.primaryColor,
       "region": "DC Metro",
       "averageRate": "\$1.24/therm",
       "customers": "1.2M+",
@@ -146,7 +146,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "name": "AVISTA Utilities",
       "description": "Pacific Northwest gas utility",
       "icon": Icons.water_drop,
-      "color": Colors.blueGrey,
+      "color": MyTheme.primaryColor,
       "region": "Pacific Northwest",
       "averageRate": "\$1.08/therm",
       "customers": "370K+",
@@ -155,7 +155,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "name": "Vectren (CenterPoint Energy)",
       "description": "Indiana & Ohio gas services",
       "icon": Icons.science,
-      "color": Colors.pink,
+      "color": MyTheme.primaryColor,
       "region": "Indiana & Ohio",
       "averageRate": "\$1.14/therm",
       "customers": "1M+",
@@ -233,18 +233,6 @@ class _GasBillScreenState extends State<GasBillScreen>
             ),
           ),
         ),
-        leading: FadeTransition(
-          opacity: _headerFade,
-          child: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: theme.primaryColor != Colors.white
-                  ? Colors.white
-                  : const Color(0xff2D3748),
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ),
       ),
       body: FadeTransition(
         opacity: _listFade,
@@ -261,18 +249,16 @@ class _GasBillScreenState extends State<GasBillScreen>
                     "Pay Your",
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w300,
-                      color: theme.primaryColor != Colors.white
-                          ? Colors.white.withOpacity(0.8)
-                          : const Color(0xff718096),
+                      color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.8) : const Color(0xff718096),
+                      fontSize: 18,
                     ),
                   ),
                   Text(
                     "Natural Gas Bill",
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: theme.primaryColor != Colors.white
-                          ? Colors.white
-                          : const Color(0xff2D3748),
+                      color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+                      fontSize: 16,
                     ),
                   ),
                   SizedBox(height: 8.h),
@@ -282,6 +268,7 @@ class _GasBillScreenState extends State<GasBillScreen>
                       color: theme.primaryColor != Colors.white
                           ? Colors.white.withOpacity(0.7)
                           : const Color(0xff718096),
+                      fontSize: 12,
                     ),
                   ),
                 ],
@@ -299,49 +286,45 @@ class _GasBillScreenState extends State<GasBillScreen>
   }
 
   Widget _buildGasProvidersList(ThemeData theme) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: AnimationLimiter(
-        child: ListView.builder(
-          physics: const BouncingScrollPhysics(),
-          itemCount: gasProviders.length,
-          itemBuilder: (context, index) {
-            return AnimationConfiguration.staggeredList(
-              position: index,
-              duration: const Duration(milliseconds: 400),
-              child: SlideAnimation(
-                verticalOffset: 50.0,
-                child: FadeInAnimation(
-                  child: _buildProviderCard(
-                    gasProviders[index],
-                    theme,
-                    index,
-                  ),
+    return AnimationLimiter(
+      child: ListView.builder(
+        physics: const BouncingScrollPhysics(),
+        itemCount: gasProviders.length,
+        itemBuilder: (context, index) {
+          return AnimationConfiguration.staggeredList(
+            position: index,
+            duration: const Duration(milliseconds: 400),
+            child: SlideAnimation(
+              verticalOffset: 50.0,
+              child: FadeInAnimation(
+                child: _buildProviderCard(
+                  gasProviders[index],
+                  theme,
+                  index,
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildProviderCard(Map<String, dynamic> provider, ThemeData theme, int index) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 16.h),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          const BoxShadow(
-            color: Colors.black26,
-            blurRadius: 5,
-            offset: Offset(1, 1),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
         child: InkWell(
           onTap: () {
             context.push(
@@ -363,22 +346,10 @@ class _GasBillScreenState extends State<GasBillScreen>
                 // Icon Container
                 Hero(
                   tag: 'gas_icon_${provider['name']}',
-                  child: Container(
-                    height: 65.h,
-                    width: 65.w,
-                    decoration: BoxDecoration(
-                      color: MyTheme.primaryColor,
-                      borderRadius: BorderRadius.circular(18.r),
-                      border: Border.all(
-                        color: (provider['color'] as Color).withOpacity(0.2),
-                        width: 1,
-                      ),
-                    ),
-                    child: Icon(
-                      provider['icon'] as IconData,
-                      size: 28.sp,
-                      color: provider['color'] as Color,
-                    ),
+                  child: Icon(
+                    provider['icon'] as IconData,
+                    size: 28.sp,
+                    color: provider['color'] as Color,
                   ),
                 ),
 
@@ -407,7 +378,7 @@ class _GasBillScreenState extends State<GasBillScreen>
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                             decoration: BoxDecoration(
-                              color: MyTheme.primaryColor.withOpacity(0.1),
+                              color: MyTheme.primaryColor,
                               borderRadius: BorderRadius.circular(12.r),
                             ),
                             child: Text(
@@ -445,8 +416,8 @@ class _GasBillScreenState extends State<GasBillScreen>
                           Expanded(
                             child: Text(
                               "${provider['region']} • ${provider['customers']} customers",
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                fontWeight: FontWeight.w600,
+                              style: const TextStyle(
+                                fontSize: 10,
                               ),
                             ),
                           ),
@@ -456,18 +427,6 @@ class _GasBillScreenState extends State<GasBillScreen>
                   ),
                 ),
 
-                // Arrow Icon
-                Container(
-                  padding: EdgeInsets.all(8.w),
-                  decoration: BoxDecoration(
-                    color: MyTheme.primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  child: Icon(
-                    Icons.arrow_forward_ios,
-                    size: 14.sp,
-                  ),
-                ),
               ],
             ),
           ),

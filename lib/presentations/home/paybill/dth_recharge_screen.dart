@@ -29,8 +29,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
       "name": "DISH Network",
       "description": "America's top-rated TV provider",
       "icon": Icons.satellite_alt,
-      "color": Colors.white,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "plans": ["Basic HD - \$60/month", "Top 200 - \$85/month", "Top 250 - \$95/month"],
       "rating": 4.2,
     },
@@ -38,8 +37,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
       "name": "DIRECTV (AT&T)",
       "description": "Premium entertainment experience",
       "icon": Icons.settings_input_antenna,
-      "color": Colors.white,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "plans": ["Entertainment - \$70/month", "Choice - \$90/month", "Ultimate - \$105/month"],
       "rating": 4.0,
     },
@@ -47,8 +45,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
       "name": "Sky Angel",
       "description": "Family-friendly programming",
       "icon": Icons.family_restroom,
-      "color": Colors.white,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "plans": ["Family Pack - \$25/month", "Premium Pack - \$40/month"],
       "rating": 3.8,
     },
@@ -56,7 +53,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
       "name": "C band Satellite Providers",
       "description": "Professional satellite solutions",
       "icon": Icons.radar,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "plans": ["Basic Package - \$45/month", "Professional - \$80/month"],
       "rating": 3.5,
     },
@@ -64,7 +61,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
       "name": "Viasat Satellite TV",
       "description": "Bundled internet & TV services",
       "icon": Icons.wifi_tethering,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "plans": ["TV + Internet Bundle - \$120/month", "Premium Bundle - \$150/month"],
       "rating": 3.9,
     },
@@ -72,7 +69,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
       "name": "Bell TV",
       "description": "Cross-border satellite service",
       "icon": Icons.public,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "plans": ["Basic Plan - \$55/month", "Premium Plan - \$75/month"],
       "rating": 3.7,
     },
@@ -80,7 +77,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
       "name": "HughesNet TV Bundles",
       "description": "Satellite internet with TV",
       "icon": Icons.router,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "plans": ["Bundle 50GB - \$100/month", "Bundle 100GB - \$130/month"],
       "rating": 3.6,
     },
@@ -150,23 +147,9 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
               "DTH Recharge",
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: theme.primaryColor != Colors.white
-                    ? Colors.white
-                    : const Color(0xff2D3748),
+                color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
               ),
             ),
-          ),
-        ),
-        leading: FadeTransition(
-          opacity: _headerFade,
-          child: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: theme.primaryColor != Colors.white
-                  ? Colors.white
-                  : const Color(0xff2D3748),
-            ),
-            onPressed: () => Navigator.of(context).pop(),
           ),
         ),
       ),
@@ -185,27 +168,24 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
                     "Choose Your",
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w300,
-                      color: theme.primaryColor != Colors.white
-                          ? Colors.white.withOpacity(0.8)
-                          : const Color(0xff718096),
+                      color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.8) : const Color(0xff718096),
+                      fontSize: 18,
                     ),
                   ),
                   Text(
                     "DTH Provider",
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: theme.primaryColor != Colors.white
-                          ? Colors.white
-                          : const Color(0xff2D3748),
+                      color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+                      fontSize: 16,
                     ),
                   ),
                   SizedBox(height: 8.h),
                   Text(
                     "Recharge your digital TV subscription instantly",
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.primaryColor != Colors.white
-                          ? Colors.white.withOpacity(0.7)
-                          : const Color(0xff718096),
+                      color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.7) : const Color(0xff718096),
+                      fontSize: 12,
                     ),
                   ),
                 ],
@@ -223,49 +203,45 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
   }
 
   Widget _buildDTHProvidersList(ThemeData theme) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: AnimationLimiter(
-        child: ListView.builder(
-          physics: const BouncingScrollPhysics(),
-          itemCount: dthProviders.length,
-          itemBuilder: (context, index) {
-            return AnimationConfiguration.staggeredList(
-              position: index,
-              duration: const Duration(milliseconds: 400),
-              child: SlideAnimation(
-                verticalOffset: 50.0,
-                child: FadeInAnimation(
-                  child: _buildProviderCard(
-                    dthProviders[index],
-                    theme,
-                    index,
-                  ),
+    return AnimationLimiter(
+      child: ListView.builder(
+        physics: const BouncingScrollPhysics(),
+        itemCount: dthProviders.length,
+        itemBuilder: (BuildContext context, int index) {
+          return AnimationConfiguration.staggeredList(
+            position: index,
+            duration: const Duration(milliseconds: 400),
+            child: SlideAnimation(
+              verticalOffset: 50.0,
+              child: FadeInAnimation(
+                child: _buildProviderCard(
+                  dthProviders[index],
+                  theme,
+                  index,
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildProviderCard(Map<String, dynamic> provider, ThemeData theme, int index) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 16.h),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          const BoxShadow(
-            color: Colors.black26,
-            blurRadius: 5,
-            offset: Offset(1, 1),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
         child: InkWell(
           onTap: () {
             context.push(
@@ -286,22 +262,10 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
                 // Icon Container
                 Hero(
                   tag: 'dth_icon_${provider['name']}',
-                  child: Container(
-                    height: 65.h,
-                    width: 65.w,
-                    decoration: BoxDecoration(
-                      color: MyTheme.primaryColor,
-                      borderRadius: BorderRadius.circular(18.r),
-                      border: Border.all(
-                        color: (provider['color'] as Color).withOpacity(0.2),
-                        width: 1,
-                      ),
-                    ),
-                    child: Icon(
-                      provider['icon'] as IconData,
-                      size: 28.sp,
-                      color: provider['color'] as Color,
-                    ),
+                  child: Icon(
+                    provider['icon'] as IconData,
+                    size: 28.sp,
+                    color: provider['color'] as Color,
                   ),
                 ),
 
@@ -320,9 +284,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
                               provider['name'] as String,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w700,
-                                color: theme.primaryColor != Colors.white
-                                    ? Colors.white
-                                    : const Color(0xff2D3748),
+                                color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
                               ),
                             ),
                           ),
@@ -330,7 +292,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                             decoration: BoxDecoration(
-                              color: MyTheme.primaryColor.withOpacity(0.1),
+                              color: MyTheme.primaryColor,
                               borderRadius: BorderRadius.circular(12.r),
                             ),
                             child: Row(
@@ -339,6 +301,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
                                 Icon(
                                   Icons.star,
                                   size: 12.sp,
+                                  color: Colors.black,
                                 ),
                                 SizedBox(width: 2.w),
                                 Text(
@@ -374,26 +337,14 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
                           SizedBox(width: 4.w),
                           Text(
                             "${(provider['plans'] as List).length} Available Plans",
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              fontWeight: FontWeight.w600,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 12,
                             ),
                           ),
                         ],
                       ),
                     ],
-                  ),
-                ),
-
-                // Arrow Icon
-                Container(
-                  padding: EdgeInsets.all(8.w),
-                  decoration: BoxDecoration(
-                    color: MyTheme.primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  child: Icon(
-                    Icons.arrow_forward_ios,
-                    size: 14.sp,
                   ),
                 ),
               ],

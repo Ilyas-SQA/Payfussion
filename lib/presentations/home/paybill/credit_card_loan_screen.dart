@@ -61,25 +61,20 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> {
   }
 
   Widget _buildBankCard(Bank bank) {
-    return Container(
-      margin: EdgeInsets.only(
-        left: 16.w,
-        right: 16.w,
-        bottom: 12.h,
-      ),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          const BoxShadow(
-            color: Colors.black26,
-            blurRadius: 5,
-            offset: Offset(1, 1),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
         child: InkWell(
           borderRadius: BorderRadius.circular(12.r),
           onTap: () => _navigateToBankDetails(bank),
@@ -134,7 +129,7 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> {
                 ),
                 Icon(
                   Icons.arrow_forward_ios,
-                  color: Colors.grey.shade400,
+                  color: MyTheme.primaryColor,
                   size: 16.sp,
                 ),
               ],
@@ -149,17 +144,8 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Select Bank',
-          style: TextStyle(
-            fontSize: 20.sp,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: BlocConsumer<BankTransactionBloc, BankTransactionState>(
@@ -173,7 +159,7 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> {
             );
           }
         },
-        builder: (context, state) {
+        builder: (BuildContext context, BankTransactionState state) {
           return Column(
             children: [
               // Header
@@ -186,7 +172,7 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> {
                     Text(
                       'Choose your bank',
                       style: TextStyle(
-                        fontSize: 24.sp,
+                        fontSize: 18.sp,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -196,7 +182,7 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> {
                           ? 'Loading banks...'
                           : 'Tap on any bank to continue',
                       style: TextStyle(
-                        fontSize: 14.sp,
+                        fontSize: 12.sp,
                         color: Colors.grey.shade600,
                       ),
                     ),
