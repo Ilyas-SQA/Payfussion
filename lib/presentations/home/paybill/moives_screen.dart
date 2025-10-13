@@ -29,7 +29,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "name": "Netflix",
       "description": "The world's leading streaming service",
       "icon": Icons.play_circle_filled,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Movies & TV",
       "monthlyPrice": "\$15.49/month",
       "content": "Movies, Series, Documentaries",
@@ -38,7 +38,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "name": "Amazon Prime Video",
       "description": "Stream with Prime membership",
       "icon": Icons.shopping_cart,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Movies & TV",
       "monthlyPrice": "\$14.98/month",
       "content": "Movies, Series, Prime Originals",
@@ -47,7 +47,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "name": "Disney+",
       "description": "The streaming home of Disney",
       "icon": Icons.castle,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Family Content",
       "monthlyPrice": "\$7.99/month",
       "content": "Disney, Marvel, Star Wars",
@@ -56,7 +56,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "name": "Hulu",
       "description": "Stream current TV and classic hits",
       "icon": Icons.tv,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "TV Shows",
       "monthlyPrice": "\$7.99/month",
       "content": "Current TV, Hulu Originals",
@@ -65,7 +65,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "name": "HBO Max",
       "description": "Where HBO meets so much more",
       "icon": Icons.theaters,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Premium Content",
       "monthlyPrice": "\$15.99/month",
       "content": "HBO, Movies, Max Originals",
@@ -74,7 +74,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "name": "Apple TV+",
       "description": "Apple's streaming service",
       "icon": Icons.apple,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Originals",
       "monthlyPrice": "\$6.99/month",
       "content": "Apple TV+ Originals",
@@ -83,7 +83,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "name": "Peacock",
       "description": "NBCUniversal's streaming service",
       "icon": Icons.pets,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "TV & Movies",
       "monthlyPrice": "\$5.99/month",
       "content": "NBC Shows, Movies, Sports",
@@ -92,7 +92,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "name": "Paramount+",
       "description": "A mountain of entertainment",
       "icon": Icons.landscape,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Movies & TV",
       "monthlyPrice": "\$5.99/month",
       "content": "CBS, Paramount, Comedy Central",
@@ -101,7 +101,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "name": "YouTube Premium",
       "description": "Ad-free YouTube with extras",
       "icon": Icons.play_arrow,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Video Platform",
       "monthlyPrice": "\$11.99/month",
       "content": "Ad-free, Music, Originals",
@@ -110,7 +110,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "name": "Sling TV",
       "description": "Live TV streaming service",
       "icon": Icons.live_tv,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Live TV",
       "monthlyPrice": "\$40/month",
       "content": "Live TV Channels",
@@ -119,7 +119,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "name": "ESPN+",
       "description": "The ultimate sports streaming",
       "icon": Icons.sports_football,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Sports",
       "monthlyPrice": "\$9.99/month",
       "content": "Live Sports, Documentaries",
@@ -128,7 +128,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "name": "Showtime",
       "description": "Premium entertainment network",
       "icon": Icons.star,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Premium TV",
       "monthlyPrice": "\$10.99/month",
       "content": "Showtime Series & Movies",
@@ -137,7 +137,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "name": "Starz",
       "description": "Premium movies and series",
       "icon": Icons.auto_awesome,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Premium Movies",
       "monthlyPrice": "\$9.99/month",
       "content": "Premium Movies & Series",
@@ -146,7 +146,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "name": "Discovery+",
       "description": "Real life entertainment",
       "icon": Icons.explore,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Documentary",
       "monthlyPrice": "\$4.99/month",
       "content": "Discovery, HGTV, Food Network",
@@ -155,7 +155,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "name": "Crunchyroll",
       "description": "The ultimate anime experience",
       "icon": Icons.animation,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Anime",
       "monthlyPrice": "\$7.99/month",
       "content": "Anime, Manga, Drama",
@@ -233,18 +233,6 @@ class _MoviesScreenState extends State<MoviesScreen>
             ),
           ),
         ),
-        leading: FadeTransition(
-          opacity: _headerFade,
-          child: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: theme.primaryColor != Colors.white
-                  ? Colors.white
-                  : const Color(0xff2D3748),
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ),
       ),
       body: FadeTransition(
         opacity: _listFade,
@@ -264,6 +252,7 @@ class _MoviesScreenState extends State<MoviesScreen>
                       color: theme.primaryColor != Colors.white
                           ? Colors.white.withOpacity(0.8)
                           : const Color(0xff718096),
+                      fontSize: 18,
                     ),
                   ),
                   Text(
@@ -273,6 +262,7 @@ class _MoviesScreenState extends State<MoviesScreen>
                       color: theme.primaryColor != Colors.white
                           ? Colors.white
                           : const Color(0xff2D3748),
+                      fontSize: 16,
                     ),
                   ),
                   SizedBox(height: 8.h),
@@ -282,6 +272,7 @@ class _MoviesScreenState extends State<MoviesScreen>
                       color: theme.primaryColor != Colors.white
                           ? Colors.white.withOpacity(0.7)
                           : const Color(0xff718096),
+                      fontSize: 12,
                     ),
                   ),
                 ],
@@ -299,49 +290,45 @@ class _MoviesScreenState extends State<MoviesScreen>
   }
 
   Widget _buildStreamingServicesList(ThemeData theme) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: AnimationLimiter(
-        child: ListView.builder(
-          physics: const BouncingScrollPhysics(),
-          itemCount: streamingServices.length,
-          itemBuilder: (context, index) {
-            return AnimationConfiguration.staggeredList(
-              position: index,
-              duration: const Duration(milliseconds: 400),
-              child: SlideAnimation(
-                verticalOffset: 50.0,
-                child: FadeInAnimation(
-                  child: _buildServiceCard(
-                    streamingServices[index],
-                    theme,
-                    index,
-                  ),
+    return AnimationLimiter(
+      child: ListView.builder(
+        physics: const BouncingScrollPhysics(),
+        itemCount: streamingServices.length,
+        itemBuilder: (context, index) {
+          return AnimationConfiguration.staggeredList(
+            position: index,
+            duration: const Duration(milliseconds: 400),
+            child: SlideAnimation(
+              verticalOffset: 50.0,
+              child: FadeInAnimation(
+                child: _buildServiceCard(
+                  streamingServices[index],
+                  theme,
+                  index,
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildServiceCard(Map<String, dynamic> service, ThemeData theme, int index) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 16.h),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          const BoxShadow(
-            color: Colors.black26,
-            blurRadius: 5,
-            offset: Offset(1, 1),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
         child: InkWell(
           onTap: () {
             context.push(
@@ -363,22 +350,10 @@ class _MoviesScreenState extends State<MoviesScreen>
                 // Icon Container
                 Hero(
                   tag: 'movies_icon_${service['name']}',
-                  child: Container(
-                    height: 65.h,
-                    width: 65.w,
-                    decoration: BoxDecoration(
-                      color: MyTheme.primaryColor,
-                      borderRadius: BorderRadius.circular(18.r),
-                      border: Border.all(
-                        color: (service['color'] as Color).withOpacity(0.2),
-                        width: 1,
-                      ),
-                    ),
-                    child: Icon(
-                      service['icon'] as IconData,
-                      size: 28.sp,
-                      color: service['color'] as Color,
-                    ),
+                  child: Icon(
+                    service['icon'] as IconData,
+                    size: 28.sp,
+                    color: service['color'] as Color,
                   ),
                 ),
 
@@ -407,7 +382,7 @@ class _MoviesScreenState extends State<MoviesScreen>
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                             decoration: BoxDecoration(
-                              color: MyTheme.primaryColor.withOpacity(0.1),
+                              color: MyTheme.primaryColor,
                               borderRadius: BorderRadius.circular(12.r),
                             ),
                             child: Text(
@@ -444,27 +419,14 @@ class _MoviesScreenState extends State<MoviesScreen>
                           Expanded(
                             child: Text(
                               "${service['category']} • ${service['content']}",
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                fontWeight: FontWeight.w600,
+                              style: const TextStyle(
+                                fontSize: 10,
                               ),
                             ),
                           ),
                         ],
                       ),
                     ],
-                  ),
-                ),
-
-                // Arrow Icon
-                Container(
-                  padding: EdgeInsets.all(8.w),
-                  decoration: BoxDecoration(
-                    color: MyTheme.primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  child: Icon(
-                    Icons.arrow_forward_ios,
-                    size: 14.sp,
                   ),
                 ),
               ],
