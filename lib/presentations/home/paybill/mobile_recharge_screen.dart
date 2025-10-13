@@ -287,7 +287,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen>
       child: ListView.builder(
         physics: const BouncingScrollPhysics(),
         itemCount: mobileCarriers.length,
-        itemBuilder: (context, index) {
+        itemBuilder: (BuildContext context, int index) {
           return AnimationConfiguration.staggeredList(
             position: index,
             duration: const Duration(milliseconds: 400),
@@ -424,18 +424,6 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen>
                   ),
                 ),
 
-                // Arrow Icon
-                Container(
-                  padding: EdgeInsets.all(8.w),
-                  decoration: BoxDecoration(
-                    color: MyTheme.primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  child: Icon(
-                    Icons.arrow_forward_ios,
-                    size: 14.sp,
-                  ),
-                ),
               ],
             ),
           ),
