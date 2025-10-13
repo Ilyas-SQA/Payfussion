@@ -29,7 +29,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen>
       "name": "Airbnb",
       "description": "Short-term rental marketplace",
       "icon": Icons.apartment,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Vacation Rentals",
       "feeRange": "3% host fee",
       "properties": "6M+ listings",
@@ -38,7 +38,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen>
       "name": "Vrbo",
       "description": "Vacation rental by owner",
       "icon": Icons.holiday_village,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Vacation Rentals",
       "feeRange": "5-10% host fee",
       "properties": "2M+ properties",
@@ -47,7 +47,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen>
       "name": "Zillow Rentals",
       "description": "Long-term rental marketplace",
       "icon": Icons.home_work,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Long-term Rentals",
       "feeRange": "No listing fees",
       "properties": "1M+ rentals",
@@ -56,7 +56,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen>
       "name": "Apartments.com",
       "description": "Apartment search platform",
       "icon": Icons.location_city,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Apartments",
       "feeRange": "Free for renters",
       "properties": "1M+ apartments",
@@ -65,7 +65,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen>
       "name": "Realtor.com Rentals",
       "description": "Professional rental listings",
       "icon": Icons.business,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Professional Rentals",
       "feeRange": "Varies by agent",
       "properties": "800K+ listings",
@@ -74,7 +74,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen>
       "name": "Trulia Rentals",
       "description": "Neighborhood-focused rentals",
       "icon": Icons.maps_home_work,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Neighborhood Rentals",
       "feeRange": "Free for renters",
       "properties": "600K+ rentals",
@@ -83,7 +83,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen>
       "name": "Furnished Finder",
       "description": "Furnished rental specialists",
       "icon": Icons.chair,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Furnished Rentals",
       "feeRange": "Premium listings",
       "properties": "200K+ furnished",
@@ -92,7 +92,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen>
       "name": "HotPads",
       "description": "Map-based rental search",
       "icon": Icons.map,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Map-based Search",
       "feeRange": "Free platform",
       "properties": "1M+ listings",
@@ -101,7 +101,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen>
       "name": "Rent.com",
       "description": "Full-service rental platform",
       "icon": Icons.key,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Full-service",
       "feeRange": "Service fees apply",
       "properties": "750K+ rentals",
@@ -110,7 +110,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen>
       "name": "Cozy",
       "description": "Property management platform",
       "icon": Icons.dashboard,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "category": "Property Management",
       "feeRange": "2.75% payment fee",
       "properties": "500K+ properties",
@@ -188,18 +188,6 @@ class _RentPaymentScreenState extends State<RentPaymentScreen>
             ),
           ),
         ),
-        leading: FadeTransition(
-          opacity: _headerFade,
-          child: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: theme.primaryColor != Colors.white
-                  ? Colors.white
-                  : const Color(0xff2D3748),
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ),
       ),
       body: FadeTransition(
         opacity: _listFade,
@@ -216,9 +204,8 @@ class _RentPaymentScreenState extends State<RentPaymentScreen>
                     "Pay Your",
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w300,
-                      color: theme.primaryColor != Colors.white
-                          ? Colors.white.withOpacity(0.8)
-                          : const Color(0xff718096),
+                      color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.8) : const Color(0xff718096),
+                      fontSize: 18,
                     ),
                   ),
                   Text(
@@ -228,6 +215,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen>
                       color: theme.primaryColor != Colors.white
                           ? Colors.white
                           : const Color(0xff2D3748),
+                      fontSize: 16,
                     ),
                   ),
                   SizedBox(height: 8.h),
@@ -237,6 +225,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen>
                       color: theme.primaryColor != Colors.white
                           ? Colors.white.withOpacity(0.7)
                           : const Color(0xff718096),
+                      fontSize: 12,
                     ),
                   ),
                 ],
@@ -254,49 +243,45 @@ class _RentPaymentScreenState extends State<RentPaymentScreen>
   }
 
   Widget _buildRentServicesList(ThemeData theme) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: AnimationLimiter(
-        child: ListView.builder(
-          physics: const BouncingScrollPhysics(),
-          itemCount: rentServices.length,
-          itemBuilder: (context, index) {
-            return AnimationConfiguration.staggeredList(
-              position: index,
-              duration: const Duration(milliseconds: 400),
-              child: SlideAnimation(
-                verticalOffset: 50.0,
-                child: FadeInAnimation(
-                  child: _buildServiceCard(
-                    rentServices[index],
-                    theme,
-                    index,
-                  ),
+    return AnimationLimiter(
+      child: ListView.builder(
+        physics: const BouncingScrollPhysics(),
+        itemCount: rentServices.length,
+        itemBuilder: (context, index) {
+          return AnimationConfiguration.staggeredList(
+            position: index,
+            duration: const Duration(milliseconds: 400),
+            child: SlideAnimation(
+              verticalOffset: 50.0,
+              child: FadeInAnimation(
+                child: _buildServiceCard(
+                  rentServices[index],
+                  theme,
+                  index,
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildServiceCard(Map<String, dynamic> service, ThemeData theme, int index) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 16.h),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          const BoxShadow(
-            color: Colors.black26,
-            blurRadius: 5,
-            offset: Offset(1, 1),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
         child: InkWell(
           onTap: () {
             context.push(
@@ -318,22 +303,10 @@ class _RentPaymentScreenState extends State<RentPaymentScreen>
                 // Icon Container
                 Hero(
                   tag: 'rent_icon_${service['name']}',
-                  child: Container(
-                    height: 65.h,
-                    width: 65.w,
-                    decoration: BoxDecoration(
-                      color: MyTheme.primaryColor,
-                      borderRadius: BorderRadius.circular(18.r),
-                      border: Border.all(
-                        color: (service['color'] as Color).withOpacity(0.2),
-                        width: 1,
-                      ),
-                    ),
-                    child: Icon(
-                      service['icon'] as IconData,
-                      size: 28.sp,
-                      color: service['color'] as Color,
-                    ),
+                  child: Icon(
+                    service['icon'] as IconData,
+                    size: 28.sp,
+                    color: service['color'] as Color,
                   ),
                 ),
 
@@ -362,7 +335,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen>
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                             decoration: BoxDecoration(
-                              color: MyTheme.primaryColor.withOpacity(0.1),
+                              color: MyTheme.primaryColor,
                               borderRadius: BorderRadius.circular(12.r),
                             ),
                             child: Text(
@@ -400,27 +373,14 @@ class _RentPaymentScreenState extends State<RentPaymentScreen>
                           Expanded(
                             child: Text(
                               "${service['properties']} • ${service['feeRange']}",
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                fontWeight: FontWeight.w600,
+                              style: const TextStyle(
+                                fontSize: 10,
                               ),
                             ),
                           ),
                         ],
                       ),
                     ],
-                  ),
-                ),
-
-                // Arrow Icon
-                Container(
-                  padding: EdgeInsets.all(8.w),
-                  decoration: BoxDecoration(
-                    color: MyTheme.primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  child: Icon(
-                    Icons.arrow_forward_ios,
-                    size: 14.sp,
                   ),
                 ),
               ],
