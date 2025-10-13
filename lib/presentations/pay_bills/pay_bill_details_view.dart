@@ -237,9 +237,9 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
       // Generate unique bill ID
       final String billId = const Uuid().v4();
 
-      print('💳 Processing payment for $_companyName');
-      print('💰 Amount: \$${amount.toStringAsFixed(2)}');
-      print('🆔 Bill ID: $billId');
+      print('Processing payment for $_companyName');
+      print('Amount: \$${amount.toStringAsFixed(2)}');
+      print('Bill ID: $billId');
 
       // Create PayBillModel with complete company information
       final payBill = PayBillModel(
@@ -266,7 +266,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
       // Add bill to repository first
       context.read<PayBillBloc>().add(AddPayBill(payBill));
 
-      print('✅ PayBillModel created with company: ${payBill.companyName}');
+      print('PayBillModel created with company: ${payBill.companyName}');
     }
   }
 
@@ -311,7 +311,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
 
                   // Process payment with complete information after bill is added
                   if (_currentBillId.isNotEmpty) {
-                    print('🔄 Processing payment for bill ID: $_currentBillId');
+                    print('Processing payment for bill ID: $_currentBillId');
                     context.read<PayBillBloc>().add(ProcessPayment(
                         _currentBillId,
                         'fingerprint',
@@ -319,7 +319,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
                     ));
                   }
                 } else if (state is PayBillPaymentSuccess) {
-                  print('✅ Payment successful for company: ${state.payBill.companyName}');
+                  print('Payment successful for company: ${state.payBill.companyName}');
                   context.push(RouteNames.receiptView, extra: state.payBill);
                 } else if (state is PayBillPaymentFailed) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -349,12 +349,8 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
             SliverAppBar(
               expandedHeight: 200.h,
               pinned: true,
-              backgroundColor: _getBrandColor(),
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               elevation: 0,
-              leading: IconButton(
-                icon: Icon(Icons.arrow_back_ios, color: Colors.white, size: 20.sp),
-                onPressed: () => context.pop(),
-              ),
               flexibleSpace: FlexibleSpaceBar(
                 title: Text(
                   _companyName, // Display actual company name
@@ -468,13 +464,17 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
       child: Container(
         padding: EdgeInsets.all(20.w),
         decoration: BoxDecoration(
-          color: _getBrandColor().withOpacity(0.1),
-          borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(
-            color: _getBrandColor().withOpacity(0.3),
-            width: 1,
-          ),
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
+
         child: Row(
           children: [
             Icon(
@@ -540,7 +540,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
           onPressed: () {
             PaymentService().saveCard(context);
           },
-        ) : SizedBox()
+        ) : const SizedBox()
       ],
     );
   }
@@ -588,12 +588,15 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
         child: Container(
           padding: EdgeInsets.all(24.w),
           decoration: BoxDecoration(
-            color: isDark ? Colors.grey[900] : Colors.grey[50],
-            borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(
-              color: Colors.grey[300]!,
-              width: 1,
-            ),
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: BorderRadius.circular(5.r),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                blurRadius: 5,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Column(
             children: [
@@ -659,15 +662,8 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey[900] : Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(5.r),
+        border: Border.all(color: MyTheme.primaryColor),
       ),
       child: TextFormField(
         controller: controller,
@@ -702,7 +698,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
             padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
               color: _getBrandColor().withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8.r),
+              borderRadius: BorderRadius.circular(5.r),
             ),
             child: Icon(
               icon,
@@ -712,7 +708,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
           ),
           suffixIcon: ValueListenableBuilder<TextEditingValue>(
             valueListenable: controller,
-            builder: (context, value, child) {
+            builder: (BuildContext context, TextEditingValue value, Widget? child) {
               if (value.text.isEmpty) return const SizedBox();
               if (keyboardType == TextInputType.emailAddress) {
                 bool isValid = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}'
@@ -730,27 +726,25 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
             },
           ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16.r),
+            borderRadius: BorderRadius.circular(5.r),
             borderSide: BorderSide.none,
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16.r),
+            borderRadius: BorderRadius.circular(5.r),
             borderSide: BorderSide.none,
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16.r),
-            borderSide: BorderSide(color: _getBrandColor(), width: 2),
+            borderRadius: BorderRadius.circular(5.r),
+            borderSide: BorderSide(color: _getBrandColor(), width: 1),
           ),
           errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16.r),
+            borderRadius: BorderRadius.circular(5.r),
             borderSide: const BorderSide(color: Colors.red, width: 1),
           ),
           focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16.r),
-            borderSide: const BorderSide(color: Colors.red, width: 2),
+            borderRadius: BorderRadius.circular(5.r),
+            borderSide: const BorderSide(color: Colors.red, width: 1),
           ),
-          filled: true,
-          fillColor: isDark ? Colors.grey[900] : Colors.white,
         ),
       ),
     );
@@ -857,8 +851,9 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
                 16.verticalSpace,
                 Text(
                   'Select Payment Card for $_companyName',
-                  style: theme.textTheme.titleLarge?.copyWith(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
+                    fontSize: 18,
                   ),
                 ),
                 20.verticalSpace,
@@ -1127,33 +1122,24 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
         width: double.infinity,
         padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
-          color: isDark ? Colors.grey[900] : Colors.white,
-          borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(
-            color: isSelected ? _getBrandColor() : Colors.grey[300]!,
-            width: isSelected ? 2 : 1,
-          ),
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
+
         child: Row(
           children: [
-            Container(
-              padding: EdgeInsets.all(12.w),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              child: Image.asset(
-                card.brandIconPath,
-                height: 24.h,
-                width: 32.w,
-              ),
+            Image.asset(
+              card.brandIconPath,
+              height: 30.h,
+              width: 40.w,
+              color: Colors.white,
             ),
             16.horizontalSpace,
             Expanded(
