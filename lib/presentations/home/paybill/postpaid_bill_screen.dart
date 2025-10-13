@@ -29,7 +29,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen>
       "name": "Verizon Wireless",
       "description": "Premium postpaid plans with 5G",
       "icon": Icons.signal_cellular_4_bar,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "planType": "Unlimited Plans",
       "startingPrice": "\$70/month",
       "features": ["5G Ultra Wideband", "Premium Data", "Hotspot"],
@@ -38,7 +38,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen>
       "name": "AT&T Mobility",
       "description": "Reliable nationwide coverage",
       "icon": Icons.wifi_tethering,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "planType": "Unlimited Plans",
       "startingPrice": "\$65/month",
       "features": ["5G Access", "HBO Max", "Mobile Hotspot"],
@@ -47,7 +47,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen>
       "name": "T-Mobile US",
       "description": "Un-carrier benefits included",
       "icon": Icons.cell_tower,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "planType": "Magenta Plans",
       "startingPrice": "\$70/month",
       "features": ["5G Included", "Netflix", "International"],
@@ -56,7 +56,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen>
       "name": "US Cellular",
       "description": "Rural coverage specialist",
       "icon": Icons.landscape,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "planType": "Unlimited Plans",
       "startingPrice": "\$60/month",
       "features": ["5G Access", "Roaming", "Family Plans"],
@@ -65,7 +65,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen>
       "name": "Google Fi Wireless",
       "description": "Flexible data plans",
       "icon": Icons.cloud,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "planType": "Flexible & Unlimited",
       "startingPrice": "\$50/month",
       "features": ["International", "Multi-network", "Data Only"],
@@ -74,7 +74,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen>
       "name": "Visible",
       "description": "All-in-one unlimited plan",
       "icon": Icons.visibility,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "planType": "Single Plan",
       "startingPrice": "\$40/month",
       "features": ["Unlimited Everything", "5G", "Party Pay"],
@@ -83,7 +83,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen>
       "name": "Cricket Wireless",
       "description": "AT&T network coverage",
       "icon": Icons.sports_cricket,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "planType": "Unlimited Plans",
       "startingPrice": "\$55/month",
       "features": ["AT&T 5G", "Unlimited Talk", "Mobile Hotspot"],
@@ -92,7 +92,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen>
       "name": "Boost Mobile",
       "description": "Shrinking payments plan",
       "icon": Icons.rocket_launch,
-      "color": Colors.white,
+      "color": MyTheme.primaryColor,
       "planType": "Shrinking Plans",
       "startingPrice": "\$50/month",
       "features": ["T-Mobile 5G", "Shrinks to \$25", "Unlimited"],
@@ -170,18 +170,6 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen>
             ),
           ),
         ),
-        leading: FadeTransition(
-          opacity: _headerFade,
-          child: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: theme.primaryColor != Colors.white
-                  ? Colors.white
-                  : const Color(0xff2D3748),
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ),
       ),
       body: FadeTransition(
         opacity: _listFade,
@@ -198,27 +186,24 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen>
                     "Pay Your",
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w300,
-                      color: theme.primaryColor != Colors.white
-                          ? Colors.white.withOpacity(0.8)
-                          : const Color(0xff718096),
+                      color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.8) : const Color(0xff718096),
+                      fontSize: 18,
                     ),
                   ),
                   Text(
                     "Postpaid Bill",
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: theme.primaryColor != Colors.white
-                          ? Colors.white
-                          : const Color(0xff2D3748),
+                      color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+                      fontSize: 16,
                     ),
                   ),
                   SizedBox(height: 8.h),
                   Text(
                     "Select your carrier to pay monthly postpaid bills",
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.primaryColor != Colors.white
-                          ? Colors.white.withOpacity(0.7)
-                          : const Color(0xff718096),
+                      color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.7) : const Color(0xff718096),
+                      fontSize: 12,
                     ),
                   ),
                 ],
@@ -236,49 +221,45 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen>
   }
 
   Widget _buildPostpaidProvidersList(ThemeData theme) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: AnimationLimiter(
-        child: ListView.builder(
-          physics: const BouncingScrollPhysics(),
-          itemCount: postpaidProviders.length,
-          itemBuilder: (context, index) {
-            return AnimationConfiguration.staggeredList(
-              position: index,
-              duration: const Duration(milliseconds: 400),
-              child: SlideAnimation(
-                verticalOffset: 50.0,
-                child: FadeInAnimation(
-                  child: _buildProviderCard(
-                    postpaidProviders[index],
-                    theme,
-                    index,
-                  ),
+    return AnimationLimiter(
+      child: ListView.builder(
+        physics: const BouncingScrollPhysics(),
+        itemCount: postpaidProviders.length,
+        itemBuilder: (context, index) {
+          return AnimationConfiguration.staggeredList(
+            position: index,
+            duration: const Duration(milliseconds: 400),
+            child: SlideAnimation(
+              verticalOffset: 50.0,
+              child: FadeInAnimation(
+                child: _buildProviderCard(
+                  postpaidProviders[index],
+                  theme,
+                  index,
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildProviderCard(Map<String, dynamic> provider, ThemeData theme, int index) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 16.h),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          const BoxShadow(
-            color: Colors.black26,
-            blurRadius: 5,
-            offset: Offset(1, 1),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
         child: InkWell(
           onTap: () {
             context.push(
@@ -300,22 +281,10 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen>
                 // Icon Container
                 Hero(
                   tag: 'postpaid_icon_${provider['name']}',
-                  child: Container(
-                    height: 65.h,
-                    width: 65.w,
-                    decoration: BoxDecoration(
-                      color: MyTheme.primaryColor,
-                      borderRadius: BorderRadius.circular(18.r),
-                      border: Border.all(
-                        color: (provider['color'] as Color).withOpacity(0.2),
-                        width: 1,
-                      ),
-                    ),
-                    child: Icon(
-                      provider['icon'] as IconData,
-                      size: 28.sp,
-                      color: provider['color'] as Color,
-                    ),
+                  child: Icon(
+                    provider['icon'] as IconData,
+                    size: 28.sp,
+                    color: provider['color'] as Color,
                   ),
                 ),
 
@@ -344,7 +313,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen>
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                             decoration: BoxDecoration(
-                              color: MyTheme.primaryColor.withOpacity(0.1),
+                              color: MyTheme.primaryColor,
                               borderRadius: BorderRadius.circular(12.r),
                             ),
                             child: Text(
@@ -381,27 +350,15 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen>
                           Expanded(
                             child: Text(
                               "${provider['planType']} • ${(provider['features'] as List).length} features",
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                fontWeight: FontWeight.w600,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 12,
                               ),
                             ),
                           ),
                         ],
                       ),
                     ],
-                  ),
-                ),
-
-                // Arrow Icon
-                Container(
-                  padding: EdgeInsets.all(8.w),
-                  decoration: BoxDecoration(
-                    color: MyTheme.primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  child: Icon(
-                    Icons.arrow_forward_ios,
-                    size: 14.sp,
                   ),
                 ),
               ],
