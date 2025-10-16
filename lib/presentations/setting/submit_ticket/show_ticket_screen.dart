@@ -97,42 +97,14 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("My Tickets"),
+      ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
-          SizedBox(height: 30.h),
-          // Animated Back Button
-          SlideTransition(
-            position: _slideAnimation,
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  _buildBackButton(),
-                ],
-              ),
-            ),
-          ),
 
           SizedBox(height: 20.h),
-
-          // Animated Title
-          SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0, 0.2),
-              end: Offset.zero,
-            ).animate(CurvedAnimation(
-              parent: _slideController,
-              curve: const Interval(0.2, 1.0, curve: Curves.easeOutCubic),
-            )),
-            child: ScaleTransition(
-              scale: _scaleAnimation,
-              child: _buildTitle(),
-            ),
-          ),
-
-          SizedBox(height: 30.h),
 
           // Animated Tickets List
           Expanded(
@@ -153,6 +125,7 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: MyTheme.primaryColor,
         onPressed: (){
           context.push(RouteNames.submitATicket);
         },
@@ -161,89 +134,10 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
     );
   }
 
-  Widget _buildBackButton() {
-    return TweenAnimationBuilder<double>(
-      duration: const Duration(milliseconds: 600),
-      tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
-        return Transform.translate(
-          offset: Offset(-20 * (1 - value), 0),
-          child: Opacity(
-            opacity: value,
-            child: InkWell(
-              onTap: () {
-                HapticFeedback.lightImpact();
-                context.go('/');
-              },
-              borderRadius: BorderRadius.circular(12.r),
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: 16.w, vertical: 8.h),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TweenAnimationBuilder<double>(
-                      duration: const Duration(milliseconds: 800),
-                      tween: Tween(begin: 0.0, end: 1.0),
-                      builder: (context, iconValue, child) {
-                        return Transform.scale(
-                          scale: iconValue,
-                          child: Icon(
-                            Icons.arrow_back_ios_new,
-                            color: const Color(0xff2D9CDB),
-                            size: 24.r,
-                          ),
-                        );
-                      },
-                    ),
-                    SizedBox(width: 2.w),
-                    Text(
-                      'Back',
-                      style: TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontSize: 20.sp,
-                        color: const Color(0xff2D9CDB),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildTitle() {
-    return TweenAnimationBuilder<double>(
-      duration: const Duration(milliseconds: 800),
-      tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
-        return Transform.translate(
-          offset: Offset(0, 20 * (1 - value)),
-          child: Opacity(
-            opacity: value,
-            child: Text(
-              'My Tickets',
-              style: TextStyle(
-                fontFamily: 'Montserrat',
-                fontSize: 24.sp,
-                color: const Color(0xff2D9CDB),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildTicketsList() {
     return StreamBuilder<QuerySnapshot>(
       stream: _ticketRepository.getCurrentUserTicketsStream(),
-      builder: (context, snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return _buildLoadingState();
         }
@@ -275,8 +169,8 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
                 child: SizedBox(
                   height: 50.h,
                   width: 50.w,
-                  child: CircularProgressIndicator(
-                    color: const Color(0xff2D9CDB),
+                  child: const CircularProgressIndicator(
+                    color: MyTheme.primaryColor,
                     strokeWidth: 3,
                   ),
                 ),
@@ -341,13 +235,13 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
           TweenAnimationBuilder<double>(
             duration: const Duration(milliseconds: 800),
             tween: Tween(begin: 0.0, end: 1.0),
-            builder: (context, value, child) {
+            builder: (BuildContext context, double value, Widget? child) {
               return Transform.scale(
                 scale: 0.8 + (0.2 * value),
                 child: Icon(
                   Icons.confirmation_number_outlined,
                   size: 80.r,
-                  color: Colors.grey,
+                  color: MyTheme.primaryColor,
                 ),
               );
             },
@@ -379,11 +273,11 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
   Widget _buildTicketsListView(List<QueryDocumentSnapshot> tickets) {
     // Sort tickets by date in Flutter instead of Firestore
     tickets.sort((a, b) {
-      final aData = a.data() as Map<String, dynamic>;
-      final bData = b.data() as Map<String, dynamic>;
+      final Map<String, dynamic> aData = a.data() as Map<String, dynamic>;
+      final Map<String, dynamic> bData = b.data() as Map<String, dynamic>;
 
-      final aDate = aData['date'] as Timestamp?;
-      final bDate = bData['date'] as Timestamp?;
+      final Timestamp? aDate = aData['date'] as Timestamp?;
+      final Timestamp? bDate = bData['date'] as Timestamp?;
 
       // Handle null dates
       if (aDate == null && bDate == null) return 0;
@@ -404,7 +298,7 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
         return TweenAnimationBuilder<double>(
           duration: Duration(milliseconds: 600 + (index * 100)),
           tween: Tween(begin: 0.0, end: 1.0),
-          builder: (context, value, child) {
+          builder: (BuildContext context, double value, Widget? child) {
             return Transform.translate(
               offset: Offset(50 * (1 - value), 0),
               child: Opacity(
@@ -429,23 +323,26 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
     if (date != null) {
       final dateTime = date.toDate();
       formattedDate =
-      '${dateTime.day}/${dateTime.month}/${dateTime.year} at ${dateTime
-          .hour}:${dateTime.minute.toString().padLeft(2, '0')}';
+      '${dateTime.day}/${dateTime.month}/${dateTime.year} at ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
     }
 
-    Color statusColor = _getStatusColor(status);
-    IconData statusIcon = _getStatusIcon(status);
+    final Color statusColor = _getStatusColor(status);
+    final IconData statusIcon = _getStatusIcon(status);
 
     return Container(
       margin: EdgeInsets.only(bottom: 16.h),
       child: Container(
         padding: EdgeInsets.all(20.w),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(
-            color: MyTheme.primaryColor.withOpacity(0.3),
-            width: 1,
-          ),
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -459,17 +356,16 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
                     title,
                     style: TextStyle(
                       fontFamily: 'Montserrat',
-                      fontSize: 18.sp,
+                      fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xff2D9CDB),
+                      color: MyTheme.primaryColor,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: 12.w, vertical: 6.h),
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                   decoration: BoxDecoration(
                     color: statusColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20.r),
