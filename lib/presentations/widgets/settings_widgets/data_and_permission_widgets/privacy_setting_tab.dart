@@ -36,7 +36,7 @@ class PrivacySettingsTab extends StatelessWidget {
             iconColor: colors.primary,
             title: 'Data Collection',
             colors: colors,
-            content: Column(
+            content: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SwitchSetting(
