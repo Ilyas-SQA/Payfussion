@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../../../core/theme/theme.dart';
@@ -24,76 +25,82 @@ class PermissionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isGranted = status?.isGranted ?? false;
 
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      elevation: 2.0,
-      color: colors.cardBackground,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  PermissionUtils.getPermissionIcon(permission),
-                  size: 28,
-                  color: MyTheme.primaryColor,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(PermissionUtils.getPermissionTitle(permission),
-                          style: AppStyles.cardTitleStyle(context)),
-                      const SizedBox(height: 4),
-                      Text(
-                        PermissionUtils.getPermissionDescription(permission),
-                        style: AppStyles.bodyTextStyle(
-                          context,
-                        ),
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                PermissionUtils.getPermissionIcon(permission),
+                size: 28,
+                color: MyTheme.primaryColor,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(PermissionUtils.getPermissionTitle(permission), style: AppStyles.cardTitleStyle(context)),
+                    const SizedBox(height: 4),
+                    Text(
+                      PermissionUtils.getPermissionDescription(permission),
+                      style: const TextStyle(
+                        fontSize: 12,
                       ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  isGranted ? 'Currently allowed' : 'Currently denied',
-                  style: AppStyles.bodyTextStyle(context).copyWith(
-                    color: isGranted ? colors.success : colors.error,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (isGranted) {
-                      openAppSettings();
-                    } else {
-                      onRequest(permission);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isGranted ? colors.primary : MyTheme.primaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
                     ),
-                  ),
-                  child: Text(
-                    isGranted ? 'Manage' : 'Allow',
-                    style: AppStyles.buttonTextStyle(context),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                isGranted ? 'Currently allowed' : 'Currently denied',
+                style: AppStyles.bodyTextStyle(context).copyWith(
+                  color: isGranted ? colors.success : colors.error,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 12,
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  if (isGranted) {
+                    openAppSettings();
+                  } else {
+                    onRequest(permission);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isGranted ? colors.primary : MyTheme.primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
                 ),
-              ],
-            ),
-          ],
-        ),
+                child: Text(
+                  isGranted ? 'Manage' : 'Allow',
+                  style: AppStyles.buttonTextStyle(context),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
