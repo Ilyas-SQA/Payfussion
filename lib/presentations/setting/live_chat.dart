@@ -17,8 +17,7 @@ class LiveChatScreen extends StatefulWidget {
   State<LiveChatScreen> createState() => _LiveChatScreenState();
 }
 
-class _LiveChatScreenState extends State<LiveChatScreen>
-    with TickerProviderStateMixin {
+class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStateMixin {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   late ChatBloc _chatBloc;
@@ -121,12 +120,15 @@ class _LiveChatScreenState extends State<LiveChatScreen>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final ThemeData theme = Theme.of(context);
+    final bool isDark = theme.brightness == Brightness.dark;
 
     return BlocProvider<ChatBloc>.value(
       value: _chatBloc,
       child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Live Chat"),
+        ),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: BlocListener<ChatBloc, ChatState>(
           bloc: _chatBloc,
@@ -137,22 +139,15 @@ class _LiveChatScreenState extends State<LiveChatScreen>
           },
           child: Column(
             children: [
-              SizedBox(height: 25.h),
-              // Custom AppBar
-              _buildCustomAppBar(theme, isDark),
-
-              // Logo and Title Section
-              _buildHeaderSection(),
-
-              // Chat Messages Area
+              /// Chat Messages Area
               Expanded(
                 child: _buildChatArea(),
               ),
 
-              // Typing Indicator
+              /// Typing Indicator
               _buildTypingIndicator(),
 
-              // Message Input Area
+              /// Message Input Area
               _buildMessageInput(theme, isDark),
             ],
           ),
@@ -304,11 +299,11 @@ class _LiveChatScreenState extends State<LiveChatScreen>
   Widget _buildChatArea() {
     return BlocBuilder<ChatBloc, ChatState>(
       bloc: _chatBloc,
-      builder: (context, state) {
+      builder: (BuildContext context, ChatState state) {
         if (state is ChatInitial || state is ChatLoading) {
           return const Center(
             child: CircularProgressIndicator(
-              color: Color(0xff2D9CDB),
+              color: MyTheme.primaryColor,
             ),
           );
         }
@@ -349,7 +344,7 @@ class _LiveChatScreenState extends State<LiveChatScreen>
                   icon: const Icon(Icons.refresh),
                   label: const Text('Try Again'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xff2D9CDB),
+                    backgroundColor: MyTheme.primaryColor,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
@@ -370,7 +365,7 @@ class _LiveChatScreenState extends State<LiveChatScreen>
                   Icon(
                     Icons.chat_bubble_outline,
                     size: 80.r,
-                    color: Colors.grey.withOpacity(0.5),
+                    color: MyTheme.primaryColor,
                   ),
                   SizedBox(height: 16.h),
                   Text(
@@ -399,11 +394,8 @@ class _LiveChatScreenState extends State<LiveChatScreen>
             controller: _scrollController,
             padding: EdgeInsets.all(16.w),
             itemCount: state.messages.length,
-            itemBuilder: (context, index) {
-              final message = state.messages[index];
-
-              // Add null safety checks
-              if (message == null) return const SizedBox.shrink();
+            itemBuilder: (BuildContext context, int index) {
+              final Map<String, dynamic> message = state.messages[index];
 
               final sender = message['sender'] as String?;
               final text = message['text'] as String?;
@@ -413,29 +405,19 @@ class _LiveChatScreenState extends State<LiveChatScreen>
                 return const SizedBox.shrink();
               }
 
-              final isUser = sender == 'user';
-              final isFirstInGroup = index == 0 ||
-                  (state.messages[index - 1] != null &&
-                      state.messages[index - 1]['sender'] != sender);
-              final isLastInGroup = index == state.messages.length - 1 ||
-                  (index < state.messages.length - 1 &&
-                      state.messages[index + 1] != null &&
-                      state.messages[index + 1]['sender'] != sender);
-
+              final bool isUser = sender == 'user';
+              final bool isFirstInGroup = index == 0 || (state.messages[index - 1]['sender'] != sender);
+              final bool isLastInGroup = index == state.messages.length - 1 || (index < state.messages.length - 1 && state.messages[index + 1]['sender'] != sender);
               return AnimatedContainer(
                 duration: Duration(milliseconds: 300 + (index * 50)),
                 curve: Curves.easeOutBack,
                 child: Column(
-                  crossAxisAlignment: isUser
-                      ? CrossAxisAlignment.end
-                      : CrossAxisAlignment.start,
+                  crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                   children: [
                     if (isFirstInGroup) SizedBox(height: 12.h),
 
                     Row(
-                      mainAxisAlignment: isUser
-                          ? MainAxisAlignment.end
-                          : MainAxisAlignment.start,
+                      mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         if (!isUser && isLastInGroup)
@@ -443,7 +425,7 @@ class _LiveChatScreenState extends State<LiveChatScreen>
                             margin: EdgeInsets.only(right: 8.w),
                             child: CircleAvatar(
                               radius: 16.r,
-                              backgroundColor: const Color(0xff2D9CDB),
+                              backgroundColor: MyTheme.primaryColor,
                               child: Icon(
                                 Icons.support_agent,
                                 color: Colors.white,
@@ -465,22 +447,20 @@ class _LiveChatScreenState extends State<LiveChatScreen>
                               vertical: 12.h,
                             ),
                             decoration: BoxDecoration(
-                              color: isUser ? MyTheme.primaryColor : Theme.of(context).brightness == Brightness.dark ? const Color(0xff2A2A2A) : Colors.white,
+                              color: isUser ? MyTheme.secondaryColor : Theme.of(context).brightness == Brightness.dark ? MyTheme.primaryColor : Colors.white,
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(isUser ? 20.r : (isFirstInGroup ? 20.r : 8.r)),
                                 topRight: Radius.circular(isUser ? (isFirstInGroup ? 20.r : 8.r) : 20.r),
                                 bottomLeft: Radius.circular(isUser ? 20.r : (isLastInGroup ? 8.r : 20.r)),
                                 bottomRight: Radius.circular(isUser ? (isLastInGroup ? 8.r : 20.r) : 20.r),
                               ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: (isUser
-                                      ? const Color(0xff2D9CDB)
-                                      : Colors.grey).withOpacity(0.2),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
+                              // boxShadow: [
+                              //   BoxShadow(
+                              //     color: (isUser ? MyTheme.primaryColor : Colors.grey).withOpacity(0.2),
+                              //     blurRadius: 8,
+                              //     offset: const Offset(0, 2),
+                              //   ),
+                              // ],
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -489,10 +469,8 @@ class _LiveChatScreenState extends State<LiveChatScreen>
                                   text,
                                   style: TextStyle(
                                     fontSize: 16.sp,
-                                    color: isUser
-                                        ? Colors.white
-                                        : Theme.of(context).textTheme.bodyLarge?.color,
                                     height: 1.3,
+                                    color: isUser ? Colors.white : Colors.black,
                                   ),
                                 ),
                                 if (isLastInGroup && timestamp != null)
@@ -502,9 +480,7 @@ class _LiveChatScreenState extends State<LiveChatScreen>
                                       _formatTimestamp(timestamp),
                                       style: TextStyle(
                                         fontSize: 11.sp,
-                                        color: isUser
-                                            ? Colors.white.withOpacity(0.8)
-                                            : Colors.grey[500],
+                                        color: isUser ? Colors.white : Colors.black,
                                       ),
                                     ),
                                   ),
@@ -555,7 +531,7 @@ class _LiveChatScreenState extends State<LiveChatScreen>
               children: [
                 CircleAvatar(
                   radius: 16.r,
-                  backgroundColor: const Color(0xff2D9CDB),
+                  backgroundColor: MyTheme.primaryColor,
                   child: Icon(
                     Icons.support_agent,
                     color: Colors.white,
@@ -566,15 +542,13 @@ class _LiveChatScreenState extends State<LiveChatScreen>
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? const Color(0xff2A2A2A)
-                        : Colors.white,
-                    borderRadius: BorderRadius.circular(20),
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: BorderRadius.circular(5.r),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                        color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                        blurRadius: 5,
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
@@ -586,7 +560,7 @@ class _LiveChatScreenState extends State<LiveChatScreen>
                         height: 20.h,
                         child: const CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: Color(0xff2D9CDB),
+                          color: MyTheme.primaryColor,
                         ),
                       ),
                       SizedBox(width: 12.w),
@@ -612,14 +586,15 @@ class _LiveChatScreenState extends State<LiveChatScreen>
 
   Widget _buildMessageInput(ThemeData theme, bool isDark) {
     return Container(
-      padding: EdgeInsets.all(16.w),
+      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 25),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -630,9 +605,7 @@ class _LiveChatScreenState extends State<LiveChatScreen>
               decoration: BoxDecoration(
                 color: isDark ? const Color(0xff2A2A2A) : const Color(0xffF5F5F5),
                 borderRadius: BorderRadius.circular(25.r),
-                border: _isComposing
-                    ? Border.all(color: const Color(0xff2D9CDB), width: 2)
-                    : null,
+                border: _isComposing ? Border.all(color: const Color(0xff2D9CDB), width: 2) : null,
               ),
               child: TextField(
                 controller: _messageController,
@@ -640,7 +613,7 @@ class _LiveChatScreenState extends State<LiveChatScreen>
                   hintText: 'Type your message...',
                   hintStyle: TextStyle(
                     color: Colors.grey[500],
-                    fontSize: 16.sp,
+                    fontSize: 12.sp,
                   ),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(
@@ -649,7 +622,7 @@ class _LiveChatScreenState extends State<LiveChatScreen>
                   ),
                   prefixIcon: Icon(
                     Icons.message_outlined,
-                    color: Colors.grey[500],
+                    color: MyTheme.primaryColor,
                     size: 20.r,
                   ),
                 ),
@@ -657,7 +630,7 @@ class _LiveChatScreenState extends State<LiveChatScreen>
                   color: theme.textTheme.bodyLarge?.color,
                   fontSize: 16.sp,
                 ),
-                cursorColor: const Color(0xff2D9CDB),
+                cursorColor: MyTheme.primaryColor,
                 onSubmitted: (_) => _sendMessage(),
                 textInputAction: TextInputAction.send,
                 maxLines: 4,
@@ -668,40 +641,24 @@ class _LiveChatScreenState extends State<LiveChatScreen>
           SizedBox(width: 12.w),
           BlocBuilder<ChatBloc, ChatState>(
             bloc: _chatBloc,
-            builder: (context, state) {
-              final isLoading = state is ChatLoaded && state.isTyping;
+            builder: (BuildContext context, ChatState state) {
+              final bool isLoading = state is ChatLoaded && state.isTyping;
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
                   color: isLoading ? Colors.grey : MyTheme.primaryColor,
                   shape: BoxShape.circle,
-                  boxShadow: !isLoading
-                      ? [
-                    BoxShadow(
-                      color: const Color(0xff2D9CDB).withOpacity(0.4),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
-                      : null,
                 ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(28.r),
-                    onTap: isLoading || !_isComposing ? null : _sendMessage,
-                    child: SizedBox(
-                      width: 56.w,
-                      height: 56.h,
-                      child: Icon(
-                        isLoading
-                            ? Icons.more_horiz
-                            : _isComposing
-                            ? Icons.send_rounded
-                            : Icons.send_rounded,
-                        color: Colors.white,
-                        size: 24.r,
-                      ),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(28.r),
+                  onTap: isLoading || !_isComposing ? null : _sendMessage,
+                  child: SizedBox(
+                    width: 50.w,
+                    height: 50.h,
+                    child: Icon(
+                      isLoading ? Icons.more_horiz : _isComposing ? Icons.send_rounded : Icons.send_rounded,
+                      color: Colors.white,
+                      size: 24.r,
                     ),
                   ),
                 ),
