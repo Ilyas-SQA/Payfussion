@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:payfussion/core/theme/theme.dart';
 
 import '../../../../logic/blocs/tickets/movies/movies_bloc.dart';
 import '../../../../logic/blocs/tickets/movies/movies_event.dart';
@@ -36,6 +38,7 @@ class MovieListScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("US Cinemas & Movies"),
+        iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -46,7 +49,7 @@ class MovieListScreen extends StatelessWidget {
         ],
       ),
       body: BlocBuilder<MovieBloc, MovieState>(
-        builder: (context, state) {
+        builder: (BuildContext context, MovieState state) {
           if (state is MovieLoading) {
             return const Center(
               child: Column(
@@ -232,7 +235,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _scaleAnimation,
-      builder: (context, child) {
+      builder: (BuildContext context, Widget? child) {
         return Transform.scale(
           scale: _scaleAnimation.value,
           child: Card(
@@ -244,15 +247,15 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                gradient: _isPressed
-                    ? LinearGradient(
-                  colors: [
-                    Colors.grey.shade50,
-                    Colors.grey.shade100,
-                  ],
-                )
-                    : null,
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: BorderRadius.circular(5.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                    blurRadius: 5,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: InkWell(
                 borderRadius: BorderRadius.circular(12),
@@ -265,12 +268,11 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                   Navigator.push(
                     context,
                     PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) => MovieDetailScreen(movie: widget.movie, imageUrl: widget.imageURL,),
-                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                      pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) => MovieDetailScreen(movie: widget.movie, imageUrl: widget.imageURL,),
+                      transitionsBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
                         return SlideTransition(
                           position: animation.drive(
-                            Tween(begin: const Offset(1.0, 0.0), end: Offset.zero)
-                                .chain(CurveTween(curve: Curves.easeOutCubic)),
+                            Tween(begin: const Offset(1.0, 0.0), end: Offset.zero).chain(CurveTween(curve: Curves.easeOutCubic)),
                           ),
                           child: child,
                         );
@@ -309,7 +311,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                       ),
                       const SizedBox(width: 16),
 
-                      // Movie Details with staggered animations
+                      /// Movie Details with staggered animations
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -317,7 +319,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                             TweenAnimationBuilder<double>(
                               duration: Duration(milliseconds: 400 + (widget.index * 50)),
                               tween: Tween(begin: 0.0, end: 1.0),
-                              builder: (context, value, child) {
+                              builder: (BuildContext context, double value, Widget? child) {
                                 return Transform.translate(
                                   offset: Offset(0, 20 * (1 - value)),
                                   child: Opacity(
@@ -337,16 +339,15 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                             TweenAnimationBuilder<double>(
                               duration: Duration(milliseconds: 500 + (widget.index * 50)),
                               tween: Tween(begin: 0.0, end: 1.0),
-                              builder: (context, value, child) {
+                              builder: (BuildContext context, double value, Widget? child) {
                                 return Transform.translate(
                                   offset: Offset(0, 15 * (1 - value)),
                                   child: Opacity(
                                     opacity: value,
                                     child: Text(
                                       widget.movie.genre,
-                                      style: TextStyle(
-                                        color: Colors.grey.shade600,
-                                        fontSize: 12,
+                                      style: const TextStyle(
+                                        fontSize: 10,
                                       ),
                                     ),
                                   ),
@@ -390,8 +391,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                                       const SizedBox(width: 8),
                                       Text(
                                         widget.movie.duration,
-                                        style: TextStyle(
-                                          color: Colors.grey.shade600,
+                                        style: const TextStyle(
                                           fontSize: 12,
                                         ),
                                       ),
@@ -419,7 +419,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                                           builder: (context, rotateValue, child) {
                                             return Transform.rotate(
                                               angle: rotateValue * 2 * 3.14159,
-                                              child: Icon(
+                                              child: const Icon(
                                                 Icons.star,
                                                 size: 16,
                                                 color: Colors.amber,
@@ -430,8 +430,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                                         const SizedBox(width: 4),
                                         Text(
                                           "${widget.movie.imdbRating}/10",
-                                          style: TextStyle(
-                                            color: Colors.grey.shade600,
+                                          style: const TextStyle(
                                             fontSize: 12,
                                           ),
                                         ),
@@ -467,7 +466,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                         ),
                       ),
 
-                      // Animated Price
+                      /// Animated Price
                       TweenAnimationBuilder<double>(
                         duration: Duration(milliseconds: 600 + (widget.index * 50)),
                         tween: Tween(begin: 0.0, end: 1.0),
@@ -481,15 +480,15 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                                   duration: const Duration(milliseconds: 200),
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: Colors.green.withOpacity(0.1),
+                                    color: MyTheme.secondaryColor.withOpacity(0.2),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
                                     "\$${widget.movie.ticketPrice.toStringAsFixed(2)}",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.green.shade600,
-                                      fontSize: 18,
+                                      color: MyTheme.secondaryColor,
+                                      fontSize: 14,
                                     ),
                                   ),
                                 ),

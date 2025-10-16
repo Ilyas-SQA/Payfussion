@@ -11,11 +11,6 @@ class MyRewardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
         title: const Text(
           'My Rewards',
           style: TextStyle(
@@ -23,7 +18,6 @@ class MyRewardScreen extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -233,18 +227,10 @@ class MyRewardScreen extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: iconBg,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                icon,
-                color: iconColor,
-                size: 24,
-              ),
+            Icon(
+              icon,
+              color: iconColor,
+              size: 24,
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -272,7 +258,7 @@ class MyRewardScreen extends StatelessWidget {
             ),
             const Icon(
               Icons.arrow_forward_ios,
-              color: Colors.grey,
+              color: MyTheme.primaryColor,
               size: 16,
             ),
           ],

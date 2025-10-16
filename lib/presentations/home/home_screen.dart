@@ -390,18 +390,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           BoxWidget(
                             title: "Ticket Booking",
                             imageURL: TImageUrl.ticketBooking,
+                            backgroundColor: MyTheme.secondaryColor,
                             onTap: (){
                               Navigator.push(context, MaterialPageRoute(builder: (context) => TicketBookingScreen()));
                             },
                           ),
                           BoxWidget(
                             title: "Insurance",
+                            backgroundColor: MyTheme.secondaryColor,
                             imageURL: TImageUrl.insurance,
                             onTap: (){
                               Navigator.push(context, MaterialPageRoute(builder: (context) => InsuranceScreen()));                            },
                           ),
                           BoxWidget(
                             title: "Apply Card",
+                            backgroundColor: MyTheme.secondaryColor,
                             imageURL: TImageUrl.applyCard,
                             onTap: (){
                               Navigator.push(context, MaterialPageRoute(builder: (context) => const ApplyCardScreen()));
@@ -409,6 +412,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           ),
                           BoxWidget(
                             title: "Government Fees",
+                            backgroundColor: MyTheme.secondaryColor,
                             imageURL: TImageUrl.governmentFee,
                             onTap: (){
                               Navigator.push(context, MaterialPageRoute(builder: (context) => GovernmentFeesScreen()));
@@ -1092,10 +1096,11 @@ class SendMoneyWidget extends StatelessWidget {
 
 
 class BoxWidget extends StatelessWidget {
-  const BoxWidget({super.key, required this.title, required this.imageURL, required this.onTap});
+  const BoxWidget({super.key, required this.title, required this.imageURL, required this.onTap,this.backgroundColor = MyTheme.primaryColor});
   final String title;
   final String imageURL;
   final VoidCallback onTap;
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -1120,7 +1125,7 @@ class BoxWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           // spacing: 10,
           children: [
-            SvgPicture.asset(imageURL, height: 27.h, width: 30.w,color: MyTheme.primaryColor,),
+            SvgPicture.asset(imageURL, height: 27.h, width: 30.w,color: backgroundColor,),
             Text(title,style: const TextStyle(fontSize: 10,fontWeight: FontWeight.w500),textAlign: TextAlign.center,),
           ],
         ),

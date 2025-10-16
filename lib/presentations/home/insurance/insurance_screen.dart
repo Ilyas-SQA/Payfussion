@@ -212,6 +212,9 @@ class _InsuranceScreenState extends State<InsuranceScreen>
             ),
           ),
         ),
+        iconTheme: const IconThemeData(
+          color: MyTheme.secondaryColor,
+        ),
       ),
       body: FadeTransition(
         opacity: _listFade,
@@ -315,14 +318,14 @@ class _InsuranceScreenState extends State<InsuranceScreen>
           Navigator.push(
             context,
             PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) =>
+              pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) =>
                   InsuranceTypeScreen(
                     companyName: company['name'],
                     types: List<String>.from(company['types']),
                     icon: company['icon'],
                     color: company['color'],
                   ),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              transitionsBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
                 return SlideTransition(
                   position: Tween<Offset>(
                     begin: const Offset(1.0, 0.0),
@@ -346,7 +349,7 @@ class _InsuranceScreenState extends State<InsuranceScreen>
                 child: Icon(
                   company['icon'] as IconData,
                   size: 28.sp,
-                  color: MyTheme.primaryColor,
+                  color: MyTheme.secondaryColor,
                 ),
               ),
 

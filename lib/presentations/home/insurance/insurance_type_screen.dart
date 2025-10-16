@@ -188,9 +188,9 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
                 expandedHeight: 200.h,
                 pinned: true,
                 backgroundColor: widget.color,
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-                  onPressed: () => Navigator.of(context).pop(),
+                iconTheme: IconThemeData(
+                  color: Colors.white,
+                  size: 24.sp,
                 ),
                 flexibleSpace: FlexibleSpaceBar(
                   title: Text(
@@ -245,12 +245,15 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
                       Container(
                         padding: EdgeInsets.all(20.w),
                         decoration: BoxDecoration(
-                          color: widget.color.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(16.r),
-                          border: Border.all(
-                            color: widget.color.withOpacity(0.2),
-                            width: 1,
-                          ),
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                          borderRadius: BorderRadius.circular(5.r),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                              blurRadius: 5,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
                         child: Row(
                           children: [
@@ -296,9 +299,8 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
                         "Select Insurance Type",
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: theme.primaryColor != Colors.white
-                              ? Colors.white
-                              : const Color(0xff2D3748),
+                          color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+                          fontSize: 16,
                         ),
                       ),
 
@@ -326,15 +328,16 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
                             margin: EdgeInsets.fromLTRB(20.w, 0, 20.w, 16.h),
                             decoration: BoxDecoration(
                               color: Theme.of(context).scaffoldBackgroundColor,
-                              borderRadius: BorderRadius.circular(16.r),
+                              borderRadius: BorderRadius.circular(5.r),
                               boxShadow: [
-                                const BoxShadow(
-                                  color: Colors.black26,
+                                BoxShadow(
+                                  color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                                   blurRadius: 5,
-                                  offset: Offset(1, 1),
+                                  offset: const Offset(0, 4),
                                 ),
                               ],
                             ),
+
                             child: Material(
                               color: Colors.transparent,
                               child: InkWell(
@@ -345,22 +348,10 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
                                   child: Row(
                                     children: [
                                       // Icon Container
-                                      Container(
-                                        height: 60.h,
-                                        width: 60.w,
-                                        decoration: BoxDecoration(
-                                          color: typeColor.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(16.r),
-                                          border: Border.all(
-                                            color: typeColor.withOpacity(0.3),
-                                            width: 1,
-                                          ),
-                                        ),
-                                        child: Icon(
-                                          typeIcon,
-                                          color: typeColor,
-                                          size: 28.sp,
-                                        ),
+                                      Icon(
+                                        typeIcon,
+                                        color: typeColor,
+                                        size: 28.sp,
                                       ),
 
                                       SizedBox(width: 16.w),
@@ -394,19 +385,6 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
                                       // Arrow and Premium Indicator
                                       Column(
                                         children: [
-                                          Container(
-                                            padding: EdgeInsets.all(8.w),
-                                            decoration: BoxDecoration(
-                                              color: typeColor.withOpacity(0.1),
-                                              borderRadius: BorderRadius.circular(12.r),
-                                            ),
-                                            child: Icon(
-                                              Icons.payment,
-                                              size: 16.sp,
-                                              color: typeColor,
-                                            ),
-                                          ),
-                                          SizedBox(height: 4.h),
                                           Icon(
                                             Icons.arrow_forward_ios,
                                             size: 12.sp,

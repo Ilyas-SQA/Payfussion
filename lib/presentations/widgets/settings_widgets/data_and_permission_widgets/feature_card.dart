@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/utils/setting_utils/data_and_permission_utils/app_styles.dart';
 import 'package:payfussion/core/utils/setting_utils/data_and_permission_utils/app_colors_utils.dart';
 
@@ -20,30 +21,38 @@ class FeatureCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      elevation: 2.0,
-      color: colors.cardBackground,
-      margin: const EdgeInsets.only(bottom: 16.0),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(icon, size: 28, color: iconColor),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(title, style: AppStyles.cardTitleStyle(context)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            content,
-          ],
-        ),
+    return Container(
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, size: 28, color: iconColor),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(title, style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          content,
+        ],
       ),
     );
   }

@@ -10,8 +10,6 @@ import '../../logic/blocs/setting/device_manager/device_manager_bloc.dart';
 import '../../logic/blocs/setting/device_manager/device_manager_event.dart';
 import '../../logic/blocs/setting/device_manager/device_manager_state.dart';
 
-// Make sure to import your theme file
-// import 'path_to_your_theme/my_theme.dart';
 
 class DevicesManagementScreen extends StatefulWidget {
   const DevicesManagementScreen({super.key});
@@ -100,9 +98,9 @@ class _DevicesManagementScreenState extends State<DevicesManagementScreen>
   }
 
   Widget _buildShimmerLoading() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = isDark ? Colors.grey[800]! : Colors.grey[300]!;
-    final highlightColor = isDark ? Colors.grey[600]! : Colors.grey[100]!;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color baseColor = isDark ? Colors.grey[800]! : Colors.grey[300]!;
+    final Color highlightColor = isDark ? Colors.grey[600]! : Colors.grey[100]!;
 
     return Shimmer.fromColors(
       baseColor: baseColor,
@@ -183,7 +181,7 @@ class _DevicesManagementScreenState extends State<DevicesManagementScreen>
     return TweenAnimationBuilder<double>(
       duration: Duration(milliseconds: 800 + delay),
       tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Transform.translate(
           offset: Offset(0, 20 * (1 - value)),
           child: Opacity(opacity: value, child: child),
@@ -207,9 +205,7 @@ class _DevicesManagementScreenState extends State<DevicesManagementScreen>
                 mobileName: '${devices[index].manufacturer} ${devices[index].model}',
                 lastLoginDate: _formatDate(devices[index].lastLogin),
                 lastLoginTime: _formatTime(devices[index].lastLogin),
-                trailingIconPath: devices[index].isActive
-                    ? 'assets/icons/setting_icons/checkmark_icon.png'
-                    : 'assets/icons/setting_icons/logout_icon.png',
+                trailingIconPath: devices[index].isActive ? 'assets/icons/setting_icons/checkmark_icon.png' : 'assets/icons/setting_icons/logout_icon.png',
                 onTrailingIconTap: () => _showLogoutDialog(context, devices[index]),
                 location: devices[index].location ?? 'Unknown',
                 animationDelay: index * 200,
@@ -229,8 +225,7 @@ class _DevicesManagementScreenState extends State<DevicesManagementScreen>
         padding: EdgeInsets.symmetric(vertical: 40.h),
         child: Column(
           children: [
-            Icon(Icons.devices_other, size: 60.sp,
-                color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.6)),
+            Icon(Icons.devices_other, size: 80.sp, color: MyTheme.primaryColor),
             SizedBox(height: 16.h),
             Text('No other devices found',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -244,19 +239,22 @@ class _DevicesManagementScreenState extends State<DevicesManagementScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Device Management"),
+      ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: BlocProvider(
-        create: (context) => DeviceBloc(DeviceRepository())..add(FetchDevices()),
+        create: (BuildContext context) => DeviceBloc(DeviceRepository())..add(FetchDevices()),
         child: BlocBuilder<DeviceBloc, DeviceState>(
-          builder: (context, state) {
+          builder: (BuildContext context, DeviceState state) {
             if (state is DeviceLoading) return _buildShimmerLoading();
 
             if (state is DeviceLoaded) {
               _fadeController.forward();
               _slideController.forward();
 
-              final currentDevice = state.devices.where((d) => d.isActive == true).toList();
-              final otherDevices = state.devices.where((d) => d.isActive != true).toList();
+              final List<DeviceModel> currentDevice = state.devices.where((d) => d.isActive == true).toList();
+              final List<DeviceModel> otherDevices = state.devices.where((d) => d.isActive != true).toList();
 
               return FadeTransition(
                 opacity: _fadeAnimation,
@@ -265,27 +263,6 @@ class _DevicesManagementScreenState extends State<DevicesManagementScreen>
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        SizedBox(height: 40.h),
-                        // Back button with MyTheme.primaryColor
-                        GestureDetector(
-                          onTap: () => context.go('/'),
-                          child: Row(
-                            children: [
-                              Icon(Icons.arrow_back_ios_new, color: MyTheme.primaryColor, size: 24.r),
-                              SizedBox(width: 2.w),
-                              Text('Back', style: TextStyle(
-                                fontFamily: 'Montserrat', fontSize: 20.sp,
-                                color: MyTheme.primaryColor, fontWeight: FontWeight.w600,
-                              )),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 10.h),
-                        // Title
-                        Text("Device Management", style: TextStyle(
-                          fontFamily: 'Montserrat', fontSize: 20.sp, fontWeight: FontWeight.w600,
-                        )),
-                        SizedBox(height: 20.h),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 25.w),
                           child: Column(
@@ -409,66 +386,65 @@ class _AnimatedCommonDeviceCardState extends State<AnimatedCommonDeviceCard>
         scale: _scaleAnimation,
         child: FadeTransition(
           opacity: _fadeAnimation,
-          child: Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-            elevation: isDark ? 4 : 8,
-            child: Container(
-              height: 120.h,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16.r),
-                color: Theme.of(context).cardColor,
-                border: isDark ? Border.all(
-                    color: Theme.of(context).colorScheme.outline.withOpacity(0.3), width: 0.5) : null,
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: Row(
-                  children: [
-                    Image.asset(widget.leadingIconPath, height: 50.h, width: 50.w,
-                        errorBuilder: (_, __, ___) => Icon(Icons.smartphone, size: 50.sp,
-                            color: MyTheme.primaryColor)), // Updated to MyTheme.primaryColor
-                    SizedBox(width: 20.w),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(widget.mobileName,
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                  fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
-                          SizedBox(height: 5.h),
-                          Text('Last login: ${widget.lastLoginDate}',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant)),
-                          SizedBox(height: 3.h),
-                          Text(widget.lastLoginTime,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant)),
-                          SizedBox(height: 3.h),
-                          Text(widget.location,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant)),
-                        ],
-                      ),
-                    ),
-                    InkWell(
-                      onTap: widget.onTrailingIconTap,
-                      borderRadius: BorderRadius.circular(20.r),
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0.sp),
-                        child: Image.asset(widget.trailingIconPath, height: 30.h, width: 30.w,
-                            color: widget.trailingIconPath.contains('logout')
-                                ? Theme.of(context).colorScheme.error
-                                : MyTheme.primaryColor, // Updated to MyTheme.primaryColor
-                            errorBuilder: (_, __, ___) => Icon(
-                                widget.trailingIconPath.contains('logout') ? Icons.logout : Icons.check_circle,
-                                size: 30.sp, color: widget.trailingIconPath.contains('logout')
-                                ? Theme.of(context).colorScheme.error
-                                : MyTheme.primaryColor)), // Updated to MyTheme.primaryColor
-                      ),
-                    ),
-                  ],
+          child: Container(
+            height: 120.h,
+            decoration: BoxDecoration(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              borderRadius: BorderRadius.circular(5.r),
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                  blurRadius: 5,
+                  offset: const Offset(0, 4),
                 ),
+              ],
+            ),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: Row(
+                children: [
+                  Image.asset(widget.leadingIconPath, height: 50.h, width: 50.w, errorBuilder: (_, __, ___) => Icon(Icons.smartphone, size: 50.sp, color: MyTheme.primaryColor)), // Updated to MyTheme.primaryColor
+                  SizedBox(width: 20.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(widget.mobileName,
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
+                        SizedBox(height: 5.h),
+                        Text('Last login: ${widget.lastLoginDate}',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                        SizedBox(height: 3.h),
+                        Text(widget.lastLoginTime,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                        SizedBox(height: 3.h),
+                        Text(widget.location,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                      ],
+                    ),
+                  ),
+                  InkWell(
+                    onTap: widget.onTrailingIconTap,
+                    borderRadius: BorderRadius.circular(20.r),
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0.sp),
+                      child: Image.asset(widget.trailingIconPath, height: 30.h, width: 30.w,
+                          color: widget.trailingIconPath.contains('logout')
+                              ? Theme.of(context).colorScheme.error
+                              : MyTheme.primaryColor, // Updated to MyTheme.primaryColor
+                          errorBuilder: (_, __, ___) => Icon(
+                              widget.trailingIconPath.contains('logout') ? Icons.logout : Icons.check_circle,
+                              size: 30.sp, color: widget.trailingIconPath.contains('logout')
+                              ? Theme.of(context).colorScheme.error
+                              : MyTheme.primaryColor)), // Updated to MyTheme.primaryColor
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -592,7 +568,7 @@ class _FuturisticLogoutDialogState extends State<FuturisticLogoutDialog>
           animation: _loadingAnimation,
           builder: (context, child) => Transform.rotate(
             angle: _loadingAnimation.value * 2 * 3.14159,
-            child: CircularProgressIndicator(
+            child: const CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(MyTheme.primaryColor)), // Updated to MyTheme.primaryColor
           ),
         ),

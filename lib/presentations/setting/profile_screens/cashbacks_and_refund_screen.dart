@@ -85,22 +85,34 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text('Cashback & Refunds', style: _screenTitleStyle),
-        elevation: 1,
-        // Subtle elevation for appbar with tabs
-        iconTheme: IconThemeData(color: Theme.of(context).secondaryHeaderColor),
         bottom: TabBar(
-          labelColor: _primaryColor,
           controller: _tabController,
-          indicatorColor: _primaryColor,
-          labelStyle: TextStyle(
-            fontFamily: _fontFamilyHeading,
-            fontWeight: FontWeight.bold,
-            fontSize: 15.sp,
+          indicatorColor: Theme.of(context).scaffoldBackgroundColor,
+          labelColor: Theme.of(context).secondaryHeaderColor,
+          indicatorSize: TabBarIndicatorSize.tab,
+          padding: EdgeInsets.all(10),
+          indicator: BoxDecoration(
+              color: MyTheme.primaryColor,
+              borderRadius: BorderRadius.circular(10)
           ),
-          unselectedLabelStyle: _tabLabelStyle,
-          tabs: const [
-            Tab(text: 'Cashback Program'),
-            Tab(text: 'Refunds & Disputes'),
+          dividerColor: Theme.of(context).scaffoldBackgroundColor,
+          labelStyle: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+          tabs: <Widget>[
+            const Tab(
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: Text('Cashback Program'),
+              ),
+            ),
+            const Tab(
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: Text('Refunds & Disputes'),
+              ),
+            ),
           ],
         ),
       ),
@@ -123,7 +135,7 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen>
         children: [
           Text(
             'Earn Rewards with PayFusion Cashback',
-            style: _sectionTitleStyle.copyWith(color: MyTheme.primaryColor),
+            style: _sectionTitleStyle.copyWith(fontSize: 18),
           ),
           const SizedBox(height: 8),
           Text(
@@ -212,7 +224,7 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen>
         children: [
           Text(
             'Hassle-Free Refunds & Disputes',
-            style: _sectionTitleStyle.copyWith(color: _primaryColor),
+            style: _sectionTitleStyle.copyWith(fontSize: 18),
           ),
           const SizedBox(height: 8),
           Text(
@@ -343,29 +355,35 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen>
     required String title,
     required Widget content,
   }) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      elevation: 2.0,
-      margin: const EdgeInsets.only(bottom: 16.0),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(icon, size: 28, color: iconColor),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(title, style: _cardTitleStyle),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            content,
-          ],
-        ),
+    return Container(
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, size: 28, color: iconColor),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(title, style: _cardTitleStyle),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          content,
+        ],
       ),
     );
   }

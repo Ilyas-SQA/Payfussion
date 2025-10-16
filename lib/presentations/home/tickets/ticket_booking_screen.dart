@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/constants/routes_name.dart';
-import 'package:payfussion/presentations/pay_bills/widgets/section_header.dart';
 import '../../../core/constants/image_url.dart';
 import '../../../core/theme/theme.dart';
 import 'bus/bus_screen.dart';
@@ -94,6 +93,9 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
             ),
           ),
         ),
+        iconTheme: const IconThemeData(
+          color: MyTheme.secondaryColor,
+        ),
       ),
       body: FadeTransition(
         opacity: _listFade,
@@ -152,7 +154,7 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
         'subtitle': 'Book movie tickets',
         'color': MyTheme.primaryColor,
         'iconColor': Colors.white,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => MovieListScreen()))
+        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => MovieListScreen()))
       },
       {
         'icon': TImageUrl.iconTrains,
@@ -197,7 +199,7 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
             crossAxisCount: 3,
             mainAxisSpacing: 10.h,
             crossAxisSpacing: 10.w,
-            childAspectRatio: 8 / 12,
+            childAspectRatio: 8 / 10,
           ),
           itemCount: ticketItems.length,
           itemBuilder: (context, index) {
@@ -250,7 +252,7 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
                   item['icon'] as String,
                   height: 28.h,
                   width: 28.w,
-                  color: MyTheme.primaryColor,
+                  color: MyTheme.secondaryColor,
                 ),
               ),
 
@@ -279,182 +281,182 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
   }
 }
 
-// Alternative Grid Layout Version
-class TicketBookingGridScreen extends StatefulWidget {
-  const TicketBookingGridScreen({super.key});
-
-  @override
-  State<TicketBookingGridScreen> createState() => _TicketBookingGridScreenState();
-}
-
-class _TicketBookingGridScreenState extends State<TicketBookingGridScreen> with TickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _fadeAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-
-    final ticketItems = [
-      {
-        'icon': TImageUrl.iconMovies,
-        'label': 'Movies',
-        'color': Colors.red.withOpacity(0.1),
-        'iconColor': Colors.red,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => MovieListScreen()))
-      },
-      {
-        'icon': TImageUrl.iconTrains,
-        'label': 'Trains',
-        'color': Colors.blue.withOpacity(0.1),
-        'iconColor': Colors.blue,
-        'onTap': () => context.push(RouteNames.trainListScreen)
-      },
-      {
-        'icon': TImageUrl.iconBus,
-        'label': 'Bus',
-        'color': Colors.green.withOpacity(0.1),
-        'iconColor': Colors.green,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => BusListScreen()))
-      },
-      {
-        'icon': TImageUrl.iconFlight,
-        'label': 'Flights',
-        'color': Colors.orange.withOpacity(0.1),
-        'iconColor': Colors.orange,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => FlightListScreen()))
-      },
-      {
-        'icon': TImageUrl.iconCar,
-        'label': 'Car Rental',
-        'color': Colors.purple.withOpacity(0.1),
-        'iconColor': Colors.purple,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => RideServiceListScreen()))
-      },
-    ];
-
-    return Scaffold(
-      body: FadeTransition(
-        opacity: _fadeAnimation,
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: SectionHeader(
-                title: "Ticket Booking",
-                onActionPressed: () {},
-              ),
-            ),
-            SizedBox(height: 16.h),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: AnimationLimiter(
-                  child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 1.1,
-                      crossAxisSpacing: 16.w,
-                      mainAxisSpacing: 16.h,
-                    ),
-                    itemCount: ticketItems.length,
-                    itemBuilder: (context, index) {
-                      return AnimationConfiguration.staggeredGrid(
-                        position: index,
-                        duration: const Duration(milliseconds: 375),
-                        columnCount: 2,
-                        child: ScaleAnimation(
-                          child: FadeInAnimation(
-                            child: _buildGridTicketItem(
-                              ticketItems[index],
-                              theme,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGridTicketItem(Map<String, dynamic> item, ThemeData theme) {
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(20.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: item['onTap'] as VoidCallback,
-          borderRadius: BorderRadius.circular(20.r),
-          child: Padding(
-            padding: EdgeInsets.all(20.w),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: 60.h,
-                  width: 60.w,
-                  decoration: BoxDecoration(
-                    color: item['color'] as Color,
-                    borderRadius: BorderRadius.circular(20.r),
-                  ),
-                  child: Center(
-                    child: Image.asset(
-                      item['icon'] as String,
-                      height: 32.h,
-                      width: 32.w,
-                      color: item['iconColor'] as Color,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 16.h),
-                Text(
-                  item['label'] as String,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: theme.primaryColor != Colors.white
-                        ? const Color(0xffffffff)
-                        : const Color(0xff2D3748),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+// // Alternative Grid Layout Version
+// class TicketBookingGridScreen extends StatefulWidget {
+//   const TicketBookingGridScreen({super.key});
+//
+//   @override
+//   State<TicketBookingGridScreen> createState() => _TicketBookingGridScreenState();
+// }
+//
+// class _TicketBookingGridScreenState extends State<TicketBookingGridScreen> with TickerProviderStateMixin {
+//   late AnimationController _controller;
+//   late Animation<double> _fadeAnimation;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     _controller = AnimationController(
+//       duration: const Duration(milliseconds: 800),
+//       vsync: this,
+//     );
+//     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
+//     _controller.forward();
+//   }
+//
+//   @override
+//   void dispose() {
+//     _controller.dispose();
+//     super.dispose();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final ThemeData theme = Theme.of(context);
+//
+//     final ticketItems = [
+//       {
+//         'icon': TImageUrl.iconMovies,
+//         'label': 'Movies',
+//         'color': Colors.red.withOpacity(0.1),
+//         'iconColor': Colors.red,
+//         'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => MovieListScreen()))
+//       },
+//       {
+//         'icon': TImageUrl.iconTrains,
+//         'label': 'Trains',
+//         'color': Colors.blue.withOpacity(0.1),
+//         'iconColor': Colors.blue,
+//         'onTap': () => context.push(RouteNames.trainListScreen)
+//       },
+//       {
+//         'icon': TImageUrl.iconBus,
+//         'label': 'Bus',
+//         'color': Colors.green.withOpacity(0.1),
+//         'iconColor': Colors.green,
+//         'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => BusListScreen()))
+//       },
+//       {
+//         'icon': TImageUrl.iconFlight,
+//         'label': 'Flights',
+//         'color': Colors.orange.withOpacity(0.1),
+//         'iconColor': Colors.orange,
+//         'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => FlightListScreen()))
+//       },
+//       {
+//         'icon': TImageUrl.iconCar,
+//         'label': 'Car Rental',
+//         'color': Colors.purple.withOpacity(0.1),
+//         'iconColor': Colors.purple,
+//         'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => RideServiceListScreen()))
+//       },
+//     ];
+//
+//     return Scaffold(
+//       body: FadeTransition(
+//         opacity: _fadeAnimation,
+//         child: Column(
+//           children: [
+//             Padding(
+//               padding: EdgeInsets.symmetric(horizontal: 16.w),
+//               child: SectionHeader(
+//                 title: "Ticket Booking",
+//                 onActionPressed: () {},
+//               ),
+//             ),
+//             SizedBox(height: 16.h),
+//             Expanded(
+//               child: Padding(
+//                 padding: EdgeInsets.symmetric(horizontal: 16.w),
+//                 child: AnimationLimiter(
+//                   child: GridView.builder(
+//                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+//                       crossAxisCount: 2,
+//                       childAspectRatio: 1.1,
+//                       crossAxisSpacing: 16.w,
+//                       mainAxisSpacing: 16.h,
+//                     ),
+//                     itemCount: ticketItems.length,
+//                     itemBuilder: (context, index) {
+//                       return AnimationConfiguration.staggeredGrid(
+//                         position: index,
+//                         duration: const Duration(milliseconds: 375),
+//                         columnCount: 2,
+//                         child: ScaleAnimation(
+//                           child: FadeInAnimation(
+//                             child: _buildGridTicketItem(
+//                               ticketItems[index],
+//                               theme,
+//                             ),
+//                           ),
+//                         ),
+//                       );
+//                     },
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+//
+//   Widget _buildGridTicketItem(Map<String, dynamic> item, ThemeData theme) {
+//     return Container(
+//       decoration: BoxDecoration(
+//         color: theme.cardColor,
+//         borderRadius: BorderRadius.circular(20.r),
+//         boxShadow: [
+//           BoxShadow(
+//             color: Colors.black.withOpacity(0.05),
+//             blurRadius: 10,
+//             offset: const Offset(0, 4),
+//           ),
+//         ],
+//       ),
+//       child: Material(
+//         color: Colors.transparent,
+//         child: InkWell(
+//           onTap: item['onTap'] as VoidCallback,
+//           borderRadius: BorderRadius.circular(20.r),
+//           child: Padding(
+//             padding: EdgeInsets.all(20.w),
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 Container(
+//                   height: 60.h,
+//                   width: 60.w,
+//                   decoration: BoxDecoration(
+//                     color: item['color'] as Color,
+//                     borderRadius: BorderRadius.circular(20.r),
+//                   ),
+//                   child: Center(
+//                     child: Image.asset(
+//                       item['icon'] as String,
+//                       height: 32.h,
+//                       width: 32.w,
+//                       color: item['iconColor'] as Color,
+//                     ),
+//                   ),
+//                 ),
+//                 SizedBox(height: 16.h),
+//                 Text(
+//                   item['label'] as String,
+//                   style: theme.textTheme.titleSmall?.copyWith(
+//                     fontWeight: FontWeight.w600,
+//                     color: theme.primaryColor != Colors.white
+//                         ? const Color(0xffffffff)
+//                         : const Color(0xff2D3748),
+//                   ),
+//                   textAlign: TextAlign.center,
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }

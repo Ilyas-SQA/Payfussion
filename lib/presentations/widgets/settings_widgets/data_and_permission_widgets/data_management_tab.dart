@@ -20,14 +20,19 @@ class DataManagementTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Your Data Control Center',
-            style: AppStyles.sectionTitleStyle(context, color: Theme.of(context).secondaryHeaderColor),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Manage your personal data and control how it\'s used within PayFusion.',
-            style: AppStyles.bodyTextStyle(context),
+            style: TextStyle(
+              fontSize: 12,
+            ),
           ),
           const SizedBox(height: 24),
 
@@ -52,7 +57,7 @@ class DataManagementTab extends StatelessWidget {
                 const SizedBox(height: 12),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.download_rounded, size: 18),
-                  label: Text('Request Data Report'),
+                  label: const Text('Request Data Report'),
                   onPressed: () {
                     _showDataReportDialog(context, colors);
                   },
@@ -92,7 +97,7 @@ class DataManagementTab extends StatelessWidget {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        child: Text('Delete Specific Data', style: TextStyle(fontSize: 12,)),
+                        child: const Text('Delete Specific Data', style: TextStyle(fontSize: 12,)),
                         onPressed: () {
                           _showSelectionDialog(context, colors);
                         },
@@ -108,7 +113,7 @@ class DataManagementTab extends StatelessWidget {
                     const SizedBox(width: 5),
                     Expanded(
                       child: ElevatedButton(
-                        child: Text('Delete Account', style: TextStyle(fontSize: 12,)),
+                        child: const Text('Delete Account', style: TextStyle(fontSize: 12,)),
                         onPressed: () {
                           _showAccountDeletionDialog(context, colors);
                         },
@@ -146,7 +151,7 @@ class DataManagementTab extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 ElevatedButton(
-                  child: Text('Update Personal Details', style: AppStyles.buttonTextStyle(context)),
+                  child: const Text('Update Personal Details', style: TextStyle(color: Colors.white)),
                   onPressed: () {
                     context.go(RouteNames.profile);
                   },
@@ -171,13 +176,13 @@ class DataManagementTab extends StatelessWidget {
             content: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BulletPoint(
+                const BulletPoint(
                   'Under data protection laws (GDPR, CCPA, etc.), you have specific rights regarding your personal data.',
                 ),
-                BulletPoint(
+                const BulletPoint(
                   'These include rights to access, correct, delete, restrict processing, and data portability.',
                 ),
-                BulletPoint(
+                const BulletPoint(
                   'For data concerns or complaints, contact our Data Protection Officer through our website.',
                 ),
                 const SizedBox(height: 12),
@@ -188,7 +193,7 @@ class DataManagementTab extends StatelessWidget {
                   child: Text(
                     'Read Full Privacy Policy',
                     style: AppStyles.bodyTextStyle(context).copyWith(
-                      color: colors.primary,
+                      color: MyTheme.primaryColor,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

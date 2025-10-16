@@ -17,18 +17,7 @@ class TaxComplianceScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'Tax & Legal Compliance',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
         ),
-        iconTheme: IconThemeData(
-          color: Theme.of(
-            context,
-          ).colorScheme.onPrimary,
-        ),
-        centerTitle: true,
-        elevation: 0,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -51,6 +40,7 @@ class TaxComplianceScreen extends StatelessWidget {
                 );
               },
             ),
+            SizedBox(height: 10,),
             _buildTaxReportingCard(
               context: context,
               icon: Icons.picture_as_pdf_outlined,
@@ -83,6 +73,7 @@ class TaxComplianceScreen extends StatelessWidget {
                 );
               },
             ),
+            const SizedBox(height: 10),
             _buildInfoLinkCard(
               context: context,
               icon: Icons.gavel_outlined,
@@ -98,6 +89,7 @@ class TaxComplianceScreen extends StatelessWidget {
                 );
               },
             ),
+            const SizedBox(height: 10),
             _buildInfoLinkCard(
               context: context,
               icon: Icons.shield_outlined,
@@ -134,6 +126,7 @@ class TaxComplianceScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             _buildSectionTitle('Secure Document Access'),
+            const SizedBox(height: 10),
             _buildInfoLinkCard(
               context: context,
               icon: Icons.lock_person_outlined,
@@ -184,44 +177,50 @@ class TaxComplianceScreen extends StatelessWidget {
     required String actionText,
     required VoidCallback onTap,
   }) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 2,
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, size: 28,color: MyTheme.primaryColor,),
-                const SizedBox(width: 12),
-                Expanded(child: Text(title)),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(description),
-            const SizedBox(height: 16),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: ElevatedButton(
-                onPressed: onTap,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: MyTheme.primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
+    return Container(
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 28,color: MyTheme.primaryColor,),
+              const SizedBox(width: 12),
+              Expanded(child: Text(title)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(description),
+          const SizedBox(height: 16),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: ElevatedButton(
+              onPressed: onTap,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: MyTheme.primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(actionText),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
               ),
+              child: Text(actionText),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -234,35 +233,40 @@ class TaxComplianceScreen extends StatelessWidget {
     required String actionText,
     required VoidCallback onTap,
   }) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 1, // Subtle elevation
-      margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        // Make the whole card tappable if desired, or just the actionText
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              Icon(icon, size: 26,color: MyTheme.primaryColor,),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title),
-                    const SizedBox(height: 4),
-                    Text(description),
-                    const SizedBox(height: 8),
-                    Text(actionText), // Styled as a link
-                  ],
-                ),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 26,color: MyTheme.primaryColor,),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title),
+                  const SizedBox(height: 4),
+                  Text(description),
+                  const SizedBox(height: 8),
+                  Text(actionText), // Styled as a link
+                ],
               ),
-              const Icon(Icons.arrow_forward_ios, size: 18,color: MyTheme.primaryColor,),
-            ],
-          ),
+            ),
+            const Icon(Icons.arrow_forward_ios, size: 18,color: MyTheme.primaryColor,),
+          ],
         ),
       ),
     );

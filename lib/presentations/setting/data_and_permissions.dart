@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:payfussion/core/theme/theme.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../core/utils/setting_utils/data_and_permission_utils/app_colors_utils.dart';
@@ -73,16 +75,40 @@ class _DataAndPermissionsScreenState extends State<DataAndPermissionsScreen>
         title: const Text('Data & Permissions'),
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: Theme.of(context).secondaryHeaderColor,
+          indicatorColor: Theme.of(context).scaffoldBackgroundColor,
           labelColor: Theme.of(context).secondaryHeaderColor,
-          labelStyle: TextStyle(
-            fontSize: 10,
+          isScrollable: true,
+          indicatorSize: TabBarIndicatorSize.tab,
+          padding: EdgeInsets.all(10),
+          indicator: BoxDecoration(
+            color: MyTheme.primaryColor,
+            borderRadius: BorderRadius.circular(10)
+          ),
+          dividerColor: Theme.of(context).scaffoldBackgroundColor,
+          tabAlignment: TabAlignment.center,
+          labelStyle: const TextStyle(
+            fontSize: 12,
             fontWeight: FontWeight.bold,
           ),
-          tabs: const [
-            Tab(text: 'Data Management',),
-            Tab(text: 'App Permissions'),
-            Tab(text: 'Privacy Settings'),
+          tabs: <Widget>[
+            const Tab(
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: Text('Data Management'),
+              ),
+            ),
+            const Tab(
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: Text('App Permissions'),
+              ),
+            ),
+            const Tab(
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: Text('Privacy Settings'),
+              ),
+            ),
           ],
         ),
       ),
@@ -102,7 +128,7 @@ class _DataAndPermissionsScreenState extends State<DataAndPermissionsScreen>
   }
 
   Future<void> _handlePermissionRequest(Permission permission) async {
-    final status = await permission.request();
+    final PermissionStatus status = await permission.request();
     await _refreshPermissions();
   }
 }

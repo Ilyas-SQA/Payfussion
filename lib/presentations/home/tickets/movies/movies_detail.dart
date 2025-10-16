@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:payfussion/core/theme/theme.dart';
 
 import '../../../../data/models/tickets/movies_model.dart';
 import '../../../widgets/custom_button.dart';
@@ -104,16 +105,16 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
       appBar: AppBar(
         title: AnimatedBuilder(
           animation: _fadeAnimation,
-          builder: (context, child) {
+          builder: (BuildContext context, Widget? child) {
             return Opacity(
               opacity: _fadeAnimation.value,
               child: Text(widget.movie.title),
             );
           },
         ),
-        elevation: 0,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        foregroundColor: Theme.of(context).textTheme.bodyLarge?.color,
+        iconTheme: const IconThemeData(
+          color: MyTheme.secondaryColor,
+        ),
       ),
       body: AnimatedBuilder(
         animation: _mainController,
@@ -185,17 +186,16 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.white,
-              Colors.grey.shade50,
-            ],
-          ),
-        ),
-        child: Padding(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),        child: Padding(
           padding: const EdgeInsets.all(20),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -384,172 +384,175 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
   }
 
   Widget _buildSynopsisCard() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Synopsis",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Synopsis",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 12),
-            TweenAnimationBuilder<int>(
-              duration: const Duration(milliseconds: 2000),
-              tween: IntTween(begin: 0, end: widget.movie.synopsis.length),
-              builder: (context, value, child) {
-                return Text(
-                  widget.movie.synopsis.substring(0, value),
-                  style: const TextStyle(height: 1.5),
-                );
-              },
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 12),
+          TweenAnimationBuilder<int>(
+            duration: const Duration(milliseconds: 2000),
+            tween: IntTween(begin: 0, end: widget.movie.synopsis.length),
+            builder: (context, value, child) {
+              return Text(
+                widget.movie.synopsis.substring(0, value),
+                style: const TextStyle(height: 1.5),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildCastCard() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Cast",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Cast",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: widget.movie.cast.asMap().entries.map((entry) {
-                final index = entry.key;
-                final actor = entry.value;
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: widget.movie.cast.asMap().entries.map((MapEntry<int, String> entry) {
+              final int index = entry.key;
+              final String actor = entry.value;
 
-                return TweenAnimationBuilder<double>(
-                  duration: Duration(milliseconds: 400 + (index * 100)),
-                  tween: Tween(begin: 0.0, end: 1.0),
-                  builder: (context, value, child) {
-                    return Transform.scale(
-                      scale: value,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.purple.shade50,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.purple.shade200),
-                        ),
-                        child: Text(
-                          actor,
-                          style: TextStyle(
-                            color: Colors.purple.shade700,
-                            fontWeight: FontWeight.w500,
-                          ),
+              return TweenAnimationBuilder<double>(
+                duration: Duration(milliseconds: 400 + (index * 100)),
+                tween: Tween(begin: 0.0, end: 1.0),
+                builder: (BuildContext context, double value, Widget? child) {
+                  return Transform.scale(
+                    scale: value,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: MyTheme.secondaryColor,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: MyTheme.secondaryColor,),
+                      ),
+                      child: Text(
+                        actor,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                    );
-                  },
-                );
-              }).toList(),
-            ),
-          ],
-        ),
+                    ),
+                  );
+                },
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildShowtimesCard() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Available Showtimes",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Available Showtimes",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: widget.movie.showtimes.asMap().entries.map((entry) {
-                final index = entry.key;
-                final time = entry.value;
-                final isSelected = _selectedShowtime == time;
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: widget.movie.showtimes.asMap().entries.map((entry) {
+              final int index = entry.key;
+              final String time = entry.value;
+              final bool isSelected = _selectedShowtime == time;
 
-                return TweenAnimationBuilder<double>(
-                  duration: Duration(milliseconds: 300 + (index * 50)),
-                  tween: Tween(begin: 0.0, end: 1.0),
-                  builder: (context, value, child) {
-                    return Transform.scale(
-                      scale: value,
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedShowtime = isSelected ? null : time;
-                          });
-                          HapticFeedback.lightImpact();
-                        },
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? Colors.blue.shade600
-                                : Colors.blue.shade50,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: isSelected
-                                  ? Colors.blue.shade600
-                                  : Colors.blue.shade300,
-                              width: isSelected ? 2 : 1,
-                            ),
-                            boxShadow: isSelected ? [
-                              BoxShadow(
-                                color: Colors.blue.shade200,
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ] : null,
-                          ),
-                          child: Text(
-                            time,
-                            style: TextStyle(
-                              color: isSelected
-                                  ? Colors.white
-                                  : Colors.blue.shade700,
-                              fontWeight: FontWeight.w600,
-                            ),
+              return TweenAnimationBuilder<double>(
+                duration: Duration(milliseconds: 300 + (index * 50)),
+                tween: Tween(begin: 0.0, end: 1.0),
+                builder: (BuildContext context, double value, Widget? child) {
+                  return Transform.scale(
+                    scale: value,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedShowtime = isSelected ? null : time;
+                        });
+                        HapticFeedback.lightImpact();
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: isSelected ? MyTheme.secondaryColor : Theme.of(context).scaffoldBackgroundColor,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: MyTheme.secondaryColor),
+                        ),
+                        child: Text(
+                          time,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
-                    );
-                  },
-                );
-              }).toList(),
-            ),
-          ],
-        ),
+                    ),
+                  );
+                },
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }
@@ -578,7 +581,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
                           : "Select Showtime to Book",
                       height: 54.h,
                       backgroundColor: _selectedShowtime != null
-                          ? const Color(0xff3862F8)
+                          ? MyTheme.secondaryColor
                           : Colors.grey.shade400,
                       textColor: Colors.white,
                       onPressed: _selectedShowtime != null ? () {
@@ -617,18 +620,17 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 16, color: Colors.grey.shade600),
+          Icon(icon, size: 16, color: MyTheme.secondaryColor),
           const SizedBox(width: 8),
           Expanded(
             child: RichText(
               text: TextSpan(
-                style: const TextStyle(fontSize: 14, color: Colors.black),
+                style: TextStyle(fontSize: 12,color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,),
                 children: [
                   TextSpan(
                     text: "$label: ",
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w500,
-                      color: Colors.grey.shade700,
                     ),
                   ),
                   TextSpan(text: value),

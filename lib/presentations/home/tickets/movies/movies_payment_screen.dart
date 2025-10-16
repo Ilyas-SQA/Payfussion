@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/tax.dart';
+import '../../../../core/theme/theme.dart';
 import '../../../../data/models/card/card_model.dart';
 import '../../../../data/models/tickets/movies_model.dart';
 import '../../../../logic/blocs/add_card/card_bloc.dart';
@@ -93,6 +94,9 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Book Movie Tickets"),
+        iconTheme: const IconThemeData(
+          color: MyTheme.secondaryColor,
+        ),
       ),
       body: BlocListener<MovieBookingBloc, MovieBookingState>(
         listener: (context, state) {
@@ -142,366 +146,418 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
   }
 
   Widget _buildMovieSummary() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Movie Summary",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Movie Summary",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 12),
-            Text("Movie: ${widget.movie.title}"),
-            Text("Genre: ${widget.movie.genre}"),
-            Text("Duration: ${widget.movie.duration}"),
-            Text("Rating: ${widget.movie.rating}"),
-            Text("Cinema: ${widget.movie.cinemaChain}"),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                const Text("Date: "),
-                TextButton(
-                  onPressed: () async {
-                    final date = await showDatePicker(
-                      context: context,
-                      initialDate: _selectedDate,
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(const Duration(days: 30)),
-                    );
-                    if (date != null) {
-                      setState(() {
-                        _selectedDate = date;
-                      });
-                    }
-                  },
-                  child: Text(
-                    "${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}",
-                    style: TextStyle(color: Colors.red.shade700),
-                  ),
+          ),
+          const SizedBox(height: 12),
+          Text("Movie: ${widget.movie.title}"),
+          Text("Genre: ${widget.movie.genre}"),
+          Text("Duration: ${widget.movie.duration}"),
+          Text("Rating: ${widget.movie.rating}"),
+          Text("Cinema: ${widget.movie.cinemaChain}"),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              const Text("Date: "),
+              TextButton(
+                onPressed: () async {
+                  final date = await showDatePicker(
+                    context: context,
+                    initialDate: _selectedDate,
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 30)),
+                  );
+                  if (date != null) {
+                    setState(() {
+                      _selectedDate = date;
+                    });
+                  }
+                },
+                child: Text(
+                  "${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}",
+                  style: const TextStyle(color: MyTheme.secondaryColor),
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildShowtimeSelection() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Select Showtime",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Select Showtime",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: widget.movie.showtimes.map((time) =>
-                  ChoiceChip(
-                    label: Text(time),
-                    selected: _selectedShowtime == time,
-                    onSelected: (selected) {
-                      if (selected) {
-                        setState(() {
-                          _selectedShowtime = time;
-                        });
-                      }
-                    },
-                    selectedColor: Colors.red.shade100,
-                    checkmarkColor: Colors.red.shade700,
-                  ),
-              ).toList(),
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: widget.movie.showtimes.map((time) =>
+                ChoiceChip(
+                  label: Text(time, style: const TextStyle(fontSize: 14,color: Colors.black),),
+                  selected: _selectedShowtime == time,
+                  onSelected: (bool selected) {
+                    if (selected) {
+                      setState(() {
+                        _selectedShowtime = time;
+                      });
+                    }
+                  },
+                  selectedColor: MyTheme.secondaryColor,
+                  checkmarkColor: MyTheme.secondaryColor,
+                ),
+            ).toList(),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildCustomerDetails() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Customer Details",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Customer Details",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: "Full Name",
-                hintText: "Enter your name",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.person),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your name';
-                }
-                return null;
-              },
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _nameController,
+            decoration: const InputDecoration(
+              labelText: "Full Name",
+              hintText: "Enter your name",
+              border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.person),
             ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: "Email",
-                hintText: "Enter email address",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.email),
-              ),
-              keyboardType: TextInputType.emailAddress,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter email address';
-                }
-                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                  return 'Please enter valid email address';
-                }
-                return null;
-              },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your name';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _emailController,
+            decoration: const InputDecoration(
+              labelText: "Email",
+              hintText: "Enter email address",
+              border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.email),
             ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _phoneController,
-              decoration: const InputDecoration(
-                labelText: "Phone Number",
-                hintText: "Enter phone number",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.phone),
-              ),
-              keyboardType: TextInputType.phone,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter phone number';
-                }
-                return null;
-              },
+            keyboardType: TextInputType.emailAddress,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter email address';
+              }
+              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                return 'Please enter valid email address';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _phoneController,
+            decoration: const InputDecoration(
+              labelText: "Phone Number",
+              hintText: "Enter phone number",
+              border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.phone),
             ),
-          ],
-        ),
+            keyboardType: TextInputType.phone,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter phone number';
+              }
+              return null;
+            },
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildTicketOptions() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Ticket Options",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Ticket Options",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text("Number of Tickets"),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          IconButton(
-                            onPressed: _numberOfTickets > 1
-                                ? () {
-                              setState(() {
-                                _numberOfTickets--;
-                              });
-                            }
-                                : null,
-                            icon: const Icon(Icons.remove_circle_outline),
-                          ),
-                          Text(
-                            '$_numberOfTickets',
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          IconButton(
-                            onPressed: _numberOfTickets < 10
-                                ? () {
-                              setState(() {
-                                _numberOfTickets++;
-                              });
-                            }
-                                : null,
-                            icon: const Icon(Icons.add_circle_outline),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text("Seat Type"),
-                      const SizedBox(height: 8),
-                      DropdownButtonFormField<String>(
-                        value: _selectedSeatType,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("Number of Tickets"),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: _numberOfTickets > 1
+                              ? () {
+                            setState(() {
+                              _numberOfTickets--;
+                            });
+                          }
+                              : null,
+                          icon: const Icon(Icons.remove_circle_outline,color: MyTheme.secondaryColor,),
                         ),
-                        items: ['Regular', 'Recliner', 'Premium', 'IMAX']
-                            .map((type) => DropdownMenuItem(
-                          value: type,
-                          child: Text(type),
-                        ))
-                            .toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedSeatType = value!;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
+                        Text(
+                          '$_numberOfTickets',
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        IconButton(
+                          onPressed: _numberOfTickets < 10
+                              ? () {
+                            setState(() {
+                              _numberOfTickets++;
+                            });
+                          }
+                              : null,
+                          icon: const Icon(Icons.add_circle_outline,color: MyTheme.secondaryColor,),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("Seat Type"),
+                    const SizedBox(height: 8),
+                    DropdownButtonFormField<String>(
+                      value: _selectedSeatType,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                      ),
+                      items: ['Regular', 'Recliner', 'Premium', 'IMAX'].map((type) => DropdownMenuItem(
+                        value: type,
+                        child: Text(type),
+                      )).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedSeatType = value!;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildPaymentMethod() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              spacing: 10,
-              children: [
-                const Text(
-                  "Payment Method",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            spacing: 10,
+            children: [
+              const Text(
+                "Payment Method",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
-                Flexible(
-                  child: CustomButton(
-                    height: 35.h,
-                    backgroundColor: AppColors.primaryBlue,
-                    onPressed: () {
-                      PaymentService().saveCard(context);
-                    },
-                    text: "Add Card",
-                  ),
+              ),
+              Flexible(
+                child: CustomButton(
+                  height: 35.h,
+                  backgroundColor: MyTheme.secondaryColor,
+                  onPressed: () {
+                    PaymentService().saveCard(context);
+                  },
+                  text: "Add Card",
                 ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _buildCardsSection(),
-          ],
-        ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildCardsSection(),
+        ],
       ),
     );
   }
 
   Widget _buildPriceBreakdown() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Price Breakdown",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Price Breakdown",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Tickets ($_numberOfTickets x \$${widget.movie.ticketPrice.toStringAsFixed(2)})"),
-                Text("\$${_baseTicketPrice.toStringAsFixed(2)}"),
-              ],
-            ),
-            if (_selectedSeatType != 'Regular') ...[
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("$_selectedSeatType Upgrade"),
-                  Text("\$${_seatUpgradeAmount.toStringAsFixed(2)}"),
-                ],
-              ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Tickets ($_numberOfTickets x \$${widget.movie.ticketPrice.toStringAsFixed(2)})"),
+              Text("\$${_baseTicketPrice.toStringAsFixed(2)}"),
             ],
+          ),
+          if (_selectedSeatType != 'Regular') ...[
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("Subtotal"),
-                Text("\$${_subtotal.toStringAsFixed(2)}"),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Ticket Tax (${Taxes.ticketFeeTax}%)"),
-                Text("\$${_ticketTax.toStringAsFixed(2)}"),
-              ],
-            ),
-            const Divider(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "Total Amount",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  "\$${_totalAmount.toStringAsFixed(2)}",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green.shade600,
-                  ),
-                ),
+                Text("$_selectedSeatType Upgrade"),
+                Text("\$${_seatUpgradeAmount.toStringAsFixed(2)}"),
               ],
             ),
           ],
-        ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Subtotal"),
+              Text("\$${_subtotal.toStringAsFixed(2)}"),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Ticket Tax (${Taxes.ticketFeeTax}%)"),
+              Text("\$${_ticketTax.toStringAsFixed(2)}"),
+            ],
+          ),
+          const Divider(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Total Amount",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                "\$${_totalAmount.toStringAsFixed(2)}",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green.shade600,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -524,7 +580,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
             ) :
             "Confirm Booking & Pay"}",
             height: 54.h,
-            backgroundColor: const Color(0xff3862F8),
+            backgroundColor: MyTheme.secondaryColor,
             textColor: Colors.white,
             onPressed: state is MovieBookingLoading ? null : _processBooking,
           );
@@ -703,7 +759,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
         decoration: BoxDecoration(
           color: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
           border: isSelected
-              ? Border.all(color: const Color(0xff3862F8), width: 2)
+              ? Border.all(color: MyTheme.secondaryColor, width: 2)
               : Border.all(color: Colors.grey.shade300),
           borderRadius: BorderRadius.circular(8),
         ),
@@ -747,7 +803,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
                 const Icon(
                   Icons.check_circle,
                   size: 16,
-                  color: Color(0xff3862F8),
+                  color: MyTheme.secondaryColor
                 ),
               const SizedBox(width: 8),
               Icon(
@@ -772,8 +828,15 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
 
         return Container(
           decoration: BoxDecoration(
-            color: isDark ? Colors.grey.shade800 : Colors.white,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: BorderRadius.circular(5.r),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                blurRadius: 5,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -783,7 +846,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
               children: [
                 Text(
                   'Select Card',
-                  style: theme.textTheme.titleLarge?.copyWith(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
                 ),

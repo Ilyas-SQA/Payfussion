@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/presentations/home/tickets/train/train_payment_screen.dart';
 
@@ -113,7 +114,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen>
           tag: 'train-name-${widget.train.name}',
           child: Text(widget.train.name),
         ),
-        elevation: 0,
+        iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
       floatingActionButton: ScaleTransition(
         scale: _fabAnimation,
@@ -125,8 +126,8 @@ class _TrainDetailScreenState extends State<TrainDetailScreen>
               curve: Curves.easeInOut,
             );
           },
-          backgroundColor: MyTheme.primaryColor,
-          child: const Icon(Icons.keyboard_arrow_up),
+          backgroundColor: MyTheme.secondaryColor,
+          child: const Icon(Icons.keyboard_arrow_up, color: Colors.white),
         ),
       ),
       body: SingleChildScrollView(
@@ -170,74 +171,76 @@ class _TrainDetailScreenState extends State<TrainDetailScreen>
   }
 
   Widget _buildHeaderCard() {
-    return Card(
-      elevation: 8,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Hero(
-                    tag: 'train-icon-${widget.train.name}',
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: MyTheme.primaryColor.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: MyTheme.primaryColor.withOpacity(0.1),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Icon(
-                        Icons.train,
-                        size: 32,
-                        color: MyTheme.primaryColor,
-                      ),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Hero(
+                  tag: 'train-icon-${widget.train.name}',
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: MyTheme.secondaryColor.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: MyTheme.secondaryColor.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.train,
+                      size: 32,
+                      color: MyTheme.secondaryColor,
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: TweenAnimationBuilder<double>(
-                      duration: const Duration(milliseconds: 1000),
-                      tween: Tween(begin: 0, end: 1),
-                      builder: (context, value, child) {
-                        return Opacity(
-                          opacity: value,
-                          child: Transform.translate(
-                            offset: Offset(30 * (1 - value), 0),
-                            child: Text(
-                              widget.train.name,
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: TweenAnimationBuilder<double>(
+                    duration: const Duration(milliseconds: 1000),
+                    tween: Tween(begin: 0, end: 1),
+                    builder: (context, value, child) {
+                      return Opacity(
+                        opacity: value,
+                        child: Transform.translate(
+                          offset: Offset(30 * (1 - value), 0),
+                          child: Text(
+                            widget.train.name,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                      );
+                    },
                   ),
-                ],
-              ),
-              const SizedBox(height: 20),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
 
-              // Animated Detail Rows
-              ..._buildAnimatedDetailRows(),
-            ],
-          ),
+            // Animated Detail Rows
+            ..._buildAnimatedDetailRows(),
+          ],
         ),
       ),
     );
@@ -317,112 +320,121 @@ class _TrainDetailScreenState extends State<TrainDetailScreen>
   }
 
   Widget _buildDescriptionCard() {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.2) : Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Row(
-              children: [
-                Icon(Icons.description, color: MyTheme.primaryColor),
-                SizedBox(width: 8),
-                Text(
-                  "Description",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              child: Text(
-                widget.train.description,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.description, color: MyTheme.secondaryColor),
+              SizedBox(width: 8),
+              Text(
+                "Description",
                 style: TextStyle(
-                  height: 1.6,
-                  color: Colors.grey.shade200,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            child: Text(
+              widget.train.description,
+              style: const TextStyle(
+                height: 1.6,
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildAmenitiesCard() {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.2) : Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.star, color: Colors.amber.shade600),
-                const SizedBox(width: 8),
-                const Text(
-                  "Amenities",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.star, color: Colors.amber.shade600),
+              const SizedBox(width: 8),
+              const Text(
+                "Amenities",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            ...widget.train.amenities.asMap().entries.map((entry) {
-              final index = entry.key;
-              final amenity = entry.value;
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...widget.train.amenities.asMap().entries.map((entry) {
+            final index = entry.key;
+            final amenity = entry.value;
 
-              return TweenAnimationBuilder<double>(
-                duration: Duration(milliseconds: 300 + (index * 100)),
-                tween: Tween(begin: 0, end: 1),
-                builder: (context, value, child) {
-                  return Opacity(
-                    opacity: value,
-                    child: Transform.translate(
-                      offset: Offset(20 * (1 - value), 0),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          children: [
-                            AnimatedContainer(
-                              duration: Duration(milliseconds: 200 + (index * 50)),
-                              child: Icon(
-                                Icons.check_circle,
-                                size: 18,
-                                color: Colors.green.shade600,
-                              ),
+            return TweenAnimationBuilder<double>(
+              duration: Duration(milliseconds: 300 + (index * 100)),
+              tween: Tween(begin: 0, end: 1),
+              builder: (context, value, child) {
+                return Opacity(
+                  opacity: value,
+                  child: Transform.translate(
+                    offset: Offset(20 * (1 - value), 0),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        children: [
+                          AnimatedContainer(
+                            duration: Duration(milliseconds: 200 + (index * 50)),
+                            child: Icon(
+                              Icons.check_circle,
+                              size: 18,
+                              color: Colors.green.shade600,
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                amenity,
-                                style: const TextStyle(fontSize: 15),
-                              ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              amenity,
+                              style: const TextStyle(fontSize: 15),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                },
-              );
-            }).toList(),
-          ],
-        ),
+                  ),
+                );
+              },
+            );
+          }).toList(),
+        ],
       ),
     );
   }
@@ -462,7 +474,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen>
           );
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: MyTheme.primaryColor,
+          backgroundColor: MyTheme.secondaryColor,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
           elevation: 0,
@@ -503,7 +515,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen>
             child: Icon(
               icon,
               size: 18,
-              color: Colors.grey.shade600,
+              color: MyTheme.secondaryColor,
             ),
           ),
           const SizedBox(width: 12),
@@ -513,9 +525,8 @@ class _TrainDetailScreenState extends State<TrainDetailScreen>
               children: [
                 Text(
                   label,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey.shade200,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
                     fontSize: 13,
                   ),
                 ),

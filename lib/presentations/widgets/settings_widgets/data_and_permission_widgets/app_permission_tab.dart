@@ -27,14 +27,14 @@ class AppPermissionsTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'App Permissions',
-            style: AppStyles.sectionTitleStyle(context, color: Theme.of(context).secondaryHeaderColor,),
+            style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Control which features and device capabilities PayFusion can access.',
-            style: AppStyles.bodyTextStyle(context),
+            style: TextStyle(fontSize: 12),
           ),
           const SizedBox(height: 24),
 

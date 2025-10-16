@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/presentations/home/tickets/train/train_detail_screen.dart';
 
@@ -25,6 +26,7 @@ class TrainListScreen extends StatelessWidget {
             },
           ),
         ],
+        iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
       body: BlocBuilder<TrainBloc, TrainState>(
         builder: (context, state) {
@@ -254,16 +256,15 @@ class _AnimatedTrainCardState extends State<AnimatedTrainCard> with TickerProvid
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  gradient: _isPressed ? LinearGradient(
-                    colors: [
-                      Colors.grey.shade50,
-                      Colors.grey.shade100,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  )
-                      : null,
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: BorderRadius.circular(5.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                      blurRadius: 5,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -276,13 +277,13 @@ class _AnimatedTrainCardState extends State<AnimatedTrainCard> with TickerProvid
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: _isPressed
-                                ? Colors.blue.shade200
-                                : Colors.blue.shade100,
+                                ? MyTheme.secondaryColor.withOpacity(0.2)
+                                : MyTheme.secondaryColor.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Icon(
                             Icons.train,
-                            color: MyTheme.primaryColor,
+                            color: MyTheme.secondaryColor,
                             size: 28,
                           ),
                         ),
@@ -310,8 +311,8 @@ class _AnimatedTrainCardState extends State<AnimatedTrainCard> with TickerProvid
                               delay: Duration(milliseconds: 100 + (widget.index * 50)),
                               child: Text(
                                 widget.train.route,
-                                style: TextStyle(
-                                  fontSize: 14,
+                                style: const TextStyle(
+                                  fontSize: 12,
                                 ),
                               ),
                             ),
@@ -333,10 +334,10 @@ class _AnimatedTrainCardState extends State<AnimatedTrainCard> with TickerProvid
                               delay: Duration(milliseconds: 200 + (widget.index * 50)),
                               child: Row(
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.access_time,
                                     size: 16,
-                                    color: Colors.grey.shade600,
+                                    color: MyTheme.secondaryColor,
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
