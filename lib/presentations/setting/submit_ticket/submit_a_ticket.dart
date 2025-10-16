@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:payfussion/core/theme/theme.dart';
 
 import '../../../logic/blocs/submit_a_ticket/submit_a_ticket_bloc.dart';
 import '../../../logic/blocs/submit_a_ticket/submit_a_ticket_event.dart';
@@ -162,7 +163,7 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SubmitATicketBloc, SubmitATicketState>(
-      listener: (context, state) {
+      listener: (BuildContext context, SubmitATicketState state) {
         if (state.isSuccess) {
           _clearForm();
           _successController.forward();
@@ -196,46 +197,14 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
           );
         }
       },
-      builder: (context, state) {
+      builder: (BuildContext context, SubmitATicketState state) {
         return Scaffold(
+          appBar: AppBar(
+            title: const Text("Create a Ticket"),
+          ),
           resizeToAvoidBottomInset: false,
           body: Column(
             children: [
-              SizedBox(height: 30.h),
-
-              // Animated Back Button
-              SlideTransition(
-                position: _slideAnimation,
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      _buildBackButton(),
-                    ],
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 20.h),
-
-              // Animated Title
-              SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(0, 0.2),
-                  end: Offset.zero,
-                ).animate(CurvedAnimation(
-                  parent: _slideController,
-                  curve: const Interval(0.2, 1.0, curve: Curves.easeOutCubic),
-                )),
-                child: ScaleTransition(
-                  scale: _scaleAnimation,
-                  child: _buildTitle(),
-                ),
-              ),
-
-              SizedBox(height: 60.h),
-
               // Animated Form
               Expanded(
                 child: SlideTransition(
@@ -259,88 +228,11 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
     );
   }
 
-  Widget _buildBackButton() {
-    return TweenAnimationBuilder<double>(
-      duration: const Duration(milliseconds: 600),
-      tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
-        return Transform.translate(
-          offset: Offset(-20 * (1 - value), 0),
-          child: Opacity(
-            opacity: value,
-            child: InkWell(
-              onTap: () {
-                context.go('/');
-              },
-              borderRadius: BorderRadius.circular(12.r),
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TweenAnimationBuilder<double>(
-                      duration: const Duration(milliseconds: 800),
-                      tween: Tween(begin: 0.0, end: 1.0),
-                      builder: (context, iconValue, child) {
-                        return Transform.scale(
-                          scale: iconValue,
-                          child: Icon(
-                            Icons.arrow_back_ios_new,
-                            color: const Color(0xff2D9CDB),
-                            size: 24.r,
-                          ),
-                        );
-                      },
-                    ),
-                    SizedBox(width: 2.w),
-                    Text(
-                      'Back',
-                      style: TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontSize: 20.sp,
-                        color: const Color(0xff2D9CDB),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildTitle() {
-    return TweenAnimationBuilder<double>(
-      duration: const Duration(milliseconds: 800),
-      tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
-        return Transform.translate(
-          offset: Offset(0, 20 * (1 - value)),
-          child: Opacity(
-            opacity: value,
-            child: Text(
-              'Create a Ticket',
-              style: TextStyle(
-                fontFamily: 'Montserrat',
-                fontSize: 24.sp,
-                color: const Color(0xff2D9CDB),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildForm(SubmitATicketState state) {
     return AnimatedBuilder(
       animation: _shakeAnimation,
-      builder: (context, child) {
-        final shakeOffset = _shakeAnimation.value * 10 *
+      builder: (BuildContext context, Widget? child) {
+        final double shakeOffset = _shakeAnimation.value * 10 *
             (1 - _shakeAnimation.value) *
             (2 * (_shakeAnimation.value * 10).floor() - 1);
 
@@ -370,7 +262,7 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
                               _CustomTextField(
                                 controller: _titleController,
                                 hintText: 'Enter your subject',
-                                validator: (value) {
+                                validator: (String? value) {
                                   if (value == null || value.trim().isEmpty) {
                                     return 'Title is required.';
                                   }
@@ -393,7 +285,7 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
                   TweenAnimationBuilder<double>(
                     duration: const Duration(milliseconds: 800),
                     tween: Tween(begin: 0.0, end: 1.0),
-                    builder: (context, value, child) {
+                    builder: (BuildContext context, double value, Widget? child) {
                       return Transform.translate(
                         offset: Offset(30 * (1 - value), 0),
                         child: Opacity(
@@ -407,7 +299,7 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
                                 controller: _descriptionController,
                                 hintText: 'Enter your description',
                                 maxLines: 10,
-                                validator: (value) {
+                                validator: (String? value) {
                                   if (value == null || value.trim().isEmpty) {
                                     return 'Description is required.';
                                   }
@@ -639,9 +531,6 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
   }
 }
 
-// ============================================================================
-// CUSTOM WIDGETS
-// ============================================================================
 class _CustomTextField extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
@@ -659,8 +548,7 @@ class _CustomTextField extends StatefulWidget {
   State<_CustomTextField> createState() => _CustomTextFieldState();
 }
 
-class _CustomTextFieldState extends State<_CustomTextField>
-    with SingleTickerProviderStateMixin {
+class _CustomTextFieldState extends State<_CustomTextField> with SingleTickerProviderStateMixin {
   late AnimationController _focusController;
   late Animation<double> _focusAnimation;
   bool _isFocused = false;
@@ -688,61 +576,53 @@ class _CustomTextFieldState extends State<_CustomTextField>
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 400),
       tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Transform.scale(
           scale: 0.95 + (0.05 * value),
           child: AnimatedBuilder(
             animation: _focusAnimation,
-            builder: (context, child) {
+            builder: (BuildContext context, Widget? child) {
               return Transform.scale(
                 scale: _focusAnimation.value,
-                child: Material(
-                  elevation: _isFocused ? 8 : 5,
-                  borderRadius: BorderRadius.circular(16.r),
-                  shadowColor: _isFocused
-                      ? Color(0xff2D9CDB).withOpacity(0.3)
-                      : Colors.black.withOpacity(0.1),
-                  child: Focus(
-                    onFocusChange: (hasFocus) {
-                      setState(() {
-                        _isFocused = hasFocus;
-                      });
-                      if (hasFocus) {
-                        _focusController.forward();
-                      } else {
-                        _focusController.reverse();
-                      }
-                    },
-                    child: TextFormField(
-                      controller: widget.controller,
-                      maxLines: widget.maxLines,
-                      validator: widget.validator,
-                      decoration: InputDecoration(
-                        hintText: widget.hintText,
-                        hintStyle: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontSize: 14.sp,
-                          color: Colors.grey,
+                child: Focus(
+                  onFocusChange: (bool hasFocus) {
+                    setState(() {
+                      _isFocused = hasFocus;
+                    });
+                    if (hasFocus) {
+                      _focusController.forward();
+                    } else {
+                      _focusController.reverse();
+                    }
+                  },
+                  child: TextFormField(
+                    controller: widget.controller,
+                    maxLines: widget.maxLines,
+                    validator: widget.validator,
+                    cursorColor: MyTheme.primaryColor,
+                    decoration: InputDecoration(
+                      hintText: widget.hintText,
+                      hintStyle: TextStyle(
+                        fontFamily: 'Montserrat',
+                        fontSize: 14.sp,
+                        color: Colors.grey,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.r),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.r),
+                        borderSide: const BorderSide(
+                          color: MyTheme.primaryColor,
+                          width: 2,
                         ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16.r),
-                          borderSide: BorderSide.none,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16.r),
-                          borderSide: BorderSide(
-                            color: Color(0xff2D9CDB),
-                            width: 2,
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: Theme.of(context).secondaryHeaderColor == Colors.white
-                            ? const Color(0xff525E6C)
-                            : Colors.white,
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 20.w,
-                          vertical: 15.h,
-                        ),
+                      ),
+                      filled: true,
+                      fillColor: Theme.of(context).secondaryHeaderColor == Colors.white ? const Color(0xff525E6C) : Colors.white,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 20.w,
+                        vertical: 15.h,
                       ),
                     ),
                   ),
@@ -798,7 +678,7 @@ class _CustomButtonState extends State<_CustomButton>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _pressAnimation,
-      builder: (context, child) {
+      builder: (BuildContext context, Widget? child) {
         return Transform.scale(
           scale: _pressAnimation.value,
           child: GestureDetector(
@@ -814,56 +694,44 @@ class _CustomButtonState extends State<_CustomButton>
               _pressController.reverse();
             },
             onTap: widget.isLoading ? null : widget.onTap,
-            child: Material(
-              elevation: widget.isLoading ? 2 : 5,
-              borderRadius: BorderRadius.circular(24.r),
-              shadowColor: widget.isLoading
-                  ? Colors.grey.withOpacity(0.3)
-                  : Color(0xff2D9CDB).withOpacity(0.4),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                height: 48.h,
-                width: 200.w,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24.r),
-                  gradient: LinearGradient(
-                    colors: widget.isLoading
-                        ? [Colors.grey, Colors.grey.shade400]
-                        : [const Color(0xff2D9CDB), const Color(0xff56CCF2)],
-                    stops: const [0.5, 1],
-                  ),
-                ),
-                child: Center(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    child: widget.isLoading
-                        ? TweenAnimationBuilder<double>(
-                      key: const ValueKey('loading'),
-                      duration: const Duration(milliseconds: 1000),
-                      tween: Tween(begin: 0.0, end: 1.0),
-                      builder: (context, value, child) {
-                        return Transform.rotate(
-                          angle: value * 2 * 3.14159,
-                          child: SizedBox(
-                            width: 20.w,
-                            height: 20.h,
-                            child: const CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              height: 48.h,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24.r),
+                color: MyTheme.primaryColor,
+              ),
+              child: Center(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: widget.isLoading
+                      ? TweenAnimationBuilder<double>(
+                    key: const ValueKey('loading'),
+                    duration: const Duration(milliseconds: 1000),
+                    tween: Tween(begin: 0.0, end: 1.0),
+                    builder: (BuildContext context, double value, Widget? child) {
+                      return Transform.rotate(
+                        angle: value * 2 * 3.14159,
+                        child: SizedBox(
+                          width: 20.w,
+                          height: 20.h,
+                          child: const CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
                           ),
-                        );
-                      },
-                    )
-                        : Text(
-                      key: const ValueKey('text'),
-                      widget.text,
-                      style: TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontSize: 18.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                        ),
+                      );
+                    },
+                  ) :
+                  Text(
+                    key: const ValueKey('text'),
+                    widget.text,
+                    style: TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontSize: 18.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
