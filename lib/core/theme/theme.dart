@@ -198,6 +198,7 @@ class MyTheme {
             fontWeight: FontWeight.bold,
           ),
           iconTheme: const IconThemeData(color: MyTheme.primaryColor),
+          scrolledUnderElevation: 0,
         ),
 
         elevatedButtonTheme: ElevatedButtonThemeData(
