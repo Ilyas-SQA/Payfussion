@@ -24,7 +24,7 @@ class AppButton extends StatelessWidget {
   final double? height;
   final double? width;
   final bool loading;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final Color color;
   final TextStyle textStyle;
   final bool isBorder;
