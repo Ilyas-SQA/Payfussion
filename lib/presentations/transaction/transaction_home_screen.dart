@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:payfussion/core/constants/image_url.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../data/models/Transactions_Modals/transaction_modal.dart';
@@ -439,21 +440,26 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen>
           });
         },
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 2.w),
+          padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 10),
           decoration: BoxDecoration(
-            color: isSelected ? MyTheme.primaryColor : Colors.white,
-            borderRadius: BorderRadius.circular(8.r),
-            border: Border.all(
-              color: isSelected ? MyTheme.primaryColor : Colors.grey.shade300,
-            ),
+            color: isSelected ? MyTheme.primaryColor : Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: BorderRadius.circular(5.r),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                blurRadius: 5,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
+
           child: Text(
             title,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 12.sp,
+              fontSize: 10.sp,
               fontWeight: FontWeight.w600,
-              color: isSelected ? Colors.white : Colors.black87,
+              color: isSelected ? Colors.white : Colors.white,
             ),
           ),
         ),
@@ -602,16 +608,9 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen>
           // Category buttons
           _buildCategoryButtons(),
           Expanded(
-            child: uid == null
-                ? _buildNoTransactionsView()
-                : StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-              stream: FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(uid)
-                  .collection(_getCollectionName())
-                  .orderBy(_getOrderByField(), descending: true)
-                  .snapshots(),
-              builder: (context, snapshot) {
+            child: uid == null ? _buildNoTransactionsView() : StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+              stream: FirebaseFirestore.instance.collection('users').doc(uid).collection(_getCollectionName()).orderBy(_getOrderByField(), descending: true).snapshots(),
+              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
                 // SHIMMER LOADING STATE
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return _buildShimmerLoading();
@@ -669,44 +668,34 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen>
   }
 
   Widget _buildTransactionHeader() {
-    if (isSearchActive) {
-      return Container(
-        width: 370.w,
+
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Container(
+        width: double.infinity,
         decoration: BoxDecoration(
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(10.r),
         ),
         child: Row(
+          spacing: 5,
           children: [
             Expanded(
+              flex: 5,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 height: 45.h,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: TextField(
+                child: AppTextormField(
                   controller: searchController,
-                  autofocus: true,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
+                  helpText: 'Search ${_getCategoryTitle().toLowerCase()}...',
+                  isPasswordField: false,
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: MyTheme.primaryColor,
+                    size: 20.sp,
                   ),
-                  decoration: InputDecoration(
-                    hintText: 'Search ${_getCategoryTitle().toLowerCase()}...',
-                    prefixIcon: const Icon(
-                      Icons.search,
-                      color: MyTheme.primaryColor,
-                    ),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 15.w,
-                      vertical: 10.h,
-                    ),
-                  ),
-                  onChanged: (value) {
+                  onChanged: (String value) {
                     setState(() {
                       searchQuery = value;
                     });
@@ -714,79 +703,15 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen>
                 ),
               ),
             ),
-            SizedBox(width: 10.w),
-            _buildIconButton(
-              TImageUrl.filter,
-              onTap: () {
-                setState(() {
-                  isSearchActive = false;
-                  searchQuery = '';
-                  searchController.clear();
-                });
-              },
-              icon: Icons.close,
+            Expanded(
+              flex: 1,
+              child: _buildIconButton(
+                TImageUrl.filter,
+                onTap: _showFilterBottomSheet,
+              ),
             ),
           ],
         ),
-      );
-    }
-
-    return Container(
-      width: 370.w,
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(10.r),
-      ),
-      child: Row(
-        spacing: 5,
-        children: [
-          Expanded(
-            flex: 6,
-            child: selectedCategory == TransactionCategory.transaction ?
-            PaymentCardSelector(
-              userId: FirebaseAuth.instance.currentUser?.uid ?? '',
-              onCardSelect: (PaymentCard card) {
-                debugPrint('Selected card last4: ${card.last4}');
-              },
-            )
-                : Container(
-              height: 50.h,
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-              child: Center(
-                child: Text(
-                  _getCategoryTitle(),
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: _buildIconButton(
-              TImageUrl.search,
-              onTap: () {
-                setState(() {
-                  isSearchActive = true;
-                });
-              },
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: _buildIconButton(
-              TImageUrl.filter,
-              onTap: _showFilterBottomSheet,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -804,7 +729,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen>
         width: 45.w,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: const Color(0xffFFFFFF),
+          color: MyTheme.primaryColor,
           borderRadius: BorderRadius.circular(8.r),
         ),
         child: icon != null ? Icon(icon, color: MyTheme.primaryColor) : SvgPicture.asset(iconPath),
@@ -844,7 +769,6 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen>
                     style: TextStyle(
                       fontFamily: 'Montserrat',
                       fontSize: 20.sp,
-                      color: const Color(0xff000000),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -894,11 +818,11 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen>
                       child: Column(
                         children: AnimationConfiguration.toStaggeredList(
                           duration: const Duration(milliseconds: 375),
-                          childAnimationBuilder: (widget) => SlideAnimation(
+                          childAnimationBuilder: (Widget widget) => SlideAnimation(
                             horizontalOffset: 30.0,
                             child: FadeInAnimation(child: widget),
                           ),
-                          children: transactionsForDate.map((transaction) {
+                          children: transactionsForDate.map((TransactionModel transaction) {
                             return Padding(
                               padding: EdgeInsets.symmetric(
                                 horizontal: 16.w,
@@ -932,7 +856,6 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen>
   }
 }
 
-// SHIMMER ANIMATION WIDGET
 class _ShimmerAnimation extends StatefulWidget {
   final Widget child;
 
@@ -999,7 +922,6 @@ class _ShimmerAnimationState extends State<_ShimmerAnimation> with SingleTickerP
   }
 }
 
-// Filter sheet remains the same
 class TransactionFilterSheet extends StatefulWidget {
   final Map<String, dynamic> initialFilters;
   final Function(Map<String, dynamic>) onApply;
