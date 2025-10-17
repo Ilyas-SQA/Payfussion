@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 
 class GovernmentPayFeeScreen extends StatefulWidget {
@@ -211,33 +212,13 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
         title: FadeTransition(
           opacity: _headerFade,
           child: SlideTransition(
             position: _headerSlide,
-            child: Text(
+            child: const Text(
               "Government Pay Fee",
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.primaryColor != Colors.white
-                    ? Colors.white
-                    : const Color(0xff2D3748),
-              ),
             ),
-          ),
-        ),
-        leading: FadeTransition(
-          opacity: _headerFade,
-          child: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: theme.primaryColor != Colors.white
-                  ? Colors.white
-                  : const Color(0xff2D3748),
-            ),
-            onPressed: () => Navigator.of(context).pop(),
           ),
         ),
       ),
@@ -253,7 +234,7 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
             children: [
               // Header Section
               Padding(
-                padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 32.h),
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -272,34 +253,21 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
                         color: theme.primaryColor != Colors.white
                             ? Colors.white.withOpacity(0.7)
                             : const Color(0xff718096),
-                        fontSize: 14,
+                        fontSize: 12,
                       ),
                     ),
                   ],
                 ),
               ),
-
+              SizedBox(height: 20.h),
               // Text Input Field
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24.w),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: theme.cardColor,
-                    borderRadius: BorderRadius.circular(16.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: AppTextormField(
-                    controller: _textIdController,
-                    prefixIcon: Icon(Icons.search),
-                    isPasswordField: false,
-                    helpText: "Enter Text ID or service name...",
-                  ),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: AppTextormField(
+                  controller: _textIdController,
+                  prefixIcon: Icon(Icons.search),
+                  isPasswordField: false,
+                  helpText: "Enter Text ID or service name...",
                 ),
               ),
 
@@ -324,9 +292,15 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
 
               // Suggestions or Continue Button
               Expanded(
-                child: showSuggestions
-                    ? _buildSuggestionsList(theme)
-                    : _buildContinueSection(theme),
+                child: showSuggestions ? _buildSuggestionsList(theme) : _buildContinueSection(theme),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 30,horizontal: 20),
+                child: AppButton(
+                  text: "Continue",
+                  onTap: _textIdController.text.trim().isEmpty ? null : () => _showComingSoonDialog(context),
+                  color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.2) : const Color(0xffE2E8F0),
+                ),
               ),
             ],
           ),
@@ -452,7 +426,7 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
         children: [
           Icon(
             Icons.account_balance,
-            size: 80.sp,
+            size: 50.sp,
             color: theme.primaryColor != Colors.white
                 ? Colors.white.withOpacity(0.3)
                 : const Color(0xffE2E8F0),
@@ -462,12 +436,11 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
             "Government Services",
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.w600,
-              color: theme.primaryColor != Colors.white
-                  ? Colors.white
-                  : const Color(0xff2D3748),
+              color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+              fontSize: 16,
             ),
           ),
-          SizedBox(height: 12.h),
+          SizedBox(height: 8.h),
           Text(
             "Enter your service ID or search for government services above",
             textAlign: TextAlign.center,
@@ -475,34 +448,7 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
               color: theme.primaryColor != Colors.white
                   ? Colors.white.withOpacity(0.7)
                   : const Color(0xff718096),
-            ),
-          ),
-          SizedBox(height: 40.h),
-          SizedBox(
-            width: double.infinity,
-            height: 56.h,
-            child: ElevatedButton(
-              onPressed: _textIdController.text.trim().isEmpty
-                  ? null
-                  : () => _showComingSoonDialog(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: MyTheme.primaryColor,
-                foregroundColor: Colors.white,
-                disabledBackgroundColor: theme.primaryColor != Colors.white
-                    ? Colors.white.withOpacity(0.2)
-                    : const Color(0xffE2E8F0),
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.r),
-                ),
-              ),
-              child: Text(
-                "Continue",
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
+              fontSize: 12,
             ),
           ),
         ],
