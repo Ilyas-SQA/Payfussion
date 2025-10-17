@@ -10,6 +10,8 @@ class AppTextormField extends StatelessWidget {
   final TextEditingController controller;
   final void Function(String)? onChanged;
   final Widget? prefixIcon;
+  final String? Function(String?)? validator;
+  final bool useGreenColor;
 
   const AppTextormField({
     super.key,
@@ -17,6 +19,8 @@ class AppTextormField extends StatelessWidget {
     required this.helpText,
     required this.controller, this.onChanged,
     this.prefixIcon,
+    this.validator,
+    this.useGreenColor = false,
   });
 
   TextInputType _getKeyboardType() {
@@ -35,10 +39,10 @@ class AppTextormField extends StatelessWidget {
       create: (_) => PasswordVisibilityCubit(),
       child: BlocBuilder<PasswordVisibilityCubit, bool>(
         builder: (context, isObscure) {
-          return TextField(
+          return TextFormField(
             controller: controller,
             keyboardType: _getKeyboardType(),
-            cursorColor: MyTheme.primaryColor,
+            cursorColor:  useGreenColor ? MyTheme.secondaryColor : MyTheme.primaryColor,
             textAlignVertical: TextAlignVertical.center,
             obscureText: isPasswordField ? isObscure : false,
             cursorHeight: 18,
@@ -62,7 +66,7 @@ class AppTextormField extends StatelessWidget {
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(8.r)),
                 borderSide: BorderSide(
-                  color: Colors.grey.shade300,
+                  color: useGreenColor ? MyTheme.secondaryColor : MyTheme.primaryColor,
                   width: 1,
                 ),
               ),
@@ -71,7 +75,7 @@ class AppTextormField extends StatelessWidget {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(8.r)),
                 borderSide: BorderSide(
-                  color: MyTheme.primaryColor,
+                  color: useGreenColor ? MyTheme.secondaryColor : MyTheme.primaryColor,
                   width: 1.5,
                 ),
               ),
@@ -102,12 +106,13 @@ class AppTextormField extends StatelessWidget {
                   isObscure
                       ? CupertinoIcons.eye_slash_fill
                       : Icons.remove_red_eye_outlined,
-                  color: MyTheme.primaryColor,
+                  color: useGreenColor ? MyTheme.secondaryColor : MyTheme.primaryColor,
                 ),
               )
                   : const SizedBox(),
             ),
             onChanged: onChanged,
+            validator: validator,
           );
         },
       ),
