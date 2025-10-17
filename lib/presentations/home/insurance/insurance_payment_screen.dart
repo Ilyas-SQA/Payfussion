@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:payfussion/presentations/widgets/custom_button.dart';
 import 'package:uuid/uuid.dart';
 import '../../../core/theme/theme.dart';
@@ -244,7 +245,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
                 } else if (state is InsurancePaymentProcessSuccess) {
                   // Show success message
                   ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
+                      const SnackBar(
                         content: Text('Payment completed successfully!'),
                         backgroundColor: Colors.green,
                         duration: Duration(seconds: 2),
@@ -273,7 +274,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
               backgroundColor: widget.color,
               elevation: 0,
               leading: IconButton(
-                icon: Icon(Icons.arrow_back_ios, color: Colors.white, size: 20.sp),
+                icon: Icon(Icons.arrow_back, color: Colors.white, size: 20.sp),
                 onPressed: () => context.pop(),
               ),
               flexibleSpace: FlexibleSpaceBar(
@@ -383,12 +384,15 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
       child: Container(
         padding: EdgeInsets.all(20.w),
         decoration: BoxDecoration(
-          color: widget.color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(
-            color: widget.color.withOpacity(0.3),
-            width: 1,
-          ),
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Row(
           children: [
@@ -471,19 +475,17 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
       )),
       child: FadeTransition(
         opacity: _fadeAnimation,
-        child: _buildInputField(
+        child: AppTextormField(
+          isPasswordField: false,
+          helpText: 'Policy Number',
           controller: _policyNumberController,
-          label: 'Policy Number',
-          hint: 'Enter your policy number',
-          icon: Icons.description,
-          isDark: isDark,
-          keyboardType: TextInputType.text,
+          useGreenColor: true,
           validator: (value) {
             if (value == null || value.isEmpty) return 'Please enter policy number';
             if (value.length < 6) return 'Policy number must be at least 6 characters';
             return null;
           },
-        ),
+        )
       ),
     );
   }
@@ -502,12 +504,15 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
         child: Container(
           padding: EdgeInsets.all(24.w),
           decoration: BoxDecoration(
-            color: isDark ? Colors.grey[900] : Colors.grey[50],
-            borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(
-              color: Colors.grey[300]!,
-              width: 1,
-            ),
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: BorderRadius.circular(5.r),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                blurRadius: 5,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Column(
             children: [
@@ -523,9 +528,11 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
               TextFormField(
                 controller: _premiumAmountController,
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Please enter premium amount';
+                  if (value == null || value.isEmpty)
+                    return 'Please enter premium amount';
                   final double? amount = double.tryParse(value);
-                  if (amount == null || amount <= 0) return 'Please enter a valid amount';
+                  if (amount == null || amount <= 0)
+                    return 'Please enter a valid amount';
                   return null;
                 },
                 style: TextStyle(
@@ -534,6 +541,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
                   color: widget.color,
                 ),
                 cursorColor: widget.color,
+                cursorHeight: 30,
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
@@ -557,100 +565,6 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInputField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    required IconData icon,
-    required bool isDark,
-    required TextInputType keyboardType,
-    String? Function(String?)? validator,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? Colors.grey[900] : Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        cursorColor: widget.color,
-        style: TextStyle(
-          fontSize: 16.sp,
-          fontWeight: FontWeight.w500,
-          color: isDark ? Colors.white : Colors.black,
-        ),
-        validator: validator,
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
-          labelText: label,
-          hintText: hint,
-          labelStyle: TextStyle(
-            fontSize: 14.sp,
-            color: widget.color,
-            fontWeight: FontWeight.w500,
-          ),
-          hintStyle: TextStyle(
-            fontSize: 14.sp,
-            color: Colors.grey[500],
-          ),
-          prefixIcon: Container(
-            margin: EdgeInsets.all(12.w),
-            padding: EdgeInsets.all(8.w),
-            decoration: BoxDecoration(
-              color: widget.color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8.r),
-            ),
-            child: Icon(
-              icon,
-              color: widget.color,
-              size: 20.sp,
-            ),
-          ),
-          suffixIcon: ValueListenableBuilder<TextEditingValue>(
-            valueListenable: controller,
-            builder: (context, value, child) {
-              if (value.text.isEmpty) return const SizedBox();
-              return IconButton(
-                icon: Icon(Icons.clear, size: 18.sp, color: Colors.grey[600]),
-                onPressed: () => controller.clear(),
-              );
-            },
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16.r),
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16.r),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16.r),
-            borderSide: BorderSide(color: widget.color, width: 2),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16.r),
-            borderSide: const BorderSide(color: Colors.red, width: 1),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16.r),
-            borderSide: const BorderSide(color: Colors.red, width: 2),
-          ),
-          filled: true,
-          fillColor: isDark ? Colors.grey[900] : Colors.white,
         ),
       ),
     );
@@ -734,8 +648,15 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
         final bool isDark = theme.brightness == Brightness.dark;
         return Container(
           decoration: BoxDecoration(
-            color: isDark ? MyTheme.darkBackgroundColor : Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: BorderRadius.circular(5.r),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                blurRadius: 5,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Padding(
             padding: EdgeInsets.all(24.w),
@@ -759,6 +680,8 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
                   'Select Payment Card',
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black,
+                    fontSize: 18,
                   ),
                 ),
                 20.verticalSpace,
@@ -1044,33 +967,22 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
         width: double.infinity,
         padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
-          color: isDark ? Colors.grey[900] : Colors.white,
-          borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(
-            color: isSelected ? widget.color : Colors.grey[300]!,
-            width: isSelected ? 2 : 1,
-          ),
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
         child: Row(
           children: [
-            Container(
-              padding: EdgeInsets.all(12.w),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              child: Image.asset(
-                card.brandIconPath,
-                height: 24.h,
-                width: 32.w,
-              ),
+            Image.asset(
+              card.brandIconPath,
+              height: 24.h,
+              width: 32.w,
             ),
             16.horizontalSpace,
             Expanded(
