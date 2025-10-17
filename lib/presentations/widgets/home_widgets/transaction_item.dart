@@ -61,159 +61,152 @@ class TransactionItem extends StatelessWidget {
         ? moneyValue.replaceAll('-', '')
         : moneyValue;
 
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(15.r),
-      elevation: 2,
-      child: Container(
-        height: 85.h,
-        width: 358.w,
-        decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: BorderRadius.circular(16.r),
-          boxShadow: [
-            const BoxShadow(
-              color: Colors.black26,
-              blurRadius: 5,
-              offset: Offset(1, 1),
-            ),
-          ],
-        ),
-        child: Row(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(left: 15.w),
-              child: Container(
-                height: 52.h,
-                width: 52.w,
-                decoration: BoxDecoration(
-                  color: MyTheme.primaryColor,
-                  borderRadius: BorderRadius.circular(10.r),
-                ),
-                child: Image.asset(
-                  iconPath,
-                  color: theme.primaryColor,
-                  scale: 0.8,
-                ),
-              ),
-            ),
-            SizedBox(width: 15.w),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    heading,
-                    style: TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontSize: 16.sp,
-                      color: theme.secondaryHeaderColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+    return Container(
+      height: 80.h,
+      width: 358.w,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          const Icon(
+            Icons.credit_card,
+            color: MyTheme.primaryColor,
+            size: 35,
+          ),
+          SizedBox(width: 15.w),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  heading,
+                  style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontSize: 14.sp,
+                    color: theme.secondaryHeaderColor,
+                    fontWeight: FontWeight.bold,
                   ),
-                  SizedBox(height: 5.h),
-                  Row(
-                    children: <Widget>[
-                      Text(
-                        "ID: ",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 5.h),
+                Row(
+                  children: <Widget>[
+                    Text(
+                      "ID: ",
+                      style: TextStyle(
+                        fontFamily: 'Montserrat',
+                        fontSize: 10.sp,
+                        color: theme.secondaryHeaderColor.withOpacity(0.6),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Flexible(
+                      child: Text(
+                        transactionId,
                         style: TextStyle(
                           fontFamily: 'Montserrat',
-                          fontSize: 12.sp,
-                          color: theme.secondaryHeaderColor.withOpacity(0.6),
+                          fontSize: 10.sp,
+                          color: theme.secondaryHeaderColor,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      Flexible(
-                        child: Text(
-                          transactionId,
-                          style: TextStyle(
-                            fontFamily: 'Montserrat',
-                            fontSize: 12.sp,
-                            color: theme.secondaryHeaderColor,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 5.h),
+                Row(
+                  children: <Widget>[
+                    Icon(
+                      Icons.access_time_rounded,
+                      size: 12.sp,
+                      color: theme.secondaryHeaderColor.withOpacity(0.6),
+                    ),
+                    SizedBox(width: 4.w),
+                    Text(
+                      "$date • $time",
+                      style: TextStyle(
+                        fontFamily: 'Montserrat',
+                        fontSize: 11.sp,
+                        color: theme.secondaryHeaderColor.withOpacity(0.6),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(right: 15.w),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                Text(
+                  "$amountPrefix $displayAmount",
+                  style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontSize: 14.sp,
+                    color: amountColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                Container(
+                  height: 22.h,
+                  padding: EdgeInsets.all(5.w),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: BorderRadius.circular(5.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                        blurRadius: 5,
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
-                  SizedBox(height: 5.h),
-                  Row(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Icon(
-                        Icons.access_time_rounded,
-                        size: 12.sp,
-                        color: theme.secondaryHeaderColor.withOpacity(0.6),
+                      Container(
+                        width: 6.w,
+                        height: 6.h,
+                        decoration: BoxDecoration(
+                          color: statusColor,
+                          shape: BoxShape.circle,
+                        ),
                       ),
                       SizedBox(width: 4.w),
                       Text(
-                        "$date • $time",
+                        status,
                         style: TextStyle(
                           fontFamily: 'Montserrat',
-                          fontSize: 11.sp,
-                          color: theme.secondaryHeaderColor.withOpacity(0.6),
-                          fontWeight: FontWeight.w500,
+                          fontSize: 12.sp,
+                          color: statusColor,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            Padding(
-              padding: EdgeInsets.only(right: 15.w),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  Text(
-                    "$amountPrefix $displayAmount",
-                    style: TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontSize: 16.sp,
-                      color: amountColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  Container(
-                    height: 22.h,
-                    padding: EdgeInsets.symmetric(horizontal: 8.w),
-                    decoration: BoxDecoration(
-                      color: statusBackground,
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Container(
-                          width: 6.w,
-                          height: 6.h,
-                          decoration: BoxDecoration(
-                            color: statusColor,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        SizedBox(width: 4.w),
-                        Text(
-                          status,
-                          style: TextStyle(
-                            fontFamily: 'Montserrat',
-                            fontSize: 12.sp,
-                            color: statusColor,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
