@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -129,15 +132,11 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
 
   AppBar _buildAppBar() {
     return AppBar(
-      title: Hero(
+      title: const Hero(
         tag: 'payment-title',
-        child: Material(
-          color: Colors.transparent,
-          child: const Text("Book Ticket"),
-        ),
+        child: Text("Book Ticket"),
       ),
-      elevation: 0,
-      backgroundColor: Colors.transparent,
+      iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
     );
   }
 
@@ -207,7 +206,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
                 onPressed: _selectDate,
                 child: Text(
                   "${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}",
-                  style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.w600),
+                  style: const TextStyle(color: MyTheme.secondaryColor, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -301,9 +300,18 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
     required List<Widget> children,
     Widget? titleWidget,
   }) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -311,7 +319,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
           children: [
             titleWidget ?? Row(
               children: [
-                Icon(icon, color: Colors.blue.shade700, size: 20),
+                Icon(icon, color: MyTheme.secondaryColor, size: 20),
                 const SizedBox(width: 8),
                 Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               ],
@@ -330,7 +338,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
       child: Row(
         children: [
           Text("$label: ", style: TextStyle(color: Colors.grey.shade600)),
-          Flexible(child: Text(value, style: const TextStyle(fontWeight: FontWeight.w500))),
+          Flexible(child: Text(value, style: const TextStyle(fontWeight: FontWeight.w500,fontSize: 12))),
         ],
       ),
     );
@@ -351,14 +359,11 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
           offset: Offset(20 * (1 - value), 0),
           child: Opacity(
             opacity: value,
-            child: TextFormField(
+            child: AppTextormField(
               controller: controller,
-              keyboardType: keyboardType,
-              decoration: InputDecoration(
-                labelText: label,
-                border: const OutlineInputBorder(),
-                prefixIcon: Icon(icon),
-              ),
+              prefixIcon: Icon(icon,color: MyTheme.secondaryColor,),
+              helpText: label,
+              useGreenColor: true,
               validator: validator,
             ),
           ),

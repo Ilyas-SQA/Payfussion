@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:payfussion/services/payment_service.dart';
 import 'package:uuid/uuid.dart';
-
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/tax.dart';
 import '../../../../data/models/card/card_model.dart';
@@ -62,7 +63,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
   double get _classUpgradeAmount {
     if (_selectedClass == 'Economy') return 0.0;
     double basePrice = widget.flight.basePrice;
-    double classMultiplier = _getClassMultiplier(_selectedClass) - 1; // Subtract 1 to get only the upgrade cost
+    double classMultiplier = _getClassMultiplier(_selectedClass) - 1;
     return basePrice * classMultiplier * _numberOfPassengers;
   }
 
@@ -96,13 +97,13 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Book Flight Ticket"),
+        iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
       body: MultiBlocListener(
         listeners: [
           BlocListener<FlightBookingBloc, FlightBookingState>(
-            listener: (context, state) {
+            listener: (BuildContext context, FlightBookingState state) {
               if (state is FlightBookingSuccess) {
-                // Add notification when flight booking is successful
                 _addFlightNotification(
                   success: true,
                 );
@@ -115,7 +116,6 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
                 );
                 Navigator.of(context).popUntil((route) => route.isFirst);
               } else if (state is FlightBookingError) {
-                // Add notification when flight booking fails
                 _addFlightNotification(
                   success: false,
                   errorMessage: state.message,
@@ -133,7 +133,6 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
           BlocListener<NotificationBloc, NotificationState>(
             listener: (context, state) {
               if (state is NotificationError) {
-                // Handle notification error silently or log it
                 print('Notification error: ${state.message}');
               }
             },
@@ -197,7 +196,18 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
   }
 
   Widget _buildFlightSummary() {
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -236,7 +246,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
                   },
                   child: Text(
                     "${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}",
-                    style: TextStyle(color: Colors.blue.shade700),
+                    style: const TextStyle(color: MyTheme.secondaryColor),
                   ),
                 ),
               ],
@@ -248,7 +258,18 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
   }
 
   Widget _buildPassengerDetails() {
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -262,15 +283,13 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            TextFormField(
+            AppTextormField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: "Full Name",
-                hintText: "Enter passenger name",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.person),
-              ),
-              validator: (value) {
+              helpText: "Full Name",
+              isPasswordField: false,
+              prefixIcon: const Icon(Icons.person,color: MyTheme.secondaryColor,),
+              useGreenColor: true,
+              validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter passenger name';
                 }
@@ -278,16 +297,12 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
               },
             ),
             const SizedBox(height: 16),
-            TextFormField(
+            AppTextormField(
               controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: "Email",
-                hintText: "Enter email address",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.email),
-              ),
-              keyboardType: TextInputType.emailAddress,
-              validator: (value) {
+              helpText: "Email",
+              prefixIcon: const Icon(Icons.email,color: MyTheme.secondaryColor,),
+              useGreenColor: true,
+              validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter email address';
                 }
@@ -298,16 +313,12 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
               },
             ),
             const SizedBox(height: 16),
-            TextFormField(
+            AppTextormField(
               controller: _phoneController,
-              decoration: const InputDecoration(
-                labelText: "Phone Number",
-                hintText: "Enter phone number",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.phone),
-              ),
-              keyboardType: TextInputType.phone,
-              validator: (value) {
+              helpText: "Phone Number",
+              prefixIcon: const Icon(Icons.phone,color: MyTheme.secondaryColor,),
+              useGreenColor: true,
+              validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter phone number';
                 }
@@ -321,7 +332,18 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
   }
 
   Widget _buildFlightOptions() {
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -346,28 +368,24 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
                       Row(
                         children: [
                           IconButton(
-                            onPressed: _numberOfPassengers > 1
-                                ? () {
+                            onPressed: _numberOfPassengers > 1 ? () {
                               setState(() {
                                 _numberOfPassengers--;
                               });
-                            }
-                                : null,
-                            icon: const Icon(Icons.remove_circle_outline),
+                            } : null,
+                            icon: const Icon(Icons.remove_circle_outline,color: MyTheme.secondaryColor,),
                           ),
                           Text(
                             '$_numberOfPassengers',
                             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           IconButton(
-                            onPressed: _numberOfPassengers < 9
-                                ? () {
+                            onPressed: _numberOfPassengers < 9 ? () {
                               setState(() {
                                 _numberOfPassengers++;
                               });
-                            }
-                                : null,
-                            icon: const Icon(Icons.add_circle_outline),
+                            } : null,
+                            icon: const Icon(Icons.add_circle_outline,color: MyTheme.secondaryColor,),
                           ),
                         ],
                       ),
@@ -385,12 +403,10 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                         ),
-                        items: ['Economy', 'Premium Economy', 'Business', 'First Class']
-                            .map((cls) => DropdownMenuItem(
+                        items: ['Economy', 'Premium Economy', 'Business', 'First Class'].map((cls) => DropdownMenuItem(
                           value: cls,
                           child: Text(cls),
-                        ))
-                            .toList(),
+                        )).toList(),
                         onChanged: (value) {
                           setState(() {
                             _selectedClass = value!;
@@ -409,7 +425,18 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
   }
 
   Widget _buildPaymentMethod() {
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -429,7 +456,8 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
                 Flexible(
                   child: CustomButton(
                     height: 35.h,
-                    backgroundColor: AppColors.primaryBlue,
+                    width: 100.w,
+                    backgroundColor: MyTheme.secondaryColor,
                     onPressed: () {
                       PaymentService().saveCard(context);
                     },
@@ -447,7 +475,18 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
   }
 
   Widget _buildFareBreakdown() {
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -529,7 +568,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
           return ElevatedButton(
             onPressed: state is FlightBookingLoading ? null : _processBooking,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue.shade700,
+              backgroundColor: MyTheme.secondaryColor,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
@@ -702,11 +741,15 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
         decoration: BoxDecoration(
-          color: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
-          border: isSelected
-              ? Border.all(color: const Color(0xff3862F8), width: 2)
-              : Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(8),
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: ListTile(
           contentPadding: EdgeInsets.zero,
@@ -748,7 +791,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
                 const Icon(
                   Icons.check_circle,
                   size: 16,
-                  color: Color(0xff3862F8),
+                  color: MyTheme.secondaryColor,
                 ),
               const SizedBox(width: 8),
               Icon(
@@ -773,8 +816,15 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
 
         return Container(
           decoration: BoxDecoration(
-            color: isDark ? Colors.grey.shade800 : Colors.white,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: BorderRadius.circular(5.r),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                blurRadius: 5,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -786,6 +836,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
                   'Select Card',
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black,
                   ),
                 ),
                 const SizedBox(height: 16),

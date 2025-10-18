@@ -220,7 +220,7 @@ class _AnimatedTrainCardState extends State<AnimatedTrainCard> with TickerProvid
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _scaleAnimation,
-      builder: (context, child) {
+      builder: (BuildContext context, Widget? child) {
         return Transform.scale(
           scale: _scaleAnimation.value,
           child: Card(
@@ -275,12 +275,6 @@ class _AnimatedTrainCardState extends State<AnimatedTrainCard> with TickerProvid
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: _isPressed
-                                ? MyTheme.secondaryColor.withOpacity(0.2)
-                                : MyTheme.secondaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
                           child: const Icon(
                             Icons.train,
                             color: MyTheme.secondaryColor,
@@ -301,7 +295,7 @@ class _AnimatedTrainCardState extends State<AnimatedTrainCard> with TickerProvid
                                   widget.train.name,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                    fontSize: 14,
                                   ),
                                 ),
                               ),

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/core/widget/appbutton/app_button.dart';
 
 import '../../../../data/models/tickets/flight_model.dart';
 import 'flight_payment_screen.dart';
@@ -12,8 +15,7 @@ class FlightDetailScreen extends StatefulWidget {
   State<FlightDetailScreen> createState() => _FlightDetailScreenState();
 }
 
-class _FlightDetailScreenState extends State<FlightDetailScreen>
-    with TickerProviderStateMixin {
+class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProviderStateMixin {
   late AnimationController _mainController;
   late AnimationController _buttonController;
   late AnimationController _routeController;
@@ -112,7 +114,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen>
       appBar: AppBar(
         title: AnimatedBuilder(
           animation: _fadeAnimation,
-          builder: (context, child) {
+          builder: (BuildContext context, Widget? child) {
             return FadeTransition(
               opacity: _fadeAnimation,
               child: SlideTransition(
@@ -125,12 +127,13 @@ class _FlightDetailScreenState extends State<FlightDetailScreen>
             );
           },
         ),
+        iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: AnimatedBuilder(
           animation: _fadeAnimation,
-          builder: (context, child) {
+          builder: (BuildContext context, Widget? child) {
             return FadeTransition(
               opacity: _fadeAnimation,
               child: SlideTransition(
@@ -143,79 +146,99 @@ class _FlightDetailScreenState extends State<FlightDetailScreen>
                       tag: "flight_${widget.flight.flightNumber}",
                       child: StaggeredAnimationCard(
                         delay: const Duration(milliseconds: 100),
-                        child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  TweenAnimationBuilder<double>(
-                                    duration: const Duration(milliseconds: 800),
-                                    tween: Tween(begin: 0.0, end: 1.0),
-                                    builder: (context, value, child) {
-                                      return Transform.rotate(
-                                        angle: value * 2 * 3.14159,
-                                        child: Transform.scale(
-                                          scale: 0.8 + (value * 0.2),
-                                          child: Icon(
-                                            Icons.flight,
-                                            size: 32,
-                                            color: Colors.blue.shade700,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        AnimatedTextReveal(
-                                          text: widget.flight.airline,
-                                          style: const TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          delay: const Duration(milliseconds: 300),
-                                        ),
-                                        AnimatedTextReveal(
-                                          text: "Flight ${widget.flight.flightNumber}",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                          ),
-                                          delay: const Duration(milliseconds: 500),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        DelayedAnimation(
-                                          delay: const Duration(milliseconds: 700),
-                                          child: AnimatedContainer(
-                                            duration: const Duration(milliseconds: 300),
-                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              color: _getFlightTypeColor(widget.flight.flightType),
-                                              borderRadius: BorderRadius.circular(4),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            borderRadius: BorderRadius.circular(5.r),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                                blurRadius: 5,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    TweenAnimationBuilder<double>(
+                                      duration: const Duration(milliseconds: 800),
+                                      tween: Tween(begin: 0.0, end: 1.0),
+                                      builder: (context, value, child) {
+                                        return Transform.rotate(
+                                          angle: value * 2 * 3.14159,
+                                          child: Transform.scale(
+                                            scale: 0.8 + (value * 0.2),
+                                            child: const Icon(
+                                              Icons.flight,
+                                              size: 32,
+                                              color: MyTheme.secondaryColor,
                                             ),
-                                            child: Text(
-                                              widget.flight.flightType,
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w500,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          AnimatedTextReveal(
+                                            text: widget.flight.airline,
+                                            style: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            delay: const Duration(milliseconds: 300),
+                                          ),
+                                          AnimatedTextReveal(
+                                            text: "Flight ${widget.flight.flightNumber}",
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                            ),
+                                            delay: const Duration(milliseconds: 500),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          DelayedAnimation(
+                                            delay: const Duration(milliseconds: 700),
+                                            child: AnimatedContainer(
+                                              duration: const Duration(milliseconds: 300),
+                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                              decoration: BoxDecoration(
+                                                color: Theme.of(context).scaffoldBackgroundColor,
+                                                borderRadius: BorderRadius.circular(5.r),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                                                    blurRadius: 5,
+                                                    offset: const Offset(0, 4),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: Text(
+                                                widget.flight.flightType,
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-                              _buildAnimatedFlightRoute(),
-                              const SizedBox(height: 16),
-                              ..._buildAnimatedDetailRows(),
-                            ],
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+                                _buildAnimatedFlightRoute(),
+                                const SizedBox(height: 16),
+                                ..._buildAnimatedDetailRows(),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -226,52 +249,65 @@ class _FlightDetailScreenState extends State<FlightDetailScreen>
                     if (widget.flight.amenities.isNotEmpty) ...[
                       StaggeredAnimationCard(
                         delay: const Duration(milliseconds: 600),
-                        child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const AnimatedTextReveal(
-                                text: "Amenities",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                delay: Duration(milliseconds: 700),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            borderRadius: BorderRadius.circular(5.r),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                                blurRadius: 5,
+                                offset: const Offset(0, 4),
                               ),
-                              const SizedBox(height: 8),
-                              ...widget.flight.amenities.asMap().entries.map(
-                                    (entry) => DelayedAnimation(
-                                  delay: Duration(milliseconds: 800 + (entry.key * 100)),
-                                  child: SlideInAnimation(
-                                    direction: SlideDirection.left,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 2),
-                                      child: Row(
-                                        children: [
-                                          TweenAnimationBuilder<double>(
-                                            duration: Duration(milliseconds: 300 + (entry.key * 50)),
-                                            tween: Tween(begin: 0.0, end: 1.0),
-                                            builder: (context, value, child) {
-                                              return Transform.scale(
-                                                scale: value,
-                                                child: Icon(
-                                                  Icons.check,
-                                                  size: 16,
-                                                  color: Colors.green,
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(entry.value),
-                                        ],
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const AnimatedTextReveal(
+                                  text: "Amenities",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  delay: Duration(milliseconds: 700),
+                                ),
+                                const SizedBox(height: 8),
+                                ...widget.flight.amenities.asMap().entries.map(
+                                      (entry) => DelayedAnimation(
+                                    delay: Duration(milliseconds: 800 + (entry.key * 100)),
+                                    child: SlideInAnimation(
+                                      direction: SlideDirection.left,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 2),
+                                        child: Row(
+                                          children: [
+                                            TweenAnimationBuilder<double>(
+                                              duration: Duration(milliseconds: 300 + (entry.key * 50)),
+                                              tween: Tween(begin: 0.0, end: 1.0),
+                                              builder: (BuildContext context, double value, Widget? child) {
+                                                return Transform.scale(
+                                                  scale: value,
+                                                  child: const Icon(
+                                                    Icons.check,
+                                                    size: 16,
+                                                    color: Colors.green,
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(entry.value),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -290,8 +326,8 @@ class _FlightDetailScreenState extends State<FlightDetailScreen>
                               width: double.infinity,
                               child: AnimatedContainer(
                                 duration: const Duration(milliseconds: 300),
-                                child: ElevatedButton(
-                                  onPressed: () {
+                                child: AppButton(
+                                  onTap: () {
                                     _buttonController.forward().then((_) {
                                       _buttonController.reverse();
                                     });
@@ -317,26 +353,8 @@ class _FlightDetailScreenState extends State<FlightDetailScreen>
                                       ),
                                     );
                                   },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue.shade700,
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    elevation: 4,
-                                  ),
-                                  child: const Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.flight_takeoff),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        "Book Now",
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                    ],
-                                  ),
+                                  color: MyTheme.secondaryColor,
+                                  text: "Book Now",
                                 ),
                               ),
                             ),
@@ -379,13 +397,13 @@ class _FlightDetailScreenState extends State<FlightDetailScreen>
                         widget.flight.departureTime,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                          fontSize: 14,
                         ),
                       ),
                       Text(
                         widget.flight.departureAirport,
-                        style: TextStyle(
-                          fontSize: 14,
+                        style: const TextStyle(
+                          fontSize: 10,
                         ),
                       ),
                     ],
@@ -398,16 +416,16 @@ class _FlightDetailScreenState extends State<FlightDetailScreen>
                   children: [
                     RotationTransition(
                       turns: Tween<double>(begin: 0, end: 0.1).animate(_routeAnimation),
-                      child: Icon(
+                      child: const Icon(
                         Icons.flight_takeoff,
-                        color: Colors.blue.shade700,
+                        color: MyTheme.secondaryColor,
                         size: 24,
                       ),
                     ),
                     Text(
                       widget.flight.duration,
-                      style: TextStyle(
-                        fontSize: 12,
+                      style: const TextStyle(
+                        fontSize: 10,
                       ),
                     ),
                   ],
@@ -426,13 +444,13 @@ class _FlightDetailScreenState extends State<FlightDetailScreen>
                         widget.flight.arrivalTime,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                          fontSize: 14,
                         ),
                       ),
                       Text(
                         widget.flight.arrivalAirport,
-                        style: TextStyle(
-                          fontSize: 14,
+                        style: const TextStyle(
+                          fontSize: 10,
                         ),
                       ),
                     ],
@@ -459,8 +477,8 @@ class _FlightDetailScreenState extends State<FlightDetailScreen>
     }
 
     return details.asMap().entries.map((entry) {
-      final index = entry.key;
-      final detail = entry.value;
+      final int index = entry.key;
+      final (IconData, String, String) detail = entry.value;
 
       if (detail.$2 == "Base Price") {
         return DelayedAnimation(
@@ -470,7 +488,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen>
             detail.$2,
             AnimatedBuilder(
               animation: _priceCountAnimation,
-              builder: (context, child) {
+              builder: (BuildContext context, Widget? child) {
                 return Text(
                   "\$${_priceCountAnimation.value.toStringAsFixed(0)} per person",
                   style: TextStyle(
@@ -506,7 +524,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen>
               builder: (context, value, child) {
                 return Transform.scale(
                   scale: value,
-                  child: Icon(icon, size: 20, color: Colors.grey.shade600),
+                  child: Icon(icon, size: 20, color: MyTheme.secondaryColor),
                 );
               },
             ),
@@ -517,9 +535,8 @@ class _FlightDetailScreenState extends State<FlightDetailScreen>
                 children: [
                   Text(
                     label,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey.shade700,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   valueWidget,
@@ -530,19 +547,6 @@ class _FlightDetailScreenState extends State<FlightDetailScreen>
         ),
       ),
     );
-  }
-
-  Color _getFlightTypeColor(String flightType) {
-    switch (flightType.toLowerCase()) {
-      case 'international':
-        return Colors.purple.shade600;
-      case 'domestic':
-        return Colors.blue.shade600;
-      case 'regional':
-        return Colors.green.shade600;
-      default:
-        return Colors.grey.shade600;
-    }
   }
 }
 
@@ -562,8 +566,7 @@ class StaggeredAnimationCard extends StatefulWidget {
   State<StaggeredAnimationCard> createState() => _StaggeredAnimationCardState();
 }
 
-class _StaggeredAnimationCardState extends State<StaggeredAnimationCard>
-    with SingleTickerProviderStateMixin {
+class _StaggeredAnimationCardState extends State<StaggeredAnimationCard> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -635,8 +638,7 @@ class DelayedAnimation extends StatefulWidget {
   State<DelayedAnimation> createState() => _DelayedAnimationState();
 }
 
-class _DelayedAnimationState extends State<DelayedAnimation>
-    with SingleTickerProviderStateMixin {
+class _DelayedAnimationState extends State<DelayedAnimation> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
 
@@ -685,8 +687,7 @@ class AnimatedTextReveal extends StatefulWidget {
   State<AnimatedTextReveal> createState() => _AnimatedTextRevealState();
 }
 
-class _AnimatedTextRevealState extends State<AnimatedTextReveal>
-    with SingleTickerProviderStateMixin {
+class _AnimatedTextRevealState extends State<AnimatedTextReveal> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -745,8 +746,7 @@ class SlideInAnimation extends StatefulWidget {
   State<SlideInAnimation> createState() => _SlideInAnimationState();
 }
 
-class _SlideInAnimationState extends State<SlideInAnimation>
-    with SingleTickerProviderStateMixin {
+class _SlideInAnimationState extends State<SlideInAnimation> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _fadeAnimation;

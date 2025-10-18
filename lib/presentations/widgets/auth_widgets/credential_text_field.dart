@@ -15,7 +15,7 @@ class AppTextormField extends StatelessWidget {
 
   const AppTextormField({
     super.key,
-    required this.isPasswordField,
+    this.isPasswordField = false,
     required this.helpText,
     required this.controller, this.onChanged,
     this.prefixIcon,

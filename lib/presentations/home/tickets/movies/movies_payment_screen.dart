@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:uuid/uuid.dart';
-
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/tax.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../data/models/card/card_model.dart';
@@ -279,14 +278,11 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          TextFormField(
+          AppTextormField(
             controller: _nameController,
-            decoration: const InputDecoration(
-              labelText: "Full Name",
-              hintText: "Enter your name",
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.person),
-            ),
+            helpText: "Full Name",
+            prefixIcon: const Icon(Icons.person,color: MyTheme.secondaryColor,),
+            useGreenColor: true,
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter your name';
@@ -295,15 +291,11 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
             },
           ),
           const SizedBox(height: 16),
-          TextFormField(
+          AppTextormField(
             controller: _emailController,
-            decoration: const InputDecoration(
-              labelText: "Email",
-              hintText: "Enter email address",
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.email),
-            ),
-            keyboardType: TextInputType.emailAddress,
+            prefixIcon: const Icon(Icons.email,color: MyTheme.secondaryColor,),
+            helpText: "Email",
+            useGreenColor: true,
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter email address';
@@ -315,15 +307,11 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
             },
           ),
           const SizedBox(height: 16),
-          TextFormField(
+          AppTextormField(
             controller: _phoneController,
-            decoration: const InputDecoration(
-              labelText: "Phone Number",
-              hintText: "Enter phone number",
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.phone),
-            ),
-            keyboardType: TextInputType.phone,
+            helpText: "Phone Number",
+            prefixIcon: const Icon(Icons.phone,color: MyTheme.secondaryColor,),
+            useGreenColor: true,
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter phone number';
@@ -462,6 +450,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
               Flexible(
                 child: CustomButton(
                   height: 35.h,
+                  width: 100.w,
                   backgroundColor: MyTheme.secondaryColor,
                   onPressed: () {
                     PaymentService().saveCard(context);
@@ -757,11 +746,15 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
         decoration: BoxDecoration(
-          color: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
-          border: isSelected
-              ? Border.all(color: MyTheme.secondaryColor, width: 2)
-              : Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(8),
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: ListTile(
           contentPadding: EdgeInsets.zero,

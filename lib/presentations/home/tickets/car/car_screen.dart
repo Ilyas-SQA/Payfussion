@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
 import '../../../../logic/blocs/tickets/car/car_bloc.dart';
@@ -70,6 +71,7 @@ class _RideServiceListScreenState extends State<RideServiceListScreen>
             ),
           ),
         ],
+        iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
       body: BlocBuilder<RideBloc, RideState>(
         builder: (context, state) {
@@ -238,8 +240,8 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
       child: AnimatedBuilder(
         animation: _hoverController,
         builder: (context, child) {
-          final scale = 1.0 + (_hoverController.value * 0.02);
-          final elevation = 4.0 + (_hoverController.value * 4.0);
+          final double scale = 1.0 + (_hoverController.value * 0.02);
+          final double elevation = 4.0 + (_hoverController.value * 4.0);
 
           return Transform.scale(
             scale: scale,
@@ -253,10 +255,15 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: _isHovered
-                        ? Border.all(color: _getServiceColor(widget.ride.serviceType), width: 2)
-                        : null,
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: BorderRadius.circular(5.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                        blurRadius: 5,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -270,17 +277,10 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                             builder: (context, value, child) {
                               return Transform.rotate(
                                 angle: value * 2 * 3.14159,
-                                child: Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: _getServiceColor(widget.ride.serviceType).withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Icon(
-                                    _getServiceIcon(widget.ride.serviceType),
-                                    color: _getServiceColor(widget.ride.serviceType),
-                                    size: 28,
-                                  ),
+                                child: Icon(
+                                  _getServiceIcon(widget.ride.serviceType),
+                                  color: MyTheme.secondaryColor,
+                                  size: 28,
                                 ),
                               );
                             },
@@ -299,7 +299,7 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                                     widget.ride.driverName,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                                      fontSize: 14,
                                     ),
                                   ),
                                 ),
@@ -309,7 +309,7 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                                 "${widget.ride.carMake} ${widget.ride.carModel}",
                                 style: TextStyle(
                                   color: Colors.grey.shade300,
-                                  fontSize: 14,
+                                  fontSize: 12,
                                 ),
                               ),
                               const SizedBox(height: 2),
@@ -318,8 +318,15 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                     decoration: BoxDecoration(
-                                      color: _getServiceColor(widget.ride.serviceType),
-                                      borderRadius: BorderRadius.circular(4),
+                                      color: Theme.of(context).scaffoldBackgroundColor,
+                                      borderRadius: BorderRadius.circular(5.r),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                                          blurRadius: 5,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
                                     ),
                                     child: Text(
                                       widget.ride.serviceType,
@@ -356,7 +363,7 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                               const SizedBox(height: 4),
                               Text(
                                 "Available in: ${widget.ride.serviceAreas.take(2).join(', ')}",
-                                style: const TextStyle(color: MyTheme.primaryColor, fontSize: 11),
+                                style: const TextStyle(color: MyTheme.secondaryColor, fontSize: 11),
                               ),
                             ],
                           ),

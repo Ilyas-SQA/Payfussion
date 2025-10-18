@@ -278,7 +278,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen>
   }
 
   List<Widget> _buildAnimatedContent() {
-    List<Widget> content = [];
+    final List<Widget> content = [];
     int animationIndex = 0;
 
     // Description Card
@@ -442,16 +442,6 @@ class _TrainDetailScreenState extends State<TrainDetailScreen>
   Widget _buildBookNowButton() {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.blue.shade300,
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
       child: ElevatedButton(
         onPressed: () {
           HapticFeedback.mediumImpact();
@@ -509,8 +499,15 @@ class _TrainDetailScreenState extends State<TrainDetailScreen>
           Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(8),
+              color: Theme.of(context).scaffoldBackgroundColor,
+              borderRadius: BorderRadius.circular(5.r),
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                  blurRadius: 5,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Icon(
               icon,
@@ -527,14 +524,14 @@ class _TrainDetailScreenState extends State<TrainDetailScreen>
                   label,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 13,
+                    fontSize: 12,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   value,
                   style: const TextStyle(
-                    fontSize: 15,
+                    fontSize: 10,
                     fontWeight: FontWeight.w500,
                   ),
                 ),

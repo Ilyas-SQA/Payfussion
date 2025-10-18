@@ -58,6 +58,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
           )),
           child: Text(widget.ride.driverName),
         ),
+        iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
       body: FadeTransition(
         opacity: _controller,
@@ -114,7 +115,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
                   duration: const Duration(milliseconds: 1000),
                   curve: Curves.easeOutBack,
                   builder: (context, value, child) {
-                    final clampedValue = value.clamp(0.0, 1.0);
+                    final double clampedValue = value.clamp(0.0, 1.0);
                     return Transform.translate(
                       offset: Offset(0, 30 * (1 - clampedValue)),
                       child: Opacity(
@@ -151,130 +152,167 @@ class _RideDetailScreenState extends State<RideDetailScreen>
   }
 
   Widget _buildDriverCard() {
-    return Card(
-      elevation: 8,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  // Avatar
-                  TweenAnimationBuilder<double>(
-                    tween: Tween(begin: 0, end: 1),
-                    duration: const Duration(milliseconds: 600),
-                    builder: (context, scale, child) {
-                      return Transform.scale(
-                        scale: scale,
-                        child: Hero(
-                          tag: 'driver_avatar_${widget.ride.driverName}',
-                          child: Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: _getServiceColor(widget.ride.serviceType).withOpacity(0.3),
-                                  blurRadius: 10,
-                                  spreadRadius: 2,
-                                ),
-                              ],
-                            ),
-                            child: CircleAvatar(
-                              radius: 30,
-                              backgroundColor: _getServiceColor(widget.ride.serviceType),
-                              child: Text(
-                                widget.ride.driverName.substring(0, 2).toUpperCase(),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                // Avatar
+                TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: 1),
+                  duration: const Duration(milliseconds: 600),
+                  builder: (context, scale, child) {
+                    return Transform.scale(
+                      scale: scale,
+                      child: Hero(
+                        tag: 'driver_avatar_${widget.ride.driverName}',
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: _getServiceColor(widget.ride.serviceType).withOpacity(0.3),
+                                blurRadius: 10,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                          child: CircleAvatar(
+                            radius: 30,
+                            backgroundColor: _getServiceColor(widget.ride.serviceType),
+                            child: Text(
+                              widget.ride.driverName.substring(0, 2).toUpperCase(),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
                               ),
                             ),
                           ),
                         ),
-                      );
-                    },
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Name
-                        TweenAnimationBuilder<Offset>(
-                          tween: Tween(
-                            begin: const Offset(1, 0),
-                            end: Offset.zero,
-                          ),
-                          duration: const Duration(milliseconds: 600),
-                          builder: (context, offset, child) {
-                            return Transform.translate(
-                              offset: offset * 50,
-                              child: Text(
-                                widget.ride.driverName,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            );
-                          },
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Name
+                      TweenAnimationBuilder<Offset>(
+                        tween: Tween(
+                          begin: const Offset(1, 0),
+                          end: Offset.zero,
                         ),
+                        duration: const Duration(milliseconds: 600),
+                        builder: (context, offset, child) {
+                          return Transform.translate(
+                            offset: offset * 50,
+                            child: Text(
+                              widget.ride.driverName,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
 
-                        // Rating
-                        TweenAnimationBuilder<double>(
-                          tween: Tween(begin: 0, end: 1),
-                          duration: const Duration(milliseconds: 800),
-                          builder: (context, value, child) {
-                            final clampedValue = value.clamp(0.0, 1.0);
-                            return Row(
-                              children: [
-                                Transform.scale(
-                                  scale: clampedValue,
-                                  child: const Icon(Icons.star, size: 20, color: Colors.amber),
+                      // Rating
+                      TweenAnimationBuilder<double>(
+                        tween: Tween(begin: 0, end: 1),
+                        duration: const Duration(milliseconds: 800),
+                        builder: (context, value, child) {
+                          final clampedValue = value.clamp(0.0, 1.0);
+                          return Row(
+                            children: [
+                              Transform.scale(
+                                scale: clampedValue,
+                                child: const Icon(Icons.star, size: 20, color: Colors.amber),
+                              ),
+                              const SizedBox(width: 4),
+                              Opacity(
+                                opacity: clampedValue,
+                                child: Text(
+                                  "${widget.ride.rating} (${widget.ride.totalRides} rides)",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey.shade600,
+                                  ),
                                 ),
-                                const SizedBox(width: 4),
-                                Opacity(
-                                  opacity: clampedValue,
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+
+                      // Service type and availability
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TweenAnimationBuilder<double>(
+                            tween: Tween(begin: 0, end: 1),
+                            duration: const Duration(milliseconds: 1000),
+                            builder: (context, scale, child) {
+                              return Transform.scale(
+                                scale: scale,
+                                child: Container(
+                                  margin: const EdgeInsets.only(top: 4),
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: _getServiceColor(widget.ride.serviceType),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
                                   child: Text(
-                                    "${widget.ride.rating} (${widget.ride.totalRides} rides)",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.grey.shade600,
+                                    widget.ride.serviceType,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ),
-                              ],
-                            );
-                          },
-                        ),
-
-                        // Service type and availability
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
+                              );
+                            },
+                          ),
+                          if (widget.ride.isAvailable)
                             TweenAnimationBuilder<double>(
                               tween: Tween(begin: 0, end: 1),
-                              duration: const Duration(milliseconds: 1000),
+                              duration: const Duration(milliseconds: 1200),
                               builder: (context, scale, child) {
                                 return Transform.scale(
                                   scale: scale,
                                   child: Container(
-                                    margin: const EdgeInsets.only(top: 4),
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                     decoration: BoxDecoration(
-                                      color: _getServiceColor(widget.ride.serviceType),
-                                      borderRadius: BorderRadius.circular(4),
+                                      color: MyTheme.secondaryColor,
+                                      borderRadius: BorderRadius.circular(20),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: MyTheme.primaryColor.withOpacity(0.3),
+                                          blurRadius: 8,
+                                          spreadRadius: 1,
+                                        ),
+                                      ],
                                     ),
-                                    child: Text(
-                                      widget.ride.serviceType,
-                                      style: const TextStyle(
+                                    child: const Text(
+                                      "Available Now",
+                                      style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 12,
                                         fontWeight: FontWeight.w500,
@@ -284,88 +322,64 @@ class _RideDetailScreenState extends State<RideDetailScreen>
                                 );
                               },
                             ),
-                            if (widget.ride.isAvailable)
-                              TweenAnimationBuilder<double>(
-                                tween: Tween(begin: 0, end: 1),
-                                duration: const Duration(milliseconds: 1200),
-                                builder: (context, scale, child) {
-                                  return Transform.scale(
-                                    scale: scale,
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                      decoration: BoxDecoration(
-                                        color: MyTheme.primaryColor,
-                                        borderRadius: BorderRadius.circular(20),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: MyTheme.primaryColor.withOpacity(0.3),
-                                            blurRadius: 8,
-                                            spreadRadius: 1,
-                                          ),
-                                        ],
-                                      ),
-                                      child: const Text(
-                                        "Available Now",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // Detail rows
-              ...([
-                [Icons.directions_car, "Vehicle", "${widget.ride.carMake} ${widget.ride.carModel} ${widget.ride.carYear}"],
-                [Icons.palette, "Color", widget.ride.carColor],
-                [Icons.confirmation_number, "License Plate", widget.ride.licensePlate],
-                [Icons.phone, "Phone", widget.ride.phoneNumber],
-                [Icons.attach_money, "Base Rate", "\$${widget.ride.baseRate.toStringAsFixed(2)} per mile"],
-                [Icons.language, "Languages", widget.ride.languages.join(', ')],
-              ].asMap().entries.map((entry) {
-                final index = entry.key;
-                final detail = entry.value;
-                return TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 0, end: 1),
-                  duration: Duration(milliseconds: 400 + (index * 80)),
-                  builder: (context, value, child) {
-                    final clampedValue = value.clamp(0.0, 1.0);
-                    return Transform.translate(
-                      offset: Offset(20 * (1 - clampedValue), 0),
-                      child: Opacity(
-                        opacity: clampedValue,
-                        child: _buildDetailRow(
-                          detail[0] as IconData,
-                          detail[1] as String,
-                          detail[2] as String,
-                        ),
+                        ],
                       ),
-                    );
-                  },
-                );
-              }).toList()),
-            ],
-          ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+
+            // Detail rows
+            ...([
+              [Icons.directions_car, "Vehicle", "${widget.ride.carMake} ${widget.ride.carModel} ${widget.ride.carYear}"],
+              [Icons.palette, "Color", widget.ride.carColor],
+              [Icons.confirmation_number, "License Plate", widget.ride.licensePlate],
+              [Icons.phone, "Phone", widget.ride.phoneNumber],
+              [Icons.attach_money, "Base Rate", "\$${widget.ride.baseRate.toStringAsFixed(2)} per mile"],
+              [Icons.language, "Languages", widget.ride.languages.join(', ')],
+            ].asMap().entries.map((entry) {
+              final index = entry.key;
+              final detail = entry.value;
+              return TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0, end: 1),
+                duration: Duration(milliseconds: 400 + (index * 80)),
+                builder: (BuildContext context, double value, Widget? child) {
+                  final double clampedValue = value.clamp(0.0, 1.0);
+                  return Transform.translate(
+                    offset: Offset(20 * (1 - clampedValue), 0),
+                    child: Opacity(
+                      opacity: clampedValue,
+                      child: _buildDetailRow(
+                        detail[0] as IconData,
+                        detail[1] as String,
+                        detail[2] as String,
+                      ),
+                    ),
+                  );
+                },
+              );
+            }).toList()),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildServiceAreasCard() {
-    return Card(
-      elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -406,14 +420,14 @@ class _RideDetailScreenState extends State<RideDetailScreen>
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: Colors.blue.shade100,
+                          color: MyTheme.secondaryColor.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.blue.shade300),
+                          border: Border.all(color: MyTheme.secondaryColor),
                         ),
                         child: Text(
                           area,
-                          style: TextStyle(
-                            color: Colors.blue.shade700,
+                          style: const TextStyle(
+                            color: MyTheme.secondaryColor,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -430,9 +444,18 @@ class _RideDetailScreenState extends State<RideDetailScreen>
   }
 
   Widget _buildSpecialServicesCard() {
-    return Card(
-      elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -509,7 +532,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
               borderRadius: BorderRadius.circular(27),
               boxShadow: widget.ride.isAvailable ? [
                 BoxShadow(
-                  color: const Color(0xff3862F8).withOpacity(0.3),
+                  color: MyTheme.secondaryColor.withOpacity(0.3),
                   blurRadius: 15,
                   spreadRadius: 2,
                 ),
@@ -519,7 +542,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
               text: widget.ride.isAvailable ? "Book Ride" : "Driver Not Available",
               height: 54.h,
               backgroundColor: widget.ride.isAvailable
-                  ? MyTheme.primaryColor
+                  ? MyTheme.secondaryColor
                   : Colors.grey.shade400,
               textColor: Colors.white,
               onPressed: widget.ride.isAvailable ? () {
@@ -552,7 +575,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 20, color: MyTheme.primaryColor,),
+          Icon(icon, size: 20, color: MyTheme.secondaryColor,),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -560,11 +583,12 @@ class _RideDetailScreenState extends State<RideDetailScreen>
               children: [
                 Text(
                   label,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14
                   ),
                 ),
-                Text(value, style: const TextStyle(fontSize: 16)),
+                Text(value, style: const TextStyle(fontSize: 12)),
               ],
             ),
           ),

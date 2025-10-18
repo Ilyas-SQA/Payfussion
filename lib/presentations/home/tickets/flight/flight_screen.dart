@@ -17,6 +17,7 @@ class FlightListScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("US Flight Services"),
+        iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -27,7 +28,7 @@ class FlightListScreen extends StatelessWidget {
         ],
       ),
       body: BlocBuilder<FlightBloc, FlightState>(
-        builder: (context, state) {
+        builder: (BuildContext context, FlightState state) {
           if (state is FlightLoading) {
             return const Center(
               child: Column(
@@ -206,12 +207,12 @@ class _AnimatedFlightCardState extends State<AnimatedFlightCard> with TickerProv
             margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             decoration: BoxDecoration(
               color: Theme.of(context).scaffoldBackgroundColor,
-              borderRadius: BorderRadius.circular(16.r),
+              borderRadius: BorderRadius.circular(5.r),
               boxShadow: [
-                const BoxShadow(
-                  color: Colors.black26,
+                BoxShadow(
+                  color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                   blurRadius: 5,
-                  offset: Offset(1, 1),
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -257,10 +258,6 @@ class _AnimatedFlightCardState extends State<AnimatedFlightCard> with TickerProv
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.shade100,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
                           child: TweenAnimationBuilder<double>(
                             duration: Duration(milliseconds: 500 + (widget.index * 100)),
                             tween: Tween(begin: 0.0, end: 1.0),
@@ -269,7 +266,7 @@ class _AnimatedFlightCardState extends State<AnimatedFlightCard> with TickerProv
                                 angle: value * 2 * 3.14159, // Full rotation
                                 child: const Icon(
                                   Icons.flight,
-                                  color: MyTheme.primaryColor,
+                                  color: MyTheme.secondaryColor,
                                   size: 28,
                                 ),
                               );
@@ -308,8 +305,15 @@ class _AnimatedFlightCardState extends State<AnimatedFlightCard> with TickerProv
                                   duration: const Duration(milliseconds: 300),
                                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                   decoration: BoxDecoration(
-                                    color: _getFlightTypeColor(widget.flight.flightType),
-                                    borderRadius: BorderRadius.circular(4),
+                                    color: Theme.of(context).scaffoldBackgroundColor,
+                                    borderRadius: BorderRadius.circular(5.r),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                                        blurRadius: 5,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
                                   ),
                                   child: Text(
                                     widget.flight.flightType,

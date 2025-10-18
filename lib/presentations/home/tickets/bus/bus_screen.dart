@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
-
 import '../../../../logic/blocs/tickets/bus/bus_bloc.dart';
 import '../../../../logic/blocs/tickets/bus/bus_event.dart';
 import '../../../../logic/blocs/tickets/bus/bus_state.dart';
@@ -75,6 +75,7 @@ class _BusListScreenState extends State<BusListScreen>
             },
           ),
         ],
+        iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
       body: BlocBuilder<BusBloc, BusState>(
         builder: (context, state) {
@@ -169,179 +170,180 @@ class _BusListScreenState extends State<BusListScreen>
                     child: AnimatedContainer(
                       duration: Duration(milliseconds: 300 + (index * 100)),
                       curve: Curves.easeOutBack,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        borderRadius: BorderRadius.circular(5.r),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                            blurRadius: 5,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
                       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                       child: Hero(
                         tag: 'bus_${bus.companyName}_${index}',
-                        child: Material(
-                          elevation: 0,
-                          color: Colors.transparent,
-                          child: Card(
-                            elevation: 4,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(12),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  PageRouteBuilder(
-                                    pageBuilder: (context, animation, secondaryAnimation) {
-                                      return BusDetailScreen(bus: bus);
-                                    },
-                                    transitionDuration: const Duration(milliseconds: 400),
-                                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                                      return SlideTransition(
-                                        position: Tween<Offset>(
-                                          begin: const Offset(1.0, 0.0),
-                                          end: Offset.zero,
-                                        ).animate(CurvedAnimation(
-                                          parent: animation,
-                                          curve: Curves.easeOutCubic,
-                                        )),
-                                        child: FadeTransition(
-                                          opacity: animation,
-                                          child: child,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
-                                padding: const EdgeInsets.all(16),
-                                child: Row(
-                                  children: [
-                                    TweenAnimationBuilder<double>(
-                                      tween: Tween<double>(begin: 0.0, end: 1.0),
-                                      duration: Duration(milliseconds: 600 + (index * 100)),
-                                      curve: Curves.elasticOut,
-                                      builder: (BuildContext context, double value, Widget? child) {
-                                        return Transform.scale(
-                                          scale: value,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(12),
-                                            decoration: BoxDecoration(
-                                              color: MyTheme.primaryColor.withOpacity(0.2),
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            child: const Icon(
-                                              Icons.directions_bus,
-                                              color: MyTheme.primaryColor,
-                                              size: 28,
-                                            ),
-                                          ),
-                                        );
-                                      },
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+                                  return BusDetailScreen(bus: bus);
+                                },
+                                transitionDuration: const Duration(milliseconds: 400),
+                                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                  return SlideTransition(
+                                    position: Tween<Offset>(
+                                      begin: const Offset(1.0, 0.0),
+                                      end: Offset.zero,
+                                    ).animate(CurvedAnimation(
+                                      parent: animation,
+                                      curve: Curves.easeOutCubic,
+                                    )),
+                                    child: FadeTransition(
+                                      opacity: animation,
+                                      child: child,
                                     ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          AnimatedDefaultTextStyle(
-                                            duration: const Duration(milliseconds: 300),
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                            ),
-                                            child: Text(bus.companyName),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          AnimatedDefaultTextStyle(
-                                            duration: const Duration(milliseconds: 300),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.all(16),
+                            child: Row(
+                              children: [
+                                TweenAnimationBuilder<double>(
+                                  tween: Tween<double>(begin: 0.0, end: 1.0),
+                                  duration: Duration(milliseconds: 600 + (index * 100)),
+                                  curve: Curves.elasticOut,
+                                  builder: (BuildContext context, double value, Widget? child) {
+                                    return Transform.scale(
+                                      scale: value,
+                                      child: const Icon(
+                                        Icons.directions_bus,
+                                        color: MyTheme.secondaryColor,
+                                        size: 28,
+                                      ),
+                                    );
+                                  },
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      AnimatedDefaultTextStyle(
+                                        duration: const Duration(milliseconds: 300),
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                        child: Text(bus.companyName),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      AnimatedDefaultTextStyle(
+                                        duration: const Duration(milliseconds: 300),
+                                        style: const TextStyle(
+                                          fontSize: 10,
+                                        ),
+                                        child: Text(bus.route),
+                                      ),
+                                      if (bus.via.isNotEmpty) ...[
+                                        const SizedBox(height: 2),
+                                        AnimatedOpacity(
+                                          duration: const Duration(milliseconds: 400),
+                                          opacity: 1.0,
+                                          child: Text(
+                                            "Via: ${bus.via}",
                                             style: TextStyle(
-                                              fontSize: 14,
+                                              color: Colors.grey.shade500,
+                                              fontSize: 12,
                                             ),
-                                            child: Text(bus.route),
                                           ),
-                                          if (bus.via.isNotEmpty) ...[
-                                            const SizedBox(height: 2),
-                                            AnimatedOpacity(
-                                              duration: const Duration(milliseconds: 400),
-                                              opacity: 1.0,
-                                              child: Text(
-                                                "Via: ${bus.via}",
-                                                style: TextStyle(
-                                                  color: Colors.grey.shade500,
-                                                  fontSize: 12,
+                                        ),
+                                      ],
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.access_time,
+                                            size: 16,
+                                            color: MyTheme.secondaryColor,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            "${bus.duration.inHours}h ${bus.duration.inMinutes % 60}m",
+                                            style: TextStyle(
+                                              color: Colors.grey.shade600,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          AnimatedContainer(
+                                            duration: const Duration(milliseconds: 300),
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context).scaffoldBackgroundColor,
+                                              borderRadius: BorderRadius.circular(5.r),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                                                  blurRadius: 5,
+                                                  offset: const Offset(0, 4),
                                                 ),
+                                              ],
+                                            ),
+                                            child: Text(
+                                              bus.busType,
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w500,
                                               ),
                                             ),
-                                          ],
-                                          const SizedBox(height: 4),
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.access_time,
-                                                size: 16,
-                                                color: Colors.grey.shade600,
-                                              ),
-                                              const SizedBox(width: 4),
-                                              Text(
-                                                "${bus.duration.inHours}h ${bus.duration.inMinutes % 60}m",
-                                                style: TextStyle(
-                                                  color: Colors.grey.shade600,
-                                                  fontSize: 12,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 12),
-                                              AnimatedContainer(
-                                                duration: const Duration(milliseconds: 300),
-                                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                                decoration: BoxDecoration(
-                                                  color: _getBusTypeColor(bus.busType),
-                                                  borderRadius: BorderRadius.circular(4),
-                                                ),
-                                                child: Text(
-                                                  bus.busType,
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 10,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
                                           ),
                                         ],
                                       ),
-                                    ),
-                                    TweenAnimationBuilder<double>(
-                                      tween: Tween<double>(begin: 0.0, end: 1.0),
-                                      duration: Duration(milliseconds: 800 + (index * 100)),
-                                      curve: Curves.bounceOut,
-                                      builder: (context, value, child) {
-                                        return Transform.scale(
-                                          scale: value,
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.end,
-                                            children: [
-                                              Text(
-                                                "\$${bus.approxCostUSD.toStringAsFixed(0)}",
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.green.shade600,
-                                                  fontSize: 18,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 4),
-                                              Text(
-                                                "per person",
-                                                style: TextStyle(
-                                                  color: Colors.grey.shade500,
-                                                  fontSize: 10,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
+                                TweenAnimationBuilder<double>(
+                                  tween: Tween<double>(begin: 0.0, end: 1.0),
+                                  duration: Duration(milliseconds: 800 + (index * 100)),
+                                  curve: Curves.bounceOut,
+                                  builder: (context, value, child) {
+                                    return Transform.scale(
+                                      scale: value,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            "\$${bus.approxCostUSD.toStringAsFixed(0)}",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.green.shade600,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            "per person",
+                                            style: TextStyle(
+                                              color: Colors.grey.shade500,
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
                             ),
                           ),
                         ),

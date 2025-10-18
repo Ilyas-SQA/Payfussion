@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:payfussion/services/payment_service.dart';
 import 'package:uuid/uuid.dart';
 
@@ -84,6 +86,9 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Book Ride"),
+        iconTheme: const IconThemeData(
+          color: MyTheme.secondaryColor,
+        ),
       ),
       body: MultiBlocListener(
         listeners: [
@@ -181,7 +186,18 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
   }
 
   Widget _buildRideSummary() {
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -231,7 +247,18 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
   }
 
   Widget _buildLocationDetails() {
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -245,14 +272,11 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            TextFormField(
+            AppTextormField(
               controller: _pickupController,
-              decoration: const InputDecoration(
-                labelText: "Pickup Location",
-                hintText: "Enter pickup address",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.my_location, color: Colors.green),
-              ),
+              helpText: "Pickup Location",
+              prefixIcon: const Icon(Icons.my_location, color: Colors.green),
+              useGreenColor: true,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter pickup location';
@@ -261,14 +285,11 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
               },
             ),
             const SizedBox(height: 16),
-            TextFormField(
+            AppTextormField(
               controller: _destinationController,
-              decoration: const InputDecoration(
-                labelText: "Destination",
-                hintText: "Enter destination address",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.place, color: Colors.red),
-              ),
+              helpText: "Destination",
+              prefixIcon: Icon(Icons.place, color: Colors.red),
+              useGreenColor: true,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter destination';
@@ -291,6 +312,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
                         max: 50.0,
                         divisions: 49,
                         label: "${_estimatedDistance.toStringAsFixed(1)} miles",
+                        activeColor: MyTheme.secondaryColor,
                         onChanged: (value) {
                           setState(() {
                             _estimatedDistance = value;
@@ -313,7 +335,18 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
   }
 
   Widget _buildRideOptions() {
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -386,15 +419,11 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
               ),
             ],
             const SizedBox(height: 16),
-            TextFormField(
+            AppTextormField(
               controller: _notesController,
-              decoration: const InputDecoration(
-                labelText: "Special Instructions (Optional)",
-                hintText: "Any special requests or instructions",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.note),
-              ),
-              maxLines: 2,
+              helpText: "Special Instructions (Optional)",
+              prefixIcon: const Icon(Icons.note,color: MyTheme.secondaryColor),
+              useGreenColor: true,
             ),
           ],
         ),
@@ -403,7 +432,18 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
   }
 
   Widget _buildPassengerDetails() {
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -417,14 +457,11 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            TextFormField(
+            AppTextormField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: "Passenger Name",
-                hintText: "Enter your name",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.person),
-              ),
+              helpText: "Passenger Name",
+              prefixIcon: Icon(Icons.person,color: MyTheme.secondaryColor,),
+              useGreenColor: true,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter passenger name';
@@ -433,15 +470,11 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
               },
             ),
             const SizedBox(height: 16),
-            TextFormField(
+            AppTextormField(
               controller: _phoneController,
-              decoration: const InputDecoration(
-                labelText: "Phone Number",
-                hintText: "Enter phone number",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.phone),
-              ),
-              keyboardType: TextInputType.phone,
+              helpText: "Phone Number",
+              prefixIcon: Icon(Icons.phone,color: MyTheme.secondaryColor),
+              useGreenColor: true,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter phone number';
@@ -456,7 +489,18 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
   }
 
   Widget _buildPaymentMethod() {
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -476,7 +520,8 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
                 Flexible(
                   child: CustomButton(
                     height: 35.h,
-                    backgroundColor: AppColors.primaryBlue,
+                    width: 100.w,
+                    backgroundColor: MyTheme.secondaryColor,
                     onPressed: () {
                       PaymentService().saveCard(context);
                     },
@@ -494,7 +539,18 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
   }
 
   Widget _buildFareEstimate() {
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -593,7 +649,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
               ),) :
             _rideType == 'Now' ? "Book Ride Now" : "Schedule Ride"}",
             height: 54.h,
-            backgroundColor: const Color(0xff3862F8),
+            backgroundColor: MyTheme.secondaryColor,
             textColor: Colors.white,
             onPressed: state is RideBookingLoading ? null : _processBooking,
           );
@@ -748,11 +804,15 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
         decoration: BoxDecoration(
-          color: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
-          border: isSelected
-              ? Border.all(color: const Color(0xff3862F8), width: 2)
-              : Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(8),
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: ListTile(
           contentPadding: EdgeInsets.zero,
@@ -794,7 +854,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
                 const Icon(
                   Icons.check_circle,
                   size: 16,
-                  color: Color(0xff3862F8),
+                  color: MyTheme.secondaryColor,
                 ),
               const SizedBox(width: 8),
               Icon(
