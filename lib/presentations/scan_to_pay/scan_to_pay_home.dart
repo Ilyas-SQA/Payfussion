@@ -9,6 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:wave/config.dart';
 import 'dart:async';
 import 'package:wave/wave.dart';
+import '../../core/theme/theme.dart';
 import '../interfaces/screen_visibility_interface.dart';
 import '../widgets/payment_selector_widget.dart';
 
@@ -536,7 +537,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
               decoration: BoxDecoration(
                 color: Colors.black,
                 borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(color: const Color(0xFF3A49F9), width: 1.5),
+                border: Border.all(color: MyTheme.secondaryColor, width: 1.5),
               ),
               child: Stack(
                 alignment: Alignment.center,
@@ -545,8 +546,8 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                   WaveWidget(
                     config: CustomConfig(
                       colors: [
-                        const Color(0x339C2CF3),
-                        const Color(0x773A49F9),
+                        MyTheme.secondaryColor,
+                        MyTheme.primaryColor
                       ],
                       durations: [4000, 5000],
                       heightPercentages: [0.65, 0.66],
@@ -565,7 +566,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF9C2CF3).withOpacity(0.3),
+                          color: MyTheme.primaryColor.withOpacity(0.3),
                           blurRadius: 15,
                           spreadRadius: 5,
                         ),
@@ -579,7 +580,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                       errorBuilder: (context, error, stackTrace) => Icon(
                         Icons.contactless_rounded,
                         size: 40.sp,
-                        color: const Color(0xFF3A49F9),
+                        color: MyTheme.secondaryColor,
                       ),
                     ),
                   ),
@@ -635,14 +636,14 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
               padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 24.w),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF9C2CF3), Color(0xFF3A49F9)],
+                  colors: [MyTheme.primaryColor, MyTheme.secondaryColor],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(12.r),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF3A49F9).withOpacity(0.3),
+                    color: MyTheme.secondaryColor.withOpacity(0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -754,7 +755,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
         height: 50.h,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Color(0xFF9C2CF3), Color(0xFF3A49F9)],
+            colors: [MyTheme.primaryColor, MyTheme.secondaryColor],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
@@ -790,7 +791,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                       child: Text(
                         "QR Code",
                         style: TextStyle(
-                          color: isQRMode ? const Color(0xFF9C2CF3) : Colors.white,
+                          color: isQRMode ? MyTheme.primaryColor : Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 14.sp,
                         ),
@@ -807,7 +808,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                       child: Text(
                         "NFC",
                         style: TextStyle(
-                          color: !isQRMode ? const Color(0xFF9C2CF3) : Colors.white,
+                          color: !isQRMode ? MyTheme.primaryColor : Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 14.sp,
                         ),
