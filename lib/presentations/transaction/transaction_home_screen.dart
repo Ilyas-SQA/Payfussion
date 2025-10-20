@@ -459,7 +459,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen>
             style: TextStyle(
               fontSize: 10.sp,
               fontWeight: FontWeight.w600,
-              color: isSelected ? Colors.white : Colors.white,
+              color: isSelected ? Colors.white : Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,
             ),
           ),
         ),
