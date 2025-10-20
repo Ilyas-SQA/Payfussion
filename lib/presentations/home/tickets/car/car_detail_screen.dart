@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import '../../../../data/models/tickets/car_model.dart';
 import '../../../widgets/custom_button.dart';
 import 'car_payment_screen.dart';
@@ -198,6 +199,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
                               widget.ride.driverName.substring(0, 2).toUpperCase(),
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
+                                color: Colors.white,
                                 fontSize: 18,
                               ),
                             ),
@@ -520,11 +522,8 @@ class _RideDetailScreenState extends State<RideDetailScreen>
   Widget _buildBookButton() {
     return AnimatedBuilder(
       animation: _pulseController,
-      builder: (context, child) {
-        final pulseValue = widget.ride.isAvailable
-            ? 1.0 + (_pulseController.value * 0.05)
-            : 1.0;
-
+      builder: (BuildContext context, Widget? child) {
+        final double pulseValue = widget.ride.isAvailable ? 1.0 + (_pulseController.value * 0.05) : 1.0;
         return Transform.scale(
           scale: pulseValue,
           child: Container(
@@ -538,14 +537,11 @@ class _RideDetailScreenState extends State<RideDetailScreen>
                 ),
               ] : null,
             ),
-            child: CustomButton(
+            child: AppButton(
               text: widget.ride.isAvailable ? "Book Ride" : "Driver Not Available",
               height: 54.h,
-              backgroundColor: widget.ride.isAvailable
-                  ? MyTheme.secondaryColor
-                  : Colors.grey.shade400,
-              textColor: Colors.white,
-              onPressed: widget.ride.isAvailable ? () {
+              color: widget.ride.isAvailable ? MyTheme.secondaryColor : Colors.grey.shade400,
+              onTap: widget.ride.isAvailable ? () {
                 Navigator.push(
                   context,
                   PageRouteBuilder(

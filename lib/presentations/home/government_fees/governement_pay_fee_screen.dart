@@ -221,6 +221,9 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
             ),
           ),
         ),
+        iconTheme: const IconThemeData(
+          color: MyTheme.secondaryColor,
+        ),
       ),
       body: FadeTransition(
         opacity: _contentFade,
@@ -265,8 +268,8 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: AppTextormField(
                   controller: _textIdController,
-                  prefixIcon: Icon(Icons.search),
-                  isPasswordField: false,
+                  prefixIcon: const Icon(Icons.search,color: MyTheme.secondaryColor,),
+                  useGreenColor: true,
                   helpText: "Enter Text ID or service name...",
                 ),
               ),
@@ -369,13 +372,13 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
                   height: 45.h,
                   width: 45.w,
                   decoration: BoxDecoration(
-                    color: MyTheme.primaryColor.withOpacity(0.1),
+                    color: MyTheme.secondaryColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Icon(
                     suggestion.icon,
                     size: 24.sp,
-                    color: MyTheme.primaryColor,
+                    color: MyTheme.secondaryColor,
                   ),
                 ),
                 SizedBox(width: 16.w),
@@ -468,7 +471,7 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
           children: [
             Icon(
               Icons.construction,
-              color: MyTheme.primaryColor,
+              color: MyTheme.secondaryColor,
               size: 28.sp,
             ),
             SizedBox(width: 12.w),
@@ -476,7 +479,7 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
               "Coming Soon",
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: MyTheme.primaryColor,
+                color: MyTheme.secondaryColor,
               ),
             ),
           ],
@@ -491,7 +494,7 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
           TextButton(
             onPressed: () => Navigator.pop(context),
             style: TextButton.styleFrom(
-              foregroundColor: MyTheme.primaryColor,
+              foregroundColor: MyTheme.secondaryColor,
             ),
             child: Text(
               "Got it",

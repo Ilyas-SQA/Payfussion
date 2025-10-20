@@ -113,14 +113,7 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: AnimatedDefaultTextStyle(
-          duration: const Duration(milliseconds: 500),
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-          child: Text(widget.bus.companyName),
-        ),
+        title: Text(widget.bus.companyName),
         iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
       body: SingleChildScrollView(
@@ -203,7 +196,6 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
                                     child: Text(
                                       widget.bus.busType,
                                       style: const TextStyle(
-                                        color: Colors.white,
                                         fontSize: 12,
                                         fontWeight: FontWeight.w500,
                                       ),
@@ -296,7 +288,7 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
                                         color: Colors.green.shade100,
                                         shape: BoxShape.circle,
                                       ),
-                                      child: Icon(
+                                      child: const Icon(
                                         Icons.check,
                                         size: 16,
                                         color: MyTheme.secondaryColor,
@@ -494,7 +486,7 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w500,
-                    color: Colors.grey.shade300,
+                    color: Colors.grey.shade600,
                   ),
                 ),
               ],

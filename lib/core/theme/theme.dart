@@ -247,6 +247,10 @@ class MyTheme {
           onError: Colors.red,
           primary: Colors.white70,
         ),
+        expansionTileTheme: const ExpansionTileThemeData(
+          iconColor: MyTheme.primaryColor,
+          clipBehavior: Clip.antiAlias,
+        ),
       );
 
   static const Color backgroundColor = Color(0xffF9F8F4);

@@ -239,17 +239,19 @@ class _BusListScreenState extends State<BusListScreen>
                                     children: [
                                       AnimatedDefaultTextStyle(
                                         duration: const Duration(milliseconds: 300),
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 14,
+                                          color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,
                                         ),
                                         child: Text(bus.companyName),
                                       ),
                                       const SizedBox(height: 4),
                                       AnimatedDefaultTextStyle(
                                         duration: const Duration(milliseconds: 300),
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 10,
+                                          color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,
                                         ),
                                         child: Text(bus.route),
                                       ),
@@ -301,7 +303,6 @@ class _BusListScreenState extends State<BusListScreen>
                                             child: Text(
                                               bus.busType,
                                               style: const TextStyle(
-                                                color: Colors.white,
                                                 fontSize: 10,
                                                 fontWeight: FontWeight.w500,
                                               ),

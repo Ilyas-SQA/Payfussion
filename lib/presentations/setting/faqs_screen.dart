@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:go_router/go_router.dart';
+import 'package:payfussion/core/theme/theme.dart';
 import 'package:shimmer/shimmer.dart';
 
 class FaqsScreen extends StatefulWidget {
@@ -131,8 +131,11 @@ class _FaqsScreenState extends State<FaqsScreen> with TickerProviderStateMixin {
                                     child: ExpansionTile(
                                       backgroundColor: Theme.of(context).cardColor,
                                       collapsedBackgroundColor: Theme.of(context).cardColor,
-                                      collapsedIconColor: const Color(0xFF2D9CDB),
-                                      iconColor: const Color(0xFF2D9CDB),
+                                      collapsedIconColor: MyTheme.primaryColor,
+                                      iconColor: MyTheme.primaryColor,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8.r),
+                                      ),
                                       title: Text(
                                         snapshot.data!.docs[index]["question"],
                                         style: const TextStyle(

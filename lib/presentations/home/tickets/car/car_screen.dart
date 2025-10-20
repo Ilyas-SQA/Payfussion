@@ -308,7 +308,7 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                               Text(
                                 "${widget.ride.carMake} ${widget.ride.carModel}",
                                 style: TextStyle(
-                                  color: Colors.grey.shade300,
+                                  color: Colors.grey.shade600,
                                   fontSize: 12,
                                 ),
                               ),
@@ -331,7 +331,6 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                                     child: Text(
                                       widget.ride.serviceType,
                                       style: const TextStyle(
-                                        color: Colors.white,
                                         fontSize: 10,
                                         fontWeight: FontWeight.w500,
                                       ),
@@ -351,12 +350,12 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                                   const SizedBox(width: 2),
                                   Text(
                                     "${widget.ride.rating}",
-                                    style: TextStyle(color: Colors.grey.shade300, fontSize: 12),
+                                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
                                     "${widget.ride.totalRides} rides",
-                                    style: TextStyle(color: Colors.grey.shade300, fontSize: 12),
+                                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                                   ),
                                 ],
                               ),
@@ -373,15 +372,12 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                           children: [
                             Hero(
                               tag: 'price_${widget.index}',
-                              child: Material(
-                                color: Colors.transparent,
-                                child: Text(
-                                  "\$${widget.ride.baseRate.toStringAsFixed(2)}",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.green.shade600,
-                                    fontSize: 18,
-                                  ),
+                              child: Text(
+                                "\$${widget.ride.baseRate.toStringAsFixed(2)}",
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: MyTheme.secondaryColor,
+                                  fontSize: 18,
                                 ),
                               ),
                             ),

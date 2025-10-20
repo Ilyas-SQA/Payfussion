@@ -40,13 +40,6 @@ class PaymentScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.primaryBlue),
-          onPressed: () {
-            HapticFeedback.lightImpact();
-            Navigator.of(context).pop();
-          },
-        ),
         title: Text(PaymentStrings.paymentScreen),
       ),
       body: PaymentForm(recipient: recipient),

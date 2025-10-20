@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:payfussion/services/payment_service.dart';
 import 'package:uuid/uuid.dart';
@@ -565,29 +566,11 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
       width: double.infinity,
       child: BlocBuilder<FlightBookingBloc, FlightBookingState>(
         builder: (context, state) {
-          return ElevatedButton(
-            onPressed: state is FlightBookingLoading ? null : _processBooking,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: MyTheme.secondaryColor,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: state is FlightBookingLoading
-                ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                color: Colors.white,
-                strokeWidth: 2,
-              ),
-            )
-                : const Text(
-              "Confirm Booking & Pay",
-              style: TextStyle(fontSize: 16),
-            ),
+          return AppButton(
+            onTap: state is FlightBookingLoading ? null : _processBooking,
+            color: MyTheme.secondaryColor,
+            text: "Confirm Booking & Pay",
+            loading: state is FlightBookingLoading,
           );
         },
       ),

@@ -18,7 +18,6 @@ class CurrencyGraphView extends StatelessWidget {
     final bool isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF1E1E2E) : const Color(0xFFF5F7FA),
       appBar: _buildAppBar(isDark, context),
       body: BlocBuilder<GraphCurrencyBloc, GraphCurrencyState>(
         builder: (context, state) {
@@ -42,20 +41,13 @@ class CurrencyGraphView extends StatelessWidget {
 
   PreferredSizeWidget _buildAppBar(bool isDark, BuildContext context) {
     return AppBar(
-      title: Text(
+      title: const Text(
         'Currency Exchange',
-        style: TextStyle(
-          color: isDark ? Colors.white : Colors.black,
-          fontWeight: FontWeight.bold,
-          fontSize: 20.sp,
-        ),
       ),
-      backgroundColor: isDark ? const Color(0xFF2A2A40) : Colors.white,
-      elevation: 0,
       shadowColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
-      iconTheme: IconThemeData(
-        color: isDark ? Colors.white : Colors.black,
+      iconTheme: const IconThemeData(
+        color: MyTheme.primaryColor,
       ),
     );
   }
@@ -109,9 +101,7 @@ class CurrencyGraphView extends StatelessWidget {
           borderRadius: BorderRadius.circular(20.r),
           boxShadow: [
             BoxShadow(
-              color: isDark
-                  ? Colors.black.withOpacity(0.3)
-                  : Colors.grey.withOpacity(0.1),
+              color: isDark ? Colors.black.withOpacity(0.3) : Colors.grey.withOpacity(0.1),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -191,15 +181,13 @@ class CurrencyGraphView extends StatelessWidget {
           child: Container(
             margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.h),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF2A2A40) : Colors.white,
-              borderRadius: BorderRadius.circular(20.r),
+              color: Theme.of(context).scaffoldBackgroundColor,
+              borderRadius: BorderRadius.circular(5.r),
               boxShadow: [
                 BoxShadow(
-                  color: isDark
-                      ? Colors.black.withOpacity(0.3)
-                      : Colors.grey.withOpacity(0.08),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
+                  color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                  blurRadius: 5,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -219,124 +207,111 @@ class CurrencyGraphView extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         itemCount: state.currencies.length,
         itemBuilder: (context, index) {
-          final currency = state.currencies[index];
-          final isSelected = state.selectedCurrency?.code == currency.code;
+          final GraphCurrencyModel currency = state.currencies[index];
+          final bool isSelected = state.selectedCurrency?.code == currency.code;
 
-          return GestureDetector(
-            onTap: () {
-              HapticFeedback.selectionClick();
-              context.read<GraphCurrencyBloc>().add(SelectCurrency(currency));
-            },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              width: 160.w,
-              margin: EdgeInsets.only(right: 16.w),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? MyTheme.primaryColor // Changed here
-                    : isDark
-                    ? const Color(0xFF2A2A40)
-                    : Colors.white,
-                borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(
-                  color: isSelected
-                      ? MyTheme.primaryColor // Changed here
-                      : isDark
-                      ? Colors.transparent
-                      : Colors.grey.withOpacity(0.2),
-                  width: isSelected ? 2 : 1,
-                ),
-                boxShadow: isSelected ? [
-                  BoxShadow(
-                    color: MyTheme.primaryColor.withOpacity(0.3), // Changed here
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  ),
-                ] : [
-                  BoxShadow(
-                    color: isDark
-                        ? Colors.black.withOpacity(0.2)
-                        : Colors.grey.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(16.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(4.w),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? Colors.white.withOpacity(0.2)
-                                : isDark
-                                ? Colors.white.withOpacity(0.1)
-                                : Colors.grey.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8.r),
-                          ),
-                          child: Text(
-                            currency.symbol,
-                            style: TextStyle(
-                              color: isSelected
-                                  ? Colors.white
-                                  : isDark
-                                  ? Colors.white
-                                  : Colors.black,
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 8.w),
-                        Text(
-                          currency.code,
-                          style: TextStyle(
-                            color: isSelected
-                                ? Colors.white.withOpacity(0.9)
-                                : isDark
-                                ? Colors.white.withOpacity(0.8)
-                                : Colors.grey[600],
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      currency.name,
-                      style: TextStyle(
-                        color: isSelected
-                            ? Colors.white.withOpacity(0.7)
-                            : isDark
-                            ? Colors.white.withOpacity(0.6)
-                            : Colors.grey[500],
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const Spacer(),
-                    Text(
-                      '${currency.symbol}${currency.currentPrice.toStringAsFixed(currency.code == 'JPY' ? 2 : 4)}',
-                      style: TextStyle(
-                        color: isSelected
-                            ? Colors.white
-                            : isDark
-                            ? Colors.white
-                            : Colors.black,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: GestureDetector(
+              onTap: () {
+                HapticFeedback.selectionClick();
+                context.read<GraphCurrencyBloc>().add(SelectCurrency(currency));
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                width: 160.w,
+                margin: EdgeInsets.only(right: 16.w),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                      blurRadius: 5,
+                      offset: const Offset(0, 4),
                     ),
                   ],
+                  color: isSelected ? MyTheme.primaryColor : Theme.of(context).scaffoldBackgroundColor,
+                  border: Border.all(
+                    color: isSelected ? MyTheme.primaryColor : isDark ? Colors.transparent : Colors.grey.withOpacity(0.2),
+                    width: isSelected ? 2 : 1,
+                  ),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(16.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(4.w),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? Colors.white.withOpacity(0.2)
+                                  : isDark
+                                  ? Colors.white.withOpacity(0.1)
+                                  : Colors.grey.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                            child: Text(
+                              currency.symbol,
+                              style: TextStyle(
+                                color: isSelected
+                                    ? Colors.white
+                                    : isDark
+                                    ? Colors.white
+                                    : Colors.black,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 8.w),
+                          Text(
+                            currency.code,
+                            style: TextStyle(
+                              color: isSelected
+                                  ? Colors.white.withOpacity(0.9)
+                                  : isDark
+                                  ? Colors.white.withOpacity(0.8)
+                                  : Colors.grey[600],
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 8.h),
+                      Text(
+                        currency.name,
+                        style: TextStyle(
+                          color: isSelected
+                              ? Colors.white.withOpacity(0.7)
+                              : isDark
+                              ? Colors.white.withOpacity(0.6)
+                              : Colors.grey[500],
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const Spacer(),
+                      Text(
+                        '${currency.symbol}${currency.currentPrice.toStringAsFixed(currency.code == 'JPY' ? 2 : 4)}',
+                        style: TextStyle(
+                          color: isSelected
+                              ? Colors.white
+                              : isDark
+                              ? Colors.white
+                              : Colors.black,
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -416,7 +391,7 @@ class CurrencyGraphView extends StatelessWidget {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF10B981).withOpacity(0.1),
+                  color: MyTheme.secondaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Row(
@@ -424,14 +399,14 @@ class CurrencyGraphView extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.trending_up_rounded,
-                      color: const Color(0xFF10B981),
+                      color: MyTheme.secondaryColor,
                       size: 14.sp,
                     ),
                     SizedBox(width: 2.w),
                     Text(
                       '+2.5%',
                       style: TextStyle(
-                        color: const Color(0xFF10B981),
+                        color: MyTheme.secondaryColor,
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w600,
                       ),
@@ -450,13 +425,10 @@ class CurrencyGraphView extends StatelessWidget {
                 gridData: FlGridData(
                   show: true,
                   drawVerticalLine: false,
-                  horizontalInterval: (currency.weeklyPrices.reduce((a, b) => a > b ? a : b) -
-                      currency.weeklyPrices.reduce((a, b) => a < b ? a : b)) / 4,
+                  horizontalInterval: (currency.weeklyPrices.reduce((a, b) => a > b ? a : b) - currency.weeklyPrices.reduce((a, b) => a < b ? a : b)) / 4,
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
-                      color: isDark
-                          ? Colors.white.withOpacity(0.08)
-                          : Colors.grey.withOpacity(0.2),
+                      color: isDark ? Colors.white.withOpacity(0.08) : Colors.grey.withOpacity(0.2),
                       strokeWidth: 1,
                     );
                   },

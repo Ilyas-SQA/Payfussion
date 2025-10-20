@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:payfussion/core/constants/container_dec.dart';
-
 import '../../core/constants/image_url.dart';
 import '../../core/theme/theme.dart';
 import '../widgets/payment_selector_widget.dart';
@@ -20,14 +18,6 @@ class CurrencyExchangeHistoryView extends StatelessWidget {
       backgroundColor: isDark ? MyTheme.darkBackgroundColor : MyTheme.backgroundColor,
       appBar: AppBar(
         backgroundColor: isDark ? MyTheme.darkBackgroundColor : MyTheme.backgroundColor,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 16.sp,
-            color: isDark ? Colors.white : Colors.black,
-          ),
-          onPressed: () => context.pop(),
-        ),
         centerTitle: true,
         title: Text(
           'Currency Exchange History',
@@ -40,7 +30,7 @@ class CurrencyExchangeHistoryView extends StatelessWidget {
             30.verticalSpace,
             // Payment Card Selector and Icons
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.w),
+              padding: EdgeInsets.symmetric(horizontal: 5.w),
               child: Row(
                 children: [
                   Expanded(
@@ -50,6 +40,7 @@ class CurrencyExchangeHistoryView extends StatelessWidget {
                     ),
                   ),
                   _buildIcon(TImageUrl.iconSearch, isDark),
+                  SizedBox(width: 5.w),
                   _buildIcon(TImageUrl.iconFilter, isDark),
                 ],
               ),
@@ -123,15 +114,14 @@ class CurrencyExchangeHistoryView extends StatelessWidget {
 
   Widget _buildIcon(String icon, bool isDark) {
     return Container(
-      width: 40.w,
-      height: 40.h,
-      margin: EdgeInsets.only(left: 8.w),
+      width: 50.w,
+      height: 50.h,
       decoration: BoxDecoration(
-        color: isDark ? Colors.black : Colors.white,
+        color: MyTheme.primaryColor,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: isDark ? Colors.white30 : Colors.black12),
+        border: Border.all(color: Colors.white30),
       ),
-      child: Image.asset(icon, color: isDark ? Colors.white : Colors.black),
+      child: Image.asset(icon, color: Colors.white),
     );
   }
 

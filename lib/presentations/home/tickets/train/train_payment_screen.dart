@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:uuid/uuid.dart';
 
@@ -256,17 +257,12 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
           const Expanded(
             child: Text("Payment Method", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ),
-          SizedBox(
+          AppButton(
+            onTap: () => PaymentService().saveCard(context),
+            height: 30,
             width: 100,
-            height: 35,
-            child: ElevatedButton(
-              onPressed: () => PaymentService().saveCard(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBlue,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-              ),
-              child: const Text("Add Card", style: TextStyle(fontSize: 12)),
-            ),
+            color: MyTheme.secondaryColor,
+            text: "Add Card",
           ),
         ],
       ),
@@ -354,7 +350,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 600),
       tween: Tween(begin: 0, end: 1),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Transform.translate(
           offset: Offset(20 * (1 - value), 0),
           child: Opacity(
@@ -384,7 +380,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
               setState(() => _numberOfPassengers--);
             }),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 200),
                 child: Text(
@@ -408,9 +404,9 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
       duration: const Duration(milliseconds: 200),
       child: IconButton(
         onPressed: enabled ? onPressed : null,
-        icon: Icon(icon),
+        icon: Icon(icon,color: Colors.white,),
         style: IconButton.styleFrom(
-          backgroundColor: enabled ? Colors.blue.shade100 : Colors.grey.shade200,
+          backgroundColor: enabled ? MyTheme.secondaryColor : Colors.grey.shade200,
         ),
       ),
     );
@@ -427,9 +423,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
           child: DropdownButtonFormField<String>(
             value: _selectedClass,
             decoration: const InputDecoration(border: OutlineInputBorder()),
-            items: ['Economy', 'Business']
-                .map((cls) => DropdownMenuItem(value: cls, child: Text(cls)))
-                .toList(),
+            items: ['Economy', 'Business'].map((cls) => DropdownMenuItem(value: cls, child: Text(cls))).toList(),
             onChanged: (value) => setState(() => _selectedClass = value!),
           ),
         ),
@@ -471,39 +465,10 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
         builder: (context, state) {
           return AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: state is BookingLoading ? [] : [
-                BoxShadow(
-                  color: Colors.blue.shade300,
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: ElevatedButton(
-              onPressed: state is BookingLoading ? null : _processBooking,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue.shade700,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              child: state is BookingLoading
-                  ? const SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-              )
-                  : const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.payment, size: 20),
-                  SizedBox(width: 8),
-                  Text("Confirm Booking & Pay", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                ],
-              ),
+            child: AppButton(
+              onTap: state is BookingLoading ? null : _processBooking,
+              text: 'Confirm Booking & Pay',
+              color: MyTheme.secondaryColor,
             ),
           );
         },
@@ -511,7 +476,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
     );
   }
 
-  // Card Selection (Compressed)
+  /// Card Selection (Compressed)
   Widget _buildCardsSection() {
     return AnimatedBuilder(
       animation: _cardController,
@@ -605,12 +570,15 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
         width: double.infinity,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          border: Border.all(
-            color: isSelected ? Colors.blue.shade700 : Colors.grey.shade300,
-            width: isSelected ? 2 : 1,
-          ),
-          borderRadius: BorderRadius.circular(8),
-          color: isSelected ? Colors.blue.shade50 : null,
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Row(
           children: [
@@ -620,6 +588,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
               child: Image.asset(
                 card.brandIconPath,
                 fit: BoxFit.contain,
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
                     width: 40,
@@ -650,14 +619,14 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
               ),
             ),
             if (isSelected)
-              Icon(Icons.check_circle, color: Colors.blue.shade700, size: 20),
+              const Icon(Icons.check_circle, color: MyTheme.secondaryColor, size: 20),
           ],
         ),
       ),
     );
   }
 
-  // Event Handlers
+  /// Event Handlers
   void _selectDate() async {
     final date = await showDatePicker(
       context: context,
@@ -677,9 +646,16 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(context).size.height * 0.7,
         ),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         padding: const EdgeInsets.all(20),
         child: Column(

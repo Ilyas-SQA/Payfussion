@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import 'package:payfussion/core/theme/theme.dart';
 import '../../../logic/blocs/calculator/calculator_bloc.dart';
 import '../../../logic/blocs/calculator/calculator_event.dart';
 
@@ -37,7 +37,7 @@ class CalculatorButton extends StatelessWidget {
             color: label == 'C'
                 ? Colors.red
                 : isColored
-                ? const Color(0xff316BFF)
+                ? MyTheme.primaryColor
                 : Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,
           ),
         ),

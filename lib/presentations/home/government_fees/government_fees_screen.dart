@@ -333,8 +333,6 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
         title: FadeTransition(
           opacity: _headerFade,
           child: SlideTransition(
@@ -349,6 +347,9 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
               ),
             ),
           ),
+        ),
+        iconTheme: const IconThemeData(
+          color: MyTheme.secondaryColor,
         ),
       ),
       body: FadeTransition(
@@ -438,7 +439,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
                     decoration: BoxDecoration(
-                      color: isSelected ? MyTheme.primaryColor : theme.cardColor,
+                      color: isSelected ? MyTheme.secondaryColor : theme.cardColor,
                       borderRadius: BorderRadius.circular(25.r),
                       boxShadow: [
                         BoxShadow(
@@ -530,7 +531,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
               Icon(
                 item.icon,
                 size: 32.sp,
-                color: MyTheme.primaryColor,
+                color: MyTheme.secondaryColor,
               ),
 
               SizedBox(height: 16.w),

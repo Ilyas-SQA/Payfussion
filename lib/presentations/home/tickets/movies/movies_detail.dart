@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/core/widget/appbutton/app_button.dart';
 
 import '../../../../data/models/tickets/movies_model.dart';
 import '../../../widgets/custom_button.dart';
@@ -575,16 +576,10 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
                     onTapDown: (_) => _onBookingPressed(),
                     onTapUp: (_) => _onBookingReleased(),
                     onTapCancel: _onBookingReleased,
-                    child: CustomButton(
-                      text: _selectedShowtime != null
-                          ? "Book Tickets for $_selectedShowtime"
-                          : "Select Showtime to Book",
-                      height: 54.h,
-                      backgroundColor: _selectedShowtime != null
-                          ? MyTheme.secondaryColor
-                          : Colors.grey.shade400,
-                      textColor: Colors.white,
-                      onPressed: _selectedShowtime != null ? () {
+                    child: AppButton(
+                      text: _selectedShowtime != null ? "Book Tickets for $_selectedShowtime" : "Select Showtime to Book",
+                      color: _selectedShowtime != null ? MyTheme.secondaryColor : Colors.grey.shade400,
+                      onTap: _selectedShowtime != null ? () {
                         Navigator.push(
                           context,
                           PageRouteBuilder(

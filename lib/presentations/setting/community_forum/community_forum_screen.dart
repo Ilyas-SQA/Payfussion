@@ -149,7 +149,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
   Widget _buildLoadingState() {
     return const Center(
       child: CircularProgressIndicator(
-        color: Color(0xff1877f2),
+        color: MyTheme.primaryColor,
       ),
     );
   }
@@ -217,11 +217,11 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
         // Force refresh by rebuilding stream
         setState(() {});
       },
-      color: const Color(0xff1877f2),
+      color: MyTheme.primaryColor,
       backgroundColor: Colors.white,
       child: ListView.builder(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 8.h),
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
         itemCount: posts.length,
         itemBuilder: (context, index) {
           final post = posts[index];
@@ -240,12 +240,12 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
       margin: EdgeInsets.only(bottom: 8.h),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(5.r),
         boxShadow: [
-          const BoxShadow(
-            color: Colors.black26,
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
-            offset: Offset(1, 1),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -305,13 +305,6 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
               ],
             ),
           ),
-          IconButton(
-            onPressed: () => _showPostOptions(context, post),
-            icon: Icon(
-              Icons.more_horiz,
-              color: Colors.grey.shade600,
-            ),
-          ),
         ],
       ),
     );
@@ -326,32 +319,41 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
           if (post.question.isNotEmpty)
             Container(
               width: double.infinity,
+              height: 300.h,
               padding: EdgeInsets.all(16.w),
-              margin: EdgeInsets.only(bottom: 12.h),
               decoration: BoxDecoration(
-                color: Colors.grey.shade800,
+                color: MyTheme.primaryColor,
                 borderRadius: BorderRadius.circular(8.r),
               ),
-              child: Text(
-                post.question,
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  height: 1.3,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          if (post.content.isNotEmpty)
-            Padding(
-              padding: EdgeInsets.only(bottom: 12.h),
-              child: Text(
-                post.content,
-                style: TextStyle(
-                  fontSize: 15.sp,
-                  height: 1.3,
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    post.question,
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      height: 1.3,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 20.h,),
+                  if (post.content.isNotEmpty)
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 12.h),
+                      child: Text(
+                        post.content,
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          height: 1.3,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                ],
               ),
             ),
         ],
@@ -371,7 +373,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                   width: 20.w,
                   height: 20.h,
                   decoration: const BoxDecoration(
-                    color: Color(0xff1877f2),
+                    color: MyTheme.primaryColor,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -420,7 +422,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
             child: _buildActionButton(
               icon: isLiked ? Icons.thumb_up : Icons.thumb_up_outlined,
               label: 'Like',
-              color: isLiked ? const Color(0xff1877f2) : Colors.grey.shade600,
+              color: isLiked ? MyTheme.primaryColor : Colors.grey.shade600,
               onTap: () => _handleLike(post.postId, isLiked),
             ),
           ),
@@ -651,7 +653,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                                   onPressed: () => _addComment(post.postId, controller),
                                   icon: Icon(
                                     Icons.send,
-                                    color: const Color(0xff1877f2),
+                                    color: MyTheme.primaryColor,
                                     size: 20.sp,
                                   ),
                                 ),
@@ -738,7 +740,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                             Icon(
                               isCommentLiked ? Icons.thumb_up : Icons.thumb_up_outlined,
                               size: 16.sp,
-                              color: isCommentLiked ? const Color(0xff1877f2) : Colors.grey.shade600,
+                              color: isCommentLiked ? MyTheme.primaryColor : Colors.grey.shade600,
                             ),
                             if (commentLikesCount > 0) ...[
                               SizedBox(width: 4.w),
@@ -856,7 +858,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                             Icon(
                               isReplyLiked ? Icons.thumb_up : Icons.thumb_up_outlined,
                               size: 14.sp,
-                              color: isReplyLiked ? const Color(0xff1877f2) : Colors.grey.shade600,
+                              color: isReplyLiked ? MyTheme.primaryColor : Colors.grey.shade600,
                             ),
                             if (replyLikesCount > 0) ...[
                               SizedBox(width: 3.w),
@@ -938,7 +940,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
           SnackBar(
             content: Text(isCurrentlyLiked ? 'Post unliked' : 'Post liked!'),
             duration: const Duration(milliseconds: 800),
-            backgroundColor: isCurrentlyLiked ? Colors.grey : const Color(0xff1877f2),
+            backgroundColor: isCurrentlyLiked ? Colors.grey : MyTheme.primaryColor,
             behavior: SnackBarBehavior.floating,
             margin: EdgeInsets.only(bottom: 100.h),
           ),
@@ -1003,7 +1005,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
           SnackBar(
             content: Text(isCurrentlyLiked ? 'Comment unliked' : 'Comment liked!'),
             duration: const Duration(milliseconds: 600),
-            backgroundColor: isCurrentlyLiked ? Colors.grey : const Color(0xff1877f2),
+            backgroundColor: isCurrentlyLiked ? Colors.grey : MyTheme.primaryColor,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -1076,7 +1078,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
           SnackBar(
             content: Text(isCurrentlyLiked ? 'Reply unliked' : 'Reply liked!'),
             duration: const Duration(milliseconds: 600),
-            backgroundColor: isCurrentlyLiked ? Colors.grey : const Color(0xff1877f2),
+            backgroundColor: isCurrentlyLiked ? Colors.grey : MyTheme.primaryColor,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -1276,54 +1278,4 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
     }
   }
 
-  void _showPostOptions(BuildContext context, CommunityFormModel post) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.bookmark_outline),
-              title: const Text('Save post'),
-              onTap: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Post saved!')),
-                );
-              },
-            ),
-            if (post.userId == currentUserId) ...[
-              ListTile(
-                leading: const Icon(Icons.edit_outlined),
-                title: const Text('Edit post'),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.delete_outline, color: Colors.red),
-                title: const Text('Delete post', style: TextStyle(color: Colors.red)),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ] else ...[
-              ListTile(
-                leading: const Icon(Icons.report_outlined, color: Colors.red),
-                title: const Text('Report post', style: TextStyle(color: Colors.red)),
-                onTap: () {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Post reported!')),
-                  );
-                },
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
 }

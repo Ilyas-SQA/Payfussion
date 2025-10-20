@@ -50,9 +50,6 @@ class CalculatorWidget extends StatelessWidget {
             vertical: mediaQuery.width * 0.08,
             horizontal: mediaQuery.width * 0.06,
           ),
-          decoration: BoxDecoration(
-            color: isDarkMode ? Colors.grey[900] : Colors.grey[100],
-          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.end,

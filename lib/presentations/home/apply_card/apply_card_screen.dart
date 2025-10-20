@@ -19,20 +19,6 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        leading: currentView > -1
-            ? IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            setState(() {
-              if (currentView == 4) {
-                currentView = selectedAccountType ?? -1;
-              } else {
-                currentView = -1;
-              }
-            });
-          },
-        )
-            : null,
         title: Text(
           _getAppBarTitle(),
           style: const TextStyle(
@@ -41,6 +27,9 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
           ),
         ),
         centerTitle: true,
+        iconTheme: const IconThemeData(
+          color: MyTheme.secondaryColor,
+        ),
       ),
       body: _getCurrentView(),
     );
@@ -124,8 +113,14 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [const BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(1, 1))],
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: InkWell(
         onTap: () => setState(() => currentView = index),
@@ -281,8 +276,14 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Theme.of(context).scaffoldBackgroundColor,
-              borderRadius: BorderRadius.circular(16.r),
-              boxShadow: [const BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(1, 1))],
+              borderRadius: BorderRadius.circular(5.r),
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                  blurRadius: 5,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -386,8 +387,14 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
           decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor,
-            borderRadius: BorderRadius.circular(16.r),
-            boxShadow: [const BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(1, 1))],
+            borderRadius: BorderRadius.circular(5.r),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                blurRadius: 5,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -483,8 +490,14 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Theme.of(context).scaffoldBackgroundColor,
-              borderRadius: BorderRadius.circular(16.r),
-              boxShadow: [const BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(1, 1))],
+              borderRadius: BorderRadius.circular(5.r),
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                  blurRadius: 5,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -517,7 +530,7 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
                 child: ElevatedButton(
                   onPressed: _showOrderConfirmation,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: MyTheme.primaryColor,
+                    backgroundColor: MyTheme.secondaryColor,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -545,7 +558,7 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: BorderRadius.circular(16.r),
+          borderRadius: BorderRadius.circular(5.r),
           border: Border.all(color: sel ? color : Colors.transparent, width: 2),
           boxShadow: [BoxShadow(color: sel ? color.withOpacity(0.3) : Colors.black26, blurRadius: sel ? 8 : 5, offset: const Offset(1, 1))],
         ),
@@ -657,26 +670,26 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(5.r),
         boxShadow: [
-          const BoxShadow(
-            color: Colors.black26,
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
-            offset: Offset(1, 1),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Row(
         children: [
-          Icon(icon, color: Colors.blue[700], size: 24),
+          Icon(icon, color: MyTheme.secondaryColor, size: 24),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue[900])),
+                Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                Text(description, style: TextStyle(fontSize: 12, color: Colors.blue[800])),
+                Text(description, style: TextStyle(fontSize: 12,)),
               ],
             ),
           ),

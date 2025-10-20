@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/constants/tax.dart';
@@ -557,9 +558,8 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
       width: double.infinity,
       child: BlocBuilder<MovieBookingBloc, MovieBookingState>(
         builder: (context, state) {
-          return CustomButton(
-            text: "${state is MovieBookingLoading
-                ? const SizedBox(
+          return AppButton(
+            text: "${state is MovieBookingLoading ? const SizedBox(
               height: 20,
               width: 20,
               child: CircularProgressIndicator(
@@ -568,10 +568,8 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
               ),
             ) :
             "Confirm Booking & Pay"}",
-            height: 54.h,
-            backgroundColor: MyTheme.secondaryColor,
-            textColor: Colors.white,
-            onPressed: state is MovieBookingLoading ? null : _processBooking,
+            color: MyTheme.secondaryColor,
+            onTap: state is MovieBookingLoading ? null : _processBooking,
           );
           //   ElevatedButton(
           //   onPressed: state is MovieBookingLoading ? null : _processBooking,

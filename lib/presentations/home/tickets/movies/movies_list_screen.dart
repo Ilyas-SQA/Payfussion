@@ -485,7 +485,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                                   ),
                                   child: Text(
                                     "\$${widget.movie.ticketPrice.toStringAsFixed(2)}",
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: MyTheme.secondaryColor,
                                       fontSize: 14,

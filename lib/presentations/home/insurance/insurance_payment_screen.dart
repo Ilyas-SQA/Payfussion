@@ -983,6 +983,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
               card.brandIconPath,
               height: 24.h,
               width: 32.w,
+              color: isDark ? Colors.white : Colors.black,
             ),
             16.horizontalSpace,
             Expanded(

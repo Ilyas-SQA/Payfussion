@@ -283,10 +283,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                         duration: const Duration(milliseconds: 200),
                         height: 56.h,
                         child: OutlinedButton.icon(
-                          onPressed: state.submitStatus == SubmitStatus.submitting ||
-                              state.verifyStatus == VerifyStatus.verifying
-                              ? null
-                              : () => context.read<RecipientBloc>().add(const SubmitPressed(addAnother: true)),
+                          onPressed: state.submitStatus == SubmitStatus.submitting || state.verifyStatus == VerifyStatus.verifying ? null : () => context.read<RecipientBloc>().add(const SubmitPressed(addAnother: true)),
                           style: OutlinedButton.styleFrom(
                             side: const BorderSide(color: MyTheme.primaryColor),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
@@ -297,6 +294,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                             style: TextStyle(
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w600,
+                              color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),

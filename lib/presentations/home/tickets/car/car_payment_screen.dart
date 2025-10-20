@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:payfussion/services/payment_service.dart';
 import 'package:uuid/uuid.dart';
@@ -365,7 +366,8 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
               subtitle: const Text("Immediate pickup"),
               value: "Now",
               groupValue: _rideType,
-              onChanged: (value) {
+              activeColor: MyTheme.secondaryColor,
+              onChanged: (String? value) {
                 setState(() {
                   _rideType = value!;
                 });
@@ -376,7 +378,8 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
               subtitle: const Text("Book for later"),
               value: "Scheduled",
               groupValue: _rideType,
-              onChanged: (value) {
+              activeColor: MyTheme.secondaryColor,
+              onChanged: (String? value) {
                 setState(() {
                   _rideType = value!;
                 });
@@ -634,27 +637,22 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
   }
 
   Widget _buildBookButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: BlocBuilder<RideBookingBloc, RideBookingState>(
-        builder: (context, state) {
-          return CustomButton(
-            text: "${state is RideBookingLoading ?
-            const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                color: Colors.white,
-                strokeWidth: 2,
-              ),) :
-            _rideType == 'Now' ? "Book Ride Now" : "Schedule Ride"}",
-            height: 54.h,
-            backgroundColor: MyTheme.secondaryColor,
-            textColor: Colors.white,
-            onPressed: state is RideBookingLoading ? null : _processBooking,
-          );
-        },
-      ),
+    return BlocBuilder<RideBookingBloc, RideBookingState>(
+      builder: (context, state) {
+        return AppButton(
+          text: "${state is RideBookingLoading ?
+          const SizedBox(
+            height: 20,
+            width: 20,
+            child: CircularProgressIndicator(
+              color: Colors.white,
+              strokeWidth: 2,
+            ),) :
+          _rideType == 'Now' ? "Book Ride Now" : "Schedule Ride"}",
+          color: MyTheme.secondaryColor,
+          onTap: state is RideBookingLoading ? null : _processBooking,
+        );
+      },
     );
   }
 
@@ -879,8 +877,15 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
 
         return Container(
           decoration: BoxDecoration(
-            color: isDark ? Colors.grey.shade800 : Colors.white,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: BorderRadius.circular(5.r),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                blurRadius: 5,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -892,6 +897,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
                   'Select Card',
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black,
                   ),
                 ),
                 const SizedBox(height: 16),

@@ -293,9 +293,6 @@ class _AnimatedFlightCardState extends State<AnimatedFlightCard> with TickerProv
                                 delay: Duration(milliseconds: 200 + (widget.index * 50)),
                                 child: Text(
                                   "Flight ${widget.flight.flightNumber}",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                  ),
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -318,7 +315,6 @@ class _AnimatedFlightCardState extends State<AnimatedFlightCard> with TickerProv
                                   child: Text(
                                     widget.flight.flightType,
                                     style: const TextStyle(
-                                      color: Colors.white,
                                       fontSize: 10,
                                       fontWeight: FontWeight.w500,
                                     ),

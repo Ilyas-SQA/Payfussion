@@ -5,7 +5,7 @@ class AppButton extends StatelessWidget {
   const AppButton({
     required this.text,
     required this.onTap,
-    this.height = 42,
+    this.height = 50,
     this.width = double.infinity,
     this.loading = false,
     this.color = MyTheme.primaryColor,

@@ -45,9 +45,6 @@ class ConvertWidget extends StatelessWidget {
             vertical: mediaQuery.width * 0.08,
             horizontal: mediaQuery.width * 0.06,
           ),
-          decoration: BoxDecoration(
-            color: isDarkMode ? Colors.grey[900] : Colors.grey[50],
-          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,

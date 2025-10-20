@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,10 +13,8 @@ import '../../logic/blocs/currency_convert/currency_convert_bloc.dart';
 import '../../logic/blocs/currency_convert/currency_convert_event.dart';
 import '../../logic/blocs/currency_convert/currency_convert_state.dart';
 import '../widgets/payment_selector_widget.dart';
-import '../widgets/profile_app_bar.dart';
 import 'currency_graph_screen.dart';
 import 'currency_viewmodel.dart';
-import 'widget/graph_widget.dart';
 
 class CurrencyExchangeView extends StatefulWidget {
   const CurrencyExchangeView({super.key});
@@ -352,37 +349,47 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> {
   }
 
   Widget _buildForesight(bool isDark) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 22.h),
-      decoration: BoxDecoration(
-        color: isDark ? Colors.black26 : Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min, // KEY FIX 5: Add mainAxisSize.min
-        children: [
-          _buildForesightHeader(isDark),
-          10.verticalSpace,
-          InkWell(
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const CurrencyGraphView())),
-            child: _buildListTile(CupertinoIcons.graph_square_fill, 'Graph'),
-          ),
-          InkWell(
-            child: _buildListTile(Icons.calculate_rounded, 'Calculator'),
-            onTap: () {
-              context.push(RouteNames.calculatorView);
-            },
-          ),
-          const SizedBox(height: 20),
-          InkWell(
-            child: _buildListTile(Icons.history, 'Exchange History',),
-            onTap: () {
-              context.push(RouteNames.currencyExchangeHistoryView);
-            },
-          ),
-          const SizedBox(height: 20), // Add bottom padding
-        ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 22.h),
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildForesightHeader(isDark),
+            10.verticalSpace,
+            InkWell(
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const CurrencyGraphView())),
+              child: _buildListTile(CupertinoIcons.graph_square_fill, 'Graph'),
+            ),
+            InkWell(
+              child: _buildListTile(Icons.calculate_rounded, 'Calculator'),
+              onTap: () {
+                context.push(RouteNames.calculatorView);
+              },
+            ),
+            const SizedBox(height: 20),
+            InkWell(
+              child: _buildListTile(Icons.history, 'Exchange History',),
+              onTap: () {
+                context.push(RouteNames.currencyExchangeHistoryView);
+              },
+            ),
+            const SizedBox(height: 20), // Add bottom padding
+          ],
+        ),
       ),
     );
   }
@@ -390,7 +397,11 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> {
   Widget _buildForesightHeader(bool isDark) {
     return ExpansionTile(
       leading: _circleIcon(Icons.lightbulb_outline, isDark),
+      collapsedIconColor: MyTheme.primaryColor,
       title: _whiteText('Foresight', 16.sp, FontWeight.w600, isDark),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.r),
+      ),
       children: [
         ...[
           'Rates usually drop between 1AM to 6PM on Monday',
@@ -416,7 +427,7 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> {
       trailing: Icon(
         Icons.arrow_forward_ios,
         size: 16.sp,
-        color: isDark ? Colors.white : Colors.black,
+        color: MyTheme.primaryColor,
       ),
     );
   }
@@ -442,8 +453,8 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> {
     return Container(
       width: 35.w,
       height: 35.h,
-      decoration: BoxDecoration(
-        color: MyTheme.secondaryColor,
+      decoration: const BoxDecoration(
+        color: MyTheme.primaryColor,
         shape: BoxShape.circle,
       ),
       child: Icon(

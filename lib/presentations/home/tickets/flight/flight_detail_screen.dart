@@ -342,8 +342,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                                             opacity: animation,
                                             child: SlideTransition(
                                               position: animation.drive(
-                                                Tween(begin: const Offset(1.0, 0.0), end: Offset.zero)
-                                                    .chain(CurveTween(curve: Curves.easeOutCubic)),
+                                                Tween(begin: const Offset(1.0, 0.0), end: Offset.zero).chain(CurveTween(curve: Curves.easeOutCubic)),
                                               ),
                                               child: child,
                                             ),

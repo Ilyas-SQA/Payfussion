@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:payfussion/services/payment_service.dart';
 import 'package:uuid/uuid.dart';
@@ -554,21 +555,17 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> {
       width: double.infinity,
       child: BlocBuilder<BusBookingBloc, BusBookingState>(
         builder: (context, state) {
-          return CustomButton(
-            text: "${
-                state is BusBookingLoading ? const SizedBox(
+          return AppButton(
+            text: "${state is BusBookingLoading ? const SizedBox(
                   height: 20,
                   width: 20,
                   child: CircularProgressIndicator(
                     color: Colors.white,
                     strokeWidth: 2,
                   ),
-                ) : "Confirm Booking & Pay"
-            }",
-            height: 54.h,
-            backgroundColor: MyTheme.secondaryColor,
-            textColor: Colors.white,
-            onPressed: state is BusBookingLoading ? null : _processBooking,
+                ) : "Confirm Booking & Pay"}",
+            color: MyTheme.secondaryColor,
+            onTap: state is BusBookingLoading ? null : _processBooking,
           );
         },
       ),
@@ -717,9 +714,15 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> {
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
         decoration: BoxDecoration(
-          color: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
-          border: isSelected ? Border.all(color: MyTheme.secondaryColor, width: 2) : Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(8),
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: ListTile(
           contentPadding: EdgeInsets.zero,
