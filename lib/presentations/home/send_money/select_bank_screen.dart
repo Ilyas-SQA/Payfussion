@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 
 import '../../../core/theme/theme.dart';
 import '../../../data/models/recipient/recipient_model.dart';
@@ -515,25 +516,11 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
                               ),
                             ),
                             SizedBox(height: 8.h),
-                            TextFormField(
+                            AppTextormField(
                               controller: _accountNumberController,
                               validator: _validateAccountNumber,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                                LengthLimitingTextInputFormatter(20),
-                              ],
-                              decoration: InputDecoration(
-                                hintText: 'Enter account number',
-                                suffixIcon: const Icon(Icons.account_balance_wallet),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                  borderSide: BorderSide(color: MyTheme.primaryColor, width: 2),
-                                ),
-                              ),
+                              helpText: 'Enter account number',
+                              prefixIcon: const Icon(Icons.account_balance_wallet),
                             ),
                           ],
                         ),
@@ -557,18 +544,24 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
                               validator: _validatePaymentPurpose,
                               decoration: InputDecoration(
                                 hintText: 'Select payment purpose',
+                                hintStyle: const TextStyle(color: Colors.white),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.r),
+                                  borderSide: const BorderSide(color: MyTheme.primaryColor, width: 2),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  borderSide: const BorderSide(color: MyTheme.primaryColor, width: 2),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.r),
-                                  borderSide: BorderSide(color: MyTheme.primaryColor, width: 2),
+                                  borderSide: const BorderSide(color: MyTheme.primaryColor, width: 2),
                                 ),
                               ),
                               items: _paymentPurposes.map((String purpose) {
                                 return DropdownMenuItem<String>(
                                   value: purpose,
-                                  child: Text(purpose),
+                                  child: Text(purpose,style: TextStyle(color: Theme.brightnessOf(context) == Brightness.light ? Colors.black : Colors.white),),
                                 );
                               }).toList(),
                               onChanged: (String? newValue) {
@@ -590,20 +583,11 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
                                     ),
                                   ),
                                   SizedBox(height: 8.h),
-                                  TextFormField(
+                                  AppTextormField(
                                     controller: _paymentPurposeController,
                                     validator: _validatePaymentPurpose,
-                                    maxLines: 2,
-                                    decoration: InputDecoration(
-                                      hintText: 'Enter payment purpose',
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12.r),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12.r),
-                                        borderSide: BorderSide(color: MyTheme.primaryColor, width: 2),
-                                      ),
-                                    ),
+                                    helpText: 'Enter payment purpose',
+                                    prefixIcon: const Icon(Icons.account_balance_wallet),
                                   ),
                                 ],
                               ),
@@ -625,25 +609,11 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
                               ),
                             ),
                             SizedBox(height: 8.h),
-                            TextFormField(
+                            AppTextormField(
                               controller: _phoneNumberController,
                               validator: _validatePhoneNumber,
-                              keyboardType: TextInputType.phone,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(RegExp(r'[0-9+\s-]')),
-                                LengthLimitingTextInputFormatter(15),
-                              ],
-                              decoration: InputDecoration(
-                                hintText: '+92 300 1234567',
-                                suffixIcon: const Icon(Icons.phone),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                  borderSide: BorderSide(color: MyTheme.primaryColor, width: 2),
-                                ),
-                              ),
+                              helpText: '+92 300 1234567',
+                              prefixIcon: const Icon(Icons.phone),
                             ),
                           ],
                         ),
@@ -654,15 +624,21 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
                         Container(
                           padding: EdgeInsets.all(16.w),
                           decoration: BoxDecoration(
-                            color: Colors.blue.shade50,
-                            borderRadius: BorderRadius.circular(12.r),
-                            border: Border.all(color: Colors.blue.shade200),
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            borderRadius: BorderRadius.circular(5.r),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                                blurRadius: 5,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                           ),
                           child: Row(
                             children: [
                               Icon(
                                 Icons.info_outline,
-                                color: Colors.blue.shade600,
+                                color: MyTheme.primaryColor,
                                 size: 20.sp,
                               ),
                               SizedBox(width: 12.w),
@@ -671,7 +647,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
                                   'Please ensure all details are correct. Account number should be verified with the bank.',
                                   style: TextStyle(
                                     fontSize: 12.sp,
-                                    color: Colors.blue.shade700,
+                                    color: MyTheme.primaryColor,
                                   ),
                                 ),
                               ),
