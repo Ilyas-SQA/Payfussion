@@ -360,7 +360,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
             const SizedBox(height: 16),
             Row(
               children: [
-                Expanded(
+                Flexible(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -402,11 +402,26 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
                       DropdownButtonFormField<String>(
                         value: _selectedClass,
                         decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: MyTheme.secondaryColor,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: MyTheme.secondaryColor,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: MyTheme.secondaryColor,
+                            ),
+                          ),
+                          focusColor: MyTheme.secondaryColor,
                         ),
                         items: ['Economy', 'Premium Economy', 'Business', 'First Class'].map((cls) => DropdownMenuItem(
                           value: cls,
-                          child: Text(cls),
+                          child: Text(cls,style: TextStyle(fontSize: 12),),
                         )).toList(),
                         onChanged: (value) {
                           setState(() {
