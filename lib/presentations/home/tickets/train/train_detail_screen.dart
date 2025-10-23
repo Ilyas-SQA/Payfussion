@@ -193,24 +193,10 @@ class _TrainDetailScreenState extends State<TrainDetailScreen>
               children: [
                 Hero(
                   tag: 'train-icon-${widget.train.name}',
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: MyTheme.secondaryColor.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: MyTheme.secondaryColor.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.train,
-                      size: 32,
-                      color: MyTheme.secondaryColor,
-                    ),
+                  child: const Icon(
+                    Icons.train,
+                    size: 32,
+                    color: MyTheme.secondaryColor,
                   ),
                 ),
                 const SizedBox(width: 16),
