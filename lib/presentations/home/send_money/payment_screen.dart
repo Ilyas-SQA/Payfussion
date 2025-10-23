@@ -303,14 +303,13 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
             child: Container(
               padding: EdgeInsets.all(16.r),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12.r),
-                border: Border.all(color: Colors.grey.withOpacity(0.2)),
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: BorderRadius.circular(5.r),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1 * value),
-                    blurRadius: 4 * value,
-                    offset: Offset(0, 2 * value),
+                    color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                    blurRadius: 5,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
@@ -357,7 +356,6 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                       style: TextStyle(
                         fontSize: isTotal ? 16.sp : 14.sp,
                         fontWeight: isTotal ? FontWeight.w600 : FontWeight.normal,
-                        color: isTotal ? AppColors.textPrimary : AppColors.textSecondary,
                       ),
                     ),
                     if (!isTotal && label == PaymentStrings.transactionFee) ...[
@@ -375,7 +373,6 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                   style: TextStyle(
                     fontSize: isTotal ? 16.sp : 14.sp,
                     fontWeight: isTotal ? FontWeight.bold : FontWeight.w500,
-                    color: isTotal ? MyTheme.primaryColor : AppColors.textPrimary,
                   ),
                 ),
               ],
@@ -469,8 +466,15 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                       child: Container(
                         padding: EdgeInsets.all(16.r),
                         decoration: BoxDecoration(
-                          color: Colors.grey.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12.r),
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                          borderRadius: BorderRadius.circular(5.r),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                              blurRadius: 5,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
                         child: Column(
                           children: [
