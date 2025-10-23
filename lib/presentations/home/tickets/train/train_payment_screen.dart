@@ -422,7 +422,24 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
           duration: const Duration(milliseconds: 300),
           child: DropdownButtonFormField<String>(
             value: _selectedClass,
-            decoration: const InputDecoration(border: OutlineInputBorder()),
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: MyTheme.secondaryColor,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: MyTheme.secondaryColor,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: MyTheme.secondaryColor,
+                ),
+              ),
+              focusColor: MyTheme.secondaryColor,
+            ),
             items: ['Economy', 'Business'].map((cls) => DropdownMenuItem(value: cls, child: Text(cls))).toList(),
             onChanged: (value) => setState(() => _selectedClass = value!),
           ),
