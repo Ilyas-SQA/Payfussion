@@ -391,7 +391,22 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> {
                       DropdownButtonFormField<String>(
                         value: _selectedSeatType,
                         decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: MyTheme.secondaryColor,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: MyTheme.secondaryColor,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: MyTheme.secondaryColor,
+                            ),
+                          ),
+                          focusColor: MyTheme.secondaryColor,
                         ),
                         items: ['Standard', 'Premium'].map((type) => DropdownMenuItem(
                           value: type,
