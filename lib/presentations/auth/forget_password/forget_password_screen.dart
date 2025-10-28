@@ -1,8 +1,12 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/core/constants/fonts.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import '../../../core/constants/image_url.dart';
 import '../../../core/constants/routes_name.dart';
@@ -18,11 +22,12 @@ class ForgetPasswordScreen extends StatefulWidget {
   State<ForgetPasswordScreen> createState() => _ForgetPasswordScreenState();
 }
 
-class _ForgetPasswordScreenState extends State<ForgetPasswordScreen>
-    with SingleTickerProviderStateMixin {
+class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> with TickerProviderStateMixin {
   final TextEditingController controller = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   late AnimationController _animationController;
+  late AnimationController _backgroundAnimationController;
   late Animation<double> _logoScaleAnimation;
   late Animation<double> _logoFadeAnimation;
   late Animation<double> _titleFadeAnimation;
@@ -43,9 +48,14 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen>
       vsync: this,
     );
 
-    // Logo animations
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+
+    // Initialize all animations here
     _logoScaleAnimation = Tween<double>(
-      begin: 0.3,
+      begin: 0.0,
       end: 1.0,
     ).animate(
       CurvedAnimation(
@@ -64,7 +74,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen>
       ),
     );
 
-    // Title animations
     _titleFadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -85,7 +94,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen>
       ),
     );
 
-    // Subtitle animations
     _subtitleFadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -106,7 +114,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen>
       ),
     );
 
-    // Email field animations
     _emailFieldAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -127,7 +134,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen>
       ),
     );
 
-    // Button animation
     _buttonAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -138,7 +144,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen>
       ),
     );
 
-    // Back text animation
     _backTextAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -149,13 +154,14 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen>
       ),
     );
 
-    // Start animation
+    // Start the animations after initialization
     _animationController.forward();
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _backgroundAnimationController.dispose();
     controller.dispose();
     super.dispose();
   }
@@ -186,149 +192,198 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen>
         }
       },
       child: Scaffold(
-        body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 30.h),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(height: 60.h),
+        body: Stack(
+          children: [
+            AnimatedBuilder(
+              animation: _backgroundAnimationController,
+              builder: (BuildContext context, Widget? child) {
+                return Stack(
+                  children: List.generate(8, (int index) {
+                    /// Calculate movement path for each circle
+                    final double angle = (_backgroundAnimationController.value * 2 * pi) + (index * pi / 4);
+                    final double radiusX = 150 + (index * 20);
+                    final double radiusY = 200 + (index * 30);
 
-              // Animated Logo
-              FadeTransition(
-                opacity: _logoFadeAnimation,
-                child: ScaleTransition(
-                  scale: _logoScaleAnimation,
-                  child: Hero(
-                    tag: 'logo',
-                    child: Image.asset(TImageUrl.iconLogo, height: 100.h),
-                  ),
-                ),
-              ),
+                    final double left = MediaQuery.of(context).size.width / 2 + cos(angle) * radiusX - 125;
+                    final double top = MediaQuery.of(context).size.height / 2 + sin(angle) * radiusY - 125;
 
-              20.verticalSpace,
+                    /// Different sizes and colors
+                    final double size = 150 + (index * 30) + sin(_backgroundAnimationController.value * 2 * pi) * 20;
+                    final Color circleColor = index % 3 == 0 ? MyTheme.primaryColor.withOpacity(0.15) : index % 3 == 1 ? MyTheme.secondaryColor.withOpacity(0.15) : MyTheme.secondaryColor.withOpacity(0.15);
 
-              // Animated Title
-              SlideTransition(
-                position: _titleSlideAnimation,
-                child: FadeTransition(
-                  opacity: _titleFadeAnimation,
-                  child: Text(
-                    'Forgot Password?',
-                    style: TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
-
-              10.verticalSpace,
-
-              // Animated Subtitle
-              SlideTransition(
-                position: _subtitleSlideAnimation,
-                child: FadeTransition(
-                  opacity: _subtitleFadeAnimation,
-                  child: Text(
-                    "Don't worry! Enter your registered email\nand we'll send you a reset link.",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontFamily: 'Inter',
-                      color: Colors.grey.shade600,
-                      height: 1.5,
-                    ),
-                  ),
-                ),
-              ),
-
-              20.verticalSpace,
-
-              // Animated Email Input Field
-              SlideTransition(
-                position: _emailFieldSlideAnimation,
-                child: FadeTransition(
-                  opacity: _emailFieldAnimation,
-                  child: AppTextormField(
-                    controller: controller,
-                    isPasswordField: false,
-                    helpText: 'Enter your email address',
-                  ),
-                ),
-              ),
-
-              30.verticalSpace,
-
-              // Animated Send Reset Button
-              FadeTransition(
-                opacity: _buttonAnimation,
-                child: ScaleTransition(
-                  scale: _buttonAnimation,
-                  child: AppButton(
-                    onTap: () {
-                      final String input = controller.text.trim();
-                      if (input.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Email cannot be empty"),
-                          ),
-                        );
-                        return;
-                      }
-
-                      context.read<AuthBloc>().add(
-                        ForgotPasswordWithEmail(email: input),
-                      );
-                    },
-                    text: 'Send Reset Link',
-                  ),
-                ),
-              ),
-
-              30.verticalSpace,
-
-              // Animated Back to Login
-              FadeTransition(
-                opacity: _backTextAnimation,
-                child: SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0, 0.5),
-                    end: Offset.zero,
-                  ).animate(
-                    CurvedAnimation(
-                      parent: _animationController,
-                      curve: const Interval(0.75, 1.0, curve: Curves.easeOut),
-                    ),
-                  ),
-                  child: GestureDetector(
-                    onTap: () => context.go(RouteNames.signIn),
-                    child: RichText(
-                      text: TextSpan(
-                        text: "Remember your password? ",
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          color: Colors.grey.shade600,
-                          fontSize: 14.sp,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: "Sign in",
-                            style: TextStyle(
-                              color: MyTheme.secondaryColor,
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.bold,
+                    return Positioned(
+                      left: left,
+                      top: top,
+                      child: Container(
+                        width: size,
+                        height: size,
+                        decoration: BoxDecoration(
+                          color: circleColor,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: circleColor.withOpacity(0.3),
+                              blurRadius: 40,
+                              spreadRadius: 10,
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
+                );
+              },
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 30.h),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 60.h),
+
+                    // Animated Logo
+                    FadeTransition(
+                      opacity: _logoFadeAnimation,
+                      child: ScaleTransition(
+                        scale: _logoScaleAnimation,
+                        child: Hero(
+                          tag: 'logo',
+                          child: Image.asset(TImageUrl.iconLogo, height: 100.h),
+                        ),
                       ),
                     ),
-                  ),
+
+                    20.verticalSpace,
+
+                    // Animated Title
+                    SlideTransition(
+                      position: _titleSlideAnimation,
+                      child: FadeTransition(
+                        opacity: _titleFadeAnimation,
+                        child: Text(
+                          'Forgot Password?',
+                          style: Font.montserratFont(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    10.verticalSpace,
+
+                    // Animated Subtitle
+                    SlideTransition(
+                      position: _subtitleSlideAnimation,
+                      child: FadeTransition(
+                        opacity: _subtitleFadeAnimation,
+                        child: Text(
+                          "Don't worry! Enter your registered email\nand we'll send you a reset link.",
+                          textAlign: TextAlign.center,
+                          style: Font.montserratFont(
+                            fontSize: 14.sp,
+                            color: Colors.grey,
+                            height: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    20.verticalSpace,
+
+                    // Animated Email Input Field with Validation
+                    SlideTransition(
+                      position: _emailFieldSlideAnimation,
+                      child: FadeTransition(
+                        opacity: _emailFieldAnimation,
+                        child: AppTextFormField(
+                          controller: controller,
+                          helpText: 'Enter your email address',
+                          validator: (String? value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Email cannot be empty';
+                            }
+                            final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                            if (!emailRegex.hasMatch(value)) {
+                              return 'Please enter a valid email address';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                    ),
+
+                    30.verticalSpace,
+
+                    // Animated Send Reset Button
+                    FadeTransition(
+                      opacity: _buttonAnimation,
+                      child: ScaleTransition(
+                        scale: _buttonAnimation,
+                        child: AppButton(
+                          onTap: () {
+                            if (_formKey.currentState!.validate()) {
+                              final String input = controller.text.trim();
+                              context.read<AuthBloc>().add(
+                                ForgotPasswordWithEmail(email: input),
+                              );
+                            }
+                          },
+                          text: 'Send Reset Link',
+                          isIcon: true,
+                          color: MyTheme.secondaryColor,
+                          icon: Icons.email,
+                        ),
+                      ),
+                    ),
+
+                    30.verticalSpace,
+
+                    // Animated Back to Login
+                    FadeTransition(
+                      opacity: _backTextAnimation,
+                      child: SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(0, 0.5),
+                          end: Offset.zero,
+                        ).animate(
+                          CurvedAnimation(
+                            parent: _animationController,
+                            curve: const Interval(0.75, 1.0, curve: Curves.easeOut),
+                          ),
+                        ),
+                        child: GestureDetector(
+                          onTap: () => context.go(RouteNames.signIn),
+                          child: RichText(
+                            text: TextSpan(
+                              text: "Remember your password? ",
+                              style: Font.montserratFont(
+                                fontSize: 14.sp,
+                                color: Theme.brightnessOf(context) == Brightness.light ? Colors.black : Colors.white,
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: "Sign in",
+                                  style: Font.montserratFont(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.brightnessOf(context) == Brightness.light ? Colors.black : Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
