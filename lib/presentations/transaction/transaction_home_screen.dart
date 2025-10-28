@@ -686,7 +686,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen>
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 height: 45.h,
-                child: AppTextormField(
+                child: AppTextFormField(
                   controller: searchController,
                   helpText: 'Search ${_getCategoryTitle().toLowerCase()}...',
                   isPasswordField: false,

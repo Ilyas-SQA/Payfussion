@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:payfussion/presentations/widgets/settings_widgets/data_and_permission_widgets/permission_card.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../../../core/constants/fonts.dart';
 import '../../../../core/utils/setting_utils/data_and_permission_utils/app_colors_utils.dart';
 import '../../../../core/utils/setting_utils/data_and_permission_utils/app_styles.dart';
 import '../../../../core/utils/setting_utils/data_and_permission_utils/permission_utils.dart';
@@ -27,14 +28,14 @@ class AppPermissionsTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'App Permissions',
-            style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,),
+            style: Font.montserratFont(fontSize: 18,fontWeight: FontWeight.bold,),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Control which features and device capabilities PayFusion can access.',
-            style: TextStyle(fontSize: 12),
+            style: Font.montserratFont(fontSize: 12),
           ),
           const SizedBox(height: 24),
 
@@ -59,7 +60,7 @@ class AppPermissionsTab extends StatelessWidget {
             iconColor: colors.warning,
             title: 'Why We Need Permissions',
             colors: colors,
-            content: Column(
+            content: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 BulletPoint(

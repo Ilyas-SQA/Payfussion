@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/presentations/splash_screen/splash_service.dart';
+import '../../core/constants/fonts.dart';
 import '../../core/constants/image_url.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -10,8 +12,7 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with TickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
   final SplashServices splashServices = SplashServices();
 
   late AnimationController _logoController;
@@ -23,13 +24,12 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _logoOpacityAnimation;
   late Animation<double> _textSlideAnimation;
   late Animation<double> _textOpacityAnimation;
-  late Animation<double> _backgroundFadeAnimation;
 
   @override
   void initState() {
     super.initState();
 
-    // Initialize animation controllers
+    /// Initialize animation controllers
     _logoController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
@@ -87,14 +87,6 @@ class _SplashScreenState extends State<SplashScreen>
       curve: Curves.easeIn,
     ));
 
-    // Background fade animation
-    _backgroundFadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeIn,
-    ));
 
     // Start animations sequence
     _startAnimations();
@@ -180,10 +172,9 @@ class _SplashScreenState extends State<SplashScreen>
                     offset: Offset(0, _textSlideAnimation.value),
                     child: Opacity(
                       opacity: _textOpacityAnimation.value,
-                      child: const Text(
+                      child: Text(
                         'PayFussion',
-                        style: TextStyle(
-                          fontFamily: 'Montserrat',
+                        style: Font.montserratFont(
                           fontSize: 24,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 1.2,
@@ -192,18 +183,16 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                   ),
 
-                  // Optional: Add a subtle loading indicator
+                  // Awesome Loader (using SpinKit from flutter_spinkit)
                   const SizedBox(height: 40),
                   Opacity(
                     opacity: _textOpacityAnimation.value,
-                    child: SizedBox(
+                    child: const SizedBox(
                       width: 40,
                       height: 40,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 3,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Theme.of(context).brightness == Brightness.dark ? MyTheme.primaryColor : MyTheme.secondaryColor,
-                        ),
+                      child: SpinKitFadingCircle(
+                        color:  MyTheme.primaryColor,
+                        size: 50.0,
                       ),
                     ),
                   ),

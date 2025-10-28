@@ -74,13 +74,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    AppTextormField(
+                    AppTextFormField(
                       controller: _titleController,
                       isPasswordField: false,
                       helpText: 'Tile',
                     ),
                     SizedBox(height: 20.h),
-                    AppTextormField(
+                    AppTextFormField(
                       controller: _contentController,
                       isPasswordField: false,
                       helpText: 'Content',

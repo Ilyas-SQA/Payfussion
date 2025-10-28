@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/utils/setting_utils/data_and_permission_utils/app_styles.dart';
 import 'package:payfussion/core/utils/setting_utils/data_and_permission_utils/app_colors_utils.dart';
 
+import '../../../../core/constants/fonts.dart';
+
 class FeatureCard extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
@@ -43,7 +45,7 @@ class FeatureCard extends StatelessWidget {
               Icon(icon, size: 28, color: iconColor),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(title, style: const TextStyle(
+                child: Text(title, style: Font.montserratFont(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),),

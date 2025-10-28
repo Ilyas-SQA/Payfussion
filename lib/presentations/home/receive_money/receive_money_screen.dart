@@ -231,7 +231,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
           scale: 0.95 + (0.05 * value),
           child: Padding(
             padding: const EdgeInsets.all(12),
-            child: AppTextormField(
+            child: AppTextFormField(
               controller: _search,
               onChanged: (q) {
                 _debounce?.cancel();

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../core/constants/fonts.dart';
 import '../../core/theme/theme.dart';
 
 // Assuming you might have a helper for responsive sizing or constants
@@ -160,7 +161,7 @@ class TaxComplianceScreen extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12.0, top: 8.0),
       child: Text(
         title.toUpperCase(),
-        style: const TextStyle(
+        style: Font.montserratFont(
           fontSize: 14,
           fontWeight: FontWeight.w600, // Slightly bolder for section headers
           letterSpacing: 0.5,
@@ -282,7 +283,7 @@ class TaxComplianceScreen extends StatelessWidget {
       child: Text(
         'Disclaimer: PayFusion provides information and tools for your convenience. The content herein is for informational purposes only and does not constitute financial, tax, or legal advice. Please consult with a qualified professional for advice tailored to your specific situation.',
         textAlign: TextAlign.center,
-        style: TextStyle(
+        style: Font.montserratFont(
           fontSize: 14.sp,
           color: Colors.grey, // Lighter color for disclaimer
           fontStyle: FontStyle.italic,

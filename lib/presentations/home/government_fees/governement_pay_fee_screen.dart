@@ -266,7 +266,7 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
               // Text Input Field
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: AppTextormField(
+                child: AppTextFormField(
                   controller: _textIdController,
                   prefixIcon: const Icon(Icons.search,color: MyTheme.secondaryColor,),
                   useGreenColor: true,

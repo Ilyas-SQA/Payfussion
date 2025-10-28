@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
-class AppTextormField extends StatelessWidget {
+class AppTextFormField extends StatelessWidget {
   final bool isPasswordField;
   final String helpText;
   final TextEditingController controller;
@@ -12,8 +12,9 @@ class AppTextormField extends StatelessWidget {
   final Widget? prefixIcon;
   final String? Function(String?)? validator;
   final bool useGreenColor;
+  final TextInputType? keyboardType;
 
-  const AppTextormField({
+  const AppTextFormField({
     super.key,
     this.isPasswordField = false,
     required this.helpText,
@@ -21,27 +22,18 @@ class AppTextormField extends StatelessWidget {
     this.prefixIcon,
     this.validator,
     this.useGreenColor = false,
+    this.keyboardType,
   });
-
-  TextInputType _getKeyboardType() {
-    if (helpText.toLowerCase().contains("email")) {
-      return TextInputType.emailAddress;
-    } else if (helpText.toLowerCase().contains("phone")) {
-      return TextInputType.phone;
-    } else {
-      return TextInputType.text;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => PasswordVisibilityCubit(),
       child: BlocBuilder<PasswordVisibilityCubit, bool>(
-        builder: (context, isObscure) {
+        builder: (BuildContext context, bool isObscure) {
           return TextFormField(
             controller: controller,
-            keyboardType: _getKeyboardType(),
+            keyboardType: keyboardType,
             cursorColor:  useGreenColor ? MyTheme.secondaryColor : MyTheme.primaryColor,
             textAlignVertical: TextAlignVertical.center,
             obscureText: isPasswordField ? isObscure : false,
@@ -49,7 +41,7 @@ class AppTextormField extends StatelessWidget {
             style: TextStyle(
               fontSize: 14.sp,
               fontFamily: 'Inter',
-              fontWeight: FontWeight.w400,
+              fontWeight: FontWeight.w500,
             ),
             decoration: InputDecoration(
               contentPadding: EdgeInsets.symmetric(
@@ -62,54 +54,13 @@ class AppTextormField extends StatelessWidget {
                 fontSize: 14.sp,
               ),
               prefixIcon: prefixIcon,
-              /// Normal Border
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8.r)),
-                borderSide: BorderSide(
-                  color: useGreenColor ? MyTheme.secondaryColor : MyTheme.primaryColor,
-                  width: 1,
-                ),
-              ),
-
-              /// Focused Border
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8.r)),
-                borderSide: BorderSide(
-                  color: useGreenColor ? MyTheme.secondaryColor : MyTheme.primaryColor,
-                  width: 1.5,
-                ),
-              ),
-
-              /// Error Border
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8.r)),
-                borderSide: const BorderSide(
-                  color: Colors.red,
-                  width: 1.2,
-                ),
-              ),
-
-              /// Focused Error Border
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8.r)),
-                borderSide: const BorderSide(
-                  color: Colors.red,
-                  width: 1.5,
-                ),
-              ),
-
-              suffixIcon: isPasswordField
-                  ? InkWell(
-                onTap: () =>
-                    context.read<PasswordVisibilityCubit>().toggle(),
+              suffixIcon: isPasswordField ? InkWell(
+                onTap: () => context.read<PasswordVisibilityCubit>().toggle(),
                 child: Icon(
-                  isObscure
-                      ? CupertinoIcons.eye_slash_fill
-                      : Icons.remove_red_eye_outlined,
+                  isObscure ? CupertinoIcons.eye_slash_fill : Icons.remove_red_eye_outlined,
                   color: useGreenColor ? MyTheme.secondaryColor : MyTheme.primaryColor,
                 ),
-              )
-                  : const SizedBox(),
+              ) : const SizedBox(),
             ),
             onChanged: onChanged,
             validator: validator,

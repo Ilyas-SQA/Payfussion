@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:icons_plus/icons_plus.dart';
 import 'package:payfussion/data/models/home_modals/nav_bar_items.dart';
 
+import '../../../core/constants/fonts.dart';
+import '../../../core/constants/image_url.dart';
 import '../../../core/theme/theme.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
 
-  const CustomBottomNavBar({
+  CustomBottomNavBar({
     super.key,
     required this.currentIndex,
     required this.onTap,
@@ -47,7 +50,7 @@ class CustomBottomNavBar extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: navBarItems.map((item) {
-              final isSelected = navBarItems.indexOf(item) == currentIndex;
+              final bool isSelected = navBarItems.indexOf(item) == currentIndex;
               return GestureDetector(
                 onTap: () => onTap(navBarItems.indexOf(item)),
                 child: Column(
@@ -55,15 +58,14 @@ class CustomBottomNavBar extends StatelessWidget {
                   children: [
                     SvgPicture.asset(
                       item.icon,
-                      height: 20.h,
-                      width: 20.w,
+                      width: 25,
+                      height: 25,
                       color: isSelected ? MyTheme.primaryColor : Colors.grey,
                     ),
                     SizedBox(height: 10.h),
                     Text(
                       item.title,
-                      style: TextStyle(
-                        fontFamily: "Montserrat",
+                      style: Font.montserratFont(
                         fontWeight: FontWeight.w500,
                         fontSize: 12.sp,
                         color: isSelected ? MyTheme.primaryColor : Colors.grey,

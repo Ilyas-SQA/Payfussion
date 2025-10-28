@@ -26,15 +26,15 @@ class _RouteScreenState extends State<RouteScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<RouteCubit, int>(
-      buildWhen: (previous, current) => previous != current,
-      builder: (context, currentIndex) {
-        // Handle visibility changes when index changes
+      buildWhen: (int previous, int current) => previous != current,
+      builder: (BuildContext context, int currentIndex) {
+        /// Handle visibility changes when index changes
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _handleIndexChange(_lastIndex, currentIndex);
           _lastIndex = currentIndex;
         });
 
-        // Pre-define screens with keys
+        /// Pre-define screens with keys
         final List<Widget> screens = [
           HomeScreen(key: _screenKeys[0]),
           ScanToPayHomeScreen(key: _screenKeys[1]),
@@ -50,7 +50,7 @@ class _RouteScreenState extends State<RouteScreen> {
           extendBody: true,
           bottomNavigationBar: CustomBottomNavBar(
             currentIndex: currentIndex,
-            onTap: (index) => context.read<RouteCubit>().changeScreen(index),
+            onTap: (int index) => context.read<RouteCubit>().changeScreen(index),
           ),
         );
       },
@@ -58,17 +58,15 @@ class _RouteScreenState extends State<RouteScreen> {
   }
 
   void _handleIndexChange(int oldIndex, int newIndex) {
-    // Stop camera when leaving scan screen
+    /// Stop camera when leaving scan screen
     if (oldIndex == 1) {
-      final scanScreenKey =
-          _screenKeys[1] as GlobalKey<State<ScanToPayHomeScreen>>;
+      final GlobalKey<State<ScanToPayHomeScreen>> scanScreenKey = _screenKeys[1] as GlobalKey<State<ScanToPayHomeScreen>>;
       scanScreenKey.getVisibilityHandler()?.onScreenInvisible();
     }
 
-    // Start camera when entering scan screen
+    /// Start camera when entering scan screen
     if (newIndex == 1) {
-      final scanScreenKey =
-          _screenKeys[1] as GlobalKey<State<ScanToPayHomeScreen>>;
+      final GlobalKey<State<ScanToPayHomeScreen>> scanScreenKey = _screenKeys[1] as GlobalKey<State<ScanToPayHomeScreen>>;
       scanScreenKey.getVisibilityHandler()?.onScreenVisible();
     }
   }

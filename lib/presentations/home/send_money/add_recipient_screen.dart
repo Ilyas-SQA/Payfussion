@@ -510,7 +510,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                 )
               ],
             ),
-            child: AppTextormField(
+            child: AppTextFormField(
               controller: controller,
               onChanged: onChanged,
               isPasswordField: false,

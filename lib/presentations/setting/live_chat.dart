@@ -2,9 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
-
+import '../../core/constants/fonts.dart';
 import '../../logic/blocs/setting/live_chat/live_chat_bloc.dart';
 import '../../logic/blocs/setting/live_chat/live_chat_event.dart';
 import '../../logic/blocs/setting/live_chat/live_chat_state.dart';
@@ -156,146 +155,6 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
     );
   }
 
-  Widget _buildCustomAppBar(ThemeData theme, bool isDark) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          InkWell(
-            onTap: () => context.go('/'),
-            borderRadius: BorderRadius.circular(25),
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.arrow_back_ios_new,
-                    color: const Color(0xff2D9CDB),
-                    size: 22.r,
-                  ),
-                  SizedBox(width: 4.w),
-                  Text(
-                    'Back',
-                    style: TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontSize: 18.sp,
-                      color: const Color(0xff2D9CDB),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const Spacer(),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-            decoration: BoxDecoration(
-              color: const Color(0xff2D9CDB).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 8.w,
-                  height: 8.h,
-                  decoration: const BoxDecoration(
-                    color: Colors.green,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                SizedBox(width: 6.w),
-                Text(
-                  'Online',
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: const Color(0xff2D9CDB),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeaderSection() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 5.h),
-      child: Column(
-        children: [
-          // Animated Logo
-          AnimatedBuilder(
-            animation: _logoAnimation,
-            builder: (context, child) {
-              return Transform.scale(
-                scale: _logoAnimation.value,
-                child: Hero(
-                  tag: 'logo',
-                  child: Image.asset(
-                    "assets/icons/logo.png",
-                    height: 100,
-                    width: 100,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        height: 100,
-                        width: 100,
-                        decoration: const BoxDecoration(
-                          color: Color(0xff2D9CDB),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.chat,
-                          color: Colors.white,
-                          size: 60,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              );
-            },
-          ),
-
-          SizedBox(height: 10.h),
-
-          Text(
-            'PayFussion',
-            style: TextStyle(
-              fontFamily: 'Montserrat',
-              fontSize: 20.sp,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-
-          SizedBox(height: 8.h),
-
-          Text(
-            '24/7 Support',
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xff2D9CDB),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildChatArea() {
     return BlocBuilder<ChatBloc, ChatState>(
       bloc: _chatBloc,
@@ -321,7 +180,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
                 SizedBox(height: 16.h),
                 Text(
                   'Oops! Something went wrong',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w600,
                     color: Colors.red,
@@ -330,7 +189,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
                 SizedBox(height: 8.h),
                 Text(
                   state.message,
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 14.sp,
                     color: Colors.grey[600],
                   ),
@@ -370,7 +229,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
                   SizedBox(height: 16.h),
                   Text(
                     'Start a conversation',
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.w600,
                       color: Colors.grey[600],
@@ -379,7 +238,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
                   SizedBox(height: 8.h),
                   Text(
                     'Send a message to begin chatting with support',
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontSize: 14.sp,
                       color: Colors.grey[500],
                     ),
@@ -467,7 +326,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
                               children: [
                                 Text(
                                   text,
-                                  style: TextStyle(
+                                  style: Font.montserratFont(
                                     fontSize: 16.sp,
                                     height: 1.3,
                                     color: isUser ? Colors.white : Colors.black,
@@ -478,7 +337,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
                                     padding: EdgeInsets.only(top: 4.h),
                                     child: Text(
                                       _formatTimestamp(timestamp),
-                                      style: TextStyle(
+                                      style: Font.montserratFont(
                                         fontSize: 11.sp,
                                         color: isUser ? Colors.white : Colors.black,
                                       ),
@@ -566,7 +425,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
                       SizedBox(width: 12.w),
                       Text(
                         'Support is typing...',
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           fontSize: 14.sp,
                           color: Colors.grey[600],
                           fontStyle: FontStyle.italic,
@@ -611,7 +470,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
                 controller: _messageController,
                 decoration: InputDecoration(
                   hintText: 'Type your message...',
-                  hintStyle: TextStyle(
+                  hintStyle: Font.montserratFont(
                     color: Colors.grey[500],
                     fontSize: 12.sp,
                   ),
@@ -626,7 +485,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
                     size: 20.r,
                   ),
                 ),
-                style: TextStyle(
+                style: Font.montserratFont(
                   color: theme.textTheme.bodyLarge?.color,
                   fontSize: 16.sp,
                 ),

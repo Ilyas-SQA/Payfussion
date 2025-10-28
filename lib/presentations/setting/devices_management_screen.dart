@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../core/constants/fonts.dart';
 import '../../core/theme/theme.dart';
 import '../../data/models/device_manager/deevice_manager_model.dart';
 import '../../data/repositories/setting_repositories/device_manager/device_manager_repository.dart';
@@ -86,7 +86,7 @@ class _DevicesManagementScreenState extends State<DevicesManagementScreen>
             Icon(isError ? Icons.warning_amber_rounded : Icons.check_circle,
                 color: contentColor, size: 24.sp),
             SizedBox(width: 12.w),
-            Expanded(child: Text(message, style: TextStyle(color: contentColor))),
+            Expanded(child: Text(message, style: Font.montserratFont(color: contentColor))),
           ],
         ),
         backgroundColor: backgroundColor,
@@ -530,7 +530,7 @@ class _FuturisticLogoutDialogState extends State<FuturisticLogoutDialog>
       children: [
         Icon(Icons.warning_amber_rounded, color: Theme.of(context).colorScheme.error, size: 60.sp),
         SizedBox(height: 20.h),
-        Text('Confirm Logout', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+        Text('Confirm Logout', style: Font.montserratFont(fontWeight: FontWeight.bold)),
         SizedBox(height: 15.h),
         RichText(
           textAlign: TextAlign.center,
@@ -538,7 +538,7 @@ class _FuturisticLogoutDialogState extends State<FuturisticLogoutDialog>
             style: Theme.of(context).textTheme.bodyMedium,
             children: [
               const TextSpan(text: 'Are you sure you want to log out from '),
-              TextSpan(text: '${widget.deviceName}?', style: TextStyle(fontWeight: FontWeight.bold)),
+              TextSpan(text: '${widget.deviceName}?', style: Font.montserratFont(fontWeight: FontWeight.bold)),
               const TextSpan(text: ' This action cannot be undone.'),
             ],
           ),
@@ -585,7 +585,7 @@ class _FuturisticLogoutDialogState extends State<FuturisticLogoutDialog>
 
     return ElevatedButton.icon(
       icon: Icon(icon, size: 18.sp, color: textColor),
-      label: Text(text, style: TextStyle(fontWeight: FontWeight.w600, color: textColor)),
+      label: Text(text, style: Font.montserratFont(fontWeight: FontWeight.w600, color: textColor)),
       style: ElevatedButton.styleFrom(
         backgroundColor: buttonColor,
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),

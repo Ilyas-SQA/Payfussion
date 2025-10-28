@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:payfussion/core/constants/fonts.dart';
 import 'package:payfussion/core/constants/image_url.dart';
 
 class SignInHeader extends StatefulWidget {
@@ -9,8 +10,7 @@ class SignInHeader extends StatefulWidget {
   State<SignInHeader> createState() => _SignInHeaderState();
 }
 
-class _SignInHeaderState extends State<SignInHeader>
-    with SingleTickerProviderStateMixin {
+class _SignInHeaderState extends State<SignInHeader> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -35,7 +35,7 @@ class _SignInHeaderState extends State<SignInHeader>
       ),
     );
 
-    // Slide animation
+    /// Slide animation
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
@@ -46,7 +46,7 @@ class _SignInHeaderState extends State<SignInHeader>
       ),
     );
 
-    // Logo scale animation
+    /// Logo scale animation
     _logoScaleAnimation = Tween<double>(
       begin: 0.5,
       end: 1.0,
@@ -80,7 +80,7 @@ class _SignInHeaderState extends State<SignInHeader>
             opacity: _fadeAnimation,
             child: Hero(
               tag: 'logo',
-              child: Image.asset(TImageUrl.iconLogo, height: 100.h),
+              child: Image.asset(TImageUrl.iconLogo, height: 80.h,),
             ),
           ),
         ),
@@ -94,8 +94,7 @@ class _SignInHeaderState extends State<SignInHeader>
             opacity: _fadeAnimation,
             child: Text(
               'Welcome to PayFussion',
-              style: TextStyle(
-                fontFamily: 'Montserrat',
+              style: Font.montserratFont(
                 fontSize: 20.sp,
                 fontWeight: FontWeight.w600,
               ),
@@ -128,8 +127,7 @@ class _SignInHeaderState extends State<SignInHeader>
             ),
             child: Text(
               'Sign in to your account to continue.',
-              style: TextStyle(
-                fontFamily: 'Inter',
+              style: Font.montserratFont(
                 fontSize: 12.sp,
               ),
             ),

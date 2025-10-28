@@ -475,7 +475,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
       )),
       child: FadeTransition(
         opacity: _fadeAnimation,
-        child: AppTextormField(
+        child: AppTextFormField(
           isPasswordField: false,
           helpText: 'Policy Number',
           controller: _policyNumberController,

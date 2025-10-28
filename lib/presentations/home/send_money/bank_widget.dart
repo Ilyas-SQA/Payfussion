@@ -362,7 +362,7 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
   Widget _buildSearchField() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-      child: AppTextormField(
+      child: AppTextFormField(
         controller: _searchController,
         onChanged: (query) {
           context.read<RecipientBloc>().add(BankSearchChanged(query));

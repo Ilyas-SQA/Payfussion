@@ -135,7 +135,7 @@ class _RecipientsListState extends State<RecipientsList> {
             ),
           ],
         ),
-        child: AppTextormField(
+        child: AppTextFormField(
           controller: _searchController,
           onChanged: (q) {
             if (_debounce?.isActive ?? false) _debounce!.cancel();

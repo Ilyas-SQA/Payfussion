@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
+import '../../../core/constants/fonts.dart';
+
 class CashbackAndRefundsScreen extends StatefulWidget {
   const CashbackAndRefundsScreen({super.key});
 
@@ -24,47 +26,7 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen>
   static const String _fontFamilyHeading = 'Montserrat';
   static const String _fontFamilyBody = 'Roboto';
 
-  TextStyle get _screenTitleStyle => const TextStyle(
-        fontFamily: _fontFamilyHeading,
-        fontWeight: FontWeight.bold,
-        fontSize: 20,
-      );
 
-  TextStyle get _tabLabelStyle => const TextStyle(
-        fontFamily: _fontFamilyHeading,
-        fontWeight: FontWeight.w600,
-        fontSize: 15,
-      );
-
-  TextStyle get _sectionTitleStyle => const TextStyle(
-        fontFamily: _fontFamilyHeading,
-        fontWeight: FontWeight.bold,
-        fontSize: 18,
-      );
-
-  TextStyle get _cardTitleStyle => const TextStyle(
-        fontFamily: _fontFamilyBody, // Or Montserrat Bold
-        fontWeight: FontWeight.bold,
-        fontSize: 16,
-      );
-
-  TextStyle get _bodyTextStyle => const TextStyle(
-        fontFamily: _fontFamilyBody,
-        fontSize: 14,
-        height: 1.5, // Good for readability
-      );
-
-  TextStyle get _listItemTextStyle => const TextStyle(
-        fontFamily: _fontFamilyBody,
-        fontSize: 14,
-      );
-
-  TextStyle get _buttonTextStyle => const TextStyle(
-        fontFamily: _fontFamilyBody,
-        fontSize: 14,
-        fontWeight: FontWeight.bold,
-        color: _textColorWhite,
-      );
 
   @override
   void initState() {
@@ -84,7 +46,13 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cashback & Refunds', style: _screenTitleStyle),
+        title: Text(
+          'Cashback & Refunds',
+          style: Font.montserratFont(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Theme.of(context).scaffoldBackgroundColor,
@@ -96,7 +64,7 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen>
               borderRadius: BorderRadius.circular(10)
           ),
           dividerColor: Theme.of(context).scaffoldBackgroundColor,
-          labelStyle: const TextStyle(
+          labelStyle: Font.montserratFont(
             fontSize: 12,
             fontWeight: FontWeight.bold,
           ),
@@ -135,12 +103,18 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen>
         children: [
           Text(
             'Earn Rewards with PayFusion Cashback',
-            style: _sectionTitleStyle.copyWith(fontSize: 18),
+            style: Font.montserratFont(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             'Get rewarded for your everyday transactions! Our cashback program is designed to give back to our valued users. Here’s how it works:',
-            style: _bodyTextStyle,
+            style: Font.montserratFont(
+              fontSize: 14,
+              height: 1.5, // Good for readability
+            ),
           ),
           const SizedBox(height: 24),
           _buildFeatureCard(
@@ -174,12 +148,20 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                    'All earned cashback is collected in your dedicated Cashback Wallet. You can use this balance for future transactions within PayFusion or transfer it to your main wallet (subject to terms).',
-                    style: _bodyTextStyle),
+                  'All earned cashback is collected in your dedicated Cashback Wallet. You can use this balance for future transactions within PayFusion or transfer it to your main wallet (subject to terms).',
+                  style: Font.montserratFont(
+                    fontSize: 14,
+                    height: 1.5, // Good for readability
+                  ),
+                ),
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.visibility_rounded, size: 18),
-                  label: Text('View Cashback Balance', style: _buttonTextStyle),
+                  label: Text('View Cashback Balance', style: Font.montserratFont(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: _textColorWhite,
+                  ),),
                   onPressed: () {
                     context.go('/');
                   },
@@ -224,12 +206,18 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen>
         children: [
           Text(
             'Hassle-Free Refunds & Disputes',
-            style: _sectionTitleStyle.copyWith(fontSize: 18),
+            style: Font.montserratFont(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
           ),
           const SizedBox(height: 8),
-          Text(
+           Text(
             'We aim to make your transactions secure and provide clear processes for refunds and addressing disputes.',
-            style: _bodyTextStyle,
+            style: Font.montserratFont(
+              fontSize: 14,
+              height: 1.5, // Good for readability
+            ),
           ),
           const SizedBox(height: 24),
           _buildFeatureCard(
@@ -251,7 +239,11 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen>
                 ElevatedButton.icon(
                   icon: const Icon(Icons.history_rounded, size: 18,color: MyTheme.primaryColor),
                   label: Text('Go to Transaction History',
-                      style: _buttonTextStyle),
+                    style: Font.montserratFont(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: _textColorWhite,
+                    ),),
                   onPressed: () {
                     // TODO: Navigate to Transaction History screen
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -337,8 +329,10 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen>
               },
               child: Text(
                 'Read Full Refund & Dispute Policy',
-                style: _bodyTextStyle.copyWith(
-                    color: _primaryColor, fontWeight: FontWeight.bold),
+                style: Font.montserratFont(
+                  fontSize: 14,
+                  height: 1.5, // Good for readability
+                ),
               ),
             ),
           ),
@@ -349,12 +343,12 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen>
 
   // --- Helper Widgets ---
   Widget _buildFeatureCard(
-    BuildContext context, {
-    required IconData icon,
-    required Color iconColor,
-    required String title,
-    required Widget content,
-  }) {
+      BuildContext context, {
+        required IconData icon,
+        required Color iconColor,
+        required String title,
+        required Widget content,
+      }) {
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
@@ -377,7 +371,11 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen>
               Icon(icon, size: 28, color: iconColor),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(title, style: _cardTitleStyle),
+                child: Text(title,
+                  style: Font.montserratFont(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),),
               ),
             ],
           ),
@@ -395,10 +393,12 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text("•  ",
-              style: TextStyle(
+              style: Font.montserratFont(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.bold)), // Custom bullet
-          Expanded(child: Text(text, style: _listItemTextStyle)),
+          Expanded(child: Text(text, style: Font.montserratFont(
+            fontSize: 14,
+          ),)),
         ],
       ),
     );

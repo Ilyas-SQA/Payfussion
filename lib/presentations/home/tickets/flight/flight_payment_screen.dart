@@ -284,7 +284,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            AppTextormField(
+            AppTextFormField(
               controller: _nameController,
               helpText: "Full Name",
               isPasswordField: false,
@@ -298,7 +298,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
               },
             ),
             const SizedBox(height: 16),
-            AppTextormField(
+            AppTextFormField(
               controller: _emailController,
               helpText: "Email",
               prefixIcon: const Icon(Icons.email,color: MyTheme.secondaryColor,),
@@ -314,7 +314,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
               },
             ),
             const SizedBox(height: 16),
-            AppTextormField(
+            AppTextFormField(
               controller: _phoneController,
               helpText: "Phone Number",
               prefixIcon: const Icon(Icons.phone,color: MyTheme.secondaryColor,),

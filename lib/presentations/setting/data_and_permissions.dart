@@ -3,6 +3,7 @@ import 'package:hive/hive.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../core/constants/fonts.dart';
 import '../../core/utils/setting_utils/data_and_permission_utils/app_colors_utils.dart';
 import '../../core/utils/setting_utils/data_and_permission_utils/permission_utils.dart';
 import '../widgets/settings_widgets/data_and_permission_widgets/app_permission_tab.dart';
@@ -86,7 +87,7 @@ class _DataAndPermissionsScreenState extends State<DataAndPermissionsScreen>
           ),
           dividerColor: Theme.of(context).scaffoldBackgroundColor,
           tabAlignment: TabAlignment.center,
-          labelStyle: const TextStyle(
+          labelStyle: Font.montserratFont(
             fontSize: 12,
             fontWeight: FontWeight.bold,
           ),

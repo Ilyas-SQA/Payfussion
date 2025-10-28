@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:payfussion/presentations/my_reward/my_reward_screen.dart';
 
+import '../../core/constants/fonts.dart';
 import '../../core/constants/routes_name.dart';
 import '../../core/theme/theme.dart';
 import '../../logic/blocs/notification/notification_bloc.dart';
@@ -68,8 +69,7 @@ class ProfileAppBar extends StatelessWidget {
                 children: [
                   Text(
                     SessionController.user.fullName ?? 'User',
-                    style: TextStyle(
-                      fontFamily: 'Montserrat',
+                    style: Font.montserratFont(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.bold,
                       color: textColor,
@@ -78,8 +78,7 @@ class ProfileAppBar extends StatelessWidget {
                   SizedBox(height: 4.h),
                   Text(
                     SessionController.user.email ?? '',
-                    style: TextStyle(
-                      fontFamily: 'Montserrat',
+                    style: Font.montserratFont(
                       fontSize: 10.sp,
                       color: textColor,
                     ),
@@ -116,7 +115,7 @@ class ProfileAppBar extends StatelessWidget {
                     position: badges.BadgePosition.topEnd(top: 3, end: 3),
                     badgeContent: Text(
                       unreadCount.toString(),
-                      style: const TextStyle(
+                      style: Font.montserratFont(
                         color: Colors.white,
                         fontSize: 10,
                       ),

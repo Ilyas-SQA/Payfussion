@@ -279,7 +279,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          AppTextormField(
+          AppTextFormField(
             controller: _nameController,
             helpText: "Full Name",
             prefixIcon: const Icon(Icons.person,color: MyTheme.secondaryColor,),
@@ -292,7 +292,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
             },
           ),
           const SizedBox(height: 16),
-          AppTextormField(
+          AppTextFormField(
             controller: _emailController,
             prefixIcon: const Icon(Icons.email,color: MyTheme.secondaryColor,),
             helpText: "Email",
@@ -308,7 +308,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
             },
           ),
           const SizedBox(height: 16),
-          AppTextormField(
+          AppTextFormField(
             controller: _phoneController,
             helpText: "Phone Number",
             prefixIcon: const Icon(Icons.phone,color: MyTheme.secondaryColor,),

@@ -16,15 +16,3 @@ List<NavBarItems> navBarItems = [
 ];
 
 // to generate it in a row use the following widget
-// Row(
-//   mainAxisAlignment: MainAxisAlignment.spaceAround,
-//   children: navBarItems.map((item) {
-//     return Column(
-//       mainAxisAlignment: MainAxisAlignment.center,
-//       children: [
-//         Image.asset(item.icon),
-//         Text(item.title),
-//       ],
-//     );
-//   }).toList(),
-// );

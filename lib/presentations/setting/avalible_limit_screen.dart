@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../core/constants/fonts.dart';
 import '../../core/theme/theme.dart';
 
 // Limit model
@@ -18,6 +19,8 @@ class LimitOption {
 
 // Updated SettingContainer with Bottom Sheet
 class LimitSettingContainer extends StatefulWidget {
+  const LimitSettingContainer({super.key});
+
   @override
   State<LimitSettingContainer> createState() => _LimitSettingContainerState();
 }
@@ -88,7 +91,7 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
                         children: [
                           Text(
                             'Available limits',
-                            style: TextStyle(
+                            style: Font.montserratFont(
                               fontSize: 20,
                               fontWeight: FontWeight.w600,
                             ),
@@ -176,7 +179,7 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
                                               r'(\d{1,3})(?=(\d{3})+(?!\d))'),
                                               (Match m) => '${m[1]},',
                                         )} | ${option.utilityBills} utility bills',
-                                        style: TextStyle(
+                                        style: Font.montserratFont(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
                                         ),
@@ -184,7 +187,7 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
                                       SizedBox(height: 8),
                                       Text(
                                         option.period,
-                                        style: TextStyle(
+                                        style: Font.montserratFont(
                                           fontSize: 14,
                                           color: Colors.grey[600],
                                           fontWeight: FontWeight.w400,
@@ -233,7 +236,7 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
                       ),
                       child: Text(
                         'Confirm Selection',
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: Colors.white,
@@ -274,7 +277,7 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
           children: [
             Text(
               'Limit',
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
                 color: Colors.grey[600],
@@ -286,7 +289,7 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
               children: [
                 Text(
                   'Incoming',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
                   ),
@@ -296,7 +299,7 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
                     RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
                         (Match m) => '${m[1]},',
                   )} left',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 16,
                     color: MyTheme.primaryColor,
                     fontWeight: FontWeight.w500,
@@ -332,7 +335,7 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
             SizedBox(height: 12),
             Text(
               'Your Rs. ${(currentLimit / 1000).toStringAsFixed(0)}k monthly limit resets on the 1st of next month',
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 12,
                 color: Colors.grey[500],
                 fontWeight: FontWeight.w400,

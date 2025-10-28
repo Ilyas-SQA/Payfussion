@@ -516,7 +516,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
                               ),
                             ),
                             SizedBox(height: 8.h),
-                            AppTextormField(
+                            AppTextFormField(
                               controller: _accountNumberController,
                               validator: _validateAccountNumber,
                               helpText: 'Enter account number',
@@ -583,7 +583,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
                                     ),
                                   ),
                                   SizedBox(height: 8.h),
-                                  AppTextormField(
+                                  AppTextFormField(
                                     controller: _paymentPurposeController,
                                     validator: _validatePaymentPurpose,
                                     helpText: 'Enter payment purpose',
@@ -609,7 +609,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
                               ),
                             ),
                             SizedBox(height: 8.h),
-                            AppTextormField(
+                            AppTextFormField(
                               controller: _phoneNumberController,
                               validator: _validatePhoneNumber,
                               helpText: '+92 300 1234567',

@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:payfussion/core/constants/routes_name.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/logic/blocs/setting/user_profile/profile_state.dart';
+import '../../../core/constants/fonts.dart';
 import '../../../logic/blocs/setting/user_profile/profile_bloc.dart';
 import '../../../logic/blocs/setting/user_profile/profile_event.dart';
 import '../../../services/session_manager_service.dart';
@@ -291,8 +292,7 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
       padding: const EdgeInsets.all(10.0),
       child: Text(
         _userName,
-        style: TextStyle(
-          fontFamily: 'Montserrat',
+        style: Font.montserratFont(
           fontSize: 20.sp,
           color: Theme.of(context).secondaryHeaderColor,
           fontWeight: FontWeight.bold,
@@ -376,8 +376,7 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
               Icon(Icons.lock_outline, size: 24.r, color: Colors.white),
               Text(
                 'Change Password',
-                style: TextStyle(
-                  fontFamily: 'Montserrat',
+                style: Font.montserratFont(
                   fontSize: 18.sp,
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
@@ -414,8 +413,7 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
             children: [
               Text(
                 'Logout',
-                style: TextStyle(
-                  fontFamily: 'Montserrat',
+                style: Font.montserratFont(
                   fontSize: 18.sp,
                   color: Colors.white,
                   fontWeight: FontWeight.w600,

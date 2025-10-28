@@ -273,7 +273,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            AppTextormField(
+            AppTextFormField(
               controller: _pickupController,
               helpText: "Pickup Location",
               prefixIcon: const Icon(Icons.my_location, color: Colors.green),
@@ -286,7 +286,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
               },
             ),
             const SizedBox(height: 16),
-            AppTextormField(
+            AppTextFormField(
               controller: _destinationController,
               helpText: "Destination",
               prefixIcon: Icon(Icons.place, color: Colors.red),
@@ -422,7 +422,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
               ),
             ],
             const SizedBox(height: 16),
-            AppTextormField(
+            AppTextFormField(
               controller: _notesController,
               helpText: "Special Instructions (Optional)",
               prefixIcon: const Icon(Icons.note,color: MyTheme.secondaryColor),
@@ -460,7 +460,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            AppTextormField(
+            AppTextFormField(
               controller: _nameController,
               helpText: "Passenger Name",
               prefixIcon: Icon(Icons.person,color: MyTheme.secondaryColor,),
@@ -473,7 +473,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
               },
             ),
             const SizedBox(height: 16),
-            AppTextormField(
+            AppTextFormField(
               controller: _phoneController,
               helpText: "Phone Number",
               prefixIcon: Icon(Icons.phone,color: MyTheme.secondaryColor),

@@ -268,7 +268,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            AppTextormField(
+            AppTextFormField(
               controller: _nameController,
               helpText: "Full Name",
               prefixIcon: const Icon(Icons.person,color: MyTheme.secondaryColor,),
@@ -281,7 +281,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> {
               }, isPasswordField: false,
             ),
             const SizedBox(height: 16),
-            AppTextormField(
+            AppTextFormField(
               controller: _emailController,
               helpText: "Enter email address",
               prefixIcon: const Icon(Icons.email,color: MyTheme.secondaryColor,),
@@ -298,7 +298,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> {
               },
             ),
             const SizedBox(height: 16),
-            AppTextormField(
+            AppTextFormField(
               controller: _phoneController,
               helpText: "Phone Number",
               prefixIcon: const Icon(Icons.phone,color: MyTheme.secondaryColor,),

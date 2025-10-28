@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:password_strength_indicator_plus/password_strength_indicator_plus.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
+import '../../../core/constants/fonts.dart';
 import '../../../core/constants/image_url.dart';
 import '../../../logic/blocs/setting/change-password/change_password_bloc.dart';
 import '../../../logic/blocs/setting/change-password/change_pasword_event.dart';
 import '../../../logic/blocs/setting/change-password/change_pasword_state.dart';
-import '../../widgets/auth_widgets/auth_button.dart';
 import '../../widgets/auth_widgets/credential_text_field.dart';
 import '../../widgets/helper_widgets/error_dialog.dart';
 
@@ -128,7 +127,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
           offset: Offset(0, 50 * (1 - value)),
           child: Opacity(
             opacity: value,
-            child: AppTextormField(
+            child: AppTextFormField(
               controller: controller,
               isPasswordField: isPasswordField,
               helpText: helpText,
@@ -222,8 +221,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
           appBar: AppBar(
             title: Text(
               'Change Password',
-              style: TextStyle(
-                fontFamily: 'Montserrat',
+              style: Font.montserratFont(
                 fontSize: 20.sp,
                 fontWeight: FontWeight.w600,
               ),
@@ -278,8 +276,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                           opacity: value,
                           child: Text(
                             'PayFussion',
-                            style: TextStyle(
-                              fontFamily: 'Montserrat',
+                            style: Font.montserratFont(
                               fontSize: 22.sp,
                               fontWeight: FontWeight.w600,
                             ),
@@ -307,8 +304,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                                   opacity: value,
                                   child: Text(
                                     'Change Password',
-                                    style: TextStyle(
-                                      fontFamily: 'Montserrat',
+                                    style: Font.montserratFont(
                                       fontSize: 22.sp,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -384,7 +380,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                                       padding: const EdgeInsets.only(top: 8.0),
                                       child: Text(
                                         'Passwords do not match.',
-                                        style: TextStyle(
+                                        style: Font.montserratFont(
                                           color: Colors.red,
                                           fontSize: 12.sp,
                                         ),

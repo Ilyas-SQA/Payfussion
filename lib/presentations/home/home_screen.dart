@@ -1,12 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:payfussion/core/constants/app_colors.dart';
 import 'package:payfussion/core/constants/image_url.dart';
 import 'package:payfussion/core/theme/theme.dart';
@@ -19,15 +16,13 @@ import 'package:payfussion/presentations/home/tickets/ticket_booking_screen.dart
 import 'package:payfussion/presentations/scan_to_pay/scan_to_pay_home.dart';
 import 'package:payfussion/presentations/widgets/profile_app_bar.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../core/constants/fonts.dart';
 import '../../core/constants/routes_name.dart';
-import '../../data/models/transaction/transaction_model.dart';
 import '../../logic/blocs/add_card/card_bloc.dart';
 import '../../logic/blocs/add_card/card_event.dart';
 import '../../logic/blocs/add_card/card_state.dart';
 import '../widgets/home_widgets/custom_credit_card.dart';
 import '../widgets/home_widgets/custom_empty_card.dart';
-import '../widgets/home_widgets/transaction_item.dart';
-import '../widgets/home_widgets/transaction_items_header.dart';
 import 'apply_card/apply_card_screen.dart';
 import 'insurance/insurance_screen.dart';
 
@@ -48,7 +43,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late Animation<Offset> _profileSlideAnimation;
   late Animation<double> _cardScaleAnimation;
   late Animation<double> _actionButtonsAnimation;
-  late Animation<Offset> _transactionSlideAnimation;
 
   @override
   void initState() {
@@ -117,14 +111,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       curve: Curves.easeOutBack,
     ));
 
-    // Transaction slide animation
-    _transactionSlideAnimation = Tween<Offset>(
-      begin: const Offset(0, 1.0),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _transactionController,
-      curve: Curves.easeOutCubic,
-    ));
   }
 
   void _startAnimationSequence() async {
@@ -146,19 +132,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  DateTime _getStartOfDay() {
-    final DateTime now = DateTime.now();
-    return DateTime(now.year, now.month, now.day);
-  }
-
-  DateTime _getEndOfDay() {
-    final DateTime now = DateTime.now();
-    return DateTime(now.year, now.month, now.day, 23, 59, 59);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(5.0),
@@ -195,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               ],
                             );
                           }
-                          final activeCards = cards.where((card) => card.isDefault).toList();
+                          final List<CardModel> activeCards = cards.where((card) => card.isDefault).toList();
                           return Column(
                             children: [
                               SizedBox(height: 15.h),
@@ -208,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     itemCount: activeCards.length,
                                     scrollDirection: Axis.horizontal,
                                     itemBuilder: (context, index) {
-                                      final card = activeCards[index];
+                                      final CardModel card = activeCards[index];
                                       return AnimationConfiguration.staggeredList(
                                         position: index,
                                         duration: const Duration(milliseconds: 300),
@@ -244,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               Center(
                                 child: Text(
                                   state.message,
-                                  style: const TextStyle(color: Colors.red),
+                                  style: Font.montserratFont(color: Colors.red),
                                 ),
                               ),
                             ],
@@ -314,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 builder: (context){
                                   return AlertDialog(
                                     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                                    content: const Text('Send Money To'),
+                                    content: Text('Send Money To',style: Font.montserratFont(fontSize: 14,fontWeight: FontWeight.bold),),
                                     actions: [
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -432,389 +407,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-
-  // Widget _buildActionButtons(BuildContext context) {
-  //   final List<Map<String, Object>> actionButtons = [
-  //     {
-  //       'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
-  //       'iconPath': TImageUrl.sendMoney,
-  //       'iconBackgroundColor': MyTheme.primaryColor,
-  //       'text': "Send Money",
-  //       'onPressed': () => {
-  //         showDialog(
-  //           context: context,
-  //           builder: (context){
-  //             return AlertDialog(
-  //               backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-  //               content: const Text('Send Money To'),
-  //               actions: [
-  //                 Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceAround,
-  //                   children: [
-  //                     SendMoneyWidget(
-  //                       title: "PayFussion Transfer",
-  //                       imageUrl: TImageUrl.bankTransfer,
-  //                       onTap: (){
-  //                         context.push(RouteNames.sendMoneyHome);
-  //                       },
-  //                     ),
-  //                     SendMoneyWidget(
-  //                       title: "Bank Transfer",
-  //                       imageUrl: TImageUrl.bankTransfer,
-  //                       onTap: (){
-  //                         Navigator.push(context, MaterialPageRoute(builder: (context) => SelectBankScreen()));
-  //                       },
-  //                     ),
-  //                   ],
-  //                 ),
-  //                 SizedBox(height: 10,),
-  //                 Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceAround,
-  //                   children: [
-  //                     SendMoneyWidget(
-  //                       title: "Other Wallet",
-  //                       imageUrl: TImageUrl.otherWallet,
-  //                       onTap: (){
-  //                         Navigator.push(context, MaterialPageRoute(builder: (context) => SelectLocalBankScreen()));
-  //                       },
-  //                     ),
-  //                     SendMoneyWidget(
-  //                       title: "Scanner QR",
-  //                       imageUrl: TImageUrl.scanner,
-  //                       onTap: (){
-  //                         Navigator.push(context, MaterialPageRoute(builder: (context) => ScanToPayHomeScreen()));
-  //                       },
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ],
-  //             );
-  //           },
-  //         )
-  //       },
-  //     },
-  //     {
-  //       'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
-  //       'iconPath': TImageUrl.recivedMoney,
-  //       'iconBackgroundColor': MyTheme.secondaryColor,
-  //       'text': "Receive Money",
-  //       'onPressed': () => context.push(RouteNames.receiveMoneyScreen),
-  //     },
-  //     {
-  //       'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
-  //       'iconPath': TImageUrl.payBill,
-  //       'iconBackgroundColor': MyTheme.primaryColor,
-  //       'text': "Pay Bills",
-  //       'onPressed': () => Navigator.push(context, MaterialPageRoute(builder: (context) => PayBillScreen())),
-  //     },
-  //     {
-  //       'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
-  //       'iconPath': TImageUrl.convertCurrency,
-  //       'iconBackgroundColor': MyTheme.secondaryColor,
-  //       'text': "Convert Currency",
-  //       'onPressed': () => context.push(RouteNames.currencyExchangeView),
-  //     },
-  //     {
-  //       'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
-  //       'iconPath': TImageUrl.ticketBooking,
-  //       'iconBackgroundColor': MyTheme.primaryColor,
-  //       'text': "Ticket Booking",
-  //       'onPressed': () => Navigator.push(context, MaterialPageRoute(builder: (context) => TicketBookingScreen())),
-  //     },
-  //     {
-  //       'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
-  //       'iconPath': TImageUrl.insurance,
-  //       'iconBackgroundColor': MyTheme.secondaryColor,
-  //       'text': "Insurance",
-  //       'onPressed': () => Navigator.push(context, MaterialPageRoute(builder: (context) => InsuranceScreen())),
-  //     },
-  //     {
-  //       'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
-  //       'iconPath': TImageUrl.applyCard,
-  //       'iconBackgroundColor': MyTheme.primaryColor,
-  //       'text': "Apply Card",
-  //       'onPressed': () => Navigator.push(context, MaterialPageRoute(builder: (context) => ApplyCardScreen())),
-  //
-  //     },
-  //     {
-  //       'backgroundColor': Theme.of(context).scaffoldBackgroundColor,
-  //       'iconPath': TImageUrl.governmentFee,
-  //       'iconBackgroundColor': MyTheme.secondaryColor,
-  //       'text': "Government Fees",
-  //       'onPressed': () => Navigator.push(context, MaterialPageRoute(builder: (context) => GovernmentFeesScreen())),
-  //     },
-  //   ];
-  //
-  //   return Column(
-  //     children: [
-  //       SizedBox(height: 20.h),
-  //       AnimationLimiter(
-  //         child: Column(
-  //           children: [
-  //             Row(
-  //               mainAxisAlignment: MainAxisAlignment.spaceAround,
-  //               children: [
-  //                 AnimationConfiguration.staggeredList(
-  //                   position: 0,
-  //                   duration: const Duration(milliseconds: 300),
-  //                   child: SlideAnimation(
-  //                     verticalOffset: 30.0,
-  //                     child: FadeInAnimation(
-  //                       child: CustomActionButton(
-  //                         backgroundColor: actionButtons[0]['backgroundColor'] as Color,
-  //                         iconPath: actionButtons[0]['iconPath'] as String,
-  //                         iconBackgroundColor: actionButtons[0]['iconBackgroundColor'] as Color,
-  //                         text: actionButtons[0]['text'] as String,
-  //                         onPressed: actionButtons[0]['onPressed'] as VoidCallback,
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //                 AnimationConfiguration.staggeredList(
-  //                   position: 1,
-  //                   duration: const Duration(milliseconds: 300),
-  //                   child: SlideAnimation(
-  //                     verticalOffset: 30.0,
-  //                     child: FadeInAnimation(
-  //                       child: CustomActionButton(
-  //                         backgroundColor: actionButtons[1]['backgroundColor'] as Color,
-  //                         iconPath: actionButtons[1]['iconPath'] as String,
-  //                         iconBackgroundColor: actionButtons[1]['iconBackgroundColor'] as Color,
-  //                         text: actionButtons[1]['text'] as String,
-  //                         onPressed: actionButtons[1]['onPressed'] as VoidCallback,
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //             SizedBox(height: 10.h),
-  //             Row(
-  //               mainAxisAlignment: MainAxisAlignment.spaceAround,
-  //               children: [
-  //                 AnimationConfiguration.staggeredList(
-  //                   position: 2,
-  //                   duration: const Duration(milliseconds: 300),
-  //                   child: SlideAnimation(
-  //                     verticalOffset: 30.0,
-  //                     child: FadeInAnimation(
-  //                       child: CustomActionButton(
-  //                         backgroundColor: actionButtons[2]['backgroundColor'] as Color,
-  //                         iconPath: actionButtons[2]['iconPath'] as String,
-  //                         iconBackgroundColor: actionButtons[2]['iconBackgroundColor'] as Color,
-  //                         text: actionButtons[2]['text'] as String,
-  //                         onPressed: actionButtons[2]['onPressed'] as VoidCallback,
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //                 AnimationConfiguration.staggeredList(
-  //                   position: 3,
-  //                   duration: const Duration(milliseconds: 300),
-  //                   child: SlideAnimation(
-  //                     verticalOffset: 30.0,
-  //                     child: FadeInAnimation(
-  //                       child: CustomActionButton(
-  //                         backgroundColor: actionButtons[3]['backgroundColor'] as Color,
-  //                         iconPath: actionButtons[3]['iconPath'] as String,
-  //                         iconBackgroundColor: actionButtons[3]['iconBackgroundColor'] as Color,
-  //                         text: actionButtons[3]['text'] as String,
-  //                         onPressed: actionButtons[3]['onPressed'] as VoidCallback,
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //             SizedBox(height: 10.h),
-  //             Row(
-  //               mainAxisAlignment: MainAxisAlignment.spaceAround,
-  //               children: [
-  //                 AnimationConfiguration.staggeredList(
-  //                   position: 2,
-  //                   duration: const Duration(milliseconds: 300),
-  //                   child: SlideAnimation(
-  //                     verticalOffset: 30.0,
-  //                     child: FadeInAnimation(
-  //                       child: CustomActionButton(
-  //                         backgroundColor: actionButtons[4]['backgroundColor'] as Color,
-  //                         iconPath: actionButtons[4]['iconPath'] as String,
-  //                         iconBackgroundColor: actionButtons[4]['iconBackgroundColor'] as Color,
-  //                         text: actionButtons[4]['text'] as String,
-  //                         onPressed: actionButtons[4]['onPressed'] as VoidCallback,
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //                 AnimationConfiguration.staggeredList(
-  //                   position: 3,
-  //                   duration: const Duration(milliseconds: 300),
-  //                   child: SlideAnimation(
-  //                     verticalOffset: 30.0,
-  //                     child: FadeInAnimation(
-  //                       child: CustomActionButton(
-  //                         backgroundColor: actionButtons[5]['backgroundColor'] as Color,
-  //                         iconPath: actionButtons[5]['iconPath'] as String,
-  //                         iconBackgroundColor: actionButtons[5]['iconBackgroundColor'] as Color,
-  //                         text: actionButtons[5]['text'] as String,
-  //                         onPressed: actionButtons[5]['onPressed'] as VoidCallback,
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //             SizedBox(height: 10.h),
-  //             Row(
-  //               mainAxisAlignment: MainAxisAlignment.spaceAround,
-  //               children: [
-  //                 AnimationConfiguration.staggeredList(
-  //                   position: 2,
-  //                   duration: const Duration(milliseconds: 300),
-  //                   child: SlideAnimation(
-  //                     verticalOffset: 30.0,
-  //                     child: FadeInAnimation(
-  //                       child: CustomActionButton(
-  //                         backgroundColor: actionButtons[6]['backgroundColor'] as Color,
-  //                         iconPath: actionButtons[6]['iconPath'] as String,
-  //                         iconBackgroundColor: actionButtons[6]['iconBackgroundColor'] as Color,
-  //                         text: actionButtons[6]['text'] as String,
-  //                         onPressed: actionButtons[6]['onPressed'] as VoidCallback,
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //                 AnimationConfiguration.staggeredList(
-  //                   position: 3,
-  //                   duration: const Duration(milliseconds: 300),
-  //                   child: SlideAnimation(
-  //                     verticalOffset: 30.0,
-  //                     child: FadeInAnimation(
-  //                       child: CustomActionButton(
-  //                         backgroundColor: actionButtons[7]['backgroundColor'] as Color,
-  //                         iconPath: actionButtons[7]['iconPath'] as String,
-  //                         iconBackgroundColor: actionButtons[7]['iconBackgroundColor'] as Color,
-  //                         text: actionButtons[7]['text'] as String,
-  //                         onPressed: actionButtons[7]['onPressed'] as VoidCallback,
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
-
-  Widget _buildTransactionSection() {
-    return Column(
-      children: [
-        SizedBox(height: 20.h),
-        StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection("users")
-              .doc(FirebaseAuth.instance.currentUser?.uid)
-              .collection('transactions')
-              .where('created_at', isGreaterThanOrEqualTo: _getStartOfDay())
-              .where('created_at', isLessThanOrEqualTo: _getEndOfDay())
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return _buildShimmerLoading(context);
-            }
-
-            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 500),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 80.h),
-                    ScaleTransition(
-                      scale: Tween<double>(begin: 0.5, end: 1.0).animate(
-                        CurvedAnimation(
-                          parent: _transactionController,
-                          curve: Curves.elasticOut,
-                        ),
-                      ),
-                      child: const Center(child: Text('No transactions for today.')),
-                    ),
-                  ],
-                ),
-              );
-            }
-
-            print("Fetched transactions: ${snapshot.data!.docs.length}");
-
-            var transactions = snapshot.data!.docs.map((doc) {
-              return TransactionModel.fromDoc(doc);
-            }).toList();
-
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 500),
-              height: 392.0,
-              width: 405.0,
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-                borderRadius: BorderRadius.circular(10.0),
-                boxShadow: <BoxShadow>[
-                  BoxShadow(
-                    color: MyTheme.primaryColor.withOpacity(0.6),
-                    blurRadius: 20,
-                    offset: const Offset(0, 7),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: <Widget>[
-                  const TransactionItemHeader(
-                    heading: 'Today',
-                    showTrailingButton: true,
-                  ),
-                  SizedBox(height: 20.0),
-                  Expanded(
-                    child: AnimationLimiter(
-                      child: ListView.builder(
-                        itemCount: transactions.length,
-                        itemBuilder: (context, index) {
-                          final tx = transactions[index];
-                          return AnimationConfiguration.staggeredList(
-                            position: index,
-                            duration: const Duration(milliseconds: 375),
-                            child: SlideAnimation(
-                              verticalOffset: 50.0,
-                              child: FadeInAnimation(
-                                child: Padding(
-                                  padding: EdgeInsets.only(bottom: 10.0),
-                                  child: TransactionItem(
-                                    iconPath: TImageUrl.iconCreditCard,
-                                    heading: tx.recipientName,
-                                    transactionId: tx.id,
-                                    moneyValue: '${tx.amount.toStringAsFixed(2)}',
-                                    status: tx.status,
-                                    date: DateFormat('MM/dd/yyyy').format(tx.createdAt),
-                                    time: DateFormat('hh:mm a').format(tx.createdAt),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ],
-    );
-  }
-
   Widget _buildShimmerCard() {
     return Shimmer.fromColors(
       baseColor: Colors.grey[300]!,
@@ -858,125 +450,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildShimmerLoading(BuildContext context) {
-    return AnimationLimiter(
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 500),
-        height: 392.0,
-        width: 405.0,
-        decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
-          borderRadius: BorderRadius.circular(10.0),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: const Color(0xff8CB7FF).withOpacity(0.6),
-              blurRadius: 20,
-              offset: const Offset(0, 7),
-            ),
-          ],
-        ),
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildShimmerBox(width: 60, height: 20),
-                  _buildShimmerBox(width: 80, height: 32, borderRadius: 16),
-                ],
-              ),
-            ),
-            SizedBox(height: 10.0),
-            Expanded(
-              child: ListView.builder(
-                itemCount: 4,
-                itemBuilder: (context, index) {
-                  return AnimationConfiguration.staggeredList(
-                    position: index,
-                    duration: const Duration(milliseconds: 375),
-                    child: SlideAnimation(
-                      verticalOffset: 30.0,
-                      child: FadeInAnimation(
-                        child: _buildTransactionShimmer(),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTransactionShimmer() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Row(
-        children: [
-          _buildShimmerBox(width: 48, height: 48, borderRadius: 24),
-          SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildShimmerBox(width: 120, height: 16),
-                    _buildShimmerBox(width: 70, height: 16),
-                  ],
-                ),
-                SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildShimmerBox(width: 80, height: 12),
-                    _buildShimmerBox(width: 60, height: 20, borderRadius: 10),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildShimmerBox({
-    required double width,
-    required double height,
-    double borderRadius = 4.0,
-  }) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(borderRadius),
-        gradient: LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [
-            Colors.grey.shade300,
-            Colors.grey.shade100,
-            Colors.grey.shade300,
-          ],
-          stops: const [0.0, 0.5, 1.0],
-        ),
-      ),
-      child: _ShimmerAnimation(
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(borderRadius),
           ),
         ),
       ),
@@ -1084,7 +557,7 @@ class SendMoneyWidget extends StatelessWidget {
             // SizedBox(height: 5.h),
             Text(
               title,
-              style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.normal,),
+              style: Font.montserratFont(fontSize: 10.sp, fontWeight: FontWeight.normal,),
               textAlign: TextAlign.center,
             ),
           ],
@@ -1126,7 +599,7 @@ class BoxWidget extends StatelessWidget {
           // spacing: 10,
           children: [
             SvgPicture.asset(imageURL, height: 27.h, width: 30.w,color: backgroundColor,),
-            Text(title,style: const TextStyle(fontSize: 10,fontWeight: FontWeight.w500),textAlign: TextAlign.center,),
+            Text(title,style: Font.montserratFont(fontSize: 10,fontWeight: FontWeight.w500),textAlign: TextAlign.center,),
           ],
         ),
       ),

@@ -355,7 +355,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
           offset: Offset(20 * (1 - value), 0),
           child: Opacity(
             opacity: value,
-            child: AppTextormField(
+            child: AppTextFormField(
               controller: controller,
               prefixIcon: Icon(icon,color: MyTheme.secondaryColor,),
               helpText: label,

@@ -10,6 +10,7 @@ import 'package:payfussion/presentations/setting/profile_screens/cashbacks_and_r
 import 'package:payfussion/presentations/setting/submit_ticket/show_ticket_screen.dart';
 import 'package:payfussion/presentations/setting/tax_and_legal_compliance.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../core/constants/fonts.dart';
 import '../../core/constants/image_url.dart';
 import '../../core/constants/routes_name.dart';
 import '../../logic/blocs/add_card/card_bloc.dart';
@@ -266,7 +267,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
           ),
           child: Text(
             errorMessage,
-            style: TextStyle(
+            style: Font.montserratFont(
               color: Colors.red.shade800,
               fontSize: 14.sp,
             ),
@@ -294,8 +295,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
               },
               child: Text(
                 "Add New",
-                style: TextStyle(
-                  fontFamily: 'Montserrat',
+                style: Font.montserratFont(
                   fontSize: 12.sp,
                   color: const Color(0xffffffff),
                   fontWeight: FontWeight.bold,
@@ -538,8 +538,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                       child: DropdownButton<String>(
                         value: ctx.select((SettingsBloc b) => b.state.transactionPrivacyMode,
                         ),
-                        style: TextStyle(
-                          fontFamily: 'Montserrat',
+                        style: Font.montserratFont(
                           fontSize: 12.sp,
                           color: theme.secondaryHeaderColor,
                           fontWeight: FontWeight.bold,
@@ -548,13 +547,12 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                           TransactionPrivacyModeChanged(v ?? 'Public'),
                         ),
                         underline: const SizedBox(),
-                        items: const [
+                        items: [
                           DropdownMenuItem(
                             value: 'Public',
                             child: Text(
                               'Public',
-                              style: TextStyle(
-                                fontFamily: 'Montserrat',
+                              style: Font.montserratFont(
                                 fontSize: 12,
                                 color: MyTheme.primaryColor,
                                 fontWeight: FontWeight.bold,
@@ -565,8 +563,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                             value: 'Private',
                             child: Text(
                               'Private',
-                              style: TextStyle(
-                                fontFamily: 'Montserrat',
+                              style: Font.montserratFont(
                                 fontSize: 12,
                                 color: MyTheme.primaryColor,
                                 fontWeight: FontWeight.bold,
@@ -577,8 +574,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                             value: 'Friends',
                             child: Text(
                               'Friends',
-                              style: TextStyle(
-                                fontFamily: 'Montserrat',
+                              style: Font.montserratFont(
                                 fontSize: 12,
                                 color: MyTheme.primaryColor,
                                 fontWeight: FontWeight.bold,
@@ -775,10 +771,10 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       padding: EdgeInsets.all(20.r),
-      child: const Center(
+      child: Center(
         child: Text(
           "No cards added yet",
-          style: TextStyle(color: Colors.grey),
+          style: Font.montserratFont(color: Colors.grey),
         ),
       ),
     );
@@ -794,7 +790,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
       ),
       child: Text(
         message,
-        style: TextStyle(color: Colors.red.shade700),
+        style: Font.montserratFont(color: Colors.red.shade700),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
+import '../../../../core/constants/fonts.dart';
 import '../../../../core/constants/routes_name.dart';
 import '../../../../core/utils/setting_utils/data_and_permission_utils/app_colors_utils.dart';
 import '../../../../core/utils/setting_utils/data_and_permission_utils/app_styles.dart';
@@ -20,17 +21,17 @@ class DataManagementTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+           Text(
             'Your Data Control Center',
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Manage your personal data and control how it\'s used within PayFusion.',
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 12,
             ),
           ),
@@ -97,7 +98,7 @@ class DataManagementTab extends StatelessWidget {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        child: const Text('Delete Specific Data', style: TextStyle(fontSize: 12,)),
+                        child: Text('Delete Specific Data', style: Font.montserratFont(fontSize: 12,)),
                         onPressed: () {
                           _showSelectionDialog(context, colors);
                         },
@@ -113,7 +114,7 @@ class DataManagementTab extends StatelessWidget {
                     const SizedBox(width: 5),
                     Expanded(
                       child: ElevatedButton(
-                        child: const Text('Delete Account', style: TextStyle(fontSize: 12,)),
+                        child: Text('Delete Account', style: Font.montserratFont(fontSize: 12,)),
                         onPressed: () {
                           _showAccountDeletionDialog(context, colors);
                         },
@@ -151,7 +152,7 @@ class DataManagementTab extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 ElevatedButton(
-                  child: const Text('Update Personal Details', style: TextStyle(color: Colors.white)),
+                  child: Text('Update Personal Details', style: Font.montserratFont(color: Colors.white)),
                   onPressed: () {
                     context.go(RouteNames.profile);
                   },
@@ -192,7 +193,7 @@ class DataManagementTab extends StatelessWidget {
                   },
                   child: Text(
                     'Read Full Privacy Policy',
-                    style: AppStyles.bodyTextStyle(context).copyWith(
+                    style: Font.montserratFont(
                       color: MyTheme.primaryColor,
                       fontWeight: FontWeight.bold,
                     ),
@@ -211,15 +212,15 @@ class DataManagementTab extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: colors.cardBackground,
-        title: Text('Request Data Report', style: TextStyle(color: colors.textPrimary)),
+        title: Text('Request Data Report', style: Font.montserratFont(color: colors.textPrimary)),
         content: Text(
           'Your data report will be prepared and sent to your registered email within 48 hours. This report contains all your personal data stored with PayFusion.',
-          style: TextStyle(color: colors.textPrimary),
+          style: Font.montserratFont(color: colors.textPrimary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: TextStyle(color: colors.primary)),
+            child: Text('Cancel', style: Font.montserratFont(color: colors.primary)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -241,7 +242,7 @@ class DataManagementTab extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: colors.cardBackground,
-        title: Text('Select Data to Delete', style: TextStyle(color: colors.textPrimary)),
+        title: Text('Select Data to Delete', style: Font.montserratFont(color: colors.textPrimary)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -254,7 +255,7 @@ class DataManagementTab extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: TextStyle(color: colors.primary)),
+            child: Text('Cancel', style: Font.montserratFont(color: colors.primary)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -276,8 +277,8 @@ class DataManagementTab extends StatelessWidget {
         builder: (context, setState) {
           bool isChecked = value;
           return CheckboxListTile(
-            title: Text(title, style: TextStyle(color: AppColors.of(context).textPrimary)),
-            subtitle: Text(subtitle, style: TextStyle(color: AppColors.of(context).textSecondary)),
+            title: Text(title, style: Font.montserratFont(color: AppColors.of(context).textPrimary)),
+            subtitle: Text(subtitle, style: Font.montserratFont(color: AppColors.of(context).textSecondary)),
             value: isChecked,
             onChanged: (newValue) {
               setState(() {
@@ -294,34 +295,34 @@ class DataManagementTab extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: colors.cardBackground,
-        title: Text('Delete Account', style: TextStyle(color: colors.textPrimary)),
+        title: Text('Delete Account', style: Font.montserratFont(color: colors.textPrimary)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Warning: This action cannot be undone.',
-              style: TextStyle(color: colors.error, fontWeight: FontWeight.bold),
+              style: Font.montserratFont(color: colors.error, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             Text(
               'Account deletion will:',
-              style: TextStyle(color: colors.textPrimary),
+              style: Font.montserratFont(color: colors.textPrimary),
             ),
             const SizedBox(height: 5),
-            Text('• Close your PayFusion account permanently', style: TextStyle(color: colors.textPrimary)),
-            Text('• Delete your personal profile information', style: TextStyle(color: colors.textPrimary)),
-            Text('• Remove your payment methods and settings', style: TextStyle(color: colors.textPrimary)),
-            Text('• Cancel all recurring payments', style: TextStyle(color: colors.textPrimary)),
+            Text('• Close your PayFusion account permanently', style: Font.montserratFont(color: colors.textPrimary)),
+            Text('• Delete your personal profile information', style: Font.montserratFont(color: colors.textPrimary)),
+            Text('• Remove your payment methods and settings', style: Font.montserratFont(color: colors.textPrimary)),
+            Text('• Cancel all recurring payments', style: Font.montserratFont(color: colors.textPrimary)),
             const SizedBox(height: 10),
-            Text('Note: Some information may be retained for legal and regulatory compliance.', style: TextStyle(color: colors.textSecondary),
+            Text('Note: Some information may be retained for legal and regulatory compliance.', style: Font.montserratFont(color: colors.textSecondary),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: TextStyle(color: colors.primary)),
+            child: Text('Cancel', style: Font.montserratFont(color: colors.primary)),
           ),
           ElevatedButton(
             onPressed: () {

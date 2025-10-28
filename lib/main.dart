@@ -101,7 +101,7 @@ class MyApp extends StatelessWidget {
           create: (_) => ChatBloc(userId: SessionController.user.uid.toString()),
         ),
         BlocProvider<AuthBloc>(
-          create: (context) => AuthBloc(
+          create: (BuildContext context) => AuthBloc(
             authRepository: getIt<AuthRepository>(),
             biometricService: getIt<BiometricService>(),
             sessionController: getIt<SessionController>(),
@@ -109,7 +109,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         BlocProvider<ProfileBloc>(
-          create: (context) => ProfileBloc(
+          create: (BuildContext context) => ProfileBloc(
             authRepository: getIt<AuthRepository>(),
           ),
         ),
@@ -117,19 +117,19 @@ class MyApp extends StatelessWidget {
           create: (_) => SettingsBloc(),
         ),
         BlocProvider<SubmitATicketBloc>(
-          create: (context) => SubmitATicketBloc(ticketRepository: TicketRepository()),
+          create: (BuildContext context) => SubmitATicketBloc(ticketRepository: TicketRepository()),
         ),
         BlocProvider<CurrencyConversionBloc>(
-          create: (context) => CurrencyConversionBloc(),
+          create: (BuildContext context) => CurrencyConversionBloc(),
         ),
         BlocProvider(
-          create: (context) => GraphCurrencyBloc()..add(LoadCurrencies()),
+          create: (BuildContext context) => GraphCurrencyBloc()..add(LoadCurrencies()),
         ),
         BlocProvider(
-          create: (context) => CardBloc(),
+          create: (BuildContext context) => CardBloc(),
         ),
         BlocProvider<PaymentRequestBloc>(
-          create: (context) => PaymentRequestBloc(
+          create: (BuildContext context) => PaymentRequestBloc(
             repository: FirestorePaymentRepository(),
           ),
         ),
@@ -140,7 +140,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         BlocProvider(
-          create: (context) => NotificationBloc(NotificationRepository()),
+          create: (BuildContext context) => NotificationBloc(NotificationRepository()),
         ),
         BlocProvider(
           create: (_) => TransactionBloc(
@@ -150,64 +150,64 @@ class MyApp extends StatelessWidget {
           )
         ),
         BlocProvider(
-          create: (context) => PayBillBloc(
+          create: (BuildContext context) => PayBillBloc(
             PayBillRepository(),
             context.read<NotificationBloc>(),
           ),
         ),
         BlocProvider(
-          create: (context) => TrainBloc(TrainRepository())..add(LoadTrains()),
+          create: (BuildContext context) => TrainBloc(TrainRepository())..add(LoadTrains()),
         ),
         BlocProvider(
-          create: (context) => BookingBloc(
+          create: (BuildContext context) => BookingBloc(
             TrainRepository(),
             context.read<NotificationBloc>(),
           ),
         ),
         BlocProvider(
-          create: (context) => BusBloc(BusRepository())..add(LoadBuses()),
+          create: (BuildContext context) => BusBloc(BusRepository())..add(LoadBuses()),
         ),
         BlocProvider(
-          create: (context) => BusBookingBloc(
+          create: (BuildContext context) => BusBookingBloc(
             BusRepository(),
             context.read<NotificationBloc>(),
           ),
         ),
         BlocProvider(
-          create: (context) => FlightBloc(FlightFirebaseService())..add(LoadFlights()),
+          create: (BuildContext context) => FlightBloc(FlightFirebaseService())..add(LoadFlights()),
         ),
         BlocProvider(
-          create: (context) => FlightBookingBloc(
+          create: (BuildContext context) => FlightBookingBloc(
             FlightFirebaseService(),
             context.read<NotificationBloc>(),
           ),
         ),
         BlocProvider(
-          create: (context) => MovieBloc(MovieRepository())..add(LoadMovies()),
+          create: (BuildContext context) => MovieBloc(MovieRepository())..add(LoadMovies()),
         ),
         BlocProvider(
-          create: (context) => MovieBookingBloc(
+          create: (BuildContext context) => MovieBookingBloc(
             MovieRepository(),
             context.read<NotificationBloc>(),
           ),
         ),
         BlocProvider(
-          create: (context) => RideBloc(RideFirebaseService())..add(LoadRides()),
+          create: (BuildContext context) => RideBloc(RideFirebaseService())..add(LoadRides()),
         ),
         BlocProvider(
-          create: (context) => RideBookingBloc(
+          create: (BuildContext context) => RideBookingBloc(
             RideFirebaseService(),
             context.read<NotificationBloc>(),
           ),
         ),
         BlocProvider(
-          create: (context) => BankTransactionBloc(
+          create: (BuildContext context) => BankTransactionBloc(
               biometricService: BiometricService(),
               notificationRepository: NotificationRepository(),
           ),
         ),
         BlocProvider(
-          create: (context) => InsurancePaymentBloc(
+          create: (BuildContext context) => InsurancePaymentBloc(
             InsurancePaymentRepository(),
           ),
         ),
@@ -215,17 +215,17 @@ class MyApp extends StatelessWidget {
       child: ScreenUtilInit(
         designSize: const Size(375, 812),
         minTextAdapt: true,
-        builder: (context, child) {
+        builder: (BuildContext context, Widget? child) {
           return BlocBuilder<ThemeBloc, ThemeState>(
-            builder: (context, themeState) {
-              ThemeMode currentThemeMode = themeState.themeMode;
+            builder: (BuildContext context, ThemeState themeState) {
+              final ThemeMode currentThemeMode = themeState.themeMode;
               return MaterialApp.router(
                 debugShowCheckedModeBanner: false,
                 title: 'PayFussion',
                 routerConfig: appRouter,
                 theme: MyTheme.lightTheme(context),
                 darkTheme: MyTheme.darkTheme(context),
-                themeMode: currentThemeMode,
+                themeMode: ThemeMode.system,
               );
             },
           );

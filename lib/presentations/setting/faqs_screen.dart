@@ -5,6 +5,8 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../core/constants/fonts.dart';
+
 class FaqsScreen extends StatefulWidget {
   const FaqsScreen({super.key});
 
@@ -83,8 +85,7 @@ class _FaqsScreenState extends State<FaqsScreen> with TickerProviderStateMixin {
       appBar: AppBar(
         title: Text(
           "FAQs",
-          style: TextStyle(
-            fontFamily: 'Montserrat',
+          style: Font.montserratFont(
             fontSize: 18.sp,
             fontWeight: FontWeight.w600,
           ),
@@ -138,7 +139,7 @@ class _FaqsScreenState extends State<FaqsScreen> with TickerProviderStateMixin {
                                       ),
                                       title: Text(
                                         snapshot.data!.docs[index]["question"],
-                                        style: const TextStyle(
+                                        style: Font.montserratFont(
                                           fontSize: 16,
                                         ),
                                       ),
@@ -146,7 +147,7 @@ class _FaqsScreenState extends State<FaqsScreen> with TickerProviderStateMixin {
                                         ListTile(
                                           title: Text(
                                             snapshot.data!.docs[index]["answer"],
-                                            style: const TextStyle(
+                                            style: Font.montserratFont(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w500,
                                             ),

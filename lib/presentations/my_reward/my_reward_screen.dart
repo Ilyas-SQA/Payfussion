@@ -4,6 +4,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/presentations/my_reward/specific_reward_screen.dart';
 
+import '../../core/constants/fonts.dart';
+
 class MyRewardScreen extends StatelessWidget {
   const MyRewardScreen({super.key});
 
@@ -11,9 +13,9 @@ class MyRewardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'My Rewards',
-          style: TextStyle(
+          style: Font.montserratFont(
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -103,10 +105,10 @@ class MyRewardScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Text(
                           'RS',
-                          style: TextStyle(
+                          style: Font.montserratFont(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -128,7 +130,7 @@ class MyRewardScreen extends StatelessWidget {
               subtitle: 'Enjoy amazing rewards',
               iconBg: MyTheme.primaryColor.withOpacity(0.1),
               onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const SpecificRewardScreen(title: "Vouchers",)));
+                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const SpecificRewardScreen(title: "Vouchers",)));
               },
             ),
             const SizedBox(height: 16),
@@ -154,7 +156,7 @@ class MyRewardScreen extends StatelessWidget {
               subtitle: 'Earn up to 10.5 % profit daily',
               iconBg: MyTheme.primaryColor.withOpacity(0.1),
               onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const SpecificRewardScreen(title: "Savings",)));
+                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const SpecificRewardScreen(title: "Savings",)));
               },
             ),
             const SizedBox(height: 16),
@@ -239,7 +241,7 @@ class MyRewardScreen extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: Font.montserratFont(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -247,7 +249,7 @@ class MyRewardScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontSize: 13,
                       color: Colors.grey[600],
                       height: 1.3,

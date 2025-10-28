@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../../../core/constants/fonts.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/utils/setting_utils/data_and_permission_utils/app_colors_utils.dart';
 import '../../../../core/utils/setting_utils/data_and_permission_utils/app_styles.dart';
@@ -58,7 +59,7 @@ class PermissionCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       PermissionUtils.getPermissionDescription(permission),
-                      style: const TextStyle(
+                      style: Font.montserratFont(
                         fontSize: 12,
                       ),
                     ),

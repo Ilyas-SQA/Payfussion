@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:payfussion/core/constants/image_url.dart';
 
+import '../../../core/constants/fonts.dart';
+
 
 class CustomCreditCard extends StatelessWidget {
   const CustomCreditCard({
@@ -30,19 +32,12 @@ class CustomCreditCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(20.r),
           gradient: LinearGradient(
             colors: cardColor.isNotEmpty ? cardColor : [
-              Color(0xFF0a3d3d),
-              Color(0xFF1a5555),
+              const Color(0xFF0a3d3d),
+              const Color(0xFF1a5555),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          // boxShadow: [
-          //   BoxShadow(
-          //     color: Colors.black.withOpacity(0.3),
-          //     blurRadius: 20,
-          //     offset: const Offset(0, 10),
-          //   ),
-          // ],
         ),
         child: Stack(
           children: [
@@ -77,8 +72,7 @@ class CustomCreditCard extends StatelessWidget {
                   // Middle section - Card number
                   Text(
                     cardNumber,
-                    style: TextStyle(
-                      fontFamily: 'Courier New',
+                    style: Font.montserratFont(
                       fontSize: 20.sp,
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
@@ -96,8 +90,7 @@ class CustomCreditCard extends StatelessWidget {
                         children: [
                           Text(
                             "Card Holder",
-                            style: TextStyle(
-                              fontFamily: 'Montserrat',
+                            style: Font.montserratFont(
                               fontSize: 9.sp,
                               color: Colors.white.withOpacity(0.6),
                               fontWeight: FontWeight.w400,
@@ -107,8 +100,7 @@ class CustomCreditCard extends StatelessWidget {
                           SizedBox(height: 2.h),
                           Text(
                             cardHolder,
-                            style: TextStyle(
-                              fontFamily: 'Montserrat',
+                            style: Font.montserratFont(
                               fontSize: 14.sp,
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
@@ -124,8 +116,7 @@ class CustomCreditCard extends StatelessWidget {
                         children: [
                           Text(
                             "Expires",
-                            style: TextStyle(
-                              fontFamily: 'Montserrat',
+                            style: Font.montserratFont(
                               fontSize: 9.sp,
                               color: Colors.white.withOpacity(0.6),
                               fontWeight: FontWeight.w400,
@@ -135,8 +126,7 @@ class CustomCreditCard extends StatelessWidget {
                           SizedBox(height: 2.h),
                           Text(
                             expiryDate,
-                            style: TextStyle(
-                              fontFamily: 'Montserrat',
+                            style: Font.montserratFont(
                               fontSize: 14.sp,
                               color: Colors.white,
                               fontWeight: FontWeight.w600,

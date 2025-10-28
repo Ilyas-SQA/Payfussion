@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/constants/routes_name.dart';
 import 'package:payfussion/presentations/widgets/add_card_widgets/custom_card_fields.dart';
 import '../../../core/constants/image_url.dart';
+import '../../core/constants/fonts.dart';
 import '../../logic/blocs/add_card/card_bloc.dart';
 import '../../logic/blocs/add_card/card_event.dart';
 import '../../logic/blocs/add_card/card_state.dart';
@@ -133,8 +132,7 @@ class _AddCardHomescreenState extends State<AddCardHomescreen> {
                             SizedBox(width: 2.w),
                             Text(
                               'Back',
-                              style: TextStyle(
-                                fontFamily: 'Montserrat',
+                              style: Font.montserratFont(
                                 fontSize: 20.sp,
                                 color: const Color(0xff2D9CDB),
                                 fontWeight: FontWeight.w600,
@@ -193,8 +191,7 @@ class _AddCardHomescreenState extends State<AddCardHomescreen> {
                                 alignment: Alignment.centerLeft,
                                 child: Text(
                                   "Enter Card Details",
-                                  style: TextStyle(
-                                    fontFamily: 'Montserrat',
+                                  style: Font.montserratFont(
                                     fontSize: 14.sp,
                                     color: const Color(0xff2D9CDB),
                                     fontWeight: FontWeight.bold,
@@ -207,8 +204,7 @@ class _AddCardHomescreenState extends State<AddCardHomescreen> {
                                 alignment: Alignment.centerLeft,
                                 child: Text(
                                   "Card Number",
-                                  style: TextStyle(
-                                    fontFamily: 'Montserrat',
+                                  style: Font.montserratFont(
                                     fontSize: 14.sp,
                                     color: Colors.black,
                                     fontWeight: FontWeight.normal,
@@ -237,8 +233,7 @@ class _AddCardHomescreenState extends State<AddCardHomescreen> {
                                 alignment: Alignment.centerLeft,
                                 child: Text(
                                   "Expiry Date",
-                                  style: TextStyle(
-                                    fontFamily: 'Montserrat',
+                                  style: Font.montserratFont(
                                     fontSize: 14.sp,
                                     color: Colors.black,
                                     fontWeight: FontWeight.normal,
@@ -272,8 +267,7 @@ class _AddCardHomescreenState extends State<AddCardHomescreen> {
                                 alignment: Alignment.centerLeft,
                                 child: Text(
                                   "Card Holder Name",
-                                  style: TextStyle(
-                                    fontFamily: 'Montserrat',
+                                  style: Font.montserratFont(
                                     fontSize: 14.sp,
                                     color: Colors.black,
                                     fontWeight: FontWeight.normal,
@@ -303,8 +297,7 @@ class _AddCardHomescreenState extends State<AddCardHomescreen> {
                                 alignment: Alignment.centerLeft,
                                 child: Text(
                                   "CVV",
-                                  style: TextStyle(
-                                    fontFamily: 'Montserrat',
+                                  style: Font.montserratFont(
                                     fontSize: 14.sp,
                                     color: Colors.black,
                                     fontWeight: FontWeight.normal,
@@ -403,8 +396,7 @@ class _AddCardHomescreenState extends State<AddCardHomescreen> {
                               alignment: Alignment.center,
                               child: Text(
                                 "Proceed",
-                                style: TextStyle(
-                                  fontFamily: 'Montserrat',
+                                style: Font.montserratFont(
                                   fontSize: 18.sp,
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
