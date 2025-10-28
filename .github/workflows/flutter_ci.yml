@@ -2,9 +2,9 @@ name: Flutter CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -12,21 +12,22 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      - name: Set up Flutter
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: "dev"
+          flutter-version: '3.35.3'
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Analyze project
+      - name: Analyze code
         run: flutter analyze
 
       - name: Run tests
         run: flutter test
 
-      - name: Build release APK
-        run: flutter build apk --release
+      # Optional for web build
+      - name: Build Web
+        run: flutter build web
