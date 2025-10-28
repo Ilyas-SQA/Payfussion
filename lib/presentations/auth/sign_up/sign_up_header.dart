@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/constants/image_url.dart';
 
+import '../../../core/constants/fonts.dart';
+
 class SignUpHeader extends StatefulWidget {
   const SignUpHeader({super.key});
 
@@ -98,7 +100,7 @@ class _SignUpHeaderState extends State<SignUpHeader>
             opacity: _logoFade,
             child: Hero(
               tag: 'logo',
-              child: Image.asset(TImageUrl.iconLogo, height: 90.h),
+              child: Image.asset(TImageUrl.iconLogo, height: 80.h),
             ),
           ),
         ),
@@ -109,8 +111,7 @@ class _SignUpHeaderState extends State<SignUpHeader>
             opacity: _titleFade,
             child: Text(
               'Welcome to PayFussion',
-              style: TextStyle(
-                fontFamily: 'Montserrat',
+              style: Font.montserratFont(
                 fontSize: 20.sp,
                 fontWeight: FontWeight.w600,
               ),
@@ -124,8 +125,7 @@ class _SignUpHeaderState extends State<SignUpHeader>
             opacity: _subtitleFade,
             child: Text(
               'Sign up to your account to continue.',
-              style: TextStyle(
-                fontFamily: 'Inter',
+              style: Font.montserratFont(
                 fontSize: 12.sp,
               ),
             ),
