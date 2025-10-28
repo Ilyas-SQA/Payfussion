@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../constants/fonts.dart';
+
 class MyTheme {
   static ThemeData lightTheme(BuildContext context) => ThemeData(
         useMaterial3: true,
@@ -9,9 +11,8 @@ class MyTheme {
         scaffoldBackgroundColor: backgroundColor,
         inputDecorationTheme: InputDecorationTheme(
           outlineBorder: const BorderSide(color: Colors.black),
-          hintStyle: TextStyle(
+          hintStyle: Font.montserratFont(
             color: const Color(0xff666666),
-            fontFamily: 'Roboto',
             fontSize: 16.sp,
             fontWeight: FontWeight.w500,
           ),
@@ -20,9 +21,49 @@ class MyTheme {
             bottom: 48.h / 2,
             left: 19.w,
           ),
+
           border: OutlineInputBorder(
             borderRadius: BorderRadius.all(
-              Radius.circular(8.r),
+              Radius.circular(5.r),
+            ),
+            borderSide: const BorderSide(
+              color: Colors.black,
+              width: 1,
+            ),
+          ),
+
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(5.r)),
+            borderSide: const BorderSide(
+              color: Colors.grey,
+              width: 1,
+            ),
+          ),
+
+          /// Focused Border
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(5.r)),
+            borderSide: const BorderSide(
+              width: 1.5,
+              color: Colors.black,
+            ),
+          ),
+
+          /// Error Border
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(5.r)),
+            borderSide: const BorderSide(
+              color: Colors.red,
+              width: 1.2,
+            ),
+          ),
+
+          /// Focused Error Border
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(5.r)),
+            borderSide: const BorderSide(
+              color: Colors.red,
+              width: 1.5,
             ),
           ),
         ),
@@ -40,44 +81,37 @@ class MyTheme {
             .textTheme
             .copyWith(
           // Specify the custom font for each style in the dark theme
-          bodyLarge: const TextStyle(
+          bodyLarge:  Font.montserratFont(
             fontWeight: FontWeight.bold,
             color: Colors.black,
-            fontFamily: 'Montserrat',
           ),
-          bodyMedium: const TextStyle(
-            fontWeight: FontWeight.normal,
-            color: Colors.black,
-            fontFamily: 'Montserrat',
-          ),
-          bodySmall: const TextStyle(
-            fontFamily: 'Montserrat',
+          bodyMedium: Font.montserratFont(
             fontWeight: FontWeight.normal,
             color: Colors.black,
           ),
-          headlineLarge: TextStyle(
-            fontFamily: 'Montserrat',
+          bodySmall: Font.montserratFont(
+            fontWeight: FontWeight.normal,
+            color: Colors.black,
+          ),
+          headlineLarge: Font.montserratFont(
             fontWeight: FontWeight.bold,
             color: Colors.black,
             fontSize: 26.sp,
           ),
-          headlineMedium: TextStyle(
+          headlineMedium: Font.montserratFont(
             fontWeight: FontWeight.bold,
             color: Colors.black,
             fontSize: 22.sp,
-            fontFamily: 'Montserrat',
           ),
-          headlineSmall: TextStyle(
+          headlineSmall: Font.montserratFont(
             fontSize: 20.sp,
             fontWeight: FontWeight.normal,
             color: Colors.black,
-            fontFamily: 'Montserrat',
           ),
         ),
         appBarTheme: AppBarTheme(
           color: Colors.white,
-          titleTextStyle: TextStyle(
-              fontFamily: 'Montserrat',
+          titleTextStyle: Font.montserratFont(
               color: Colors.black,
               fontSize: 20.sp,
               fontWeight: FontWeight.bold),
@@ -89,11 +123,10 @@ class MyTheme {
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
             textStyle: WidgetStateProperty.all(
-              TextStyle(
+              Font.montserratFont(
                 color: Colors.black,
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w700,
-                fontFamily: 'Montserrat',
               ),
             ),
             backgroundColor: WidgetStateProperty.all(
@@ -135,9 +168,8 @@ class MyTheme {
         scaffoldBackgroundColor: MyTheme.darkBackgroundColor,
         inputDecorationTheme: InputDecorationTheme(
           outlineBorder: const BorderSide(color: Colors.black),
-          hintStyle: TextStyle(
+          hintStyle: Font.montserratFont(
             color: Colors.white,
-            fontFamily: 'Roboto',
             fontSize: 16.sp,
             fontWeight: FontWeight.w500,
           ),
@@ -156,33 +188,27 @@ class MyTheme {
             .of(context)
             .textTheme
             .copyWith(
-          headlineSmall: TextStyle(
-            fontFamily: 'Montserrat',
+          headlineSmall: Font.montserratFont(
             fontSize: 18.sp,
             fontWeight: FontWeight.normal,
             color: Colors.white,
           ),
           // Specify the custom font for each style in the dark theme
-          bodyLarge: const TextStyle(
-              fontFamily: 'Montserrat',
+          bodyLarge: Font.montserratFont(
               fontWeight: FontWeight.bold,
               color: Colors.white),
-          bodyMedium: const TextStyle(
-              fontFamily: 'Montserrat',
+          bodyMedium: Font.montserratFont(
               fontWeight: FontWeight.normal,
               color: Colors.white),
-          bodySmall: const TextStyle(
-              fontFamily: 'Montserrat',
+          bodySmall: Font.montserratFont(
               fontWeight: FontWeight.normal,
               color: Colors.white),
-          headlineLarge: TextStyle(
-            fontFamily: 'Montserrat',
+          headlineLarge: Font.montserratFont(
             fontWeight: FontWeight.bold,
             color: Colors.white,
             fontSize: 35.sp,
           ),
-          headlineMedium: TextStyle(
-            fontFamily: 'Montserrat',
+          headlineMedium: Font.montserratFont(
             fontWeight: FontWeight.bold,
             color: Colors.white,
             fontSize: 24.sp,
@@ -191,8 +217,7 @@ class MyTheme {
 
         appBarTheme: AppBarTheme(
           backgroundColor: MyTheme.darkBackgroundColor,
-          titleTextStyle: TextStyle(
-            fontFamily: 'Montserrat',
+          titleTextStyle: Font.montserratFont(
             color: Colors.white,
             fontSize: 20.sp,
             fontWeight: FontWeight.bold,
@@ -204,8 +229,7 @@ class MyTheme {
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
             textStyle: WidgetStateProperty.all(
-              TextStyle(
-                fontFamily: 'Montserrat',
+              Font.montserratFont(
                 color: Colors.black,
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w700,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:icons_plus/icons_plus.dart';
 
 class TImageUrl {
   TImageUrl._();
@@ -146,8 +147,6 @@ class TImageUrl {
   static const String entertainment = 'assets/images/paybill/entertainment.svg';
   static const String gasBill = 'assets/images/paybill/gas_bill.svg';
   static const String rentBill = 'assets/images/paybill/rent_bill.svg';
-
-
 
 
 }
