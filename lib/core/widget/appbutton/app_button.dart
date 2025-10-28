@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:payfussion/core/constants/fonts.dart';
 import '../../theme/theme.dart';
 
 class AppButton extends StatelessWidget {
   const AppButton({
     required this.text,
     required this.onTap,
-    this.height = 50,
+    this.height = 48,
     this.width = double.infinity,
     this.loading = false,
     this.color = MyTheme.primaryColor,
-    this.textStyle = const TextStyle(
-        fontWeight: FontWeight.w600,
-        color: Colors.white,
-        fontSize: 14
-    ),
+    this.textStyle,
     this.isBorder = true,
     this.isIcon = false,
     this.icon,
-    this.borderRadius = const BorderRadius.all(Radius.circular(20)),
+    this.borderRadius = const BorderRadius.all(Radius.circular(30)),
     super.key});
 
   final String text;
@@ -26,7 +23,7 @@ class AppButton extends StatelessWidget {
   final bool loading;
   final VoidCallback? onTap;
   final Color color;
-  final TextStyle textStyle;
+  final TextStyle? textStyle;
   final bool isBorder;
   final bool isIcon;
   final IconData? icon;
@@ -47,16 +44,20 @@ class AppButton extends StatelessWidget {
           ),
         ),
         child: loading ?
-        Center(child: SizedBox(height: 20,width: 20,child: CircularProgressIndicator(color: Colors.white,))) :
+        const Center(child: SizedBox(height: 20,width: 20,child: CircularProgressIndicator(color: Colors.white,))) :
         isIcon ? Row(
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 10,
           children: [
-            Icon(icon,color: MyTheme.primaryColor,),
+            Icon(icon,color: Colors.white,),
             Center(
               child: Text(
-                  text,
-                  style: textStyle
+                text,
+                style: textStyle ?? Font.montserratFont(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                  fontSize: 14,
+                ),
               ),
             ),
           ],
@@ -64,7 +65,11 @@ class AppButton extends StatelessWidget {
         Center(
           child: Text(
             text,
-            style: textStyle,
+            style: textStyle ?? Font.montserratFont(
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+              fontSize: 14,
+            ),
             textAlign: TextAlign.center,
           ),
         ),
