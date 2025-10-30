@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/presentations/splash_screen/splash_service.dart';
+import 'package:payfussion/presentations/widgets/background_theme.dart';
 import '../../core/constants/fonts.dart';
 import '../../core/constants/image_url.dart';
 
@@ -24,10 +25,16 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   late Animation<double> _logoOpacityAnimation;
   late Animation<double> _textSlideAnimation;
   late Animation<double> _textOpacityAnimation;
+  late AnimationController _backgroundAnimationController;
 
   @override
   void initState() {
     super.initState();
+
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
 
     /// Initialize animation controllers
     _logoController = AnimationController(
@@ -114,11 +121,13 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     _logoController.dispose();
     _textController.dispose();
     _fadeController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: AnimatedBuilder(
@@ -127,78 +136,71 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
           _textController,
           _fadeController,
         ]),
-        builder: (context, child) {
-          return Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              // Optional: Add a subtle gradient
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Theme.of(context).scaffoldBackgroundColor,
-                  Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
-                ],
+        builder: (BuildContext context, Widget? child) {
+          return Stack(
+            children: [
+              AnimatedBackground(
+                animationController: _backgroundAnimationController,
               ),
-            ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  // Animated Logo
-                  Transform.scale(
-                    scale: _logoScaleAnimation.value,
-                    child: Transform.rotate(
-                      angle: _logoRotationAnimation.value,
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    // Animated Logo
+                    Transform.scale(
+                      scale: _logoScaleAnimation.value,
+                      child: Transform.rotate(
+                        angle: _logoRotationAnimation.value,
+                        child: Opacity(
+                          opacity: _logoOpacityAnimation.value,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Image.asset(
+                              TImageUrl.iconLogo,
+                              height: 100,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Animated Text
+                    Transform.translate(
+                      offset: Offset(0, _textSlideAnimation.value),
                       child: Opacity(
-                        opacity: _logoOpacityAnimation.value,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Image.asset(
-                            TImageUrl.iconLogo,
-                            height: 100,
+                        opacity: _textOpacityAnimation.value,
+                        child: Text(
+                          'PayFussion',
+                          style: Font.montserratFont(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 1.2,
                           ),
                         ),
                       ),
                     ),
-                  ),
 
-                  const SizedBox(height: 20),
-
-                  // Animated Text
-                  Transform.translate(
-                    offset: Offset(0, _textSlideAnimation.value),
-                    child: Opacity(
+                    // Awesome Loader (using SpinKit from flutter_spinkit)
+                    const SizedBox(height: 40),
+                    Opacity(
                       opacity: _textOpacityAnimation.value,
-                      child: Text(
-                        'PayFussion',
-                        style: Font.montserratFont(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 1.2,
+                      child: const SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: SpinKitFadingCircle(
+                          color:  MyTheme.primaryColor,
+                          size: 50.0,
                         ),
                       ),
                     ),
-                  ),
-
-                  // Awesome Loader (using SpinKit from flutter_spinkit)
-                  const SizedBox(height: 40),
-                  Opacity(
-                    opacity: _textOpacityAnimation.value,
-                    child: const SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: SpinKitFadingCircle(
-                        color:  MyTheme.primaryColor,
-                        size: 50.0,
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+            ],
           );
         },
       ),
