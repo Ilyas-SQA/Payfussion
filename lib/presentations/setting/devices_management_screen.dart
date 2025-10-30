@@ -9,6 +9,7 @@ import '../../data/repositories/setting_repositories/device_manager/device_manag
 import '../../logic/blocs/setting/device_manager/device_manager_bloc.dart';
 import '../../logic/blocs/setting/device_manager/device_manager_event.dart';
 import '../../logic/blocs/setting/device_manager/device_manager_state.dart';
+import '../widgets/background_theme.dart';
 
 
 class DevicesManagementScreen extends StatefulWidget {
@@ -18,17 +19,22 @@ class DevicesManagementScreen extends StatefulWidget {
   State<DevicesManagementScreen> createState() => _DevicesManagementScreenState();
 }
 
-class _DevicesManagementScreenState extends State<DevicesManagementScreen>
-    with TickerProviderStateMixin {
+class _DevicesManagementScreenState extends State<DevicesManagementScreen> with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late AnimationController _slideController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+  late AnimationController _backgroundAnimationController;
+
 
   @override
   void initState() {
     super.initState();
     _initializeAnimations();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   void _initializeAnimations() {
@@ -46,6 +52,7 @@ class _DevicesManagementScreenState extends State<DevicesManagementScreen>
   void dispose() {
     _fadeController.dispose();
     _slideController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -243,70 +250,77 @@ class _DevicesManagementScreenState extends State<DevicesManagementScreen>
         title: const Text("Device Management"),
       ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: BlocProvider(
-        create: (BuildContext context) => DeviceBloc(DeviceRepository())..add(FetchDevices()),
-        child: BlocBuilder<DeviceBloc, DeviceState>(
-          builder: (BuildContext context, DeviceState state) {
-            if (state is DeviceLoading) return _buildShimmerLoading();
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          BlocProvider(
+            create: (BuildContext context) => DeviceBloc(DeviceRepository())..add(FetchDevices()),
+            child: BlocBuilder<DeviceBloc, DeviceState>(
+              builder: (BuildContext context, DeviceState state) {
+                if (state is DeviceLoading) return _buildShimmerLoading();
 
-            if (state is DeviceLoaded) {
-              _fadeController.forward();
-              _slideController.forward();
+                if (state is DeviceLoaded) {
+                  _fadeController.forward();
+                  _slideController.forward();
 
-              final List<DeviceModel> currentDevice = state.devices.where((d) => d.isActive == true).toList();
-              final List<DeviceModel> otherDevices = state.devices.where((d) => d.isActive != true).toList();
+                  final List<DeviceModel> currentDevice = state.devices.where((d) => d.isActive == true).toList();
+                  final List<DeviceModel> otherDevices = state.devices.where((d) => d.isActive != true).toList();
 
-              return FadeTransition(
-                opacity: _fadeAnimation,
-                child: SlideTransition(
-                  position: _slideAnimation,
-                  child: SingleChildScrollView(
+                  return FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: SlideTransition(
+                      position: _slideAnimation,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 25.w),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 20.h),
+                                  if (currentDevice.isNotEmpty) ...[
+                                    _buildAnimatedSection('Current Device', currentDevice, 0),
+                                    SizedBox(height: 40.h),
+                                  ],
+                                  _buildAnimatedSection('Other Devices', otherDevices, 200),
+                                  SizedBox(height: 30.h),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                if (state is DeviceError) {
+                  return Center(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 25.w),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: 20.h),
-                              if (currentDevice.isNotEmpty) ...[
-                                _buildAnimatedSection('Current Device', currentDevice, 0),
-                                SizedBox(height: 40.h),
-                              ],
-                              _buildAnimatedSection('Other Devices', otherDevices, 200),
-                              SizedBox(height: 30.h),
-                            ],
-                          ),
+                        Icon(Icons.error_outline, size: 60.sp, color: Theme.of(context).colorScheme.error),
+                        SizedBox(height: 16.h),
+                        Text("Error: ${state.error}", textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                color: Theme.of(context).colorScheme.error)),
+                        SizedBox(height: 24.h),
+                        ElevatedButton(
+                          onPressed: () => context.read<DeviceBloc>().add(FetchDevices()),
+                          child: const Text('Retry'),
                         ),
                       ],
                     ),
-                  ),
-                ),
-              );
-            }
-
-            if (state is DeviceError) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.error_outline, size: 60.sp, color: Theme.of(context).colorScheme.error),
-                    SizedBox(height: 16.h),
-                    Text("Error: ${state.error}", textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.error)),
-                    SizedBox(height: 24.h),
-                    ElevatedButton(
-                      onPressed: () => context.read<DeviceBloc>().add(FetchDevices()),
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              );
-            }
-            return Container();
-          },
-        ),
+                  );
+                }
+                return Container();
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
