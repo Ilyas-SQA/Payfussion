@@ -5,7 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import '../../../core/constants/routes_name.dart';
-import '../../../services/submit_ticket_service.dart'; // Adjust path as needed
+import '../../../services/submit_ticket_service.dart';
+import '../../widgets/background_theme.dart'; // Adjust path as needed
 
 class ShowTicketScreen extends StatefulWidget {
   const ShowTicketScreen({super.key});
@@ -21,11 +22,10 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
   late AnimationController _slideController;
   late AnimationController _fadeController;
   late AnimationController _scaleController;
+  late AnimationController _backgroundAnimationController;
 
   // Animations
-  late Animation<Offset> _slideAnimation;
   late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
 
   // Initialize the repository - THIS WAS THE MISSING PART
   late TicketRepository _ticketRepository;
@@ -33,7 +33,10 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
   @override
   void initState() {
     super.initState();
-
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
     // Initialize the repository - ADD THIS LINE
     _ticketRepository = TicketRepository();
 
@@ -53,14 +56,6 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
       vsync: this,
     );
 
-    // Initialize animations
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _slideController,
-      curve: Curves.easeOutCubic,
-    ));
 
     _fadeAnimation = Tween<double>(
       begin: 0.0,
@@ -68,14 +63,6 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
     ).animate(CurvedAnimation(
       parent: _fadeController,
       curve: Curves.easeInOut,
-    ));
-
-    _scaleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _scaleController,
-      curve: Curves.elasticOut,
     ));
 
     // Start entry animations
@@ -91,6 +78,7 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
     _slideController.dispose();
     _fadeController.dispose();
     _scaleController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -101,26 +89,33 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
         title: const Text("My Tickets"),
       ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: Column(
+      body: Stack(
         children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          Column(
+            children: [
 
-          SizedBox(height: 20.h),
+              SizedBox(height: 20.h),
 
-          // Animated Tickets List
-          Expanded(
-            child: SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(0, 0.1),
-                end: Offset.zero,
-              ).animate(CurvedAnimation(
-                parent: _slideController,
-                curve: const Interval(0.4, 1.0, curve: Curves.easeOutCubic),
-              )),
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: _buildTicketsList(),
+              // Animated Tickets List
+              Expanded(
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0, 0.1),
+                    end: Offset.zero,
+                  ).animate(CurvedAnimation(
+                    parent: _slideController,
+                    curve: const Interval(0.4, 1.0, curve: Curves.easeOutCubic),
+                  )),
+                  child: FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: _buildTicketsList(),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),
