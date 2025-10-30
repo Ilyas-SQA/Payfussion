@@ -13,6 +13,7 @@ import '../../../logic/blocs/setting/user_profile/profile_bloc.dart';
 import '../../../logic/blocs/setting/user_profile/profile_event.dart';
 import '../../../services/session_manager_service.dart';
 import '../../../shared/widgets/error_dialog.dart';
+import '../../widgets/background_theme.dart';
 import '../../widgets/settings_widgets/profiles_widgets/editable_card.dart';
 
 class ProfileHomeScreen extends StatefulWidget {
@@ -43,6 +44,7 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
   late Animation<Offset> _profileSlide;
   late Animation<double> _contentFade;
   late Animation<double> _buttonsFade;
+  late AnimationController _backgroundAnimationController;
 
   @override
   void initState() {
@@ -50,6 +52,10 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
     _initUserData();
     _initAnimations();
     _startAnimations();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   void _initAnimations() {
@@ -120,6 +126,7 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
     _profileController.dispose();
     _contentController.dispose();
     _buttonsController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -162,73 +169,80 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
           context.showErrorDialog(state.message);
         }
       },
-      builder: (context, state) {
+      builder: (BuildContext context, ProfileState state) {
         return Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppBar(
             title: const Text("Profile"),
             elevation: 0,
           ),
-          body: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 20.h),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(height: 15.h),
-
-                  // Animated profile image
-                  SlideTransition(
-                    position: _profileSlide,
-                    child: ScaleTransition(
-                      scale: _profileScale,
-                      child: _buildProfileImage(),
-                    ),
-                  ),
-                  SizedBox(height: 15.h),
-
-                  // Animated username
-                  ScaleTransition(
-                    scale: _profileScale,
-                    child: FadeTransition(
-                      opacity: _profileController,
-                      child: _buildUserName(),
-                    ),
-                  ),
-                  SizedBox(height: 15.h),
-
-                  // Animated editable cards
-                  FadeTransition(
-                    opacity: _contentFade,
-                    child: SlideTransition(
-                      position: Tween<Offset>(
-                        begin: const Offset(0, 0.3),
-                        end: Offset.zero,
-                      ).animate(_contentController),
-                      child: _buildEditableCards(),
-                    ),
-                  ),
-                  SizedBox(height: 10.h),
-
-                  // Animated buttons
-                  FadeTransition(
-                    opacity: _buttonsFade,
-                    child: SlideTransition(
-                      position: Tween<Offset>(
-                        begin: const Offset(0, 0.5),
-                        end: Offset.zero,
-                      ).animate(_buttonsController),
-                      child: Column(
-                        children: [
-                          _buildChangePasswordButton(),
-                          SizedBox(height: 20.h),
-                          _buildLogoutButton(),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+          body: Stack(
+            children: [
+              AnimatedBackground(
+                animationController: _backgroundAnimationController,
               ),
-            ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 20.h),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      SizedBox(height: 15.h),
+
+                      // Animated profile image
+                      SlideTransition(
+                        position: _profileSlide,
+                        child: ScaleTransition(
+                          scale: _profileScale,
+                          child: _buildProfileImage(),
+                        ),
+                      ),
+                      SizedBox(height: 15.h),
+
+                      // Animated username
+                      ScaleTransition(
+                        scale: _profileScale,
+                        child: FadeTransition(
+                          opacity: _profileController,
+                          child: _buildUserName(),
+                        ),
+                      ),
+                      SizedBox(height: 15.h),
+
+                      // Animated editable cards
+                      FadeTransition(
+                        opacity: _contentFade,
+                        child: SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0, 0.3),
+                            end: Offset.zero,
+                          ).animate(_contentController),
+                          child: _buildEditableCards(),
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
+
+                      // Animated buttons
+                      FadeTransition(
+                        opacity: _buttonsFade,
+                        child: SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0, 0.5),
+                            end: Offset.zero,
+                          ).animate(_buttonsController),
+                          child: Column(
+                            children: [
+                              _buildChangePasswordButton(),
+                              SizedBox(height: 20.h),
+                              _buildLogoutButton(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         );
       },
