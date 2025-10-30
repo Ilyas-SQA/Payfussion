@@ -27,6 +27,7 @@ import '../../services/payment_service.dart';
 import '../../services/service_locator.dart';
 import '../../services/session_manager_service.dart';
 import '../my_reward/my_reward_screen.dart';
+import '../widgets/background_theme.dart';
 import '../widgets/settings_widgets/setting_container.dart';
 import '../widgets/settings_widgets/setting_item.dart';
 import '../widgets/settings_widgets/setting_item_header.dart';
@@ -61,12 +62,17 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
   late Animation<Offset> _headerSlide;
   late Animation<double> _profileScale;
   late Animation<Offset> _profileSlide;
+  late AnimationController _backgroundAnimationController;
 
   @override
   void initState() {
     super.initState();
     _initAnimations();
     _startAnimations();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   void _initAnimations() {
@@ -121,6 +127,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
     _headerController.dispose();
     _profileController.dispose();
     _contentController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -189,61 +196,68 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
             SizedBox(width: 10.w),
           ],
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-            child: AnimationLimiter(
-              child: Column(
-                children: AnimationConfiguration.toStaggeredList(
-                  duration: const Duration(milliseconds: 200),
-                  childAnimationBuilder: (widget) => SlideAnimation(
-                    verticalOffset: 20.0,
-                    child: FadeInAnimation(child: widget),
-                  ),
-                  children: [
-                    // Error message
-                    _buildErrorMessage(),
-                    SizedBox(height: 18.h),
-
-                    // Profile section
-                    SlideTransition(
-                      position: _profileSlide,
-                      child: ScaleTransition(
-                        scale: _profileScale,
-                        child: SettingProfile(
-                          onTap: () {
-                            context.push(RouteNames.profile);
-                          },
-                        ),
+        body: Stack(
+          children: [
+            AnimatedBackground(
+              animationController: _backgroundAnimationController,
+            ),
+            SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                child: AnimationLimiter(
+                  child: Column(
+                    children: AnimationConfiguration.toStaggeredList(
+                      duration: const Duration(milliseconds: 200),
+                      childAnimationBuilder: (widget) => SlideAnimation(
+                        verticalOffset: 20.0,
+                        child: FadeInAnimation(child: widget),
                       ),
+                      children: [
+                        // Error message
+                        _buildErrorMessage(),
+                        SizedBox(height: 18.h),
+
+                        // Profile section
+                        SlideTransition(
+                          position: _profileSlide,
+                          child: ScaleTransition(
+                            scale: _profileScale,
+                            child: SettingProfile(
+                              onTap: () {
+                                context.push(RouteNames.profile);
+                              },
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20.h),
+                        LimitSettingContainer(),
+
+                        SizedBox(height: 35.h),
+                        // Linked Accounts
+                        _buildLinkedAccountsSection(),
+                        SizedBox(height: 35.h),
+
+                        // Security Settings
+                        _buildSecuritySection(),
+                        SizedBox(height: 35.h),
+
+                        // Privacy Settings
+                        _buildPrivacySection(),
+                        SizedBox(height: 35.h),
+
+                        // Payment & Transactions
+                        _buildPaymentSection(theme),
+                        SizedBox(height: 35.h),
+
+                        // Customer Support
+                        _buildSupportSection(),
+                      ],
                     ),
-                    SizedBox(height: 20.h),
-                    LimitSettingContainer(),
-
-                    SizedBox(height: 35.h),
-                    // Linked Accounts
-                    _buildLinkedAccountsSection(),
-                    SizedBox(height: 35.h),
-
-                    // Security Settings
-                    _buildSecuritySection(),
-                    SizedBox(height: 35.h),
-
-                    // Privacy Settings
-                    _buildPrivacySection(),
-                    SizedBox(height: 35.h),
-
-                    // Payment & Transactions
-                    _buildPaymentSection(theme),
-                    SizedBox(height: 35.h),
-
-                    // Customer Support
-                    _buildSupportSection(),
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
