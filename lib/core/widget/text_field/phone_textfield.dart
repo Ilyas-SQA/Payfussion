@@ -31,7 +31,7 @@ class PhoneCredentialsField extends StatelessWidget {
         hintText: helpText,
         hintStyle: TextStyle(
           fontSize: 14.sp,
-          fontWeight: FontWeight.normal,
+          fontWeight: FontWeight.bold,
         ),
         contentPadding: EdgeInsets.symmetric(
           vertical: 16.h,

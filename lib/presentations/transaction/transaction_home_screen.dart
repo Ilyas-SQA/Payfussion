@@ -7,12 +7,11 @@ import 'package:intl/intl.dart';
 import 'package:payfussion/core/constants/image_url.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
-
 import '../../core/constants/app_colors.dart';
 import '../../data/models/Transactions_Modals/transaction_modal.dart';
+import '../widgets/background_theme.dart';
 import '../widgets/home_widgets/transaction_item.dart';
 import '../widgets/home_widgets/transaction_items_header.dart';
-import '../widgets/payment_selector_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum TransactionCategory { transaction, payBills, insurance, tickets }
@@ -24,9 +23,7 @@ class TransactionHomeScreen extends StatefulWidget {
   State<TransactionHomeScreen> createState() => _TransactionHomeScreenState();
 }
 
-class _TransactionHomeScreenState extends State<TransactionHomeScreen>
-    with TickerProviderStateMixin {
-  // Search / Filters local UI state
+class _TransactionHomeScreenState extends State<TransactionHomeScreen> with TickerProviderStateMixin {
   bool isSearchActive = false;
   TextEditingController searchController = TextEditingController();
   String searchQuery = '';
@@ -39,6 +36,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen>
   late AnimationController _contentAnimationController;
   late Animation<double> _headerAnimation;
   late Animation<Offset> _headerSlideAnimation;
+  late AnimationController _backgroundAnimationController;
 
   // Filters
   Map<String, dynamic> activeFilters = {
@@ -51,6 +49,10 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen>
   void initState() {
     super.initState();
     _initializeAnimations();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   void _initializeAnimations() {
@@ -89,6 +91,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen>
   void dispose() {
     _headerAnimationController.dispose();
     _contentAnimationController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -594,47 +597,54 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen>
         title: const Text("Transactions"),
         centerTitle: true,
       ),
-      body: Column(
+      body: Stack(
         children: [
-          SizedBox(height: 20.h),
-          // Animated header
-          SlideTransition(
-            position: _headerSlideAnimation,
-            child: FadeTransition(
-              opacity: _headerAnimation,
-              child: _buildTransactionHeader(),
-            ),
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
           ),
-          // Category buttons
-          _buildCategoryButtons(),
-          Expanded(
-            child: uid == null ? _buildNoTransactionsView() : StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-              stream: FirebaseFirestore.instance.collection('users').doc(uid).collection(_getCollectionName()).orderBy(_getOrderByField(), descending: true).snapshots(),
-              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-                // SHIMMER LOADING STATE
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return _buildShimmerLoading();
-                }
+          Column(
+            children: [
+              SizedBox(height: 20.h),
+              // Animated header
+              SlideTransition(
+                position: _headerSlideAnimation,
+                child: FadeTransition(
+                  opacity: _headerAnimation,
+                  child: _buildTransactionHeader(),
+                ),
+              ),
+              // Category buttons
+              _buildCategoryButtons(),
+              Expanded(
+                child: uid == null ? _buildNoTransactionsView() : StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                  stream: FirebaseFirestore.instance.collection('users').doc(uid).collection(_getCollectionName()).orderBy(_getOrderByField(), descending: true).snapshots(),
+                  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+                    // SHIMMER LOADING STATE
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return _buildShimmerLoading();
+                    }
 
-                if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                }
-                final docs = snapshot.data?.docs ?? [];
-                final base = docs.map(_fromFirestore).toList();
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    }
+                    final docs = snapshot.data?.docs ?? [];
+                    final base = docs.map(_fromFirestore).toList();
 
-                if (base.isEmpty) {
-                  return _buildNoTransactionsView();
-                }
+                    if (base.isEmpty) {
+                      return _buildNoTransactionsView();
+                    }
 
-                final filtered = _getFilteredTransactions(base);
-                if (filtered.isEmpty) {
-                  return _buildNoTransactionsView();
-                }
+                    final filtered = _getFilteredTransactions(base);
+                    if (filtered.isEmpty) {
+                      return _buildNoTransactionsView();
+                    }
 
-                final grouped = _groupTransactionsByDate(filtered);
-                return _buildTransactionsList(grouped);
-              },
-            ),
+                    final grouped = _groupTransactionsByDate(filtered);
+                    return _buildTransactionsList(grouped);
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),

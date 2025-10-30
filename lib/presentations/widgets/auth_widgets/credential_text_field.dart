@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:payfussion/core/constants/fonts.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
 class AppTextFormField extends StatelessWidget {
@@ -38,9 +39,8 @@ class AppTextFormField extends StatelessWidget {
             textAlignVertical: TextAlignVertical.center,
             obscureText: isPasswordField ? isObscure : false,
             cursorHeight: 18,
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 14.sp,
-              fontFamily: 'Inter',
               fontWeight: FontWeight.w500,
             ),
             decoration: InputDecoration(
@@ -49,9 +49,9 @@ class AppTextFormField extends StatelessWidget {
                 horizontal: 19.w,
               ),
               hintText: helpText,
-              hintStyle: TextStyle(
-                color: Colors.grey.shade500,
+              hintStyle: Font.montserratFont(
                 fontSize: 14.sp,
+                fontWeight: FontWeight.bold
               ),
               prefixIcon: prefixIcon,
               suffixIcon: isPasswordField ? InkWell(

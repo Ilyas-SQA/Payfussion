@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -12,7 +11,7 @@ class MyTheme {
         inputDecorationTheme: InputDecorationTheme(
           outlineBorder: const BorderSide(color: Colors.black),
           hintStyle: Font.montserratFont(
-            color: const Color(0xff666666),
+            color: Colors.black,
             fontSize: 16.sp,
             fontWeight: FontWeight.w500,
           ),
@@ -35,7 +34,7 @@ class MyTheme {
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(5.r)),
             borderSide: const BorderSide(
-              color: Colors.grey,
+              color: Colors.black,
               width: 1,
             ),
           ),
@@ -44,7 +43,7 @@ class MyTheme {
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(5.r)),
             borderSide: const BorderSide(
-              width: 1.5,
+              width: 1,
               color: Colors.black,
             ),
           ),
@@ -54,7 +53,7 @@ class MyTheme {
             borderRadius: BorderRadius.all(Radius.circular(5.r)),
             borderSide: const BorderSide(
               color: Colors.red,
-              width: 1.2,
+              width: 1,
             ),
           ),
 
@@ -63,7 +62,7 @@ class MyTheme {
             borderRadius: BorderRadius.all(Radius.circular(5.r)),
             borderSide: const BorderSide(
               color: Colors.red,
-              width: 1.5,
+              width: 1,
             ),
           ),
         ),
