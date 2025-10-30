@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import '../../core/constants/fonts.dart';
 import '../../core/utils/setting_utils/data_and_permission_utils/app_colors_utils.dart';
 import '../../core/utils/setting_utils/data_and_permission_utils/permission_utils.dart';
@@ -14,12 +12,10 @@ class DataAndPermissionsScreen extends StatefulWidget {
   const DataAndPermissionsScreen({super.key});
 
   @override
-  State<DataAndPermissionsScreen> createState() =>
-      _DataAndPermissionsScreenState();
+  State<DataAndPermissionsScreen> createState() => _DataAndPermissionsScreenState();
 }
 
-class _DataAndPermissionsScreenState extends State<DataAndPermissionsScreen>
-    with SingleTickerProviderStateMixin {
+class _DataAndPermissionsScreenState extends State<DataAndPermissionsScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   Map<Permission, PermissionStatus> _permissionStatus = {};
 
