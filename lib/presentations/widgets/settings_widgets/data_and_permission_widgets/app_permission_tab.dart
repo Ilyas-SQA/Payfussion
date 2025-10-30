@@ -6,10 +6,11 @@ import '../../../../core/constants/fonts.dart';
 import '../../../../core/utils/setting_utils/data_and_permission_utils/app_colors_utils.dart';
 import '../../../../core/utils/setting_utils/data_and_permission_utils/app_styles.dart';
 import '../../../../core/utils/setting_utils/data_and_permission_utils/permission_utils.dart';
+import '../../background_theme.dart';
 import 'bullet_points.dart';
 import 'feature_card.dart';
 
-class AppPermissionsTab extends StatelessWidget {
+class AppPermissionsTab extends StatefulWidget {
   final AppColors colors;
   final Map<Permission, PermissionStatus> permissionStatus;
   final Function(Permission) onPermissionRequested;
@@ -22,61 +23,90 @@ class AppPermissionsTab extends StatelessWidget {
   });
 
   @override
+  State<AppPermissionsTab> createState() => _AppPermissionsTabState();
+}
+
+class _AppPermissionsTabState extends State<AppPermissionsTab> with TickerProviderStateMixin {
+  late AnimationController _backgroundAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _backgroundAnimationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'App Permissions',
-            style: Font.montserratFont(fontSize: 18,fontWeight: FontWeight.bold,),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Control which features and device capabilities PayFusion can access.',
-            style: Font.montserratFont(fontSize: 12),
-          ),
-          const SizedBox(height: 24),
+    return Stack(
+      children: [
+        AnimatedBackground(
+          animationController: _backgroundAnimationController,
+        ),
+        SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'App Permissions',
+                style: Font.montserratFont(fontSize: 18,fontWeight: FontWeight.bold,),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Control which features and device capabilities PayFusion can access.',
+                style: Font.montserratFont(fontSize: 12),
+              ),
+              const SizedBox(height: 24),
 
-          // Permission cards
-          ...PermissionUtils.allPermissions.map((permission) =>
-              Column(
-                children: [
-                  PermissionCard(
-                    permission: permission,
-                    status: permissionStatus[permission],
-                    colors: colors,
-                    onRequest: onPermissionRequested,
-                  ),
-                  const SizedBox(height: 16),
-                ],
-              )
-          ),
+              // Permission cards
+              ...PermissionUtils.allPermissions.map((permission) =>
+                  Column(
+                    children: [
+                      PermissionCard(
+                        permission: permission,
+                        status: widget.permissionStatus[permission],
+                        colors: widget.colors,
+                        onRequest: widget.onPermissionRequested,
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  )
+              ),
 
-          // Permission information
-          FeatureCard(
-            icon: Icons.info_outline,
-            iconColor: colors.warning,
-            title: 'Why We Need Permissions',
-            colors: colors,
-            content: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                BulletPoint(
-                  'PayFusion only requests permissions essential to its functionality.',
+              // Permission information
+              FeatureCard(
+                icon: Icons.info_outline,
+                iconColor: widget.colors.warning,
+                title: 'Why We Need Permissions',
+                colors: widget.colors,
+                content: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    BulletPoint(
+                      'PayFusion only requests permissions essential to its functionality.',
+                    ),
+                    BulletPoint(
+                      'You can deny or revoke permissions at any time, but some features may be limited.',
+                    ),
+                    BulletPoint(
+                      'We never access your device features for purposes beyond those stated in our privacy policy.',
+                    ),
+                  ],
                 ),
-                BulletPoint(
-                  'You can deny or revoke permissions at any time, but some features may be limited.',
-                ),
-                BulletPoint(
-                  'We never access your device features for purposes beyond those stated in our privacy policy.',
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
