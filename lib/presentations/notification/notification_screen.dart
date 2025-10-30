@@ -9,6 +9,7 @@ import '../../../logic/blocs/notification/notification_bloc.dart';
 import '../../../logic/blocs/notification/notification_event.dart';
 import '../../../logic/blocs/notification/notification_state.dart';
 import '../../core/theme/theme.dart';
+import '../widgets/background_theme.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -24,6 +25,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
   late AnimationController _contentController;
   late Animation<double> _headerFade;
   late Animation<Offset> _headerSlide;
+  late AnimationController _backgroundAnimationController;
 
   @override
   void initState() {
@@ -31,6 +33,10 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
     _initAnimations();
     _startAnimations();
     context.read<NotificationBloc>().add(OpenNotificationScreen());
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   void _initAnimations() {
@@ -52,6 +58,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
   void dispose() {
     _headerController.dispose();
     _contentController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -86,46 +93,53 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                         ]))),
           ],
       ),
-      body: Column(
-          children: [
-            SlideTransition(
-                position: Tween<Offset>(begin: const Offset(0, -0.2), end: Offset.zero).animate(_headerController),
-                child: FadeTransition(opacity: _headerFade, child: _buildFilterTabs())),
-            Expanded(
-                child: FadeTransition(
-                    opacity: _contentController,
-                    child: BlocConsumer<NotificationBloc, NotificationState>(
-                        listener: (context, state) {
-                          if (state is NotificationError) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(state.message), backgroundColor: Colors.red));
-                          } else if (state is NotificationSuccess) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(state.message), backgroundColor: Colors.green));
-                          }
-                        },
-                        builder: (context, state) {
-                          if (state is NotificationLoading) return _buildShimmerLoading();
-                          if (state is NotificationsLoaded) {
-                            final filteredNotifications = _filterNotifications(state.notifications);
-                            if (filteredNotifications.isEmpty) return _buildEmptyState();
-                            return RefreshIndicator(
-                                onRefresh: () async { context.read<NotificationBloc>().add(LoadNotifications()); },
-                                child: AnimationLimiter(
-                                    child: ListView.builder(
-                                        padding: const EdgeInsets.all(16),
-                                        itemCount: filteredNotifications.length,
-                                        itemBuilder: (context, index) {
-                                          final notification = filteredNotifications[index];
-                                          return AnimationConfiguration.staggeredList(
-                                              position: index, duration: const Duration(milliseconds: 200),
-                                              child: SlideAnimation(
-                                                  verticalOffset: 30.0,
-                                                  child: FadeInAnimation(child: _buildNotificationCard(notification))));
-                                        })));
-                          }
-                          return _buildEmptyState();
-                        })))]),
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          Column(
+              children: [
+                SlideTransition(
+                    position: Tween<Offset>(begin: const Offset(0, -0.2), end: Offset.zero).animate(_headerController),
+                    child: FadeTransition(opacity: _headerFade, child: _buildFilterTabs())),
+                Expanded(
+                    child: FadeTransition(
+                        opacity: _contentController,
+                        child: BlocConsumer<NotificationBloc, NotificationState>(
+                            listener: (context, state) {
+                              if (state is NotificationError) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(state.message), backgroundColor: Colors.red));
+                              } else if (state is NotificationSuccess) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(state.message), backgroundColor: Colors.green));
+                              }
+                            },
+                            builder: (context, state) {
+                              if (state is NotificationLoading) return _buildShimmerLoading();
+                              if (state is NotificationsLoaded) {
+                                final filteredNotifications = _filterNotifications(state.notifications);
+                                if (filteredNotifications.isEmpty) return _buildEmptyState();
+                                return RefreshIndicator(
+                                    onRefresh: () async { context.read<NotificationBloc>().add(LoadNotifications()); },
+                                    child: AnimationLimiter(
+                                        child: ListView.builder(
+                                            padding: const EdgeInsets.all(16),
+                                            itemCount: filteredNotifications.length,
+                                            itemBuilder: (context, index) {
+                                              final notification = filteredNotifications[index];
+                                              return AnimationConfiguration.staggeredList(
+                                                  position: index, duration: const Duration(milliseconds: 200),
+                                                  child: SlideAnimation(
+                                                      verticalOffset: 30.0,
+                                                      child: FadeInAnimation(child: _buildNotificationCard(notification))));
+                                            })));
+                              }
+                              return _buildEmptyState();
+                            })))]),
+        ],
+      ),
     );
   }
 
