@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 
 import 'package:payfussion/core/constants/image_url.dart';
 
@@ -17,9 +18,11 @@ class CustomCreditCard extends StatelessWidget {
     required this.expiryDate,
     required this.balance,
     super.key,
+    required this.imageUrl,
   });
 
   final String cardNumber, cvc, cardId, cardBrand, cardHolder, expiryDate, balance;
+  final String imageUrl;
   final List<Color> cardColor;
 
   @override
@@ -28,42 +31,36 @@ class CustomCreditCard extends StatelessWidget {
       child: Container(
         height: 200.h,
         width: 350.w,
+        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20.r),
-          gradient: LinearGradient(
-            colors: cardColor.isNotEmpty ? cardColor : [
-              const Color(0xFF0a3d3d),
-              const Color(0xFF1a5555),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          borderRadius: BorderRadius.circular(16.r),
         ),
         child: Stack(
+          fit: StackFit.expand,
           children: [
-            // Diagonal stripes overlay
             Positioned.fill(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.r),
-                child: CustomPaint(
-                  painter: DiagonalStripesPainter(),
-                ),
+              child: SvgPicture.asset(
+                imageUrl,
+                fit: BoxFit.cover,
               ),
             ),
 
             Padding(
-              padding: EdgeInsets.all(24.w),
+              padding: EdgeInsets.all(40.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Top section - Balance and Logo
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Balance
-                      Image.asset("assets/images/cards/sim-card.png",height: 40,width: 40,),
+                      Image.asset(
+                        "assets/images/cards/sim-card.png",
+                        height: 40.h,
+                        width: 40.w,
+                      ),
                       // Card brand logo (VISA)
                       TImageUrl.getCardBrandLogo(cardBrand),
                     ],
@@ -145,27 +142,4 @@ class CustomCreditCard extends StatelessWidget {
       ),
     );
   }
-}
-
-// Custom painter for diagonal stripes
-class DiagonalStripesPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..color = Colors.black.withOpacity(0.1)
-      ..strokeWidth = 100
-      ..style = PaintingStyle.stroke;
-
-    // Draw diagonal stripes
-    for (double i = -size.height; i < size.width + size.height; i += 150) {
-      canvas.drawLine(
-        Offset(i, 0),
-        Offset(i + size.height, size.height),
-        paint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
