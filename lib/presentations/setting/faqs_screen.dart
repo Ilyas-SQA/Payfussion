@@ -6,6 +6,7 @@ import 'package:payfussion/core/theme/theme.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../core/constants/fonts.dart';
+import '../widgets/background_theme.dart';
 
 class FaqsScreen extends StatefulWidget {
   const FaqsScreen({super.key});
@@ -17,16 +18,18 @@ class FaqsScreen extends StatefulWidget {
 class _FaqsScreenState extends State<FaqsScreen> with TickerProviderStateMixin {
   late AnimationController _headerController;
   late AnimationController _contentController;
+  late AnimationController _backgroundAnimationController;
 
-  late Animation<double> _headerFade;
-  late Animation<Offset> _headerSlide;
-  late Animation<double> _titleScale;
 
   @override
   void initState() {
     super.initState();
     _initAnimations();
     _startAnimations();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   void _initAnimations() {
@@ -39,30 +42,6 @@ class _FaqsScreenState extends State<FaqsScreen> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 400),
       vsync: this,
     );
-
-    _headerFade = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _headerController,
-      curve: Curves.easeOut,
-    ));
-
-    _headerSlide = Tween<Offset>(
-      begin: const Offset(-0.5, 0),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _headerController,
-      curve: Curves.easeOut,
-    ));
-
-    _titleScale = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _headerController,
-      curve: Curves.easeOutBack,
-    ));
   }
 
   void _startAnimations() async {
@@ -76,6 +55,7 @@ class _FaqsScreenState extends State<FaqsScreen> with TickerProviderStateMixin {
   void dispose() {
     _headerController.dispose();
     _contentController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -92,83 +72,90 @@ class _FaqsScreenState extends State<FaqsScreen> with TickerProviderStateMixin {
         ),
         centerTitle: true,
       ),
-      body: Column(
+      body: Stack(
         children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          Column(
+            children: [
 
-          SizedBox(height: 10.h),
+              SizedBox(height: 10.h),
 
-          // Animated content
-          Expanded(
-            child: FadeTransition(
-              opacity: _contentController,
-              child: FutureBuilder(
-                future: FirebaseFirestore.instance.collection("faqs").get(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return AnimationLimiter(
-                      child: ListView.builder(
-                        itemCount: snapshot.data!.docs.length,
-                        itemBuilder: (context, index) {
-                          return AnimationConfiguration.staggeredList(
-                            position: index,
-                            duration: const Duration(milliseconds: 200),
-                            child: SlideAnimation(
-                              verticalOffset: 20.0,
-                              child: FadeInAnimation(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context).scaffoldBackgroundColor,
-                                      borderRadius: BorderRadius.circular(5.r),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
-                                          blurRadius: 5,
-                                          offset: const Offset(0, 4),
+              // Animated content
+              Expanded(
+                child: FadeTransition(
+                  opacity: _contentController,
+                  child: FutureBuilder(
+                    future: FirebaseFirestore.instance.collection("faqs").get(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return AnimationLimiter(
+                          child: ListView.builder(
+                            itemCount: snapshot.data!.docs.length,
+                            itemBuilder: (context, index) {
+                              return AnimationConfiguration.staggeredList(
+                                position: index,
+                                duration: const Duration(milliseconds: 200),
+                                child: SlideAnimation(
+                                  verticalOffset: 20.0,
+                                  child: FadeInAnimation(
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).scaffoldBackgroundColor,
+                                          borderRadius: BorderRadius.circular(5.r),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                                              blurRadius: 5,
+                                              offset: const Offset(0, 4),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
-                                    child: ExpansionTile(
-                                      backgroundColor: Theme.of(context).cardColor,
-                                      collapsedBackgroundColor: Theme.of(context).cardColor,
-                                      collapsedIconColor: MyTheme.primaryColor,
-                                      iconColor: MyTheme.primaryColor,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8.r),
-                                      ),
-                                      title: Text(
-                                        snapshot.data!.docs[index]["question"],
-                                        style: Font.montserratFont(
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                      children: [
-                                        ListTile(
+                                        child: ExpansionTile(
+                                          backgroundColor: Theme.of(context).cardColor,
+                                          collapsedBackgroundColor: Theme.of(context).cardColor,
+                                          collapsedIconColor: MyTheme.primaryColor,
+                                          iconColor: MyTheme.primaryColor,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(8.r),
+                                          ),
                                           title: Text(
-                                            snapshot.data!.docs[index]["answer"],
+                                            snapshot.data!.docs[index]["question"],
                                             style: Font.montserratFont(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
+                                              fontSize: 16,
                                             ),
                                           ),
+                                          children: [
+                                            ListTile(
+                                              title: Text(
+                                                snapshot.data!.docs[index]["answer"],
+                                                style: Font.montserratFont(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  } else {
-                    return const AnimatedShimmerListTile();
-                  }
-                },
+                              );
+                            },
+                          ),
+                        );
+                      } else {
+                        return const AnimatedShimmerListTile();
+                      }
+                    },
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),
