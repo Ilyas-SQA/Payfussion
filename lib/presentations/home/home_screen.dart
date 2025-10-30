@@ -1,4 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flip_card_swiper/flip_card_swiper.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -21,6 +25,12 @@ import '../../core/constants/routes_name.dart';
 import '../../logic/blocs/add_card/card_bloc.dart';
 import '../../logic/blocs/add_card/card_event.dart';
 import '../../logic/blocs/add_card/card_state.dart';
+import '../../logic/blocs/notification/notification_bloc.dart';
+import '../../logic/blocs/notification/notification_state.dart';
+import '../../services/session_manager_service.dart';
+import '../my_reward/my_reward_screen.dart';
+import '../notification/notification_screen.dart';
+import '../widgets/background_theme.dart';
 import '../widgets/home_widgets/custom_credit_card.dart';
 import '../widgets/home_widgets/custom_empty_card.dart';
 import 'apply_card/apply_card_screen.dart';
@@ -38,9 +48,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _cardAnimationController;
   late AnimationController _actionButtonsController;
   late AnimationController _transactionController;
-
-  late Animation<double> _profileAnimation;
-  late Animation<Offset> _profileSlideAnimation;
+  late AnimationController _backgroundAnimationController;
   late Animation<double> _cardScaleAnimation;
   late Animation<double> _actionButtonsAnimation;
 
@@ -49,6 +57,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.initState();
     _initializeAnimations();
     _startAnimationSequence();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   void _initializeAnimations() {
@@ -75,23 +87,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 700),
       vsync: this,
     );
-
-    // Profile animations
-    _profileAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _profileAnimationController,
-      curve: Curves.easeOutCubic,
-    ));
-
-    _profileSlideAnimation = Tween<Offset>(
-      begin: const Offset(-1.0, 0),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _profileAnimationController,
-      curve: Curves.elasticOut,
-    ));
 
     // Card scale animation
     _cardScaleAnimation = Tween<double>(
@@ -123,286 +118,439 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     await _transactionController.forward();
   }
 
+  static final List<String> imageUrl = [
+    "assets/images/cards/card_1.svg",
+    "assets/images/cards/card_2.svg",
+  ];
+
   @override
   void dispose() {
     _profileAnimationController.dispose();
     _cardAnimationController.dispose();
     _actionButtonsController.dispose();
     _transactionController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: SingleChildScrollView(
+      appBar: PreferredSize(
+        preferredSize: const Size(double.infinity, 80),
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            boxShadow: [
+               BoxShadow(
+                color: Colors.grey.withOpacity(0.15),
+                blurRadius: 8,
+                spreadRadius: 0,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
           child: Column(
-            children: <Widget>[
-              SizedBox(height: 10.h),
-
-              /// Animated Profile Section
-              SlideTransition(
-                position: _profileSlideAnimation,
-                child: FadeTransition(
-                  opacity: _profileAnimation,
-                  child: const ProfileAppBar(),
-                ),
-              ),
-
-              /// Animated Card Section
-              ScaleTransition(
-                scale: _cardScaleAnimation,
-                child: FadeTransition(
-                  opacity: _cardAnimationController,
-                  child: BlocProvider(
-                    create: (BuildContext context) => CardBloc()..add(LoadCards()),
-                    child: BlocBuilder<CardBloc, CardState>(
-                      builder: (BuildContext context, CardState state) {
-                        if (state is CardLoaded) {
-                          final List<CardModel> cards = state.cards;
-                          if (cards.isEmpty) {
-                            return Column(
-                              children: [
-                                SizedBox(height: 15.h),
-                                const CustomEmptyCard(),
-                              ],
-                            );
-                          }
-                          final List<CardModel> activeCards = cards.where((card) => card.isDefault).toList();
-                          return Column(
-                            children: [
-                              SizedBox(height: 15.h),
-                              SizedBox(
-                                height: 200,
-                                child: activeCards.isEmpty ?
-                                const CustomEmptyCard() :
-                                AnimationLimiter(
-                                  child: ListView.builder(
-                                    itemCount: activeCards.length,
-                                    scrollDirection: Axis.horizontal,
-                                    itemBuilder: (context, index) {
-                                      final CardModel card = activeCards[index];
-                                      return AnimationConfiguration.staggeredList(
-                                        position: index,
-                                        duration: const Duration(milliseconds: 300),
-                                        child: SlideAnimation(
-                                          horizontalOffset: 50.0,
-                                          child: FadeInAnimation(
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(left: 3),
-                                              child: CustomCreditCard(
-                                                cardId: card.id,
-                                                cardNumber: "**** **** **** ${card.last4}",
-                                                cvc: "${card.expMonth}/${card.expYear}",
-                                                cardColor: AppColors.cardColor[index % AppColors.cardColor.length],
-                                                cardBrand: card.brand,
-                                                cardHolder: 'Ilyas Khan',
-                                                expiryDate:"${card.expMonth}/${card.expYear}",
-                                                balance: '\$ 10000',
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        } else if (state is CardError) {
-                          return Column(
-                            children: [
-                              SizedBox(height: 35.h),
-                              Center(
-                                child: Text(
-                                  state.message,
-                                  style: Font.montserratFont(color: Colors.red),
-                                ),
-                              ),
-                            ],
-                          );
-                        } else {
-                          return Column(
-                            children: [
-                              SizedBox(height: 15.h),
-                              SizedBox(
-                                height: 200,
-                                child: AnimationLimiter(
-                                  child: ListView.builder(
-                                    itemCount: 3,
-                                    scrollDirection: Axis.horizontal,
-                                    itemBuilder: (context, index) {
-                                      return AnimationConfiguration.staggeredList(
-                                        position: index,
-                                        duration: const Duration(milliseconds: 375),
-                                        child: SlideAnimation(
-                                          horizontalOffset: 50.0,
-                                          child: FadeInAnimation(
-                                            child: Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                                              child: _buildShimmerCard(),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        }
-                      },
-                    ),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 30.h,),
-
-              /// Animated Action Buttons
-              FadeTransition(
-                opacity: _actionButtonsAnimation,
-                child: SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0, 0.5),
-                    end: Offset.zero,
-                  ).animate(CurvedAnimation(
-                    parent: _actionButtonsController,
-                    curve: Curves.easeOutCubic,
-                  )),
-                  child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
                     spacing: 10,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          BoxWidget(
-                            title: "Send Money",
-                            imageURL: TImageUrl.sendMoney,
-                            onTap: () => {
-                              showDialog(
-                                context: context,
-                                builder: (context){
-                                  return AlertDialog(
-                                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                                    content: Text('Send Money To',style: Font.montserratFont(fontSize: 14,fontWeight: FontWeight.bold),),
-                                    actions: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                        children: [
-                                          BoxWidget(
-                                            title: "PayFussion Transfer",
-                                            imageURL: TImageUrl.bankTransfer,
-                                            onTap: (){
-                                              context.push(RouteNames.sendMoneyHome);
-                                            },
-                                          ),
-                                          BoxWidget(
-                                            title: "Bank Transfer",
-                                            imageURL: TImageUrl.bankTransfer,
-                                            onTap: (){
-                                              Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => SelectBankScreen()));
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 10,),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                        children: [
-                                          BoxWidget(
-                                            title: "Other Wallet",
-                                            imageURL: TImageUrl.otherWallet,
-                                            onTap: (){
-                                              Navigator.push(context, MaterialPageRoute(builder: (context) => SelectLocalBankScreen()));
-                                            },
-                                          ),
-                                          BoxWidget(
-                                            title: "Scanner QR",
-                                            imageURL: TImageUrl.scanner,
-                                            onTap: (){
-                                              Navigator.push(context, MaterialPageRoute(builder: (context) => ScanToPayHomeScreen()));
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  );
-                                },
-                              )
-                            },
+                      GestureDetector(
+                        onTap: () => context.push(RouteNames.profile),
+                        child: Hero(
+                          tag: 'profile_avatar',
+                          child: Center(
+                            child: Container(
+                              width: 45.r,
+                              height: 45.r,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.3),
+                                  width: 2,
+                                ),
+                              ),
+                              child: ClipOval(
+                                child: (SessionController.user.profileImageUrl != null &&
+                                    SessionController.user.profileImageUrl!.isNotEmpty)
+                                    ? CachedNetworkImage(
+                                  imageUrl: SessionController.user.profileImageUrl!,
+                                  width: 45.r,
+                                  height: 45.r,
+                                  fit: BoxFit.cover,
+                                  placeholder: (BuildContext context, String url) => const Center(
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  errorWidget: (BuildContext context, String url, Object error) =>
+                                      Icon(Icons.person, size: 25.r, color: Colors.grey),
+                                )
+                                    : Container(
+                                  color: Colors.grey[300],
+                                  child: Icon(Icons.person, size: 25.r, color: Colors.grey[600]),
+                                ),
+                              ),
+                            ),
                           ),
-                          BoxWidget(
-                            title: "Recived Money",
-                            imageURL: TImageUrl.recivedMoney,
-                            onTap: (){
-                              context.push(RouteNames.receiveMoneyScreen);
-                            },
-                          ),
-                          BoxWidget(
-                            title: "Pay Bills",
-                            imageURL: TImageUrl.payBill,
-                            onTap: (){
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => const PayBillScreen()));
-                            },
-                          ),
-                          BoxWidget(
-                            title: "Convert Currency",
-                            imageURL: TImageUrl.convertCurrency,
-                            onTap: (){
-                              context.push(RouteNames.currencyExchangeView);
-                            },
-                          ),
-                        ],
+                        ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          BoxWidget(
-                            title: "Ticket Booking",
-                            imageURL: TImageUrl.ticketBooking,
-                            backgroundColor: MyTheme.secondaryColor,
-                            onTap: (){
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => TicketBookingScreen()));
-                            },
+                          Text(
+                            "Hi ${SessionController.user.fullName ?? 'User'}",
+                            style: Font.montserratFont(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          BoxWidget(
-                            title: "Insurance",
-                            backgroundColor: MyTheme.secondaryColor,
-                            imageURL: TImageUrl.insurance,
-                            onTap: (){
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => InsuranceScreen()));                            },
-                          ),
-                          BoxWidget(
-                            title: "Apply Card",
-                            backgroundColor: MyTheme.secondaryColor,
-                            imageURL: TImageUrl.applyCard,
-                            onTap: (){
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => const ApplyCardScreen()));
-                            },
-                          ),
-                          BoxWidget(
-                            title: "Government Fees",
-                            backgroundColor: MyTheme.secondaryColor,
-                            imageURL: TImageUrl.governmentFee,
-                            onTap: (){
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => GovernmentFeesScreen()));
-                            },
+                          Text(
+                            "${SessionController.user.email ?? ''}",
+                            style: Font.montserratFont(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.normal,
+                            ),
                           ),
                         ],
                       ),
                     ],
-                  )
-                ),
-              ),
+                  ),
+                  Row(
+                    children: [
+                      BlocBuilder<NotificationBloc, NotificationState>(
+                        builder: (BuildContext context, NotificationState state) {
+                          int unreadCount = 0;
+                          if (state is NotificationsLoaded) {
+                            unreadCount = state.unreadCount;
+                          }
 
+                          final IconButton icon = IconButton(
+                            icon: const Icon(CupertinoIcons.bell_fill, color: MyTheme.primaryColor,),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const NotificationScreen(),
+                                ),
+                              );
+                            },
+                          );
+
+                          return unreadCount > 0 ?
+                          badges.Badge(
+                            position: badges.BadgePosition.topEnd(top: 3, end: 3),
+                            badgeContent: Text(
+                              unreadCount.toString(),
+                              style: Font.montserratFont(
+                                color: Colors.white,
+                                fontSize: 10,
+                              ),
+                            ),
+                            badgeStyle: const badges.BadgeStyle(
+                              badgeColor: MyTheme.primaryColor,
+                              shape: badges.BadgeShape.circle,
+                              padding: EdgeInsets.all(6),
+                            ),
+                            child: icon,
+                          ) : icon;
+                        },
+                      ),
+                      IconButton(
+                        onPressed: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const MyRewardScreen()));
+                        },
+                        icon: SvgPicture.asset("assets/images/home/reward.svg",height: 20,width: 20,color: MyTheme.secondaryColor,),
+                      )
+                    ],
+                  )
+
+                ],
+              ),
             ],
           ),
         ),
+      ),
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Column(
+              children: <Widget>[
+                /// Animated Card Section
+                ScaleTransition(
+                  scale: _cardScaleAnimation,
+                  child: FadeTransition(
+                    opacity: _cardAnimationController,
+                    child: BlocProvider(
+                      create: (BuildContext context) => CardBloc()..add(LoadCards()),
+                      child: BlocBuilder<CardBloc, CardState>(
+                        builder: (BuildContext context, CardState state) {
+                          if (state is CardLoaded) {
+                            final List<CardModel> cards = state.cards;
+                            if (cards.isEmpty) {
+                              return Column(
+                                children: [
+                                  SizedBox(height: 15.h),
+                                  const CustomEmptyCard(),
+                                ],
+                              );
+                            }
+                            final List<CardModel> activeCards = cards.where((card) => card.isDefault).toList();
+                            return Column(
+                              children: [
+                                SizedBox(height: 15.h),
+                                SizedBox(
+                                  height: 200,
+                                  child: activeCards.isEmpty ?
+                                  const CustomEmptyCard() :
+                                  AnimationLimiter(
+                                    child: FlipCardSwiper(
+                                      cardData: activeCards,
+                                      onCardChange: (int newIndex) {
+                                        // Optional: Do something when card changes
+                                        print('Current card index: $newIndex');
+                                      },
+                                      onCardCollectionAnimationComplete: (value) {
+                                        // Optional: Triggered when animation finishes
+                                        print('Animation complete');
+                                      },
+                                      cardBuilder: (BuildContext context, int index, int visibleIndex) {
+                                        final CardModel card = activeCards[index];
+                                        return CustomCreditCard(
+                                          cardId: card.id,
+                                          cardNumber: "**** **** **** ${card.last4}",
+                                          cvc: "${card.expMonth}/${card.expYear}",
+                                          cardColor: AppColors.cardColor[index % AppColors.cardColor.length],
+                                          cardBrand: card.brand,
+                                          cardHolder: 'Ilyas Khan',
+                                          expiryDate: "${card.expMonth}/${card.expYear}",
+                                          balance: '\$ 10000',
+                                          imageUrl: imageUrl[index % cards.length],
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          } else if (state is CardError) {
+                            return Column(
+                              children: [
+                                SizedBox(height: 35.h),
+                                Center(
+                                  child: Text(
+                                    state.message,
+                                    style: Font.montserratFont(color: Colors.red),
+                                  ),
+                                ),
+                              ],
+                            );
+                          } else {
+                            return Column(
+                              children: [
+                                SizedBox(height: 15.h),
+                                SizedBox(
+                                  height: 200,
+                                  child: AnimationLimiter(
+                                    child: ListView.builder(
+                                      itemCount: 3,
+                                      scrollDirection: Axis.horizontal,
+                                      itemBuilder: (context, index) {
+                                        return AnimationConfiguration.staggeredList(
+                                          position: index,
+                                          duration: const Duration(milliseconds: 375),
+                                          child: SlideAnimation(
+                                            horizontalOffset: 50.0,
+                                            child: FadeInAnimation(
+                                              child: Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                                child: _buildShimmerCard(),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 30.h,),
+
+                /// Animated Action Buttons
+                FadeTransition(
+                  opacity: _actionButtonsAnimation,
+                  child: SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0, 0.5),
+                      end: Offset.zero,
+                    ).animate(CurvedAnimation(
+                      parent: _actionButtonsController,
+                      curve: Curves.easeOutCubic,
+                    )),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: Column(
+                        spacing: 10,
+                        children: [
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              BoxWidget(
+                                title: "Send Money",
+                                backgroundColor: MyTheme.primaryColor,
+                                imageURL: TImageUrl.sendMoney,
+                                onTap: () => {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context){
+                                      return AlertDialog(
+                                        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                                        content: Text('Send Money To',style: Font.montserratFont(fontSize: 14,fontWeight: FontWeight.bold),),
+                                        actions: [
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                            children: [
+                                              BoxWidget(
+                                                title: "PayFussion Transfer",
+                                                imageURL: TImageUrl.bankTransfer,
+                                                onTap: (){
+                                                  context.push(RouteNames.sendMoneyHome);
+                                                },
+                                              ),
+                                              BoxWidget(
+                                                title: "Bank Transfer",
+                                                imageURL: TImageUrl.bankTransfer,
+                                                onTap: (){
+                                                  Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => SelectBankScreen()));
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 10,),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                            children: [
+                                              BoxWidget(
+                                                title: "Other Wallet",
+                                                imageURL: TImageUrl.otherWallet,
+                                                onTap: (){
+                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => SelectLocalBankScreen()));
+                                                },
+                                              ),
+                                              BoxWidget(
+                                                title: "Scanner QR",
+                                                imageURL: TImageUrl.scanner,
+                                                onTap: (){
+                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => ScanToPayHomeScreen()));
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  )
+                                },
+                              ),
+                              BoxWidget(
+                                title: "Recived Money",
+                                imageURL: TImageUrl.recivedMoney,
+                                backgroundColor: MyTheme.primaryColor,
+                                onTap: (){
+                                  context.push(RouteNames.receiveMoneyScreen);
+                                },
+                              ),
+                              BoxWidget(
+                                title: "Pay Bills",
+                                imageURL: TImageUrl.payBill,
+                                backgroundColor: MyTheme.primaryColor,
+                                onTap: (){
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const PayBillScreen()));
+                                },
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              BoxWidget(
+                                title: "Convert Currency",
+                                imageURL: TImageUrl.convertCurrency,
+                                backgroundColor: MyTheme.primaryColor,
+                                onTap: (){
+                                  context.push(RouteNames.currencyExchangeView);
+                                },
+                              ),
+                              BoxWidget(
+                                title: "Ticket Booking",
+                                imageURL: TImageUrl.ticketBooking,
+                                backgroundColor: MyTheme.secondaryColor,
+                                onTap: (){
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => TicketBookingScreen()));
+                                },
+                              ),
+                              BoxWidget(
+                                title: "Insurance",
+                                backgroundColor: MyTheme.secondaryColor,
+                                imageURL: TImageUrl.insurance,
+                                onTap: (){
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => InsuranceScreen()));                            },
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            spacing: 25,
+                            children: [
+                              BoxWidget(
+                                title: "Apply Card",
+                                backgroundColor: MyTheme.secondaryColor,
+                                imageURL: TImageUrl.applyCard,
+                                onTap: (){
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ApplyCardScreen()));
+                                },
+                              ),
+                              BoxWidget(
+                                title: "Government Fees",
+                                backgroundColor: MyTheme.secondaryColor,
+                                imageURL: TImageUrl.governmentFee,
+                                onTap: (){
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => GovernmentFeesScreen()));
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    )
+                  ),
+                ),
+
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
