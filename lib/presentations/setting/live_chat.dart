@@ -8,6 +8,7 @@ import '../../logic/blocs/setting/live_chat/live_chat_bloc.dart';
 import '../../logic/blocs/setting/live_chat/live_chat_event.dart';
 import '../../logic/blocs/setting/live_chat/live_chat_state.dart';
 import '../../services/live_chat_services.dart';
+import '../widgets/background_theme.dart';
 
 class LiveChatScreen extends StatefulWidget {
   const LiveChatScreen({super.key});
@@ -24,11 +25,16 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
   late AnimationController _logoAnimationController;
   late Animation<double> _logoAnimation;
   bool _isComposing = false;
+  late AnimationController _backgroundAnimationController;
+
 
   @override
   void initState() {
     super.initState();
-
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
     // Initialize animations
     _logoAnimationController = AnimationController(
       duration: const Duration(seconds: 2),
@@ -114,6 +120,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
     _messageController.dispose();
     _chatBloc.close();
     LiveChatServices().dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -136,18 +143,25 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
               _scrollToBottom();
             }
           },
-          child: Column(
+          child: Stack(
             children: [
-              /// Chat Messages Area
-              Expanded(
-                child: _buildChatArea(),
+              AnimatedBackground(
+                animationController: _backgroundAnimationController,
               ),
+              Column(
+                children: [
+                  /// Chat Messages Area
+                  Expanded(
+                    child: _buildChatArea(),
+                  ),
 
-              /// Typing Indicator
-              _buildTypingIndicator(),
+                  /// Typing Indicator
+                  _buildTypingIndicator(),
 
-              /// Message Input Area
-              _buildMessageInput(theme, isDark),
+                  /// Message Input Area
+                  _buildMessageInput(theme, isDark),
+                ],
+              ),
             ],
           ),
         ),
