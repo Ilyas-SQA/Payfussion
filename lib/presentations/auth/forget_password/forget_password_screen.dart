@@ -14,6 +14,7 @@ import '../../../logic/blocs/auth/auth_bloc.dart';
 import '../../../logic/blocs/auth/auth_event.dart';
 import '../../../logic/blocs/auth/auth_state.dart';
 import '../../widgets/auth_widgets/credential_text_field.dart';
+import '../../widgets/background_theme.dart';
 
 class ForgetPasswordScreen extends StatefulWidget {
   const ForgetPasswordScreen({super.key});
@@ -168,6 +169,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> with Ticker
 
   @override
   Widget build(BuildContext context) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return BlocListener<AuthBloc, AuthState>(
       listener: (BuildContext context, AuthState state) {
         Navigator.of(context, rootNavigator: true).popUntil((route) => route.isFirst);
@@ -194,46 +196,10 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> with Ticker
       child: Scaffold(
         body: Stack(
           children: [
-            AnimatedBuilder(
-              animation: _backgroundAnimationController,
-              builder: (BuildContext context, Widget? child) {
-                return Stack(
-                  children: List.generate(8, (int index) {
-                    /// Calculate movement path for each circle
-                    final double angle = (_backgroundAnimationController.value * 2 * pi) + (index * pi / 4);
-                    final double radiusX = 150 + (index * 20);
-                    final double radiusY = 200 + (index * 30);
-
-                    final double left = MediaQuery.of(context).size.width / 2 + cos(angle) * radiusX - 125;
-                    final double top = MediaQuery.of(context).size.height / 2 + sin(angle) * radiusY - 125;
-
-                    /// Different sizes and colors
-                    final double size = 150 + (index * 30) + sin(_backgroundAnimationController.value * 2 * pi) * 20;
-                    final Color circleColor = index % 3 == 0 ? MyTheme.primaryColor.withOpacity(0.15) : index % 3 == 1 ? MyTheme.secondaryColor.withOpacity(0.15) : MyTheme.secondaryColor.withOpacity(0.15);
-
-                    return Positioned(
-                      left: left,
-                      top: top,
-                      child: Container(
-                        width: size,
-                        height: size,
-                        decoration: BoxDecoration(
-                          color: circleColor,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: circleColor.withOpacity(0.3),
-                              blurRadius: 40,
-                              spreadRadius: 10,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
-                );
-              },
+            AnimatedBackground(
+              animationController: _backgroundAnimationController,
             ),
+
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 30.h),
               child: Form(
@@ -285,7 +251,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> with Ticker
                           textAlign: TextAlign.center,
                           style: Font.montserratFont(
                             fontSize: 14.sp,
-                            color: Colors.grey,
                             height: 1.5,
                           ),
                         ),
