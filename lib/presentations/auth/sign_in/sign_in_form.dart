@@ -284,16 +284,15 @@ class _SignInFormState extends State<SignInForm> with SingleTickerProviderStateM
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       spacing: 10,
                       children: <Widget>[
-                        const Flexible(child: Divider(color: Colors.grey)),
+                        const Flexible(child: Divider(color: Colors.black)),
                         Text(
                           "OR",
                           style: Font.montserratFont(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w500,
-                            color: Colors.grey,
                           ),
                         ),
-                        const Flexible(child: Divider(color: Colors.grey)),
+                        const Flexible(child: Divider(color: Colors.black)),
                       ],
                     ),
                   ),
