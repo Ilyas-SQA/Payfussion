@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/constants/routes_name.dart';
 import '../../../core/constants/image_url.dart';
 import '../../../core/theme/theme.dart';
+import '../../widgets/background_theme.dart';
 import 'bus/bus_screen.dart';
 import 'car/car_screen.dart';
 import 'flight/flight_screen.dart';
@@ -21,7 +22,7 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
   // Animation controllers
   late AnimationController _headerController;
   late AnimationController _listController;
-
+  late AnimationController _backgroundAnimationController;
   late Animation<double> _headerFade;
   late Animation<Offset> _headerSlide;
   late Animation<double> _listFade;
@@ -31,6 +32,10 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
     super.initState();
     _initAnimations();
     _startAnimationSequence();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   void _initAnimations() {
@@ -70,6 +75,7 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
   void dispose() {
     _headerController.dispose();
     _listController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -97,51 +103,58 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
           color: MyTheme.secondaryColor,
         ),
       ),
-      body: FadeTransition(
-        opacity: _listFade,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Section
-            Padding(
-              padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Choose Your",
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w300,
-                      color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.8) : const Color(0xff718096),
-                      fontSize: 18,
-                    ),
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          FadeTransition(
+            opacity: _listFade,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header Section
+                Padding(
+                  padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Choose Your",
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.w300,
+                          color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.8) : const Color(0xff718096),
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        "Ticket Booking",
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+                          fontSize: 16,
+                        ),
+                      ),
+                      SizedBox(height: 8.h),
+                      Text(
+                        "Book your tickets easily and conveniently",
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.7) : const Color(0xff718096),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    "Ticket Booking",
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
-                      fontSize: 16,
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    "Book your tickets easily and conveniently",
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.7) : const Color(0xff718096),
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                ),
 
-            // Ticket List
-            Expanded(
-              child: _buildTicketBookingList(theme),
+                // Ticket List
+                Expanded(
+                  child: _buildTicketBookingList(theme),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
