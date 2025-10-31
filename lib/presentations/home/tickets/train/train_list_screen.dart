@@ -4,14 +4,37 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/presentations/home/tickets/train/train_detail_screen.dart';
-
 import '../../../../data/models/tickets/train_model.dart';
 import '../../../../logic/blocs/tickets/train/train_bloc.dart';
 import '../../../../logic/blocs/tickets/train/train_event.dart';
 import '../../../../logic/blocs/tickets/train/train_state.dart';
+import '../../../widgets/background_theme.dart';
 
-class TrainListScreen extends StatelessWidget {
+class TrainListScreen extends StatefulWidget {
   const TrainListScreen({super.key});
+
+  @override
+  State<TrainListScreen> createState() => _TrainListScreenState();
+}
+
+class _TrainListScreenState extends State<TrainListScreen> with TickerProviderStateMixin {
+  late AnimationController _backgroundAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _backgroundAnimationController.dispose();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -28,124 +51,131 @@ class TrainListScreen extends StatelessWidget {
         ],
         iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
-      body: BlocBuilder<TrainBloc, TrainState>(
-        builder: (context, state) {
-          if (state is TrainLoading) {
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Loading trains...'),
-                ],
-              ),
-            );
-          }
-
-          if (state is TrainError) {
-            return Center(
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 500),
-                curve: Curves.easeInOut,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TweenAnimationBuilder<double>(
-                      duration: Duration(milliseconds: 800),
-                      tween: Tween(begin: 0, end: 1),
-                      builder: (context, value, child) {
-                        return Transform.scale(
-                          scale: value,
-                          child: Icon(
-                            Icons.error,
-                            size: 64,
-                            color: Colors.red.shade400,
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    FadeInUp(
-                      delay: Duration(milliseconds: 300),
-                      child: Text(
-                        state.message,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    FadeInUp(
-                      delay: Duration(milliseconds: 600),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          context.read<TrainBloc>().add(LoadTrains());
-                        },
-                        child: const Text('Retry'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-
-          if (state is TrainLoaded) {
-            return AnimatedList(
-              padding: const EdgeInsets.all(8),
-              initialItemCount: state.trains.length,
-              itemBuilder: (context, index, animation) {
-                if (index >= state.trains.length) return const SizedBox.shrink();
-
-                final train = state.trains[index];
-
-                return SlideTransition(
-                  position: animation.drive(
-                    Tween(begin: const Offset(1, 0), end: Offset.zero).chain(
-                      CurveTween(curve: Curves.easeOutCubic),
-                    ),
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          BlocBuilder<TrainBloc, TrainState>(
+            builder: (BuildContext context, TrainState state) {
+              if (state is TrainLoading) {
+                return const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text('Loading trains...'),
+                    ],
                   ),
-                  child: FadeTransition(
-                    opacity: animation.drive(
-                      CurveTween(curve: Curves.easeIn),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        bottom: index == state.trains.length - 1 ? 0 : 8,
-                      ),
-                      child: AnimatedTrainCard(
-                        train: train,
-                        index: index,
-                      ),
+                );
+              }
+
+              if (state is TrainError) {
+                return Center(
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 500),
+                    curve: Curves.easeInOut,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TweenAnimationBuilder<double>(
+                          duration: Duration(milliseconds: 800),
+                          tween: Tween(begin: 0, end: 1),
+                          builder: (context, value, child) {
+                            return Transform.scale(
+                              scale: value,
+                              child: Icon(
+                                Icons.error,
+                                size: 64,
+                                color: Colors.red.shade400,
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        FadeInUp(
+                          delay: Duration(milliseconds: 300),
+                          child: Text(
+                            state.message,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        FadeInUp(
+                          delay: Duration(milliseconds: 600),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              context.read<TrainBloc>().add(LoadTrains());
+                            },
+                            child: const Text('Retry'),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );
-              },
-            );
-          }
+              }
 
-          return FadeInUp(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.train,
-                    size: 64,
-                    color: Colors.grey.shade400,
+              if (state is TrainLoaded) {
+                return AnimatedList(
+                  padding: const EdgeInsets.all(8),
+                  initialItemCount: state.trains.length,
+                  itemBuilder: (context, index, animation) {
+                    if (index >= state.trains.length) return const SizedBox.shrink();
+
+                    final train = state.trains[index];
+
+                    return SlideTransition(
+                      position: animation.drive(
+                        Tween(begin: const Offset(1, 0), end: Offset.zero).chain(
+                          CurveTween(curve: Curves.easeOutCubic),
+                        ),
+                      ),
+                      child: FadeTransition(
+                        opacity: animation.drive(
+                          CurveTween(curve: Curves.easeIn),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            bottom: index == state.trains.length - 1 ? 0 : 8,
+                          ),
+                          child: AnimatedTrainCard(
+                            train: train,
+                            index: index,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }
+
+              return FadeInUp(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.train,
+                        size: 64,
+                        color: Colors.grey.shade400,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No trains available',
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No trains available',
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
