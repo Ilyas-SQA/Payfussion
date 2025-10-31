@@ -6,8 +6,6 @@ import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:uuid/uuid.dart';
-
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/tax.dart';
 import '../../../../data/models/card/card_model.dart';
 import '../../../../data/models/tickets/train_model.dart';
@@ -18,6 +16,7 @@ import '../../../../logic/blocs/tickets/train/train_bloc.dart';
 import '../../../../logic/blocs/tickets/train/train_event.dart';
 import '../../../../logic/blocs/tickets/train/train_state.dart';
 import '../../../../services/payment_service.dart';
+import '../../../widgets/background_theme.dart';
 
 class TrainPaymentScreen extends StatefulWidget {
   final TrainModel train;
@@ -26,15 +25,15 @@ class TrainPaymentScreen extends StatefulWidget {
   State<TrainPaymentScreen> createState() => _TrainPaymentScreenState();
 }
 
-class _TrainPaymentScreenState extends State<TrainPaymentScreen>
-    with TickerProviderStateMixin {
+class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProviderStateMixin {
   late AnimationController _pageController;
   late AnimationController _cardController;
   late AnimationController _buttonController;
   late List<AnimationController> _sectionControllers;
+  late AnimationController _backgroundAnimationController;
 
-  final _formKey = GlobalKey<FormState>();
-  final _controllers = <TextEditingController>[
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final List<TextEditingController> _controllers = <TextEditingController>[
     TextEditingController(), // name
     TextEditingController(), // email
     TextEditingController(), // phone
@@ -51,6 +50,10 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
     _initAnimations();
     context.read<CardBloc>().add(LoadCards());
     _startAnimations();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   void _initAnimations() {
@@ -94,6 +97,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
     _buttonController.dispose();
     _sectionControllers.forEach((c) => c.dispose());
     _controllers.forEach((c) => c.dispose());
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -108,25 +112,32 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: BlocListener<BookingBloc, BookingState>(
-        listener: _handleBookingState,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                _buildAnimatedSection(0, _buildTripSummary()),
-                _buildAnimatedSection(1, _buildPassengerDetails()),
-                _buildAnimatedSection(2, _buildTravelOptions()),
-                _buildAnimatedSection(3, _buildPaymentMethod()),
-                _buildAnimatedSection(4, _buildFareBreakdown()),
-                const SizedBox(height: 24),
-                _buildAnimatedBookButton(),
-              ],
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          BlocListener<BookingBloc, BookingState>(
+            listener: _handleBookingState,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    _buildAnimatedSection(0, _buildTripSummary()),
+                    _buildAnimatedSection(1, _buildPassengerDetails()),
+                    _buildAnimatedSection(2, _buildTravelOptions()),
+                    _buildAnimatedSection(3, _buildPaymentMethod()),
+                    _buildAnimatedSection(4, _buildFareBreakdown()),
+                    const SizedBox(height: 24),
+                    _buildAnimatedBookButton(),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
