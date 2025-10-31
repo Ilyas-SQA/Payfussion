@@ -6,6 +6,7 @@ import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/home/tickets/train/train_payment_screen.dart';
 
 import '../../../../data/models/tickets/train_model.dart';
+import '../../../widgets/background_theme.dart';
 
 class TrainDetailScreen extends StatefulWidget {
   final TrainModel train;
@@ -16,13 +17,12 @@ class TrainDetailScreen extends StatefulWidget {
   State<TrainDetailScreen> createState() => _TrainDetailScreenState();
 }
 
-class _TrainDetailScreenState extends State<TrainDetailScreen>
-    with TickerProviderStateMixin {
+class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProviderStateMixin {
   late AnimationController _headerController;
   late AnimationController _contentController;
   late AnimationController _buttonController;
   late AnimationController _fabController;
-
+  late AnimationController _backgroundAnimationController;
   late Animation<double> _headerAnimation;
   late Animation<double> _contentAnimation;
   late Animation<double> _buttonAnimation;
@@ -34,7 +34,10 @@ class _TrainDetailScreenState extends State<TrainDetailScreen>
   @override
   void initState() {
     super.initState();
-
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
     _headerController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -104,6 +107,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen>
     _buttonController.dispose();
     _fabController.dispose();
     _scrollController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -131,42 +135,49 @@ class _TrainDetailScreenState extends State<TrainDetailScreen>
           child: const Icon(Icons.keyboard_arrow_up, color: Colors.white),
         ),
       ),
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Card with Hero Animation
-            SlideTransition(
-              position: _headerAnimation.drive(
-                Tween(begin: const Offset(0, -0.5), end: Offset.zero),
-              ),
-              child: FadeTransition(
-                opacity: _headerAnimation,
-                child: _buildHeaderCard(),
-              ),
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          SingleChildScrollView(
+            controller: _scrollController,
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header Card with Hero Animation
+                SlideTransition(
+                  position: _headerAnimation.drive(
+                    Tween(begin: const Offset(0, -0.5), end: Offset.zero),
+                  ),
+                  child: FadeTransition(
+                    opacity: _headerAnimation,
+                    child: _buildHeaderCard(),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Content Cards
+                ..._buildAnimatedContent(),
+
+                const SizedBox(height: 24),
+
+                // Animated Book Now Button
+                SlideTransition(
+                  position: _buttonAnimation.drive(
+                    Tween(begin: const Offset(0, 0.5), end: Offset.zero),
+                  ),
+                  child: ScaleTransition(
+                    scale: _buttonAnimation,
+                    child: _buildBookNowButton(),
+                  ),
+                ),
+              ],
             ),
-
-            const SizedBox(height: 20),
-
-            // Content Cards
-            ..._buildAnimatedContent(),
-
-            const SizedBox(height: 24),
-
-            // Animated Book Now Button
-            SlideTransition(
-              position: _buttonAnimation.drive(
-                Tween(begin: const Offset(0, 0.5), end: Offset.zero),
-              ),
-              child: ScaleTransition(
-                scale: _buttonAnimation,
-                child: _buildBookNowButton(),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
