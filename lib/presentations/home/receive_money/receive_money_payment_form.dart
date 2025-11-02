@@ -13,7 +13,6 @@ import 'package:payfussion/presentations/home/receive_money/widgets/expiry_selec
 import 'package:payfussion/presentations/home/receive_money/widgets/note_input_widget.dart';
 import 'package:payfussion/presentations/home/receive_money/widgets/success_view_widget.dart';
 import 'package:provider/provider.dart';
-
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/theme.dart';
 import '../../../data/models/payment_request/payment_request_model.dart';
@@ -46,6 +45,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
   late AnimationController _scaleController;
   late AnimationController _bounceController;
   late AnimationController _rotateController;
+  late AnimationController _backgroundAnimationController;
 
   // Animations
   late Animation<Offset> _slideAnimation;
@@ -135,6 +135,10 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
 
     /// Load existing payment requests when the form initializes
     context.read<PaymentRequestBloc>().add(const LoadPaymentRequests());
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   @override
@@ -148,6 +152,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
     _scaleController.dispose();
     _bounceController.dispose();
     _rotateController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
