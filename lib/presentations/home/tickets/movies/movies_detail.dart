@@ -3,9 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
-
 import '../../../../data/models/tickets/movies_model.dart';
-import '../../../widgets/custom_button.dart';
+import '../../../widgets/background_theme.dart';
 import 'movies_payment_screen.dart';
 
 class MovieDetailScreen extends StatefulWidget {
@@ -26,6 +25,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _scaleAnimation;
+  late AnimationController _backgroundAnimationController;
 
   String? _selectedShowtime;
   bool _isBookingPressed = false;
@@ -33,7 +33,10 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
   @override
   void initState() {
     super.initState();
-
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
     // Main animation controller for page entrance
     _mainController = AnimationController(
       duration: const Duration(milliseconds: 1200),
@@ -86,6 +89,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
     _mainController.dispose();
     _buttonController.dispose();
     _shimmerController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -117,66 +121,73 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
           color: MyTheme.secondaryColor,
         ),
       ),
-      body: AnimatedBuilder(
-        animation: _mainController,
-        builder: (context, child) {
-          return FadeTransition(
-            opacity: _fadeAnimation,
-            child: SlideTransition(
-              position: _slideAnimation,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Main Movie Info Card
-                    _AnimatedCard(
-                      delay: 0,
-                      controller: _mainController,
-                      child: _buildMainInfoCard(widget.imageUrl),
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          AnimatedBuilder(
+            animation: _mainController,
+            builder: (context, child) {
+              return FadeTransition(
+                opacity: _fadeAnimation,
+                child: SlideTransition(
+                  position: _slideAnimation,
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Main Movie Info Card
+                        _AnimatedCard(
+                          delay: 0,
+                          controller: _mainController,
+                          child: _buildMainInfoCard(widget.imageUrl),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Synopsis Card
+                        if (widget.movie.synopsis.isNotEmpty) ...[
+                          _AnimatedCard(
+                            delay: 200,
+                            controller: _mainController,
+                            child: _buildSynopsisCard(),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+
+                        // Cast Card
+                        if (widget.movie.cast.isNotEmpty) ...[
+                          _AnimatedCard(
+                            delay: 400,
+                            controller: _mainController,
+                            child: _buildCastCard(),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+
+                        // Showtimes Card
+                        _AnimatedCard(
+                          delay: 600,
+                          controller: _mainController,
+                          child: _buildShowtimesCard(),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Animated Book Button
+                        _buildAnimatedBookButton(),
+
+                        const SizedBox(height: 20),
+                      ],
                     ),
-
-                    const SizedBox(height: 20),
-
-                    // Synopsis Card
-                    if (widget.movie.synopsis.isNotEmpty) ...[
-                      _AnimatedCard(
-                        delay: 200,
-                        controller: _mainController,
-                        child: _buildSynopsisCard(),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-
-                    // Cast Card
-                    if (widget.movie.cast.isNotEmpty) ...[
-                      _AnimatedCard(
-                        delay: 400,
-                        controller: _mainController,
-                        child: _buildCastCard(),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-
-                    // Showtimes Card
-                    _AnimatedCard(
-                      delay: 600,
-                      controller: _mainController,
-                      child: _buildShowtimesCard(),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Animated Book Button
-                    _buildAnimatedBookButton(),
-
-                    const SizedBox(height: 20),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          );
-        },
+              );
+            },
+          ),
+        ],
       ),
     );
   }
