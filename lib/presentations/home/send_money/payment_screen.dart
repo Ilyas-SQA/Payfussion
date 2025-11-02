@@ -13,6 +13,7 @@ import '../../../logic/blocs/add_card/card_state.dart';
 import '../../../logic/blocs/transaction/transaction_bloc.dart';
 import '../../../logic/blocs/transaction/transaction_event.dart';
 import '../../../logic/blocs/transaction/transaction_state.dart';
+import '../../widgets/background_theme.dart';
 
 class PaymentStrings {
   static const paymentScreen = 'Payment';
@@ -29,9 +30,31 @@ class Taxes {
   static const double internalTransferFee = 0.5;
 }
 
-class PaymentScreen extends StatelessWidget {
+class PaymentScreen extends StatefulWidget {
   final RecipientModel recipient;
   const PaymentScreen({super.key, required this.recipient});
+
+  @override
+  State<PaymentScreen> createState() => _PaymentScreenState();
+}
+
+class _PaymentScreenState extends State<PaymentScreen>  with TickerProviderStateMixin{
+
+  late AnimationController _backgroundAnimationController;
+  @override
+  void initState() {
+    super.initState();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _backgroundAnimationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +63,16 @@ class PaymentScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         elevation: 0,
-        title: Text(PaymentStrings.paymentScreen),
+        title: const Text(PaymentStrings.paymentScreen),
       ),
-      body: PaymentForm(recipient: recipient),
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          PaymentForm(recipient: widget.recipient),
+        ],
+      ),
     );
   }
 }
