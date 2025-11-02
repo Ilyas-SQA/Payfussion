@@ -7,11 +7,17 @@ import 'package:payfussion/core/theme/theme.dart';
 import '../../../../logic/blocs/tickets/movies/movies_bloc.dart';
 import '../../../../logic/blocs/tickets/movies/movies_event.dart';
 import '../../../../logic/blocs/tickets/movies/movies_state.dart';
+import '../../../widgets/background_theme.dart';
 import 'movies_detail.dart';
 
-class MovieListScreen extends StatelessWidget {
+class MovieListScreen extends StatefulWidget {
   MovieListScreen({super.key});
 
+  @override
+  State<MovieListScreen> createState() => _MovieListScreenState();
+}
+
+class _MovieListScreenState extends State<MovieListScreen> with TickerProviderStateMixin{
   List<String> moviesImage = [
     "assets/images/movies/download (2).jpeg",
     "assets/images/movies/download.jpeg",
@@ -32,6 +38,23 @@ class MovieListScreen extends StatelessWidget {
     "assets/images/movies/download (16).jpeg",
     "assets/images/movies/download (17).jpeg",
   ];
+  late AnimationController _backgroundAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _backgroundAnimationController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,96 +71,103 @@ class MovieListScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: BlocBuilder<MovieBloc, MovieState>(
-        builder: (BuildContext context, MovieState state) {
-          if (state is MovieLoading) {
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Loading movies...'),
-                ],
-              ),
-            );
-          }
-
-          if (state is MovieError) {
-            return Center(
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TweenAnimationBuilder<double>(
-                      duration: const Duration(milliseconds: 600),
-                      tween: Tween(begin: 0.0, end: 1.0),
-                      builder: (context, value, child) {
-                        return Transform.scale(
-                          scale: value,
-                          child: Icon(
-                            Icons.error,
-                            size: 64,
-                            color: Colors.red.shade400,
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    FadeTransition(
-                      opacity: AlwaysStoppedAnimation(1.0),
-                      child: Text(state.message, textAlign: TextAlign.center),
-                    ),
-                    const SizedBox(height: 16),
-                    AnimatedScale(
-                      scale: 1.0,
-                      duration: const Duration(milliseconds: 200),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          context.read<MovieBloc>().add(LoadMovies());
-                        },
-                        child: const Text('Retry'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-
-          if (state is MovieLoaded) {
-            return AnimatedList(
-              padding: const EdgeInsets.all(8),
-              initialItemCount: state.movies.length,
-              itemBuilder: (context, index, animation) {
-                if (index >= state.movies.length) return const SizedBox.shrink();
-
-                final movie = state.movies[index];
-                return SlideTransition(
-                  position: animation.drive(
-                    Tween(begin: const Offset(1.0, 0.0), end: Offset.zero).chain(
-                      CurveTween(curve: Curves.easeOutCubic),
-                    ),
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          BlocBuilder<MovieBloc, MovieState>(
+            builder: (BuildContext context, MovieState state) {
+              if (state is MovieLoading) {
+                return const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text('Loading movies...'),
+                    ],
                   ),
-                  child: FadeTransition(
-                    opacity: animation,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: _AnimatedMovieCard(
-                        movie: movie,
-                        index: index,
-                        imageURL: moviesImage[index],
-                      ),
+                );
+              }
+
+              if (state is MovieError) {
+                return Center(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TweenAnimationBuilder<double>(
+                          duration: const Duration(milliseconds: 600),
+                          tween: Tween(begin: 0.0, end: 1.0),
+                          builder: (context, value, child) {
+                            return Transform.scale(
+                              scale: value,
+                              child: Icon(
+                                Icons.error,
+                                size: 64,
+                                color: Colors.red.shade400,
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        FadeTransition(
+                          opacity: AlwaysStoppedAnimation(1.0),
+                          child: Text(state.message, textAlign: TextAlign.center),
+                        ),
+                        const SizedBox(height: 16),
+                        AnimatedScale(
+                          scale: 1.0,
+                          duration: const Duration(milliseconds: 200),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              context.read<MovieBloc>().add(LoadMovies());
+                            },
+                            child: const Text('Retry'),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );
-              },
-            );
-          }
+              }
 
-          return const Center(child: Text('No movies available'));
-        },
+              if (state is MovieLoaded) {
+                return AnimatedList(
+                  padding: const EdgeInsets.all(8),
+                  initialItemCount: state.movies.length,
+                  itemBuilder: (context, index, animation) {
+                    if (index >= state.movies.length) return const SizedBox.shrink();
+
+                    final movie = state.movies[index];
+                    return SlideTransition(
+                      position: animation.drive(
+                        Tween(begin: const Offset(1.0, 0.0), end: Offset.zero).chain(
+                          CurveTween(curve: Curves.easeOutCubic),
+                        ),
+                      ),
+                      child: FadeTransition(
+                        opacity: animation,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: _AnimatedMovieCard(
+                            movie: movie,
+                            index: index,
+                            imageURL: moviesImage[index],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }
+
+              return const Center(child: Text('No movies available'));
+            },
+          ),
+        ],
       ),
     );
   }
