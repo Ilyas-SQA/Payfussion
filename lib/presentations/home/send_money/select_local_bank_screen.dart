@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/presentations/home/send_money/select_bank_screen.dart';
 
 import '../../../core/theme/theme.dart';
+import '../../widgets/background_theme.dart';
 
 class SelectLocalBankScreen extends StatefulWidget {
   const SelectLocalBankScreen({super.key});
@@ -11,7 +12,7 @@ class SelectLocalBankScreen extends StatefulWidget {
   State<SelectLocalBankScreen> createState() => _SelectLocalBankScreenState();
 }
 
-class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> {
+class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> with TickerProviderStateMixin{
   final List<Map<String, String>> financialApps = [
     {"imageUrl":"assets/images/otherBank/download (10).png" ,'name': 'Cash App', 'type': 'Digital Wallet'},
     {"imageUrl":"assets/images/otherBank/download (11).png" ,'name': 'Venmo', 'type': 'P2P Payment'},
@@ -151,6 +152,22 @@ class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> {
     );
   }
 
+  late AnimationController _backgroundAnimationController;
+  @override
+  void initState() {
+    super.initState();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _backgroundAnimationController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -168,104 +185,111 @@ class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: Column(
+      body: Stack(
         children: [
-          // Header
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 24.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Choose your Other Wallet',
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                Text(
-                  'Select a Other Wallet from the list below (tap again to unselect)',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: Colors.grey.shade400,
-                  ),
-                ),
-              ],
-            ),
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
           ),
-
-          // Financial Apps List
-          Expanded(
-            child: financialApps.isEmpty
-                ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.account_balance_wallet_outlined,
-                    size: 64.sp,
-                    color: Colors.grey.shade400,
-                  ),
-                  SizedBox(height: 16.h),
-                  Text(
-                    'No Financial Apps Available',
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                ],
-              ),
-            ) : ListView.builder(
-              padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
-              itemCount: financialApps.length,
-              itemBuilder: (context, index) {
-                final app = financialApps[index];
-                final isSelected = selectedApp == app['name'];
-                return _buildAppCard(app, isSelected);
-              },
-            ),
-          ),
-
-          // Continue Button
-          if (selectedApp != null)
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(16.w),
-              child: ElevatedButton(
-                onPressed: _proceedToNextScreen,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: MyTheme.primaryColor,
-                  padding: EdgeInsets.symmetric(vertical: 16.h),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  elevation: 2,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+          Column(
+            children: [
+              // Header
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 24.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Continue',
+                      'Choose your Other Wallet',
                       style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(width: 8.w),
-                    Icon(
-                      Icons.arrow_forward,
-                      color: Colors.white,
-                      size: 20.sp,
+                    SizedBox(height: 8.h),
+                    Text(
+                      'Select a Other Wallet from the list below (tap again to unselect)',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: Colors.grey.shade400,
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
+
+              // Financial Apps List
+              Expanded(
+                child: financialApps.isEmpty
+                    ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.account_balance_wallet_outlined,
+                        size: 64.sp,
+                        color: Colors.grey.shade400,
+                      ),
+                      SizedBox(height: 16.h),
+                      Text(
+                        'No Financial Apps Available',
+                        style: TextStyle(
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ) : ListView.builder(
+                  padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
+                  itemCount: financialApps.length,
+                  itemBuilder: (context, index) {
+                    final app = financialApps[index];
+                    final isSelected = selectedApp == app['name'];
+                    return _buildAppCard(app, isSelected);
+                  },
+                ),
+              ),
+
+              // Continue Button
+              if (selectedApp != null)
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(16.w),
+                  child: ElevatedButton(
+                    onPressed: _proceedToNextScreen,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: MyTheme.primaryColor,
+                      padding: EdgeInsets.symmetric(vertical: 16.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      elevation: 2,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Continue',
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(width: 8.w),
+                        Icon(
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                          size: 20.sp,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
     );
