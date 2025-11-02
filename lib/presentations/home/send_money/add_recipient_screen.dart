@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +15,7 @@ import '../../../data/repositories/recipient/recipient_repository.dart';
 import '../../../logic/blocs/recipient/recipient_bloc.dart';
 import '../../../logic/blocs/recipient/recipient_event.dart';
 import '../../../logic/blocs/recipient/recipient_state.dart';
+import '../../widgets/background_theme.dart';
 
 class RecipientStrings {
   static const String addRecipient = 'Add Recipient';
@@ -39,10 +39,31 @@ class RecipientStrings {
   static const String cancel = 'Cancel';
 }
 
-class AddRecipientScreen extends StatelessWidget {
+class AddRecipientScreen extends StatefulWidget {
   const AddRecipientScreen({super.key});
 
+  @override
+  State<AddRecipientScreen> createState() => _AddRecipientScreenState();
+}
+
+class _AddRecipientScreenState extends State<AddRecipientScreen> with TickerProviderStateMixin{
   String _userId() => FirebaseAuth.instance.currentUser?.uid ?? 'debugUser';
+  late AnimationController _backgroundAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _backgroundAnimationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +80,14 @@ class AddRecipientScreen extends StatelessWidget {
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           title: const Text(RecipientStrings.addRecipient),
         ),
-        body: const RecipientForm(),
+        body: Stack(
+          children: [
+            AnimatedBackground(
+              animationController: _backgroundAnimationController,
+            ),
+            const RecipientForm(),
+          ],
+        ),
       ),
     );
   }
