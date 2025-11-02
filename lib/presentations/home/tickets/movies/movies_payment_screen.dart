@@ -15,6 +15,7 @@ import '../../../../logic/blocs/tickets/movies/movies_bloc.dart';
 import '../../../../logic/blocs/tickets/movies/movies_event.dart';
 import '../../../../logic/blocs/tickets/movies/movies_state.dart';
 import '../../../../services/payment_service.dart';
+import '../../../widgets/background_theme.dart';
 import '../../../widgets/custom_button.dart';
 
 class MoviePaymentScreen extends StatefulWidget {
@@ -26,11 +27,12 @@ class MoviePaymentScreen extends StatefulWidget {
   State<MoviePaymentScreen> createState() => _MoviePaymentScreenState();
 }
 
-class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
+class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
+  late AnimationController _backgroundAnimationController;
 
   DateTime _selectedDate = DateTime.now();
   String _selectedShowtime = '';
@@ -43,6 +45,10 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
     super.initState();
     _selectedShowtime = widget.movie.showtimes.first;
     context.read<CardBloc>().add(LoadCards());
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   @override
@@ -50,6 +56,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -98,49 +105,56 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> {
           color: MyTheme.secondaryColor,
         ),
       ),
-      body: BlocListener<MovieBookingBloc, MovieBookingState>(
-        listener: (context, state) {
-          if (state is MovieBookingSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.green,
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          BlocListener<MovieBookingBloc, MovieBookingState>(
+            listener: (context, state) {
+              if (state is MovieBookingSuccess) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.message),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              } else if (state is MovieBookingError) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.message),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildMovieSummary(),
+                    const SizedBox(height: 16),
+                    _buildShowtimeSelection(),
+                    const SizedBox(height: 16),
+                    _buildCustomerDetails(),
+                    const SizedBox(height: 16),
+                    _buildTicketOptions(),
+                    const SizedBox(height: 16),
+                    _buildPaymentMethod(),
+                    const SizedBox(height: 16),
+                    _buildPriceBreakdown(),
+                    const SizedBox(height: 24),
+                    _buildBookButton(),
+                  ],
+                ),
               ),
-            );
-            Navigator.of(context).popUntil((route) => route.isFirst);
-          } else if (state is MovieBookingError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-        },
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildMovieSummary(),
-                const SizedBox(height: 16),
-                _buildShowtimeSelection(),
-                const SizedBox(height: 16),
-                _buildCustomerDetails(),
-                const SizedBox(height: 16),
-                _buildTicketOptions(),
-                const SizedBox(height: 16),
-                _buildPaymentMethod(),
-                const SizedBox(height: 16),
-                _buildPriceBreakdown(),
-                const SizedBox(height: 24),
-                _buildBookButton(),
-              ],
             ),
           ),
-        ),
+        ],
       ),
     );
   }
