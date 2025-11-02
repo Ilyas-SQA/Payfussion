@@ -6,7 +6,6 @@ import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:payfussion/services/payment_service.dart';
 import 'package:uuid/uuid.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/tax.dart';
 import '../../../../data/models/card/card_model.dart';
 import '../../../../data/models/notification/notification_model.dart';
@@ -20,6 +19,7 @@ import '../../../../logic/blocs/notification/notification_state.dart';
 import '../../../../logic/blocs/tickets/flight/flight_bloc.dart';
 import '../../../../logic/blocs/tickets/flight/flight_event.dart';
 import '../../../../logic/blocs/tickets/flight/flight_state.dart';
+import '../../../widgets/background_theme.dart';
 import '../../../widgets/custom_button.dart';
 
 
@@ -32,11 +32,12 @@ class FlightPaymentScreen extends StatefulWidget {
   State<FlightPaymentScreen> createState() => _FlightPaymentScreenState();
 }
 
-class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
+class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerProviderStateMixin{
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
+  late AnimationController _backgroundAnimationController;
 
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
   int _numberOfPassengers = 1;
@@ -47,6 +48,10 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
   void initState() {
     super.initState();
     context.read<CardBloc>().add(LoadCards());
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   @override
@@ -54,6 +59,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -100,67 +106,74 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> {
         title: const Text("Book Flight Ticket"),
         iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
-      body: MultiBlocListener(
-        listeners: [
-          BlocListener<FlightBookingBloc, FlightBookingState>(
-            listener: (BuildContext context, FlightBookingState state) {
-              if (state is FlightBookingSuccess) {
-                _addFlightNotification(
-                  success: true,
-                );
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-                Navigator.of(context).popUntil((route) => route.isFirst);
-              } else if (state is FlightBookingError) {
-                _addFlightNotification(
-                  success: false,
-                  errorMessage: state.message,
-                );
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
-            },
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
           ),
-          BlocListener<NotificationBloc, NotificationState>(
-            listener: (context, state) {
-              if (state is NotificationError) {
-                print('Notification error: ${state.message}');
-              }
-            },
-          ),
-        ],
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildFlightSummary(),
-                const SizedBox(height: 16),
-                _buildPassengerDetails(),
-                const SizedBox(height: 16),
-                _buildFlightOptions(),
-                const SizedBox(height: 16),
-                _buildPaymentMethod(),
-                const SizedBox(height: 16),
-                _buildFareBreakdown(),
-                const SizedBox(height: 24),
-                _buildBookButton(),
-              ],
+          MultiBlocListener(
+            listeners: [
+              BlocListener<FlightBookingBloc, FlightBookingState>(
+                listener: (BuildContext context, FlightBookingState state) {
+                  if (state is FlightBookingSuccess) {
+                    _addFlightNotification(
+                      success: true,
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.message),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  } else if (state is FlightBookingError) {
+                    _addFlightNotification(
+                      success: false,
+                      errorMessage: state.message,
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.message),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+              ),
+              BlocListener<NotificationBloc, NotificationState>(
+                listener: (context, state) {
+                  if (state is NotificationError) {
+                    print('Notification error: ${state.message}');
+                  }
+                },
+              ),
+            ],
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildFlightSummary(),
+                    const SizedBox(height: 16),
+                    _buildPassengerDetails(),
+                    const SizedBox(height: 16),
+                    _buildFlightOptions(),
+                    const SizedBox(height: 16),
+                    _buildPaymentMethod(),
+                    const SizedBox(height: 16),
+                    _buildFareBreakdown(),
+                    const SizedBox(height: 24),
+                    _buildBookButton(),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
