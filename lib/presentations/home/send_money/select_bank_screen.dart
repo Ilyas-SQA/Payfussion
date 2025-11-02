@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
-
 import '../../../core/theme/theme.dart';
 import '../../../data/models/recipient/recipient_model.dart';
 import '../../../logic/blocs/bank_transaction/bank_transaction_bloc.dart';
 import '../../../logic/blocs/bank_transaction/bank_transaction_event.dart';
 import '../../../logic/blocs/bank_transaction/bank_transaction_state.dart';
+import '../../widgets/background_theme.dart';
 
 // Updated SelectBankScreen with toggle selection and MyTheme.primaryColor
 class SelectBankScreen extends StatefulWidget {
@@ -18,12 +17,27 @@ class SelectBankScreen extends StatefulWidget {
   State<SelectBankScreen> createState() => _SelectBankScreenState();
 }
 
-class _SelectBankScreenState extends State<SelectBankScreen> {
+class _SelectBankScreenState extends State<SelectBankScreen> with TickerProviderStateMixin{
+
+  late AnimationController _backgroundAnimationController;
+
+
   @override
   void initState() {
     super.initState();
     // Fetch banks when screen loads
     context.read<BankTransactionBloc>().add(const FetchBanks());
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+  }
+
+
+  @override
+  void dispose() {
+    _backgroundAnimationController.dispose();
+    super.dispose();
   }
 
   void _toggleBankSelection(Bank bank, bool isCurrentlySelected) {
@@ -175,123 +189,130 @@ class _SelectBankScreenState extends State<SelectBankScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: BlocConsumer<BankTransactionBloc, BankTransactionState>(
-        listener: (context, state) {
-          if (state.errorMessage != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.errorMessage!),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          return Column(
-            children: [
-              // Header
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 24.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Choose your bank',
-                      style: TextStyle(
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      'Select a bank from the list below (tap again to unselect)',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Banks List
-              Expanded(
-                child: state.isLoadingBanks
-                    ? Center(
-                  child: CircularProgressIndicator(
-                    color: MyTheme.primaryColor,
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          BlocConsumer<BankTransactionBloc, BankTransactionState>(
+            listener: (BuildContext context, BankTransactionState state) {
+              if (state.errorMessage != null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.errorMessage!),
+                    backgroundColor: Colors.red,
                   ),
-                )
-                    : state.availableBanks.isEmpty
-                    ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.account_balance_outlined,
-                        size: 64.sp,
-                        color: Colors.grey.shade400,
-                      ),
-                      SizedBox(height: 16.h),
-                      Text(
-                        'No Banks Available',
-                        style: TextStyle(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-                    : ListView.builder(
-                  padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
-                  itemCount: state.availableBanks.length,
-                  itemBuilder: (context, index) {
-                    final bank = state.availableBanks[index];
-                    final isSelected = state.selectedBank?.id == bank.id;
-                    return _buildBankCard(bank, isSelected);
-                  },
-                ),
-              ),
-
-              // Continue Button
-              if (state.hasSelectedBank)
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(16.w),
-                  child: ElevatedButton(
-                    onPressed: _proceedToBankDetails,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: MyTheme.primaryColor,
-                      padding: EdgeInsets.symmetric(vertical: 16.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      elevation: 2,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                );
+              }
+            },
+            builder: (context, state) {
+              return Column(
+                children: [
+                  // Header
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 24.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Continue',
+                          'Choose your bank',
                           style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(width: 8.w),
-                        Icon(
-                          Icons.arrow_forward,
-                          color: Colors.white,
-                          size: 20.sp,
+                        SizedBox(height: 8.h),
+                        Text(
+                          'Select a bank from the list below (tap again to unselect)',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                ),
-            ],
-          );
-        },
+
+                  // Banks List
+                  Expanded(
+                    child: state.isLoadingBanks
+                        ? Center(
+                      child: CircularProgressIndicator(
+                        color: MyTheme.primaryColor,
+                      ),
+                    )
+                        : state.availableBanks.isEmpty
+                        ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.account_balance_outlined,
+                            size: 64.sp,
+                            color: Colors.grey.shade400,
+                          ),
+                          SizedBox(height: 16.h),
+                          Text(
+                            'No Banks Available',
+                            style: TextStyle(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                        : ListView.builder(
+                      padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
+                      itemCount: state.availableBanks.length,
+                      itemBuilder: (context, index) {
+                        final bank = state.availableBanks[index];
+                        final isSelected = state.selectedBank?.id == bank.id;
+                        return _buildBankCard(bank, isSelected);
+                      },
+                    ),
+                  ),
+
+                  // Continue Button
+                  if (state.hasSelectedBank)
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(16.w),
+                      child: ElevatedButton(
+                        onPressed: _proceedToBankDetails,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: MyTheme.primaryColor,
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          elevation: 2,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Continue',
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            SizedBox(width: 8.w),
+                            Icon(
+                              Icons.arrow_forward,
+                              color: Colors.white,
+                              size: 20.sp,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -305,11 +326,12 @@ class BankDetailsScreen extends StatefulWidget {
   State<BankDetailsScreen> createState() => _BankDetailsScreenState();
 }
 
-class _BankDetailsScreenState extends State<BankDetailsScreen> {
+class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProviderStateMixin{
   final _formKey = GlobalKey<FormState>();
   final _accountNumberController = TextEditingController();
   final _paymentPurposeController = TextEditingController();
   final _phoneNumberController = TextEditingController();
+  late AnimationController _backgroundAnimationController;
 
   String? _selectedPurpose;
   final List<String> _paymentPurposes = [
@@ -323,6 +345,15 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
     'Shopping',
     'Other',
   ];
+  @override
+  void initState() {
+    super.initState();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+  }
+
 
   @override
   void dispose() {
@@ -409,284 +440,291 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
         ),
         elevation: 0,
       ),
-      body: BlocConsumer<BankTransactionBloc, BankTransactionState>(
-        listener: (context, state) {
-          if (state.errorMessage != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.errorMessage!),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          return Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                // Selected Bank Info
-                if (state.selectedBank != null)
-                  Container(
-                    margin: EdgeInsets.all(16.w),
-                    padding: EdgeInsets.all(16.w),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [MyTheme.primaryColor, MyTheme.primaryColor.withOpacity(0.8)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 50.w,
-                          height: 50.w,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(25.r),
-                          ),
-                          child: Icon(
-                            Icons.account_balance,
-                            color: Colors.white,
-                            size: 24.sp,
-                          ),
-                        ),
-                        SizedBox(width: 16.w),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                state.selectedBank!.name,
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              if (state.selectedBank!.branchName.isNotEmpty) ...[
-                                SizedBox(height: 4.h),
-                                Text(
-                                  state.selectedBank!.branchName,
-                                  style: TextStyle(
-                                    fontSize: 12.sp,
-                                    color: Colors.white.withOpacity(0.8),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          Icons.check_circle,
-                          color: Colors.white,
-                          size: 24.sp,
-                        ),
-                      ],
-                    ),
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          BlocConsumer<BankTransactionBloc, BankTransactionState>(
+            listener: (context, state) {
+              if (state.errorMessage != null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.errorMessage!),
+                    backgroundColor: Colors.red,
                   ),
-
-                // Form Fields
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.all(16.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Enter Transfer Details',
-                          style: TextStyle(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.bold,
+                );
+              }
+            },
+            builder: (context, state) {
+              return Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    // Selected Bank Info
+                    if (state.selectedBank != null)
+                      Container(
+                        margin: EdgeInsets.all(16.w),
+                        padding: EdgeInsets.all(16.w),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [MyTheme.primaryColor, MyTheme.primaryColor.withOpacity(0.8)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
+                          borderRadius: BorderRadius.circular(12.r),
                         ),
-                        SizedBox(height: 24.h),
-
-                        // Account Number Field
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
                           children: [
-                            Text(
-                              'Account Number',
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w600,
+                            Container(
+                              width: 50.w,
+                              height: 50.w,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(25.r),
+                              ),
+                              child: Icon(
+                                Icons.account_balance,
+                                color: Colors.white,
+                                size: 24.sp,
                               ),
                             ),
-                            SizedBox(height: 8.h),
-                            AppTextFormField(
-                              controller: _accountNumberController,
-                              validator: _validateAccountNumber,
-                              helpText: 'Enter account number',
-                              prefixIcon: const Icon(Icons.account_balance_wallet),
-                            ),
-                          ],
-                        ),
-
-                        SizedBox(height: 24.h),
-
-                        // Payment Purpose Dropdown
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Payment Purpose',
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SizedBox(height: 8.h),
-                            DropdownButtonFormField<String>(
-                              value: _selectedPurpose,
-                              validator: _validatePaymentPurpose,
-                              decoration: InputDecoration(
-                                hintText: 'Select payment purpose',
-                                hintStyle: const TextStyle(color: Colors.white),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                  borderSide: const BorderSide(color: MyTheme.primaryColor, width: 2),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                  borderSide: const BorderSide(color: MyTheme.primaryColor, width: 2),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                  borderSide: const BorderSide(color: MyTheme.primaryColor, width: 2),
-                                ),
-                              ),
-                              items: _paymentPurposes.map((String purpose) {
-                                return DropdownMenuItem<String>(
-                                  value: purpose,
-                                  child: Text(purpose,style: TextStyle(color: Theme.brightnessOf(context) == Brightness.light ? Colors.black : Colors.white),),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedPurpose = newValue;
-                                });
-                              },
-                            ),
-                            if (_selectedPurpose == 'Other') ...[
-                              SizedBox(height: 16.h),
-                              Column(
+                            SizedBox(width: 16.w),
+                            Expanded(
+                              child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Specify Purpose',
+                                    state.selectedBank!.name,
                                     style: TextStyle(
-                                      fontSize: 14.sp,
+                                      fontSize: 16.sp,
                                       fontWeight: FontWeight.w600,
+                                      color: Colors.white,
                                     ),
                                   ),
-                                  SizedBox(height: 8.h),
-                                  AppTextFormField(
-                                    controller: _paymentPurposeController,
-                                    validator: _validatePaymentPurpose,
-                                    helpText: 'Enter payment purpose',
-                                    prefixIcon: const Icon(Icons.account_balance_wallet),
-                                  ),
+                                  if (state.selectedBank!.branchName.isNotEmpty) ...[
+                                    SizedBox(height: 4.h),
+                                    Text(
+                                      state.selectedBank!.branchName,
+                                      style: TextStyle(
+                                        fontSize: 12.sp,
+                                        color: Colors.white.withOpacity(0.8),
+                                      ),
+                                    ),
+                                  ],
                                 ],
                               ),
-                            ],
+                            ),
+                            Icon(
+                              Icons.check_circle,
+                              color: Colors.white,
+                              size: 24.sp,
+                            ),
                           ],
                         ),
+                      ),
 
-                        SizedBox(height: 24.h),
-
-                        // Phone Number Field
-                        Column(
+                    // Form Fields
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.all(16.w),
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Phone Number',
+                              'Enter Transfer Details',
                               style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w600,
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 8.h),
-                            AppTextFormField(
-                              controller: _phoneNumberController,
-                              validator: _validatePhoneNumber,
-                              helpText: '+92 300 1234567',
-                              prefixIcon: const Icon(Icons.phone),
+                            SizedBox(height: 24.h),
+
+                            // Account Number Field
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Account Number',
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                SizedBox(height: 8.h),
+                                AppTextFormField(
+                                  controller: _accountNumberController,
+                                  validator: _validateAccountNumber,
+                                  helpText: 'Enter account number',
+                                  prefixIcon: const Icon(Icons.account_balance_wallet),
+                                ),
+                              ],
+                            ),
+
+                            SizedBox(height: 24.h),
+
+                            // Payment Purpose Dropdown
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Payment Purpose',
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                SizedBox(height: 8.h),
+                                DropdownButtonFormField<String>(
+                                  value: _selectedPurpose,
+                                  validator: _validatePaymentPurpose,
+                                  decoration: InputDecoration(
+                                    hintText: 'Select payment purpose',
+                                    hintStyle: const TextStyle(color: Colors.white),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12.r),
+                                      borderSide: const BorderSide(color: MyTheme.primaryColor, width: 2),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12.r),
+                                      borderSide: const BorderSide(color: MyTheme.primaryColor, width: 2),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12.r),
+                                      borderSide: const BorderSide(color: MyTheme.primaryColor, width: 2),
+                                    ),
+                                  ),
+                                  items: _paymentPurposes.map((String purpose) {
+                                    return DropdownMenuItem<String>(
+                                      value: purpose,
+                                      child: Text(purpose,style: TextStyle(color: Theme.brightnessOf(context) == Brightness.light ? Colors.black : Colors.white),),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      _selectedPurpose = newValue;
+                                    });
+                                  },
+                                ),
+                                if (_selectedPurpose == 'Other') ...[
+                                  SizedBox(height: 16.h),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Specify Purpose',
+                                        style: TextStyle(
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      SizedBox(height: 8.h),
+                                      AppTextFormField(
+                                        controller: _paymentPurposeController,
+                                        validator: _validatePaymentPurpose,
+                                        helpText: 'Enter payment purpose',
+                                        prefixIcon: const Icon(Icons.account_balance_wallet),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ],
+                            ),
+
+                            SizedBox(height: 24.h),
+
+                            // Phone Number Field
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Phone Number',
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                SizedBox(height: 8.h),
+                                AppTextFormField(
+                                  controller: _phoneNumberController,
+                                  validator: _validatePhoneNumber,
+                                  helpText: '+92 300 1234567',
+                                  prefixIcon: const Icon(Icons.phone),
+                                ),
+                              ],
+                            ),
+
+                            SizedBox(height: 32.h),
+
+                            // Info Card
+                            Container(
+                              padding: EdgeInsets.all(16.w),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).scaffoldBackgroundColor,
+                                borderRadius: BorderRadius.circular(5.r),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                                    blurRadius: 5,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.info_outline,
+                                    color: MyTheme.primaryColor,
+                                    size: 20.sp,
+                                  ),
+                                  SizedBox(width: 12.w),
+                                  Expanded(
+                                    child: Text(
+                                      'Please ensure all details are correct. Account number should be verified with the bank.',
+                                      style: TextStyle(
+                                        fontSize: 12.sp,
+                                        color: MyTheme.primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
+                      ),
+                    ),
 
-                        SizedBox(height: 32.h),
-
-                        // Info Card
-                        Container(
-                          padding: EdgeInsets.all(16.w),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                            borderRadius: BorderRadius.circular(5.r),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
-                                blurRadius: 5,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
+                    // Continue Button
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(16.w),
+                      child: ElevatedButton(
+                        onPressed: _submitDetails,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: MyTheme.primaryColor,
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.r),
                           ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.info_outline,
-                                color: MyTheme.primaryColor,
-                                size: 20.sp,
-                              ),
-                              SizedBox(width: 12.w),
-                              Expanded(
-                                child: Text(
-                                  'Please ensure all details are correct. Account number should be verified with the bank.',
-                                  style: TextStyle(
-                                    fontSize: 12.sp,
-                                    color: MyTheme.primaryColor,
-                                  ),
-                                ),
-                              ),
-                            ],
+                          elevation: 2,
+                        ),
+                        child: Text(
+                          'Continue',
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // Continue Button
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(16.w),
-                  child: ElevatedButton(
-                    onPressed: _submitDetails,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: MyTheme.primaryColor,
-                      padding: EdgeInsets.symmetric(vertical: 16.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      elevation: 2,
-                    ),
-                    child: Text(
-                      'Continue',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          );
-        },
+              );
+            },
+          ),
+        ],
       ),
     );
   }
