@@ -6,8 +6,6 @@ import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:payfussion/services/payment_service.dart';
 import 'package:uuid/uuid.dart';
-
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/tax.dart';
 import '../../../../data/models/card/card_model.dart';
 import '../../../../data/models/notification/notification_model.dart';
@@ -21,6 +19,7 @@ import '../../../../logic/blocs/notification/notification_state.dart';
 import '../../../../logic/blocs/tickets/car/car_bloc.dart';
 import '../../../../logic/blocs/tickets/car/car_event.dart';
 import '../../../../logic/blocs/tickets/car/car_state.dart';
+import '../../../widgets/background_theme.dart';
 import '../../../widgets/custom_button.dart';
 
 
@@ -33,13 +32,14 @@ class RideBookingScreen extends StatefulWidget {
   State<RideBookingScreen> createState() => _RideBookingScreenState();
 }
 
-class _RideBookingScreenState extends State<RideBookingScreen> {
+class _RideBookingScreenState extends State<RideBookingScreen> with TickerProviderStateMixin{
   final _formKey = GlobalKey<FormState>();
   final _pickupController = TextEditingController();
   final _destinationController = TextEditingController();
   final _notesController = TextEditingController();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
+  late AnimationController _backgroundAnimationController;
 
   DateTime _selectedDateTime = DateTime.now().add(const Duration(minutes: 15));
   String _rideType = 'Now';
@@ -50,6 +50,10 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
   void initState() {
     super.initState();
     context.read<CardBloc>().add(LoadCards());
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   @override
@@ -59,6 +63,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
     _notesController.dispose();
     _nameController.dispose();
     _phoneController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -91,72 +96,79 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
           color: MyTheme.secondaryColor,
         ),
       ),
-      body: MultiBlocListener(
-        listeners: [
-          BlocListener<RideBookingBloc, RideBookingState>(
-            listener: (context, state) {
-              if (state is RideBookingSuccess) {
-                // Add notification when ride booking is successful
-                _addRideNotification(
-                  success: true,
-                );
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-                Navigator.of(context).popUntil((route) => route.isFirst);
-              } else if (state is RideBookingError) {
-                // Add notification when ride booking fails
-                _addRideNotification(
-                  success: false,
-                  errorMessage: state.message,
-                );
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
-            },
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
           ),
-          BlocListener<NotificationBloc, NotificationState>(
-            listener: (context, state) {
-              if (state is NotificationError) {
-                // Handle notification error silently or log it
-                print('Notification error: ${state.message}');
-              }
-            },
-          ),
-        ],
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildRideSummary(),
-                const SizedBox(height: 16),
-                _buildLocationDetails(),
-                const SizedBox(height: 16),
-                _buildRideOptions(),
-                const SizedBox(height: 16),
-                _buildPassengerDetails(),
-                const SizedBox(height: 16),
-                _buildPaymentMethod(),
-                const SizedBox(height: 16),
-                _buildFareEstimate(),
-                const SizedBox(height: 24),
-                _buildBookButton(),
-              ],
+          MultiBlocListener(
+            listeners: [
+              BlocListener<RideBookingBloc, RideBookingState>(
+                listener: (context, state) {
+                  if (state is RideBookingSuccess) {
+                    // Add notification when ride booking is successful
+                    _addRideNotification(
+                      success: true,
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.message),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  } else if (state is RideBookingError) {
+                    // Add notification when ride booking fails
+                    _addRideNotification(
+                      success: false,
+                      errorMessage: state.message,
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.message),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+              ),
+              BlocListener<NotificationBloc, NotificationState>(
+                listener: (context, state) {
+                  if (state is NotificationError) {
+                    // Handle notification error silently or log it
+                    print('Notification error: ${state.message}');
+                  }
+                },
+              ),
+            ],
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildRideSummary(),
+                    const SizedBox(height: 16),
+                    _buildLocationDetails(),
+                    const SizedBox(height: 16),
+                    _buildRideOptions(),
+                    const SizedBox(height: 16),
+                    _buildPassengerDetails(),
+                    const SizedBox(height: 16),
+                    _buildPaymentMethod(),
+                    const SizedBox(height: 16),
+                    _buildFareEstimate(),
+                    const SizedBox(height: 24),
+                    _buildBookButton(),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
