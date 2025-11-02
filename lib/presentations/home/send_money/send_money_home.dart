@@ -18,12 +18,34 @@ import '../../../data/repositories/recipient/recipient_repository.dart';
 import '../../../logic/blocs/recipient/recipient_bloc.dart';
 import '../../../logic/blocs/recipient/recipient_event.dart';
 import '../../../logic/blocs/recipient/recipient_state.dart';
+import '../../widgets/background_theme.dart';
 import 'add_recipient_screen.dart';
 
-class SendMoneyHome extends StatelessWidget {
+class SendMoneyHome extends StatefulWidget {
   const SendMoneyHome({super.key});
 
+  @override
+  State<SendMoneyHome> createState() => _SendMoneyHomeState();
+}
+
+class _SendMoneyHomeState extends State<SendMoneyHome> with TickerProviderStateMixin{
   String _userId() => FirebaseAuth.instance.currentUser?.uid ?? 'debugUser';
+  late AnimationController _backgroundAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _backgroundAnimationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +69,14 @@ class SendMoneyHome extends StatelessWidget {
             ),
           ],
         ),
-        body: const RecipientsList(),
+        body: Stack(
+          children: [
+            AnimatedBackground(
+              animationController: _backgroundAnimationController,
+            ),
+            const RecipientsList(),
+          ],
+        ),
       ),
     );
   }
