@@ -1,20 +1,41 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
-
-import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/theme.dart';
 import '../../../data/models/payment_request/payment_request_model.dart';
 import '../../../logic/blocs/payment_request/payment_request_bloc.dart';
 import '../../../logic/blocs/payment_request/payment_request_event.dart';
 import '../../../logic/blocs/payment_request/payment_request_state.dart';
+import '../../widgets/background_theme.dart';
 import 'receive_money_payment_screen.dart';
 
-class ReceiveMoneyScreen extends StatelessWidget {
+class ReceiveMoneyScreen extends StatefulWidget {
   const ReceiveMoneyScreen({super.key});
+
+  @override
+  State<ReceiveMoneyScreen> createState() => _ReceiveMoneyScreenState();
+}
+
+class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> with TickerProviderStateMixin{
+
+  late AnimationController _backgroundAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _backgroundAnimationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +73,16 @@ class ReceiveMoneyScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: const SafeArea(child: PaymentRequestsList()),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            AnimatedBackground(
+              animationController: _backgroundAnimationController,
+            ),
+            PaymentRequestsList(),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -178,7 +208,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PaymentRequestBloc, PaymentRequestState>(
-      builder: (context, state) {
+      builder: (BuildContext context, state) {
         return Column(
           children: [
             SlideTransition(
