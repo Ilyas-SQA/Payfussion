@@ -4,18 +4,19 @@ import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
 import '../../../core/constants/fonts.dart';
+import '../../widgets/background_theme.dart';
 
 class CashbackAndRefundsScreen extends StatefulWidget {
   const CashbackAndRefundsScreen({super.key});
 
   @override
-  State<CashbackAndRefundsScreen> createState() =>
-      _CashbackAndRefundsScreenState();
+  State<CashbackAndRefundsScreen> createState() => _CashbackAndRefundsScreenState();
 }
 
-class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen>
-    with SingleTickerProviderStateMixin {
+class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen> with TickerProviderStateMixin {
   late TabController _tabController;
+  late AnimationController _backgroundAnimationController;
+
 
   // --- Style Constants (consistent with your app) ---
   static const Color _primaryColor = Color(0xFF2D9CDB);
@@ -32,11 +33,16 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -46,26 +52,22 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Cashback & Refunds',
-          style: Font.montserratFont(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
         ),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Theme.of(context).scaffoldBackgroundColor,
           labelColor: Theme.of(context).secondaryHeaderColor,
           indicatorSize: TabBarIndicatorSize.tab,
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           indicator: BoxDecoration(
               color: MyTheme.primaryColor,
               borderRadius: BorderRadius.circular(10)
           ),
           dividerColor: Theme.of(context).scaffoldBackgroundColor,
           labelStyle: Font.montserratFont(
-            fontSize: 12,
+            fontSize: 10,
             fontWeight: FontWeight.bold,
           ),
           tabs: <Widget>[
@@ -87,8 +89,22 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildCashbackProgramTab(context),
-          _buildRefundsAndDisputesTab(context),
+          Stack(
+            children: [
+              AnimatedBackground(
+                animationController: _backgroundAnimationController,
+              ),
+              _buildCashbackProgramTab(context),
+            ],
+          ),
+          Stack(
+            children: [
+              AnimatedBackground(
+                animationController: _backgroundAnimationController,
+              ),
+              _buildRefundsAndDisputesTab(context),
+            ],
+          ),
         ],
       ),
     );
