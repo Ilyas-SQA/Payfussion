@@ -44,7 +44,7 @@ class _DataAndPermissionsScreenState extends State<DataAndPermissionsScreen> wit
   }
 
   Future<void> _updatePermissionStatus(List<Permission> permissions) async {
-    Map<Permission, PermissionStatus> statuses = {};
+    final Map<Permission, PermissionStatus> statuses = {};
     for (var permission in permissions) {
       statuses[permission] = await permission.status;
     }
