@@ -2,15 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
-
 import '../../../../data/models/tickets/flight_model.dart';
 import '../../../../logic/blocs/tickets/flight/flight_bloc.dart';
 import '../../../../logic/blocs/tickets/flight/flight_event.dart';
 import '../../../../logic/blocs/tickets/flight/flight_state.dart';
+import '../../../widgets/background_theme.dart';
 import 'flight_detail_screen.dart';
 
-class FlightListScreen extends StatelessWidget {
+class FlightListScreen extends StatefulWidget {
   const FlightListScreen({super.key});
+
+  @override
+  State<FlightListScreen> createState() => _FlightListScreenState();
+}
+
+class _FlightListScreenState extends State<FlightListScreen> with TickerProviderStateMixin{
+
+  late AnimationController _backgroundAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _backgroundAnimationController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,96 +51,103 @@ class FlightListScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: BlocBuilder<FlightBloc, FlightState>(
-        builder: (BuildContext context, FlightState state) {
-          if (state is FlightLoading) {
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Loading flights...'),
-                ],
-              ),
-            );
-          }
-
-          if (state is FlightError) {
-            return Center(
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TweenAnimationBuilder<double>(
-                      duration: const Duration(milliseconds: 500),
-                      tween: Tween(begin: 0.0, end: 1.0),
-                      builder: (context, value, child) {
-                        return Transform.scale(
-                          scale: value,
-                          child: Icon(
-                            Icons.error,
-                            size: 64,
-                            color: Colors.red.shade400,
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    FadeInWidget(
-                      delay: const Duration(milliseconds: 300),
-                      child: Text(
-                        state.message,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    FadeInWidget(
-                      delay: const Duration(milliseconds: 500),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          context.read<FlightBloc>().add(LoadFlights());
-                        },
-                        child: const Text('Retry'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-
-          if (state is FlightLoaded) {
-            return AnimatedList(
-              padding: const EdgeInsets.all(8),
-              initialItemCount: state.flights.length,
-              itemBuilder: (context, index, animation) {
-                if (index >= state.flights.length) return const SizedBox.shrink();
-
-                final FlightModel flight = state.flights[index];
-                return SlideTransition(
-                  position: animation.drive(
-                    Tween(begin: const Offset(1.0, 0.0), end: Offset.zero).chain(CurveTween(curve: Curves.easeOutQuart)),
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          BlocBuilder<FlightBloc, FlightState>(
+            builder: (BuildContext context, FlightState state) {
+              if (state is FlightLoading) {
+                return const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text('Loading flights...'),
+                    ],
                   ),
-                  child: FadeTransition(
-                    opacity: animation,
-                    child: AnimatedFlightCard(
-                      flight: flight,
-                      index: index,
+                );
+              }
+
+              if (state is FlightError) {
+                return Center(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TweenAnimationBuilder<double>(
+                          duration: const Duration(milliseconds: 500),
+                          tween: Tween(begin: 0.0, end: 1.0),
+                          builder: (context, value, child) {
+                            return Transform.scale(
+                              scale: value,
+                              child: Icon(
+                                Icons.error,
+                                size: 64,
+                                color: Colors.red.shade400,
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        FadeInWidget(
+                          delay: const Duration(milliseconds: 300),
+                          child: Text(
+                            state.message,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        FadeInWidget(
+                          delay: const Duration(milliseconds: 500),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              context.read<FlightBloc>().add(LoadFlights());
+                            },
+                            child: const Text('Retry'),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );
-              },
-            );
-          }
+              }
 
-          return const FadeInWidget(
-            child: Center(
-              child: Text('No flights available'),
-            ),
-          );
-        },
+              if (state is FlightLoaded) {
+                return AnimatedList(
+                  padding: const EdgeInsets.all(8),
+                  initialItemCount: state.flights.length,
+                  itemBuilder: (context, index, animation) {
+                    if (index >= state.flights.length) return const SizedBox.shrink();
+
+                    final FlightModel flight = state.flights[index];
+                    return SlideTransition(
+                      position: animation.drive(
+                        Tween(begin: const Offset(1.0, 0.0), end: Offset.zero).chain(CurveTween(curve: Curves.easeOutQuart)),
+                      ),
+                      child: FadeTransition(
+                        opacity: animation,
+                        child: AnimatedFlightCard(
+                          flight: flight,
+                          index: index,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }
+
+              return const FadeInWidget(
+                child: Center(
+                  child: Text('No flights available'),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
