@@ -6,6 +6,7 @@ import 'package:payfussion/core/theme/theme.dart';
 import '../../../../logic/blocs/tickets/car/car_bloc.dart';
 import '../../../../logic/blocs/tickets/car/car_event.dart';
 import '../../../../logic/blocs/tickets/car/car_state.dart';
+import '../../../widgets/background_theme.dart';
 import 'car_detail_screen.dart';
 
 class RideServiceListScreen extends StatefulWidget {
@@ -15,10 +16,10 @@ class RideServiceListScreen extends StatefulWidget {
   State<RideServiceListScreen> createState() => _RideServiceListScreenState();
 }
 
-class _RideServiceListScreenState extends State<RideServiceListScreen>
-    with TickerProviderStateMixin {
+class _RideServiceListScreenState extends State<RideServiceListScreen> with TickerProviderStateMixin {
   late AnimationController _controller;
   late AnimationController _refreshController;
+  late AnimationController _backgroundAnimationController;
 
   @override
   void initState() {
@@ -32,12 +33,17 @@ class _RideServiceListScreenState extends State<RideServiceListScreen>
       vsync: this,
     );
     _controller.forward();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   @override
   void dispose() {
     _controller.dispose();
     _refreshController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -73,114 +79,121 @@ class _RideServiceListScreenState extends State<RideServiceListScreen>
         ],
         iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
-      body: BlocBuilder<RideBloc, RideState>(
-        builder: (context, state) {
-          if (state is RideLoading) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TweenAnimationBuilder<double>(
-                    tween: Tween(begin: 0.8, end: 1.2),
-                    duration: const Duration(milliseconds: 1000),
-                    builder: (context, scale, child) {
-                      return Transform.scale(
-                        scale: scale,
-                        child: const CircularProgressIndicator(),
-                      );
-                    },
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          BlocBuilder<RideBloc, RideState>(
+            builder: (BuildContext context, RideState state) {
+              if (state is RideLoading) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TweenAnimationBuilder<double>(
+                        tween: Tween(begin: 0.8, end: 1.2),
+                        duration: const Duration(milliseconds: 1000),
+                        builder: (context, scale, child) {
+                          return Transform.scale(
+                            scale: scale,
+                            child: const CircularProgressIndicator(),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      FadeTransition(
+                        opacity: _controller,
+                        child: const Text('Loading rides...'),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                  FadeTransition(
-                    opacity: _controller,
-                    child: const Text('Loading rides...'),
+                );
+              }
+
+              if (state is RideError) {
+                return FadeTransition(
+                  opacity: _controller,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TweenAnimationBuilder<double>(
+                          tween: Tween(begin: 0, end: 1),
+                          duration: const Duration(milliseconds: 600),
+                          builder: (context, scale, child) {
+                            return Transform.scale(
+                              scale: scale,
+                              child: Icon(Icons.error, size: 64, color: Colors.red.shade400),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        Text(state.message, textAlign: TextAlign.center),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () => context.read<RideBloc>().add(LoadRides()),
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
-            );
-          }
+                );
+              }
 
-          if (state is RideError) {
-            return FadeTransition(
-              opacity: _controller,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TweenAnimationBuilder<double>(
-                      tween: Tween(begin: 0, end: 1),
-                      duration: const Duration(milliseconds: 600),
-                      builder: (context, scale, child) {
-                        return Transform.scale(
-                          scale: scale,
-                          child: Icon(Icons.error, size: 64, color: Colors.red.shade400),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    Text(state.message, textAlign: TextAlign.center),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () => context.read<RideBloc>().add(LoadRides()),
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-
-          if (state is RideLoaded) {
-            return FadeTransition(
-              opacity: _controller,
-              child: ListView.builder(
-                padding: const EdgeInsets.all(8),
-                itemCount: state.rides.length,
-                itemBuilder: (context, index) {
-                  final ride = state.rides[index];
-                  return TweenAnimationBuilder<double>(
-                    tween: Tween(begin: 0, end: 1),
-                    duration: Duration(milliseconds: 300 + (index * 80)),
-                    curve: Curves.easeOutBack,
-                    builder: (context, value, child) {
-                      final clampedValue = value.clamp(0.0, 1.0);
-                      return Transform.translate(
-                        offset: Offset(0, 30 * (1 - clampedValue)),
-                        child: Opacity(
-                          opacity: clampedValue,
-                          child: AnimatedRideCard(
-                            ride: ride,
-                            index: index,
-                            onTap: () => Navigator.push(
-                              context,
-                              PageRouteBuilder(
-                                pageBuilder: (context, animation, _) => RideDetailScreen(ride: ride),
-                                transitionsBuilder: (context, animation, _, child) {
-                                  return SlideTransition(
-                                    position: Tween<Offset>(
-                                      begin: const Offset(1.0, 0.0),
-                                      end: Offset.zero,
-                                    ).animate(animation),
-                                    child: child,
-                                  );
-                                },
+              if (state is RideLoaded) {
+                return FadeTransition(
+                  opacity: _controller,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(8),
+                    itemCount: state.rides.length,
+                    itemBuilder: (context, index) {
+                      final ride = state.rides[index];
+                      return TweenAnimationBuilder<double>(
+                        tween: Tween(begin: 0, end: 1),
+                        duration: Duration(milliseconds: 300 + (index * 80)),
+                        curve: Curves.easeOutBack,
+                        builder: (context, value, child) {
+                          final clampedValue = value.clamp(0.0, 1.0);
+                          return Transform.translate(
+                            offset: Offset(0, 30 * (1 - clampedValue)),
+                            child: Opacity(
+                              opacity: clampedValue,
+                              child: AnimatedRideCard(
+                                ride: ride,
+                                index: index,
+                                onTap: () => Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (context, animation, _) => RideDetailScreen(ride: ride),
+                                    transitionsBuilder: (context, animation, _, child) {
+                                      return SlideTransition(
+                                        position: Tween<Offset>(
+                                          begin: const Offset(1.0, 0.0),
+                                          end: Offset.zero,
+                                        ).animate(animation),
+                                        child: child,
+                                      );
+                                    },
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       );
                     },
-                  );
-                },
-              ),
-            );
-          }
+                  ),
+                );
+              }
 
-          return FadeTransition(
-            opacity: _controller,
-            child: const Center(child: Text('No rides available')),
-          );
-        },
+              return FadeTransition(
+                opacity: _controller,
+                child: const Center(child: Text('No rides available')),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
