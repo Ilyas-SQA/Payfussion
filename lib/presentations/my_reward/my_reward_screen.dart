@@ -45,6 +45,7 @@ class _MyRewardScreenState extends State<MyRewardScreen> with TickerProviderStat
             fontWeight: FontWeight.w600,
           ),
         ),
+        iconTheme: IconThemeData(color: MyTheme.secondaryColor),
       ),
       body: Stack(
         children: [
@@ -109,7 +110,7 @@ class _MyRewardScreenState extends State<MyRewardScreen> with TickerProviderStat
                         height: 80,
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [MyTheme.primaryColor, MyTheme.primaryColor],
+                            colors: [MyTheme.secondaryColor, MyTheme.secondaryColor],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -155,7 +156,7 @@ class _MyRewardScreenState extends State<MyRewardScreen> with TickerProviderStat
                 _buildRewardItem(
                   context,
                   icon: Icons.local_offer,
-                  iconColor: MyTheme.primaryColor,
+                  iconColor: MyTheme.secondaryColor,
                   title: 'Vouchers',
                   subtitle: 'Enjoy amazing rewards',
                   iconBg: MyTheme.primaryColor.withOpacity(0.1),
@@ -168,7 +169,7 @@ class _MyRewardScreenState extends State<MyRewardScreen> with TickerProviderStat
                 _buildRewardItem(
                   context,
                   icon: Icons.monetization_on,
-                  iconColor: MyTheme.primaryColor,
+                  iconColor: MyTheme.secondaryColor,
                   title: 'Rs 1 Game',
                   subtitle: 'Perform Rs. 1 transaction and a chance to win',
                   iconBg: MyTheme.primaryColor.withOpacity(0.1),
@@ -181,7 +182,7 @@ class _MyRewardScreenState extends State<MyRewardScreen> with TickerProviderStat
                 _buildRewardItem(
                   context,
                   icon: Icons.savings,
-                  iconColor: MyTheme.primaryColor,
+                  iconColor: MyTheme.secondaryColor,
                   title: 'Savings',
                   subtitle: 'Earn up to 10.5 % profit daily',
                   iconBg: MyTheme.primaryColor.withOpacity(0.1),
@@ -194,7 +195,7 @@ class _MyRewardScreenState extends State<MyRewardScreen> with TickerProviderStat
                 _buildRewardItem(
                   context,
                   icon: Icons.person_add,
-                  iconColor: MyTheme.primaryColor,
+                  iconColor: MyTheme.secondaryColor,
                   title: 'Invite & Earn',
                   subtitle: 'Invite your friend to register on the Easypaisa app',
                   iconBg: MyTheme.primaryColor.withOpacity(0.1),
@@ -207,7 +208,7 @@ class _MyRewardScreenState extends State<MyRewardScreen> with TickerProviderStat
                 _buildRewardItem(
                   context,
                   icon: Icons.emoji_events,
-                  iconColor: MyTheme.primaryColor,
+                  iconColor: MyTheme.secondaryColor,
                   title: 'Goal & Rewards',
                   subtitle: 'Complete goals and earn exiting rewards',
                   iconBg: MyTheme.primaryColor.withOpacity(0.1),
@@ -220,7 +221,7 @@ class _MyRewardScreenState extends State<MyRewardScreen> with TickerProviderStat
                 _buildRewardItem(
                   context,
                   icon: Icons.card_giftcard,
-                  iconColor: MyTheme.primaryColor,
+                  iconColor: MyTheme.secondaryColor,
                   title: 'Enter & Win',
                   subtitle: 'Enter lucky code and win cash rewards',
                   iconBg: MyTheme.primaryColor.withOpacity(0.1),
@@ -292,7 +293,7 @@ class _MyRewardScreenState extends State<MyRewardScreen> with TickerProviderStat
             ),
             const Icon(
               Icons.arrow_forward_ios,
-              color: MyTheme.primaryColor,
+              color: MyTheme.secondaryColor,
               size: 16,
             ),
           ],
