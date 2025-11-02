@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:payfussion/presentations/home/receive_money/receive_money_payment_form.dart';
 import 'package:provider/provider.dart';
-
-import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/image_url.dart';
 import '../../../core/theme/theme.dart';
 import '../../../data/models/payment/contact_modal.dart';
 import '../../../data/models/payment/payment_account_modal.dart';
 import '../../../services/biometric_service.dart';
 import '../../payment_strings.dart';
+import '../../widgets/background_theme.dart';
 
 class ReceiveMoneyPaymentProvider extends ChangeNotifier {
   double _amount = 0.0;
@@ -292,8 +291,30 @@ class ReceiveMoneyPaymentProvider extends ChangeNotifier {
   }
 }
 
-class ReceiveMoneyPaymentScreen extends StatelessWidget {
+class ReceiveMoneyPaymentScreen extends StatefulWidget {
   const ReceiveMoneyPaymentScreen({super.key});
+
+  @override
+  State<ReceiveMoneyPaymentScreen> createState() => _ReceiveMoneyPaymentScreenState();
+}
+
+class _ReceiveMoneyPaymentScreenState extends State<ReceiveMoneyPaymentScreen> with TickerProviderStateMixin{
+  late AnimationController _backgroundAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _backgroundAnimationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -311,12 +332,19 @@ class ReceiveMoneyPaymentScreen extends StatelessWidget {
               Navigator.of(context).pop();
             },
           ),
-          title: Text(
+          title: const Text(
             ReceiveMoneyPaymentStrings.paymentScreen,
             semanticsLabel: 'Request Payment Screen',
           ),
         ),
-        body: ReceiveMoneyPaymentForm(),
+        body: Stack(
+          children: [
+            AnimatedBackground(
+              animationController: _backgroundAnimationController,
+            ),
+            ReceiveMoneyPaymentForm(),
+          ],
+        ),
       ),
     );
   }
