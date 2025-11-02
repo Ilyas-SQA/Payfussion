@@ -4,6 +4,7 @@ import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
 
 import '../../../../data/models/tickets/flight_model.dart';
+import '../../../widgets/background_theme.dart';
 import 'flight_payment_screen.dart';
 
 class FlightDetailScreen extends StatefulWidget {
@@ -20,7 +21,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
   late AnimationController _buttonController;
   late AnimationController _routeController;
   late AnimationController _priceController;
-
+  late AnimationController _backgroundAnimationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _scaleAnimation;
@@ -30,7 +31,10 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
   @override
   void initState() {
     super.initState();
-
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
     _mainController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -105,6 +109,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
     _buttonController.dispose();
     _routeController.dispose();
     _priceController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -129,244 +134,251 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
         ),
         iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: AnimatedBuilder(
-          animation: _fadeAnimation,
-          builder: (BuildContext context, Widget? child) {
-            return FadeTransition(
-              opacity: _fadeAnimation,
-              child: SlideTransition(
-                position: _slideAnimation,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Main flight info card with hero animation
-                    Hero(
-                      tag: "flight_${widget.flight.flightNumber}",
-                      child: StaggeredAnimationCard(
-                        delay: const Duration(milliseconds: 100),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                            borderRadius: BorderRadius.circular(5.r),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
-                                blurRadius: 5,
-                                offset: const Offset(0, 4),
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: AnimatedBuilder(
+              animation: _fadeAnimation,
+              builder: (BuildContext context, Widget? child) {
+                return FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: SlideTransition(
+                    position: _slideAnimation,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Main flight info card with hero animation
+                        Hero(
+                          tag: "flight_${widget.flight.flightNumber}",
+                          child: StaggeredAnimationCard(
+                            delay: const Duration(milliseconds: 100),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).scaffoldBackgroundColor,
+                                borderRadius: BorderRadius.circular(5.r),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                                    blurRadius: 5,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
+                              child: Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    TweenAnimationBuilder<double>(
-                                      duration: const Duration(milliseconds: 800),
-                                      tween: Tween(begin: 0.0, end: 1.0),
-                                      builder: (context, value, child) {
-                                        return Transform.rotate(
-                                          angle: value * 2 * 3.14159,
-                                          child: Transform.scale(
-                                            scale: 0.8 + (value * 0.2),
-                                            child: const Icon(
-                                              Icons.flight,
-                                              size: 32,
-                                              color: MyTheme.secondaryColor,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          AnimatedTextReveal(
-                                            text: widget.flight.airline,
-                                            style: const TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            delay: const Duration(milliseconds: 300),
-                                          ),
-                                          AnimatedTextReveal(
-                                            text: "Flight ${widget.flight.flightNumber}",
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                            ),
-                                            delay: const Duration(milliseconds: 500),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          DelayedAnimation(
-                                            delay: const Duration(milliseconds: 700),
-                                            child: AnimatedContainer(
-                                              duration: const Duration(milliseconds: 300),
-                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                              decoration: BoxDecoration(
-                                                color: Theme.of(context).scaffoldBackgroundColor,
-                                                borderRadius: BorderRadius.circular(5.r),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
-                                                    blurRadius: 5,
-                                                    offset: const Offset(0, 4),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: Text(
-                                                widget.flight.flightType,
-                                                style: const TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w500,
+                                    Row(
+                                      children: [
+                                        TweenAnimationBuilder<double>(
+                                          duration: const Duration(milliseconds: 800),
+                                          tween: Tween(begin: 0.0, end: 1.0),
+                                          builder: (context, value, child) {
+                                            return Transform.rotate(
+                                              angle: value * 2 * 3.14159,
+                                              child: Transform.scale(
+                                                scale: 0.8 + (value * 0.2),
+                                                child: const Icon(
+                                                  Icons.flight,
+                                                  size: 32,
+                                                  color: MyTheme.secondaryColor,
                                                 ),
                                               ),
+                                            );
+                                          },
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              AnimatedTextReveal(
+                                                text: widget.flight.airline,
+                                                style: const TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                                delay: const Duration(milliseconds: 300),
+                                              ),
+                                              AnimatedTextReveal(
+                                                text: "Flight ${widget.flight.flightNumber}",
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                ),
+                                                delay: const Duration(milliseconds: 500),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              DelayedAnimation(
+                                                delay: const Duration(milliseconds: 700),
+                                                child: AnimatedContainer(
+                                                  duration: const Duration(milliseconds: 300),
+                                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                  decoration: BoxDecoration(
+                                                    color: Theme.of(context).scaffoldBackgroundColor,
+                                                    borderRadius: BorderRadius.circular(5.r),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                                                        blurRadius: 5,
+                                                        offset: const Offset(0, 4),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  child: Text(
+                                                    widget.flight.flightType,
+                                                    style: const TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight: FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 16),
+                                    _buildAnimatedFlightRoute(),
+                                    const SizedBox(height: 16),
+                                    ..._buildAnimatedDetailRows(),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Amenities section
+                        if (widget.flight.amenities.isNotEmpty) ...[
+                          StaggeredAnimationCard(
+                            delay: const Duration(milliseconds: 600),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).scaffoldBackgroundColor,
+                                borderRadius: BorderRadius.circular(5.r),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                                    blurRadius: 5,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const AnimatedTextReveal(
+                                      text: "Amenities",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      delay: Duration(milliseconds: 700),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    ...widget.flight.amenities.asMap().entries.map(
+                                          (entry) => DelayedAnimation(
+                                        delay: Duration(milliseconds: 800 + (entry.key * 100)),
+                                        child: SlideInAnimation(
+                                          direction: SlideDirection.left,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(vertical: 2),
+                                            child: Row(
+                                              children: [
+                                                TweenAnimationBuilder<double>(
+                                                  duration: Duration(milliseconds: 300 + (entry.key * 50)),
+                                                  tween: Tween(begin: 0.0, end: 1.0),
+                                                  builder: (BuildContext context, double value, Widget? child) {
+                                                    return Transform.scale(
+                                                      scale: value,
+                                                      child: const Icon(
+                                                        Icons.check,
+                                                        size: 16,
+                                                        color: Colors.green,
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Text(entry.value),
+                                              ],
                                             ),
                                           ),
-                                        ],
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 16),
-                                _buildAnimatedFlightRoute(),
-                                const SizedBox(height: 16),
-                                ..._buildAnimatedDetailRows(),
-                              ],
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
+                          const SizedBox(height: 16),
+                        ],
 
-                    // Amenities section
-                    if (widget.flight.amenities.isNotEmpty) ...[
-                      StaggeredAnimationCard(
-                        delay: const Duration(milliseconds: 600),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                            borderRadius: BorderRadius.circular(5.r),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
-                                blurRadius: 5,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const AnimatedTextReveal(
-                                  text: "Amenities",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  delay: Duration(milliseconds: 700),
-                                ),
-                                const SizedBox(height: 8),
-                                ...widget.flight.amenities.asMap().entries.map(
-                                      (entry) => DelayedAnimation(
-                                    delay: Duration(milliseconds: 800 + (entry.key * 100)),
-                                    child: SlideInAnimation(
-                                      direction: SlideDirection.left,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 2),
-                                        child: Row(
-                                          children: [
-                                            TweenAnimationBuilder<double>(
-                                              duration: Duration(milliseconds: 300 + (entry.key * 50)),
-                                              tween: Tween(begin: 0.0, end: 1.0),
-                                              builder: (BuildContext context, double value, Widget? child) {
-                                                return Transform.scale(
-                                                  scale: value,
-                                                  child: const Icon(
-                                                    Icons.check,
-                                                    size: 16,
-                                                    color: Colors.green,
+                        // Book now button with pulse animation
+                        DelayedAnimation(
+                          delay: const Duration(milliseconds: 1000),
+                          child: AnimatedBuilder(
+                            animation: _scaleAnimation,
+                            builder: (context, child) {
+                              return Transform.scale(
+                                scale: _scaleAnimation.value,
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 300),
+                                    child: AppButton(
+                                      onTap: () {
+                                        _buttonController.forward().then((_) {
+                                          _buttonController.reverse();
+                                        });
+
+                                        Navigator.push(
+                                          context,
+                                          PageRouteBuilder(
+                                            pageBuilder: (context, animation, secondaryAnimation) =>
+                                                FlightPaymentScreen(flight: widget.flight),
+                                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                              return FadeTransition(
+                                                opacity: animation,
+                                                child: SlideTransition(
+                                                  position: animation.drive(
+                                                    Tween(begin: const Offset(1.0, 0.0), end: Offset.zero).chain(CurveTween(curve: Curves.easeOutCubic)),
                                                   ),
-                                                );
-                                              },
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Text(entry.value),
-                                          ],
-                                        ),
-                                      ),
+                                                  child: child,
+                                                ),
+                                              );
+                                            },
+                                            transitionDuration: const Duration(milliseconds: 400),
+                                          ),
+                                        );
+                                      },
+                                      color: MyTheme.secondaryColor,
+                                      text: "Book Now",
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
+                              );
+                            },
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-
-                    // Book now button with pulse animation
-                    DelayedAnimation(
-                      delay: const Duration(milliseconds: 1000),
-                      child: AnimatedBuilder(
-                        animation: _scaleAnimation,
-                        builder: (context, child) {
-                          return Transform.scale(
-                            scale: _scaleAnimation.value,
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 300),
-                                child: AppButton(
-                                  onTap: () {
-                                    _buttonController.forward().then((_) {
-                                      _buttonController.reverse();
-                                    });
-
-                                    Navigator.push(
-                                      context,
-                                      PageRouteBuilder(
-                                        pageBuilder: (context, animation, secondaryAnimation) =>
-                                            FlightPaymentScreen(flight: widget.flight),
-                                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                                          return FadeTransition(
-                                            opacity: animation,
-                                            child: SlideTransition(
-                                              position: animation.drive(
-                                                Tween(begin: const Offset(1.0, 0.0), end: Offset.zero).chain(CurveTween(curve: Curves.easeOutCubic)),
-                                              ),
-                                              child: child,
-                                            ),
-                                          );
-                                        },
-                                        transitionDuration: const Duration(milliseconds: 400),
-                                      ),
-                                    );
-                                  },
-                                  color: MyTheme.secondaryColor,
-                                  text: "Book Now",
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
