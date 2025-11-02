@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import '../../../../data/models/tickets/car_model.dart';
-import '../../../widgets/custom_button.dart';
+import '../../../widgets/background_theme.dart';
 import 'car_payment_screen.dart';
 
 class RideDetailScreen extends StatefulWidget {
@@ -15,9 +15,9 @@ class RideDetailScreen extends StatefulWidget {
   State<RideDetailScreen> createState() => _RideDetailScreenState();
 }
 
-class _RideDetailScreenState extends State<RideDetailScreen>
-    with TickerProviderStateMixin {
+class _RideDetailScreenState extends State<RideDetailScreen> with TickerProviderStateMixin {
   late AnimationController _controller;
+  late AnimationController _backgroundAnimationController;
   late AnimationController _pulseController;
 
   @override
@@ -31,7 +31,10 @@ class _RideDetailScreenState extends State<RideDetailScreen>
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
-
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
     _controller.forward();
     if (widget.ride.isAvailable) {
       _pulseController.repeat(reverse: true);
@@ -42,6 +45,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
   void dispose() {
     _controller.dispose();
     _pulseController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -61,93 +65,100 @@ class _RideDetailScreenState extends State<RideDetailScreen>
         ),
         iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
-      body: FadeTransition(
-        opacity: _controller,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Driver Info Card
-              TweenAnimationBuilder<double>(
-                tween: Tween(begin: 0, end: 1),
-                duration: const Duration(milliseconds: 600),
-                curve: Curves.easeOutBack,
-                builder: (context, value, child) {
-                  final clampedValue = value.clamp(0.0, 1.0);
-                  return Transform.translate(
-                    offset: Offset(0, 30 * (1 - clampedValue)),
-                    child: Transform.scale(
-                      scale: 0.9 + (0.1 * clampedValue),
-                      child: Opacity(
-                        opacity: clampedValue,
-                        child: _buildDriverCard(),
-                      ),
-                    ),
-                  );
-                },
-              ),
-
-              const SizedBox(height: 20),
-
-              // Service Areas Card
-              TweenAnimationBuilder<double>(
-                tween: Tween(begin: 0, end: 1),
-                duration: const Duration(milliseconds: 800),
-                curve: Curves.easeOutBack,
-                builder: (context, value, child) {
-                  final clampedValue = value.clamp(0.0, 1.0);
-                  return Transform.translate(
-                    offset: Offset(0, 30 * (1 - clampedValue)),
-                    child: Opacity(
-                      opacity: clampedValue,
-                      child: _buildServiceAreasCard(),
-                    ),
-                  );
-                },
-              ),
-
-              const SizedBox(height: 16),
-
-              // Special Services Card
-              if (widget.ride.specialServices.isNotEmpty) ...[
-                TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 0, end: 1),
-                  duration: const Duration(milliseconds: 1000),
-                  curve: Curves.easeOutBack,
-                  builder: (context, value, child) {
-                    final double clampedValue = value.clamp(0.0, 1.0);
-                    return Transform.translate(
-                      offset: Offset(0, 30 * (1 - clampedValue)),
-                      child: Opacity(
-                        opacity: clampedValue,
-                        child: _buildSpecialServicesCard(),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 16),
-              ],
-
-              // Book Button
-              TweenAnimationBuilder<double>(
-                tween: Tween(begin: 0, end: 1),
-                duration: const Duration(milliseconds: 1200),
-                curve: Curves.elasticOut,
-                builder: (context, value, child) {
-                  final clampedValue = value.clamp(0.0, 1.0);
-                  return Transform.translate(
-                    offset: Offset(0, 50 * (1 - clampedValue)),
-                    child: Opacity(
-                      opacity: clampedValue,
-                      child: _buildBookButton(),
-                    ),
-                  );
-                },
-              ),
-            ],
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
           ),
-        ),
+          FadeTransition(
+            opacity: _controller,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Driver Info Card
+                  TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0, end: 1),
+                    duration: const Duration(milliseconds: 600),
+                    curve: Curves.easeOutBack,
+                    builder: (context, value, child) {
+                      final clampedValue = value.clamp(0.0, 1.0);
+                      return Transform.translate(
+                        offset: Offset(0, 30 * (1 - clampedValue)),
+                        child: Transform.scale(
+                          scale: 0.9 + (0.1 * clampedValue),
+                          child: Opacity(
+                            opacity: clampedValue,
+                            child: _buildDriverCard(),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Service Areas Card
+                  TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0, end: 1),
+                    duration: const Duration(milliseconds: 800),
+                    curve: Curves.easeOutBack,
+                    builder: (context, value, child) {
+                      final clampedValue = value.clamp(0.0, 1.0);
+                      return Transform.translate(
+                        offset: Offset(0, 30 * (1 - clampedValue)),
+                        child: Opacity(
+                          opacity: clampedValue,
+                          child: _buildServiceAreasCard(),
+                        ),
+                      );
+                    },
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Special Services Card
+                  if (widget.ride.specialServices.isNotEmpty) ...[
+                    TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 0, end: 1),
+                      duration: const Duration(milliseconds: 1000),
+                      curve: Curves.easeOutBack,
+                      builder: (context, value, child) {
+                        final double clampedValue = value.clamp(0.0, 1.0);
+                        return Transform.translate(
+                          offset: Offset(0, 30 * (1 - clampedValue)),
+                          child: Opacity(
+                            opacity: clampedValue,
+                            child: _buildSpecialServicesCard(),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+
+                  // Book Button
+                  TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0, end: 1),
+                    duration: const Duration(milliseconds: 1200),
+                    curve: Curves.elasticOut,
+                    builder: (context, value, child) {
+                      final clampedValue = value.clamp(0.0, 1.0);
+                      return Transform.translate(
+                        offset: Offset(0, 50 * (1 - clampedValue)),
+                        child: Opacity(
+                          opacity: clampedValue,
+                          child: _buildBookButton(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
