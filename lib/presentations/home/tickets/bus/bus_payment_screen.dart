@@ -6,8 +6,6 @@ import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:payfussion/services/payment_service.dart';
 import 'package:uuid/uuid.dart';
-
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/tax.dart';
 import '../../../../data/models/card/card_model.dart';
 import '../../../../data/models/notification/notification_model.dart';
@@ -21,6 +19,7 @@ import '../../../../logic/blocs/notification/notification_state.dart';
 import '../../../../logic/blocs/tickets/bus/bus_bloc.dart';
 import '../../../../logic/blocs/tickets/bus/bus_event.dart';
 import '../../../../logic/blocs/tickets/bus/bus_state.dart';
+import '../../../widgets/background_theme.dart';
 import '../../../widgets/custom_button.dart';
 
 
@@ -33,11 +32,12 @@ class BusPaymentScreen extends StatefulWidget {
   State<BusPaymentScreen> createState() => _BusPaymentScreenState();
 }
 
-class _BusPaymentScreenState extends State<BusPaymentScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
+class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProviderStateMixin {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  late AnimationController _backgroundAnimationController;
 
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
   int _numberOfPassengers = 1;
@@ -48,6 +48,10 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> {
   void initState() {
     super.initState();
     context.read<CardBloc>().add(LoadCards());
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   @override
@@ -55,6 +59,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -86,70 +91,77 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> {
         title: const Text("Book Bus Ticket"),
         iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
-      body: MultiBlocListener(
-        listeners: [
-          BlocListener<BusBookingBloc, BusBookingState>(
-            listener: (context, state) {
-              if (state is BusBookingSuccess) {
-                // Add notification when booking is successful
-                _addTicketNotification(
-                  success: true,
-                );
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-                Navigator.of(context).popUntil((route) => route.isFirst);
-              } else if (state is BusBookingError) {
-                // Add notification when booking fails
-                _addTicketNotification(
-                  success: false,
-                  errorMessage: state.message,
-                );
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
-            },
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
           ),
-          BlocListener<NotificationBloc, NotificationState>(
-            listener: (context, state) {
-              if (state is NotificationError) {
-                // Handle notification error silently or log it
-                print('Notification error: ${state.message}');
-              }
-            },
-          ),
-        ],
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildTripSummary(),
-                const SizedBox(height: 16),
-                _buildPassengerDetails(),
-                const SizedBox(height: 16),
-                _buildTravelOptions(),
-                const SizedBox(height: 16),
-                _buildPaymentMethod(),
-                const SizedBox(height: 16),
-                _buildFareBreakdown(),
-                const SizedBox(height: 24),
-                _buildBookButton(),
-              ],
+          MultiBlocListener(
+            listeners: [
+              BlocListener<BusBookingBloc, BusBookingState>(
+                listener: (context, state) {
+                  if (state is BusBookingSuccess) {
+                    // Add notification when booking is successful
+                    _addTicketNotification(
+                      success: true,
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.message),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  } else if (state is BusBookingError) {
+                    // Add notification when booking fails
+                    _addTicketNotification(
+                      success: false,
+                      errorMessage: state.message,
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.message),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+              ),
+              BlocListener<NotificationBloc, NotificationState>(
+                listener: (context, state) {
+                  if (state is NotificationError) {
+                    // Handle notification error silently or log it
+                    print('Notification error: ${state.message}');
+                  }
+                },
+              ),
+            ],
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildTripSummary(),
+                    const SizedBox(height: 16),
+                    _buildPassengerDetails(),
+                    const SizedBox(height: 16),
+                    _buildTravelOptions(),
+                    const SizedBox(height: 16),
+                    _buildPaymentMethod(),
+                    const SizedBox(height: 16),
+                    _buildFareBreakdown(),
+                    const SizedBox(height: 24),
+                    _buildBookButton(),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
