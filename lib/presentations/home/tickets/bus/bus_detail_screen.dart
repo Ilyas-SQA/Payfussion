@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
-
 import '../../../../data/models/tickets/bus_model.dart';
-import '../../../widgets/custom_button.dart';
+import '../../../widgets/background_theme.dart';
 import 'bus_payment_screen.dart';
 
 class BusDetailScreen extends StatefulWidget {
@@ -21,7 +20,7 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
   late AnimationController _fadeController;
   late AnimationController _scaleController;
   late AnimationController _buttonController;
-
+  late AnimationController _backgroundAnimationController;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
@@ -30,7 +29,10 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
   @override
   void initState() {
     super.initState();
-
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
     _slideController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
@@ -101,6 +103,7 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
     _fadeController.dispose();
     _scaleController.dispose();
     _buttonController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -116,265 +119,272 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
         title: Text(widget.bus.companyName),
         iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SlideTransition(
-              position: _slideAnimation,
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: Hero(
-                  tag: 'bus_detail_${widget.bus.companyName}',
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 400),
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      borderRadius: BorderRadius.circular(5.r),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
-                          blurRadius: 5,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            ScaleTransition(
-                              scale: _scaleAnimation,
-                              child: const Icon(
-                                Icons.directions_bus,
-                                size: 32,
-                                color: MyTheme.secondaryColor,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  TweenAnimationBuilder<double>(
-                                    tween: Tween<double>(begin: 0.0, end: 1.0),
-                                    duration: const Duration(milliseconds: 600),
-                                    builder: (context, value, child) {
-                                      return Transform.translate(
-                                        offset: Offset(0, 20 * (1 - value)),
-                                        child: Opacity(
-                                          opacity: _safeOpacity(value),
-                                          child: Text(
-                                            widget.bus.companyName,
-                                            style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  AnimatedContainer(
-                                    duration: const Duration(milliseconds: 500),
-                                    margin: const EdgeInsets.only(top: 4),
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context).scaffoldBackgroundColor,
-                                      borderRadius: BorderRadius.circular(5.r),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
-                                          blurRadius: 5,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Text(
-                                      widget.bus.busType,
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SlideTransition(
+                  position: _slideAnimation,
+                  child: FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: Hero(
+                      tag: 'bus_detail_${widget.bus.companyName}',
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 400),
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                          borderRadius: BorderRadius.circular(5.r),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                              blurRadius: 5,
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20),
-                        ..._buildAnimatedDetailRows(),
-                      ],
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                ScaleTransition(
+                                  scale: _scaleAnimation,
+                                  child: const Icon(
+                                    Icons.directions_bus,
+                                    size: 32,
+                                    color: MyTheme.secondaryColor,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      TweenAnimationBuilder<double>(
+                                        tween: Tween<double>(begin: 0.0, end: 1.0),
+                                        duration: const Duration(milliseconds: 600),
+                                        builder: (context, value, child) {
+                                          return Transform.translate(
+                                            offset: Offset(0, 20 * (1 - value)),
+                                            child: Opacity(
+                                              opacity: _safeOpacity(value),
+                                              child: Text(
+                                                widget.bus.companyName,
+                                                style: const TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      AnimatedContainer(
+                                        duration: const Duration(milliseconds: 500),
+                                        margin: const EdgeInsets.only(top: 4),
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).scaffoldBackgroundColor,
+                                          borderRadius: BorderRadius.circular(5.r),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                                              blurRadius: 5,
+                                              offset: const Offset(0, 4),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Text(
+                                          widget.bus.busType,
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            ..._buildAnimatedDetailRows(),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-            // Description Card
-            if (widget.bus.description.isNotEmpty) ...[
-              _buildAnimatedCard(
-                delay: 400,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Description",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    TweenAnimationBuilder<double>(
-                      tween: Tween<double>(begin: 0.0, end: 1.0),
-                      duration: const Duration(milliseconds: 800),
-                      builder: (context, value, child) {
-                        return Opacity(
-                          opacity: _safeOpacity(value),
-                          child: Text(
-                            widget.bus.description,
-                            style: TextStyle(
-                              fontSize: 14,
-                              height: 1.5,
-                            ),
+                // Description Card
+                if (widget.bus.description.isNotEmpty) ...[
+                  _buildAnimatedCard(
+                    delay: 400,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Description",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-
-            // Amenities Card
-            if (widget.bus.amenities.isNotEmpty) ...[
-              _buildAnimatedCard(
-                delay: 600,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Amenities",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    ...widget.bus.amenities.asMap().entries.map(
-                          (entry) => TweenAnimationBuilder<double>(
-                        tween: Tween<double>(begin: 0.0, end: 1.0),
-                        duration: Duration(milliseconds: 600 + (entry.key * 100)),
-                        curve: Curves.easeOutBack,
-                        builder: (context, value, child) {
-                          return Transform.translate(
-                            offset: Offset(-50 * (1 - value), 0),
-                            child: Opacity(
+                        ),
+                        const SizedBox(height: 8),
+                        TweenAnimationBuilder<double>(
+                          tween: Tween<double>(begin: 0.0, end: 1.0),
+                          duration: const Duration(milliseconds: 800),
+                          builder: (context, value, child) {
+                            return Opacity(
                               opacity: _safeOpacity(value),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(4),
-                                      decoration: BoxDecoration(
-                                        color: Colors.green.shade100,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Icon(
-                                        Icons.check,
-                                        size: 16,
-                                        color: MyTheme.secondaryColor,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Text(
-                                        entry.value,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          height: 1.4,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                              child: Text(
+                                widget.bus.description,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  height: 1.5,
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
+                  ),
+                  const SizedBox(height: 16),
+                ],
 
-            // Book Now Button with Animation
-            TweenAnimationBuilder<double>(
-              tween: Tween<double>(begin: 0.0, end: 1.0),
-              duration: const Duration(milliseconds: 800),
-              curve: Curves.bounceOut,
-              builder: (context, value, child) {
-                return Transform.scale(
-                  scale: value.clamp(0.0, 1.0),
-                  child: AnimatedBuilder(
-                    animation: _buttonScaleAnimation,
-                    builder: (context, child) {
-                      return Transform.scale(
-                        scale: _buttonScaleAnimation.value.clamp(0.5, 1.0),
-                        child: GestureDetector(
-                          onTapDown: (_) => _buttonController.forward(),
-                          onTapUp: (_) => _buttonController.reverse(),
-                          onTapCancel: () => _buttonController.reverse(),
-                          child: AppButton(
-                            text: "Book Now",
-                            color: MyTheme.secondaryColor,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
-                                    return BusPaymentScreen(bus: widget.bus);
-                                  },
-                                  transitionDuration: const Duration(milliseconds: 400),
-                                  transitionsBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
-                                    return SlideTransition(
-                                      position: Tween<Offset>(
-                                        begin: const Offset(1.0, 0.0),
-                                        end: Offset.zero,
-                                      ).animate(CurvedAnimation(
-                                        parent: animation,
-                                        curve: Curves.easeOutCubic,
-                                      )),
-                                      child: FadeTransition(
-                                        opacity: animation,
-                                        child: child,
-                                      ),
-                                    );
-                                  },
+                // Amenities Card
+                if (widget.bus.amenities.isNotEmpty) ...[
+                  _buildAnimatedCard(
+                    delay: 600,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Amenities",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        ...widget.bus.amenities.asMap().entries.map(
+                              (entry) => TweenAnimationBuilder<double>(
+                            tween: Tween<double>(begin: 0.0, end: 1.0),
+                            duration: Duration(milliseconds: 600 + (entry.key * 100)),
+                            curve: Curves.easeOutBack,
+                            builder: (context, value, child) {
+                              return Transform.translate(
+                                offset: Offset(-50 * (1 - value), 0),
+                                child: Opacity(
+                                  opacity: _safeOpacity(value),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 4),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(4),
+                                          decoration: BoxDecoration(
+                                            color: Colors.green.shade100,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.check,
+                                            size: 16,
+                                            color: MyTheme.secondaryColor,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Text(
+                                            entry.value,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              height: 1.4,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               );
                             },
                           ),
                         ),
-                      );
-                    },
+                      ],
+                    ),
                   ),
-                );
-              },
+                  const SizedBox(height: 20),
+                ],
+
+                // Book Now Button with Animation
+                TweenAnimationBuilder<double>(
+                  tween: Tween<double>(begin: 0.0, end: 1.0),
+                  duration: const Duration(milliseconds: 800),
+                  curve: Curves.bounceOut,
+                  builder: (context, value, child) {
+                    return Transform.scale(
+                      scale: value.clamp(0.0, 1.0),
+                      child: AnimatedBuilder(
+                        animation: _buttonScaleAnimation,
+                        builder: (context, child) {
+                          return Transform.scale(
+                            scale: _buttonScaleAnimation.value.clamp(0.5, 1.0),
+                            child: GestureDetector(
+                              onTapDown: (_) => _buttonController.forward(),
+                              onTapUp: (_) => _buttonController.reverse(),
+                              onTapCancel: () => _buttonController.reverse(),
+                              child: AppButton(
+                                text: "Book Now",
+                                color: MyTheme.secondaryColor,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    PageRouteBuilder(
+                                      pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+                                        return BusPaymentScreen(bus: widget.bus);
+                                      },
+                                      transitionDuration: const Duration(milliseconds: 400),
+                                      transitionsBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+                                        return SlideTransition(
+                                          position: Tween<Offset>(
+                                            begin: const Offset(1.0, 0.0),
+                                            end: Offset.zero,
+                                          ).animate(CurvedAnimation(
+                                            parent: animation,
+                                            curve: Curves.easeOutCubic,
+                                          )),
+                                          child: FadeTransition(
+                                            opacity: animation,
+                                            child: child,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 20),
+              ],
             ),
-            const SizedBox(height: 20),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
