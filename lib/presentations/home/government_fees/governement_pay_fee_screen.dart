@@ -5,6 +5,8 @@ import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 
+import '../../widgets/background_theme.dart';
+
 class GovernmentPayFeeScreen extends StatefulWidget {
   const GovernmentPayFeeScreen({super.key});
 
@@ -25,6 +27,7 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
   late Animation<double> _headerFade;
   late Animation<Offset> _headerSlide;
   late Animation<double> _contentFade;
+  late AnimationController _backgroundAnimationController;
 
   List<GovernmentServiceSuggestion> filteredSuggestions = [];
   bool showSuggestions = false;
@@ -137,6 +140,10 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
     _initAnimations();
     _startAnimationSequence();
     _textIdController.addListener(_onTextChanged);
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   void _initAnimations() {
@@ -202,6 +209,7 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
     _contentController.dispose();
     _textIdController.dispose();
     _textIdFocusNode.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -225,89 +233,96 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
           color: MyTheme.secondaryColor,
         ),
       ),
-      body: FadeTransition(
-        opacity: _contentFade,
-        child: SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0, 0.3),
-            end: Offset.zero,
-          ).animate(_contentController),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header Section
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Enter Service ID",
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
-                        fontSize: 18,
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      "Enter your government service ID or search by service name",
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.primaryColor != Colors.white
-                            ? Colors.white.withOpacity(0.7)
-                            : const Color(0xff718096),
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 20.h),
-              // Text Input Field
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: AppTextFormField(
-                  controller: _textIdController,
-                  prefixIcon: const Icon(Icons.search,color: MyTheme.secondaryColor,),
-                  useGreenColor: true,
-                  helpText: "Enter Text ID or service name...",
-                ),
-              ),
-
-              SizedBox(height: 10.h),
-
-              // Suggestions List
-              if (showSuggestions) ...[
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.w),
-                  child: Text(
-                    "Suggestions",
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: theme.primaryColor != Colors.white
-                          ? Colors.white
-                          : const Color(0xff2D3748),
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          FadeTransition(
+            opacity: _contentFade,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0, 0.3),
+                end: Offset.zero,
+              ).animate(_contentController),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header Section
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Enter Service ID",
+                          style: theme.textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(height: 8.h),
+                        Text(
+                          "Enter your government service ID or search by service name",
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.primaryColor != Colors.white
+                                ? Colors.white.withOpacity(0.7)
+                                : const Color(0xff718096),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                SizedBox(height: 16.h),
-              ],
+                  SizedBox(height: 20.h),
+                  // Text Input Field
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: AppTextFormField(
+                      controller: _textIdController,
+                      prefixIcon: const Icon(Icons.search,color: MyTheme.secondaryColor,),
+                      useGreenColor: true,
+                      helpText: "Enter Text ID or service name...",
+                    ),
+                  ),
 
-              // Suggestions or Continue Button
-              Expanded(
-                child: showSuggestions ? _buildSuggestionsList(theme) : _buildContinueSection(theme),
+                  SizedBox(height: 10.h),
+
+                  // Suggestions List
+                  if (showSuggestions) ...[
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24.w),
+                      child: Text(
+                        "Suggestions",
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: theme.primaryColor != Colors.white
+                              ? Colors.white
+                              : const Color(0xff2D3748),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+                  ],
+
+                  // Suggestions or Continue Button
+                  Expanded(
+                    child: showSuggestions ? _buildSuggestionsList(theme) : _buildContinueSection(theme),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 30,horizontal: 20),
+                    child: AppButton(
+                      text: "Continue",
+                      onTap: _textIdController.text.trim().isEmpty ? null : () => _showComingSoonDialog(context),
+                      color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.2) : const Color(0xffE2E8F0),
+                    ),
+                  ),
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 30,horizontal: 20),
-                child: AppButton(
-                  text: "Continue",
-                  onTap: _textIdController.text.trim().isEmpty ? null : () => _showComingSoonDialog(context),
-                  color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.2) : const Color(0xffE2E8F0),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
