@@ -1,14 +1,37 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../core/constants/image_url.dart';
 import '../../core/theme/theme.dart';
+import '../widgets/background_theme.dart';
 import '../widgets/payment_selector_widget.dart';
 
-class CurrencyExchangeHistoryView extends StatelessWidget {
+class CurrencyExchangeHistoryView extends StatefulWidget {
   const CurrencyExchangeHistoryView({super.key});
+
+  @override
+  State<CurrencyExchangeHistoryView> createState() => _CurrencyExchangeHistoryViewState();
+}
+
+class _CurrencyExchangeHistoryViewState extends State<CurrencyExchangeHistoryView> with TickerProviderStateMixin{
+  late AnimationController _backgroundAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _backgroundAnimationController.dispose();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -25,86 +48,93 @@ class CurrencyExchangeHistoryView extends StatelessWidget {
         ),
       ),
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
-            30.verticalSpace,
-            // Payment Card Selector and Icons
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 5.w),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: PaymentCardSelector(
-                      userId: FirebaseAuth.instance.currentUser?.uid ?? '',
-                      onCardSelect: (PaymentCard card) {},
-                    ),
-                  ),
-                  _buildIcon(TImageUrl.iconSearch, isDark),
-                  SizedBox(width: 5.w),
-                  _buildIcon(TImageUrl.iconFilter, isDark),
-                ],
-              ),
+            AnimatedBackground(
+              animationController: _backgroundAnimationController,
             ),
-
-            // Empty State Section
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Empty state icon
-                    Container(
-                      width: 120.w,
-                      height: 120.w,
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.white.withOpacity(0.1)
-                            : MyTheme.primaryColor.withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.swap_horiz_rounded,
-                        size: 60.sp,
-                        color: isDark
-                            ? Colors.white.withOpacity(0.6)
-                            : MyTheme.primaryColor.withOpacity(0.6),
-                      ),
-                    ),
-
-                    32.verticalSpace,
-
-                    // No history title
-                    Text(
-                      'No Exchange History',
-                      style: TextStyle(
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.w700,
-                        color: isDark ? Colors.white : Colors.black,
-                      ),
-                    ),
-
-                    16.verticalSpace,
-
-                    // No history description
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 32.w),
-                      child: Text(
-                        'You haven\'t made any currency exchanges yet. Start exchanging to see your transaction history here.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w400,
-                          color: isDark
-                              ? Colors.white.withOpacity(0.7)
-                              : Colors.black.withOpacity(0.6),
-                          height: 1.5,
+            Column(
+              children: [
+                30.verticalSpace,
+                // Payment Card Selector and Icons
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 5.w),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: PaymentCardSelector(
+                          userId: FirebaseAuth.instance.currentUser?.uid ?? '',
+                          onCardSelect: (PaymentCard card) {},
                         ),
                       ),
-                    ),
-
-                  ],
+                      _buildIcon(TImageUrl.iconSearch, isDark),
+                      SizedBox(width: 5.w),
+                      _buildIcon(TImageUrl.iconFilter, isDark),
+                    ],
+                  ),
                 ),
-              ),
+
+                // Empty State Section
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Empty state icon
+                        Container(
+                          width: 120.w,
+                          height: 120.w,
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? Colors.white.withOpacity(0.1)
+                                : MyTheme.primaryColor.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.swap_horiz_rounded,
+                            size: 60.sp,
+                            color: isDark
+                                ? Colors.white.withOpacity(0.6)
+                                : MyTheme.primaryColor.withOpacity(0.6),
+                          ),
+                        ),
+
+                        32.verticalSpace,
+
+                        // No history title
+                        Text(
+                          'No Exchange History',
+                          style: TextStyle(
+                            fontSize: 24.sp,
+                            fontWeight: FontWeight.w700,
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
+                        ),
+
+                        16.verticalSpace,
+
+                        // No history description
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 32.w),
+                          child: Text(
+                            'You haven\'t made any currency exchanges yet. Start exchanging to see your transaction history here.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w400,
+                              color: isDark
+                                  ? Colors.white.withOpacity(0.7)
+                                  : Colors.black.withOpacity(0.6),
+                              height: 1.5,
+                            ),
+                          ),
+                        ),
+
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
