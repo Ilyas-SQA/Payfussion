@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/theme/theme.dart';
+import '../../widgets/background_theme.dart';
 
 class ApplyCardScreen extends StatefulWidget {
   const ApplyCardScreen({super.key});
@@ -9,10 +10,27 @@ class ApplyCardScreen extends StatefulWidget {
   State<ApplyCardScreen> createState() => _ApplyCardScreenState();
 }
 
-class _ApplyCardScreenState extends State<ApplyCardScreen> {
+class _ApplyCardScreenState extends State<ApplyCardScreen> with TickerProviderStateMixin {
   int currentView = -1;
   int? selectedAccountType;
   int? selectedCardOption;
+  late AnimationController _backgroundAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _backgroundAnimationController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,50 +76,57 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
   }
 
   Widget _buildAccountSelectionView() {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Open Your Account', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Text('Select the account type that fits your needs', style: TextStyle(fontSize: 15, color: Colors.grey[600])),
-              ],
-            ),
+    return Stack(
+      children: [
+        AnimatedBackground(
+          animationController: _backgroundAnimationController,
+        ),
+        SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Open Your Account', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 8),
+                    Text('Select the account type that fits your needs', style: TextStyle(fontSize: 15, color: Colors.grey[600])),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              _buildAccountCard(
+                title: 'Checking Account', subtitle: 'Everyday banking made easy',
+                description: 'Perfect for daily transactions, bill payments, and direct deposits',
+                features: ['Free debit card', 'Unlimited transactions', 'ATM access nationwide', 'No minimum balance'],
+                icon: Icons.account_balance_wallet, color: MyTheme.primaryColor, monthlyFee: '\$0', index: 0,
+              ),
+              _buildAccountCard(
+                title: 'Savings Account', subtitle: 'Grow your money',
+                description: 'Earn interest while keeping your money safe and accessible',
+                features: ['Competitive APY rate', 'FDIC insured up to \$250,000', 'Easy online transfers', 'Monthly statements'],
+                icon: Icons.savings, color: MyTheme.secondaryColor, monthlyFee: '\$0', apy: '4.50%', index: 1,
+              ),
+              _buildAccountCard(
+                title: 'Money Market Account', subtitle: 'Higher returns, more flexibility',
+                description: 'Premium savings with check-writing privileges',
+                features: ['Higher interest rates', 'Check writing available', 'Debit card included', 'Limited monthly transactions'],
+                icon: Icons.trending_up, color: MyTheme.primaryColor, monthlyFee: '\$10', apy: '5.25%', minBalance: '\$2,500', index: 2,
+              ),
+              _buildAccountCard(
+                title: 'Certificate of Deposit', subtitle: 'Lock in high rates',
+                description: 'Fixed-term deposit with guaranteed returns',
+                features: ['Fixed interest rate', 'Terms: 3, 6, 12, 24 months', 'FDIC insured', 'Early withdrawal penalty applies'],
+                icon: Icons.lock_clock, color: MyTheme.secondaryColor, monthlyFee: '\$0', apy: '5.50%', minBalance: '\$1,000', index: 3,
+              ),
+              const SizedBox(height: 24),
+            ],
           ),
-          const SizedBox(height: 16),
-          _buildAccountCard(
-            title: 'Checking Account', subtitle: 'Everyday banking made easy',
-            description: 'Perfect for daily transactions, bill payments, and direct deposits',
-            features: ['Free debit card', 'Unlimited transactions', 'ATM access nationwide', 'No minimum balance'],
-            icon: Icons.account_balance_wallet, color: MyTheme.primaryColor, monthlyFee: '\$0', index: 0,
-          ),
-          _buildAccountCard(
-            title: 'Savings Account', subtitle: 'Grow your money',
-            description: 'Earn interest while keeping your money safe and accessible',
-            features: ['Competitive APY rate', 'FDIC insured up to \$250,000', 'Easy online transfers', 'Monthly statements'],
-            icon: Icons.savings, color: MyTheme.secondaryColor, monthlyFee: '\$0', apy: '4.50%', index: 1,
-          ),
-          _buildAccountCard(
-            title: 'Money Market Account', subtitle: 'Higher returns, more flexibility',
-            description: 'Premium savings with check-writing privileges',
-            features: ['Higher interest rates', 'Check writing available', 'Debit card included', 'Limited monthly transactions'],
-            icon: Icons.trending_up, color: MyTheme.primaryColor, monthlyFee: '\$10', apy: '5.25%', minBalance: '\$2,500', index: 2,
-          ),
-          _buildAccountCard(
-            title: 'Certificate of Deposit', subtitle: 'Lock in high rates',
-            description: 'Fixed-term deposit with guaranteed returns',
-            features: ['Fixed interest rate', 'Terms: 3, 6, 12, 24 months', 'FDIC insured', 'Early withdrawal penalty applies'],
-            icon: Icons.lock_clock, color: MyTheme.secondaryColor, monthlyFee: '\$0', apy: '5.50%', minBalance: '\$1,000', index: 3,
-          ),
-          const SizedBox(height: 24),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -200,147 +225,154 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
   }
 
   Widget _buildAccountDetailView() {
-    final d = _getAccountData(currentView);
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.all(20),
-            height: 200,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: d['gradientColors']),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [BoxShadow(color: d['gradientColors'][0].withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 10))],
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  top: -50, right: -50,
-                  child: Container(width: 200, height: 200, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.1))),
+    final Map<String, dynamic> d = _getAccountData(currentView);
+    return Stack(
+      children: [
+        AnimatedBackground(
+          animationController: _backgroundAnimationController,
+        ),
+        SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.all(20),
+                height: 200,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: d['gradientColors']),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [BoxShadow(color: d['gradientColors'][0].withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 10))],
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(d['cardTitle'], style: const TextStyle( fontSize: 18, fontWeight: FontWeight.w600)),
-                              const SizedBox(height: 4),
-                              Text(d['bankName'], style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 12)),
-                            ],
-                          ),
-                          Icon(d['icon'],size: 36),
-                        ],
-                      ),
-                      Column(
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: -50, right: -50,
+                      child: Container(width: 200, height: 200, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.1))),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Account Number', style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 10, letterSpacing: 1)),
-                          const SizedBox(height: 6),
-                          const Text('•••• •••• •••• 4729', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, letterSpacing: 2)),
-                        ],
-                      ),
-                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(d['cardTitle'], style: const TextStyle( fontSize: 18, fontWeight: FontWeight.w600)),
+                                  const SizedBox(height: 4),
+                                  Text(d['bankName'], style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 12)),
+                                ],
+                              ),
+                              Icon(d['icon'],size: 36),
+                            ],
+                          ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Available Balance', style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 10)),
-                              const SizedBox(height: 4),
-                              const Text('\$0.00', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                              Text('Account Number', style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 10, letterSpacing: 1)),
+                              const SizedBox(height: 6),
+                              const Text('•••• •••• •••• 4729', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, letterSpacing: 2)),
                             ],
                           ),
-                          if (currentView != 3)
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(6)),
-                              child: const Text('VISA', style: TextStyle(color: Color(0xFF1A1F71), fontSize: 14, fontWeight: FontWeight.bold)),
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Available Balance', style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 10)),
+                                  const SizedBox(height: 4),
+                                  const Text('\$0.00', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                ],
+                              ),
+                              if (currentView != 3)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(6)),
+                                  child: const Text('VISA', style: TextStyle(color: Color(0xFF1A1F71), fontSize: 14, fontWeight: FontWeight.bold)),
+                                ),
+                            ],
+                          ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              borderRadius: BorderRadius.circular(5.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
-                  blurRadius: 5,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(d['title'], style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Text(d['description'], style: TextStyle(fontSize: 14, color: Colors.grey[600], height: 1.5)),
-                const SizedBox(height: 20),
-                ...d['features'].map<Widget>((f) => Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: _buildFeatureRow(f['icon'], f['title'], f['subtitle'], d['gradientColors'][0]),
-                )),
-                const SizedBox(height: 20),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(color: d['gradientColors'][0].withOpacity(0.6), borderRadius: BorderRadius.circular(12)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildRateInfo('Monthly Fee', d['monthlyFee']),
-                      if (d['apy'] != null) _buildRateInfo('APY', d['apy']),
-                      if (d['minBalance'] != null) _buildRateInfo('Min Balance', d['minBalance']),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          _buildOptionButton('Account Benefits & Rewards'),
-          _buildOptionButton('Fee Schedule'),
-          _buildOptionButton('Terms & Conditions'),
-          _buildOptionButton('FDIC Insurance Information'),
-          const SizedBox(height: 32),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => setState(() {
-                  selectedAccountType = currentView;
-                  currentView = 4;
-                }),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: d['gradientColors'][0],
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                  elevation: 2,
-                ),
-                child: const Text('Continue', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               ),
-            ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: BorderRadius.circular(5.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                      blurRadius: 5,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(d['title'], style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 8),
+                    Text(d['description'], style: TextStyle(fontSize: 14, color: Colors.grey[600], height: 1.5)),
+                    const SizedBox(height: 20),
+                    ...d['features'].map<Widget>((f) => Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: _buildFeatureRow(f['icon'], f['title'], f['subtitle'], d['gradientColors'][0]),
+                    )),
+                    const SizedBox(height: 20),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(color: d['gradientColors'][0].withOpacity(0.6), borderRadius: BorderRadius.circular(12)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _buildRateInfo('Monthly Fee', d['monthlyFee']),
+                          if (d['apy'] != null) _buildRateInfo('APY', d['apy']),
+                          if (d['minBalance'] != null) _buildRateInfo('Min Balance', d['minBalance']),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              _buildOptionButton('Account Benefits & Rewards'),
+              _buildOptionButton('Fee Schedule'),
+              _buildOptionButton('Terms & Conditions'),
+              _buildOptionButton('FDIC Insurance Information'),
+              const SizedBox(height: 32),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => setState(() {
+                      selectedAccountType = currentView;
+                      currentView = 4;
+                    }),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: d['gradientColors'][0],
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                      elevation: 2,
+                    ),
+                    child: const Text('Continue', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 40),
+            ],
           ),
-          const SizedBox(height: 40),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -409,140 +441,147 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> {
   }
 
   Widget _buildCardOptionsView() {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Choose Your Card', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Text('Select the card type and shipping option that works best for you', style: TextStyle(fontSize: 15, color: Colors.grey[600])),
-              ],
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [MyTheme.primaryColor.withOpacity(0.1), MyTheme.secondaryColor.withOpacity(0.1)]),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: MyTheme.primaryColor.withOpacity(0.3), width: 1.5),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.celebration, color: MyTheme.primaryColor, size: 28),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('First-Time User Promo!', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 4),
-                      Text('Get your Standard Card free on your first order', style: TextStyle(fontSize: 13, color: Colors.grey[700])),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          _buildCardOptionCard(
-            title: 'Standard Card',
-            description: 'Perfect for everyday use with reliable service',
-            features: ['Durable plastic design', 'Contactless payment', 'Standard shipping (5-7 days)', 'Full account access'],
-            originalPrice: '\$7.99',
-            currentPrice: 'FREE',
-            isPromo: true,
-            icon: Icons.credit_card,
-            color: MyTheme.primaryColor,
-            index: 0,
-          ),
-          _buildCardOptionCard(
-            title: 'Premium Card',
-            description: 'Stand out with a sleek metal design',
-            features: ['Premium metal card', 'Laser-engraved details', 'Enhanced durability', 'Priority customer support'],
-            originalPrice: null,
-            currentPrice: '\$14.99',
-            isPromo: false,
-            icon: Icons.stars,
-            color: MyTheme.secondaryColor,
-            badge: 'POPULAR',
-            index: 1,
-          ),
-          _buildCardOptionCard(
-            title: 'Express Delivery',
-            description: 'Get your card fast with expedited shipping',
-            features: ['Standard card design', 'Express FedEx/UPS shipping', '2-day delivery guarantee', 'Tracking included'],
-            originalPrice: null,
-            currentPrice: '\$19.99',
-            isPromo: false,
-            icon: Icons.local_shipping,
-            color: const Color(0xFFFF6B6B),
-            index: 2,
-          ),
-          const SizedBox(height: 24),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              borderRadius: BorderRadius.circular(5.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
-                  blurRadius: 5,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Additional Options', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 16),
-                _buildAdditionalOption(icon: Icons.palette, title: 'Custom Card Design', subtitle: 'Personalize with your own image', price: '+\$4.99'),
-                const SizedBox(height: 12),
-                _buildAdditionalOption(icon: Icons.phone_android, title: 'Virtual Card', subtitle: 'Instant access, use while you wait', price: 'FREE', isFree: true),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              children: [
-                _buildInfoCard(icon: Icons.shield, title: 'Secure & Protected', description: 'All cards are FDIC insured and include fraud protection'),
-                const SizedBox(height: 12),
-                _buildInfoCard(icon: Icons.refresh, title: 'Easy Replacement', description: 'Lost or stolen? Order a replacement for just \$5.99-\$10.99'),
-              ],
-            ),
-          ),
-          const SizedBox(height: 32),
-          if (selectedCardOption != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: SizedBox(
+    return Stack(
+      children: [
+        AnimatedBackground(
+          animationController: _backgroundAnimationController,
+        ),
+        SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
                 width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _showOrderConfirmation,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: MyTheme.secondaryColor,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                    elevation: 2,
-                  ),
-                  child: Text('Continue - ${_getCardPrice(selectedCardOption!)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Choose Your Card', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 8),
+                    Text('Select the card type and shipping option that works best for you', style: TextStyle(fontSize: 15, color: Colors.grey[600])),
+                  ],
                 ),
               ),
-            ),
-          const SizedBox(height: 40),
-        ],
-      ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [MyTheme.primaryColor.withOpacity(0.1), MyTheme.secondaryColor.withOpacity(0.1)]),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: MyTheme.primaryColor.withOpacity(0.3), width: 1.5),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.celebration, color: MyTheme.primaryColor, size: 28),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('First-Time User Promo!', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 4),
+                          Text('Get your Standard Card free on your first order', style: TextStyle(fontSize: 13, color: Colors.grey[700])),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              _buildCardOptionCard(
+                title: 'Standard Card',
+                description: 'Perfect for everyday use with reliable service',
+                features: ['Durable plastic design', 'Contactless payment', 'Standard shipping (5-7 days)', 'Full account access'],
+                originalPrice: '\$7.99',
+                currentPrice: 'FREE',
+                isPromo: true,
+                icon: Icons.credit_card,
+                color: MyTheme.primaryColor,
+                index: 0,
+              ),
+              _buildCardOptionCard(
+                title: 'Premium Card',
+                description: 'Stand out with a sleek metal design',
+                features: ['Premium metal card', 'Laser-engraved details', 'Enhanced durability', 'Priority customer support'],
+                originalPrice: null,
+                currentPrice: '\$14.99',
+                isPromo: false,
+                icon: Icons.stars,
+                color: MyTheme.secondaryColor,
+                badge: 'POPULAR',
+                index: 1,
+              ),
+              _buildCardOptionCard(
+                title: 'Express Delivery',
+                description: 'Get your card fast with expedited shipping',
+                features: ['Standard card design', 'Express FedEx/UPS shipping', '2-day delivery guarantee', 'Tracking included'],
+                originalPrice: null,
+                currentPrice: '\$19.99',
+                isPromo: false,
+                icon: Icons.local_shipping,
+                color: const Color(0xFFFF6B6B),
+                index: 2,
+              ),
+              const SizedBox(height: 24),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: BorderRadius.circular(5.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                      blurRadius: 5,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Additional Options', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 16),
+                    _buildAdditionalOption(icon: Icons.palette, title: 'Custom Card Design', subtitle: 'Personalize with your own image', price: '+\$4.99'),
+                    const SizedBox(height: 12),
+                    _buildAdditionalOption(icon: Icons.phone_android, title: 'Virtual Card', subtitle: 'Instant access, use while you wait', price: 'FREE', isFree: true),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    _buildInfoCard(icon: Icons.shield, title: 'Secure & Protected', description: 'All cards are FDIC insured and include fraud protection'),
+                    const SizedBox(height: 12),
+                    _buildInfoCard(icon: Icons.refresh, title: 'Easy Replacement', description: 'Lost or stolen? Order a replacement for just \$5.99-\$10.99'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 32),
+              if (selectedCardOption != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _showOrderConfirmation,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: MyTheme.secondaryColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                        elevation: 2,
+                      ),
+                      child: Text('Continue - ${_getCardPrice(selectedCardOption!)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 40),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
