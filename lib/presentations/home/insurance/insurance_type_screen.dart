@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import '../../widgets/background_theme.dart';
 import 'insurance_payment_screen.dart';
 
 class InsuranceTypeScreen extends StatefulWidget {
@@ -26,6 +27,7 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+  late AnimationController _backgroundAnimationController;
 
   @override
   void initState() {
@@ -45,11 +47,16 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     _controller.forward();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -174,158 +181,80 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      body: FadeTransition(
-        opacity: _fadeAnimation,
-        child: SlideTransition(
-          position: _slideAnimation,
-          child: CustomScrollView(
-            slivers: [
-              // App Bar
-              SliverAppBar(
-                expandedHeight: 200.h,
-                pinned: true,
-                backgroundColor: widget.color,
-                iconTheme: IconThemeData(
-                  color: Colors.white,
-                  size: 24.sp,
-                ),
-                flexibleSpace: FlexibleSpaceBar(
-                  title: Text(
-                    widget.companyName,
-                    style: TextStyle(
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          FadeTransition(
+            opacity: _fadeAnimation,
+            child: SlideTransition(
+              position: _slideAnimation,
+              child: CustomScrollView(
+                slivers: [
+                  // App Bar
+                  SliverAppBar(
+                    expandedHeight: 200.h,
+                    pinned: true,
+                    backgroundColor: widget.color,
+                    iconTheme: IconThemeData(
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.sp,
+                      size: 24.sp,
                     ),
-                  ),
-                  background: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          widget.color,
-                          widget.color.withOpacity(0.8),
-                        ],
-                      ),
-                    ),
-                    child: Center(
-                      child: Hero(
-                        tag: 'insurance_icon_${widget.companyName}',
-                        child: Container(
-                          height: 80.h,
-                          width: 80.w,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(20.r),
-                          ),
-                          child: Icon(
-                            widget.icon,
-                            size: 40.sp,
-                            color: Colors.white,
-                          ),
+                    flexibleSpace: FlexibleSpaceBar(
+                      title: Text(
+                        widget.companyName,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.sp,
                         ),
                       ),
-                    ),
-                  ),
-                ),
-              ),
-
-              // Content
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.all(20.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header Section
-                      Container(
-                        padding: EdgeInsets.all(20.w),
+                      background: Container(
                         decoration: BoxDecoration(
-                          color: Theme.of(context).scaffoldBackgroundColor,
-                          borderRadius: BorderRadius.circular(5.r),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
-                              blurRadius: 5,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              widget.color,
+                              widget.color.withOpacity(0.8),
+                            ],
+                          ),
                         ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.info_outline,
-                              color: widget.color,
-                              size: 24.sp,
-                            ),
-                            SizedBox(width: 12.w),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Available Insurance Types',
-                                    style: TextStyle(
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: theme.primaryColor != Colors.white
-                                          ? Colors.white
-                                          : const Color(0xff2D3748),
-                                    ),
-                                  ),
-                                  SizedBox(height: 4.h),
-                                  Text(
-                                    'Choose from ${widget.types.length} insurance options',
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                ],
+                        child: Center(
+                          child: Hero(
+                            tag: 'insurance_icon_${widget.companyName}',
+                            child: Container(
+                              height: 80.h,
+                              width: 80.w,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(20.r),
+                              ),
+                              child: Icon(
+                                widget.icon,
+                                size: 40.sp,
+                                color: Colors.white,
                               ),
                             ),
-                          ],
+                          ),
                         ),
                       ),
-
-                      SizedBox(height: 32.h),
-
-                      // Insurance Types Header
-                      Text(
-                        "Select Insurance Type",
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
-                          fontSize: 16,
-                        ),
-                      ),
-
-                      SizedBox(height: 16.h),
-                    ],
+                    ),
                   ),
-                ),
-              ),
 
-              // Insurance Types List
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                    final insuranceType = widget.types[index];
-                    final typeColor = _getInsuranceTypeColor(insuranceType);
-                    final typeIcon = _getInsuranceTypeIcon(insuranceType);
-
-                    return AnimationConfiguration.staggeredList(
-                      position: index,
-                      duration: const Duration(milliseconds: 375),
-                      child: SlideAnimation(
-                        verticalOffset: 30.0,
-                        child: FadeInAnimation(
-                          child: Container(
-                            margin: EdgeInsets.fromLTRB(20.w, 0, 20.w, 16.h),
+                  // Content
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.all(20.w),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Header Section
+                          Container(
+                            padding: EdgeInsets.all(20.w),
                             decoration: BoxDecoration(
                               color: Theme.of(context).scaffoldBackgroundColor,
                               borderRadius: BorderRadius.circular(5.r),
@@ -337,82 +266,166 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
                                 ),
                               ],
                             ),
-
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () => _navigateToPayment(insuranceType),
-                                borderRadius: BorderRadius.circular(16.r),
-                                child: Padding(
-                                  padding: EdgeInsets.all(20.w),
-                                  child: Row(
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  color: widget.color,
+                                  size: 24.sp,
+                                ),
+                                SizedBox(width: 12.w),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      // Icon Container
-                                      Icon(
-                                        typeIcon,
-                                        color: typeColor,
-                                        size: 28.sp,
-                                      ),
-
-                                      SizedBox(width: 16.w),
-
-                                      // Content
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              insuranceType,
-                                              style: theme.textTheme.titleSmall?.copyWith(
-                                                fontWeight: FontWeight.w600,
-                                                color: theme.primaryColor != Colors.white
-                                                    ? Colors.white
-                                                    : const Color(0xff2D3748),
-                                              ),
-                                            ),
-                                            SizedBox(height: 4.h),
-                                            Text(
-                                              'Tap to pay premium',
-                                              style: TextStyle(
-                                                fontSize: 12.sp,
-                                                color: Colors.grey[600],
-                                              ),
-                                            ),
-                                          ],
+                                      Text(
+                                        'Available Insurance Types',
+                                        style: TextStyle(
+                                          fontSize: 16.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: theme.primaryColor != Colors.white
+                                              ? Colors.white
+                                              : const Color(0xff2D3748),
                                         ),
                                       ),
+                                      SizedBox(height: 4.h),
+                                      Text(
+                                        'Choose from ${widget.types.length} insurance options',
+                                        style: TextStyle(
+                                          fontSize: 14.sp,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
 
-                                      // Arrow and Premium Indicator
-                                      Column(
+                          SizedBox(height: 32.h),
+
+                          // Insurance Types Header
+                          Text(
+                            "Select Insurance Type",
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+                              fontSize: 16,
+                            ),
+                          ),
+
+                          SizedBox(height: 16.h),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Insurance Types List
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                        final insuranceType = widget.types[index];
+                        final typeColor = _getInsuranceTypeColor(insuranceType);
+                        final typeIcon = _getInsuranceTypeIcon(insuranceType);
+
+                        return AnimationConfiguration.staggeredList(
+                          position: index,
+                          duration: const Duration(milliseconds: 375),
+                          child: SlideAnimation(
+                            verticalOffset: 30.0,
+                            child: FadeInAnimation(
+                              child: Container(
+                                margin: EdgeInsets.fromLTRB(20.w, 0, 20.w, 16.h),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).scaffoldBackgroundColor,
+                                  borderRadius: BorderRadius.circular(5.r),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                                      blurRadius: 5,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    onTap: () => _navigateToPayment(insuranceType),
+                                    borderRadius: BorderRadius.circular(16.r),
+                                    child: Padding(
+                                      padding: EdgeInsets.all(20.w),
+                                      child: Row(
                                         children: [
+                                          // Icon Container
                                           Icon(
-                                            Icons.arrow_forward_ios,
-                                            size: 12.sp,
+                                            typeIcon,
                                             color: typeColor,
+                                            size: 28.sp,
+                                          ),
+
+                                          SizedBox(width: 16.w),
+
+                                          // Content
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  insuranceType,
+                                                  style: theme.textTheme.titleSmall?.copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: theme.primaryColor != Colors.white
+                                                        ? Colors.white
+                                                        : const Color(0xff2D3748),
+                                                  ),
+                                                ),
+                                                SizedBox(height: 4.h),
+                                                Text(
+                                                  'Tap to pay premium',
+                                                  style: TextStyle(
+                                                    fontSize: 12.sp,
+                                                    color: Colors.grey[600],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
+                                          // Arrow and Premium Indicator
+                                          Column(
+                                            children: [
+                                              Icon(
+                                                Icons.arrow_forward_ios,
+                                                size: 12.sp,
+                                                color: typeColor,
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
-                                    ],
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                    );
-                  },
-                  childCount: widget.types.length,
-                ),
-              ),
+                        );
+                      },
+                      childCount: widget.types.length,
+                    ),
+                  ),
 
-              // Bottom spacing
-              SliverToBoxAdapter(
-                child: SizedBox(height: 32.h),
+                  // Bottom spacing
+                  SliverToBoxAdapter(
+                    child: SizedBox(height: 32.h),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
