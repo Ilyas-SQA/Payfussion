@@ -18,6 +18,7 @@ import '../../../logic/blocs/insurance/insurance_state.dart';
 import '../../../services/biometric_service.dart';
 import '../../../services/payment_service.dart';
 import '../../../services/service_locator.dart';
+import '../../widgets/background_theme.dart';
 
 class InsurancePaymentScreen extends StatefulWidget {
   final String companyName;
@@ -44,7 +45,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
 
   final TextEditingController _policyNumberController = TextEditingController();
   final TextEditingController _premiumAmountController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // Biometric Service
   final BiometricService _biometricService = getIt<BiometricService>();
@@ -58,6 +59,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
   late AnimationController _scaleController;
   late AnimationController _fingerprintController;
   late AnimationController _pulseController;
+  late AnimationController _backgroundAnimationController;
 
   // Animations
   late Animation<Offset> _slideAnimation;
@@ -72,6 +74,10 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
     _initAnimations();
     _initBiometric();
     context.read<CardBloc>().add(LoadCards());
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   void _initAnimations() {
@@ -127,6 +133,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
     _pulseController.dispose();
     _policyNumberController.dispose();
     _premiumAmountController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -230,149 +237,156 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
     final bool isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? MyTheme.darkBackgroundColor : MyTheme.backgroundColor,
-      body: MultiBlocListener(
-        listeners: [
-          BlocListener<InsurancePaymentBloc, InsurancePaymentState>(
-              listener: (context, state) {
-                if (state is InsurancePaymentSuccess) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.message), backgroundColor: Colors.green));
-                  if (_currentPaymentId.isNotEmpty) {
-                    context.read<InsurancePaymentBloc>().add(
-                        ProcessInsurancePayment(_currentPaymentId, 'fingerprint', _selectedCard!.id));
-                  }
-                } else if (state is InsurancePaymentProcessSuccess) {
-                  // Show success message
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Payment completed successfully!'),
-                        backgroundColor: Colors.green,
-                        duration: Duration(seconds: 2),
-                      ));
-
-                  // Navigate back after short delay
-                  Future.delayed(Duration(seconds: 2), () {
-                    if (mounted) {
-                      Navigator.of(context).pop();
-                    }
-                  });
-                } else if (state is InsurancePaymentProcessFailed) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Payment failed: ${state.error}'), backgroundColor: Colors.red));
-                  setState(() { _isFingerprintVisible = false; });
-                }
-              }
+      // backgroundColor: isDark ? MyTheme.darkBackgroundColor : MyTheme.backgroundColor,
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
           ),
-        ],
-        child: CustomScrollView(
-          slivers: [
-            // Enhanced App Bar
-            SliverAppBar(
-              expandedHeight: 200.h,
-              pinned: true,
-              backgroundColor: widget.color,
-              elevation: 0,
-              leading: IconButton(
-                icon: Icon(Icons.arrow_back, color: Colors.white, size: 20.sp),
-                onPressed: () => context.pop(),
+          MultiBlocListener(
+            listeners: [
+              BlocListener<InsurancePaymentBloc, InsurancePaymentState>(
+                  listener: (context, state) {
+                    if (state is InsurancePaymentSuccess) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(state.message), backgroundColor: Colors.green));
+                      if (_currentPaymentId.isNotEmpty) {
+                        context.read<InsurancePaymentBloc>().add(
+                            ProcessInsurancePayment(_currentPaymentId, 'fingerprint', _selectedCard!.id));
+                      }
+                    } else if (state is InsurancePaymentProcessSuccess) {
+                      // Show success message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Payment completed successfully!'),
+                            backgroundColor: Colors.green,
+                            duration: Duration(seconds: 2),
+                          ));
+
+                      // Navigate back after short delay
+                      Future.delayed(Duration(seconds: 2), () {
+                        if (mounted) {
+                          Navigator.of(context).pop();
+                        }
+                      });
+                    } else if (state is InsurancePaymentProcessFailed) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Payment failed: ${state.error}'), backgroundColor: Colors.red));
+                      setState(() { _isFingerprintVisible = false; });
+                    }
+                  }
               ),
-              flexibleSpace: FlexibleSpaceBar(
-                title: Text(
-                  widget.companyName,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16.sp,
+            ],
+            child: CustomScrollView(
+              slivers: [
+                // Enhanced App Bar
+                SliverAppBar(
+                  expandedHeight: 200.h,
+                  pinned: true,
+                  backgroundColor: widget.color,
+                  elevation: 0,
+                  leading: IconButton(
+                    icon: Icon(Icons.arrow_back, color: Colors.white, size: 20.sp),
+                    onPressed: () => context.pop(),
                   ),
-                ),
-                background: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        widget.color,
-                        widget.color.withOpacity(0.8),
-                      ],
+                  flexibleSpace: FlexibleSpaceBar(
+                    title: Text(
+                      widget.companyName,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.sp,
+                      ),
                     ),
-                  ),
-                  child: Center(
-                    child: SlideTransition(
-                      position: _slideAnimation,
-                      child: ScaleTransition(
-                        scale: _scaleAnimation,
-                        child: Container(
-                          padding: EdgeInsets.all(20.w),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(20.r),
-                          ),
-                          child: Icon(
-                            widget.icon,
-                            size: 60.sp,
-                            color: Colors.white,
+                    background: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            widget.color,
+                            widget.color.withOpacity(0.8),
+                          ],
+                        ),
+                      ),
+                      child: Center(
+                        child: SlideTransition(
+                          position: _slideAnimation,
+                          child: ScaleTransition(
+                            scale: _scaleAnimation,
+                            child: Container(
+                              padding: EdgeInsets.all(20.w),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(20.r),
+                              ),
+                              child: Icon(
+                                widget.icon,
+                                size: 60.sp,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
 
-            // Content
-            SliverToBoxAdapter(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: isDark ? MyTheme.darkBackgroundColor : Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(24.w),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Header Info Card
-                        _buildInfoCard(isDark),
+                // Content
+                SliverToBoxAdapter(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isDark ? MyTheme.darkBackgroundColor : Colors.white,
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(24.w),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Header Info Card
+                            _buildInfoCard(isDark),
 
-                        32.verticalSpace,
+                            32.verticalSpace,
 
-                        // Policy Details Section
-                        _buildSectionHeader('Policy Details', Icons.policy, isDark,false),
-                        16.verticalSpace,
-                        _buildPolicyInput(isDark),
+                            // Policy Details Section
+                            _buildSectionHeader('Policy Details', Icons.policy, isDark,false),
+                            16.verticalSpace,
+                            _buildPolicyInput(isDark),
 
-                        24.verticalSpace,
+                            24.verticalSpace,
 
-                        // Premium Amount Section
-                        _buildSectionHeader('Premium Amount', Icons.payments, isDark,false),
-                        16.verticalSpace,
-                        _buildPremiumInput(isDark),
+                            // Premium Amount Section
+                            _buildSectionHeader('Premium Amount', Icons.payments, isDark,false),
+                            16.verticalSpace,
+                            _buildPremiumInput(isDark),
 
-                        32.verticalSpace,
+                            32.verticalSpace,
 
-                        // Payment Method Section
-                        _buildSectionHeader('Payment Method', Icons.credit_card, isDark,true),
-                        16.verticalSpace,
-                        _buildCardsSection(),
+                            // Payment Method Section
+                            _buildSectionHeader('Payment Method', Icons.credit_card, isDark,true),
+                            16.verticalSpace,
+                            _buildCardsSection(),
 
-                        32.verticalSpace,
+                            32.verticalSpace,
 
-                        // Fingerprint Section
-                        if (_isFingerprintVisible) _buildFingerPrint(isDark: isDark),
+                            // Fingerprint Section
+                            if (_isFingerprintVisible) _buildFingerPrint(isDark: isDark),
 
-                        100.verticalSpace, // Space for bottom button
-                      ],
+                            100.verticalSpace, // Space for bottom button
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       bottomNavigationBar: _buildBottomNav(isDark: isDark),
     );
