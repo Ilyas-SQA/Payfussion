@@ -738,17 +738,30 @@ class BankTransferAmountScreen extends StatefulWidget {
   State<BankTransferAmountScreen> createState() => _BankTransferAmountScreenState();
 }
 
-class _BankTransferAmountScreenState extends State<BankTransferAmountScreen> {
-  final _amountController = TextEditingController();
+class _BankTransferAmountScreenState extends State<BankTransferAmountScreen> with TickerProviderStateMixin{
+  final TextEditingController _amountController = TextEditingController();
+  late AnimationController _backgroundAnimationController;
+
 
   @override
   void dispose() {
+    _backgroundAnimationController.dispose();
     _amountController.dispose();
     super.dispose();
   }
 
   void _processTransfer() {
     context.read<BankTransactionBloc>().add(const ProcessBankTransfer());
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   @override
@@ -782,183 +795,189 @@ class _BankTransferAmountScreenState extends State<BankTransferAmountScreen> {
             style: TextStyle(
               fontSize: 20.sp,
               fontWeight: FontWeight.w600,
-              color: Colors.white,
             ),
           ),
           elevation: 0,
         ),
-        body: BlocBuilder<BankTransactionBloc, BankTransactionState>(
-          builder: (context, state) {
-            return Column(
-              children: [
-                // Bank Info Header
-                if (state.hasCompleteDetails)
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(16.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Transfer to:',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                          ),
-                        ),
-                        SizedBox(height: 4.h),
-                        Text(
-                          state.selectedBank!.name,
-                          style: TextStyle(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          'Account: ${state.accountNumber}',
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                          ),
-                        ),
-                        Text(
-                          'Purpose: ${state.paymentPurpose}',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.w),
-                    child: Column(
-                      children: [
-                        // Amount Input
-                        Text(
-                          'Enter Amount',
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(height: 16.h),
-                        TextField(
-                          controller: _amountController,
-                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                          style: TextStyle(
-                            fontSize: 24.sp,
-                            fontWeight: FontWeight.bold,
-                            color: MyTheme.primaryColor,
-                          ),
-                          textAlign: TextAlign.center,
-                          decoration: InputDecoration(
-                            hintText: '0.00',
-                            prefixText: '\$ ',
-                            prefixStyle: TextStyle(
-                              fontSize: 24.sp,
-                              fontWeight: FontWeight.bold,
-                              color: MyTheme.primaryColor,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                              borderSide: BorderSide(color: MyTheme.primaryColor),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                              borderSide: BorderSide(color: MyTheme.primaryColor, width: 2),
-                            ),
-                            errorText: state.amountError,
-                          ),
-                          onChanged: (value) {
-                            context.read<BankTransactionBloc>().add(BankTransferAmountChanged(value));
-                          },
-                        ),
-
-                        SizedBox(height: 24.h),
-
-                        // Fee Display
-                        if (state.amount > 0)
-                          Container(
-                            padding: EdgeInsets.all(16.w),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12.r),
-                            ),
-                            child: Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('Transfer Amount:', style: TextStyle(fontSize: 14.sp)),
-                                    Text(state.formattedAmount, style: TextStyle(fontSize: 14.sp)),
-                                  ],
-                                ),
-                                SizedBox(height: 8.h),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('Transaction Fee:', style: TextStyle(fontSize: 14.sp)),
-                                    Text('\$${state.transactionFee.toStringAsFixed(2)}', style: TextStyle(fontSize: 14.sp)),
-                                  ],
-                                ),
-                                Divider(height: 16.h),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Total Amount:',
-                                      style: TextStyle(
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    Text(
-                                      state.formattedTotalAmount,
-                                      style: TextStyle(
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.w600,
-                                        color: MyTheme.primaryColor,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-
-                        const Spacer(),
-
-                        // Transfer Button
-                        Container(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: state.canProcessTransfer && !state.isProcessing ? _processTransfer : null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: MyTheme.primaryColor,
-                              padding: EdgeInsets.symmetric(vertical: 16.h),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12.r),
+        body: Stack(
+          children: [
+            AnimatedBackground(
+              animationController: _backgroundAnimationController,
+            ),
+            BlocBuilder<BankTransactionBloc, BankTransactionState>(
+              builder: (BuildContext context, BankTransactionState state) {
+                return Column(
+                  children: [
+                    // Bank Info Header
+                    if (state.hasCompleteDetails)
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(16.w),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Transfer to:',
+                              style: TextStyle(
+                                fontSize: 12.sp,
                               ),
                             ),
-                            child: state.isProcessing
-                                ? const CircularProgressIndicator(color: Colors.white)
-                                : Text(
-                              'Complete Transfer',
+                            SizedBox(height: 4.h),
+                            Text(
+                              state.selectedBank!.name,
+                              style: TextStyle(
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              'Account: ${state.accountNumber}',
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                              ),
+                            ),
+                            Text(
+                              'Purpose: ${state.paymentPurpose}',
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+                        child: Column(
+                          children: [
+                            // Amount Input
+                            Text(
+                              'Enter Amount',
                               style: TextStyle(
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.white,
                               ),
                             ),
-                          ),
+                            SizedBox(height: 16.h),
+                            TextField(
+                              controller: _amountController,
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                              style: TextStyle(
+                                fontSize: 24.sp,
+                                fontWeight: FontWeight.bold,
+                                color: MyTheme.primaryColor,
+                              ),
+                              textAlign: TextAlign.center,
+                              decoration: InputDecoration(
+                                hintText: '0.00',
+                                prefixText: '\$ ',
+                                prefixStyle: TextStyle(
+                                  fontSize: 24.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: MyTheme.primaryColor,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  borderSide: BorderSide(color: MyTheme.primaryColor),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  borderSide: BorderSide(color: MyTheme.primaryColor, width: 2),
+                                ),
+                                errorText: state.amountError,
+                              ),
+                              onChanged: (value) {
+                                context.read<BankTransactionBloc>().add(BankTransferAmountChanged(value));
+                              },
+                            ),
+
+                            SizedBox(height: 24.h),
+
+                            // Fee Display
+                            if (state.amount > 0)
+                              Container(
+                                padding: EdgeInsets.all(16.w),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Transfer Amount:', style: TextStyle(fontSize: 14.sp)),
+                                        Text(state.formattedAmount, style: TextStyle(fontSize: 14.sp)),
+                                      ],
+                                    ),
+                                    SizedBox(height: 8.h),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Transaction Fee:', style: TextStyle(fontSize: 14.sp)),
+                                        Text('\$${state.transactionFee.toStringAsFixed(2)}', style: TextStyle(fontSize: 14.sp)),
+                                      ],
+                                    ),
+                                    Divider(height: 16.h),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Total Amount:',
+                                          style: TextStyle(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        Text(
+                                          state.formattedTotalAmount,
+                                          style: TextStyle(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.w600,
+                                            color: MyTheme.primaryColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                            const Spacer(),
+
+                            // Transfer Button
+                            Container(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: state.canProcessTransfer && !state.isProcessing ? _processTransfer : null,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: MyTheme.primaryColor,
+                                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.r),
+                                  ),
+                                ),
+                                child: state.isProcessing
+                                    ? const CircularProgressIndicator(color: Colors.white)
+                                    : Text(
+                                  'Complete Transfer',
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-              ],
-            );
-          },
+                  ],
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
