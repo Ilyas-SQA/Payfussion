@@ -10,6 +10,7 @@ import '../../../core/theme/theme.dart';
 import '../../../logic/blocs/bank_transaction/bank_transaction_bloc.dart';
 import '../../../logic/blocs/bank_transaction/bank_transaction_event.dart';
 import '../../../logic/blocs/bank_transaction/bank_transaction_state.dart';
+import '../../widgets/background_theme.dart';
 
 class CreditCardLoanScreen extends StatefulWidget {
   const CreditCardLoanScreen({Key? key}) : super(key: key);
@@ -18,11 +19,19 @@ class CreditCardLoanScreen extends StatefulWidget {
   State<CreditCardLoanScreen> createState() => _CreditCardLoanScreenState();
 }
 
-class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> {
+class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> with TickerProviderStateMixin{
+
+  late AnimationController _backgroundAnimationController;
+
+
   @override
   void initState() {
     super.initState();
     context.read<BankTransactionBloc>().add(const FetchBanks());
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   void _navigateToBankDetails(Bank bank) {
@@ -139,6 +148,11 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> {
       ),
     );
   }
+  @override
+  void dispose() {
+    _backgroundAnimationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,96 +162,103 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> {
           'Select Bank',
         ),
       ),
-      body: BlocConsumer<BankTransactionBloc, BankTransactionState>(
-        listener: (context, state) {
-          if (state.errorMessage != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.errorMessage!),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-        },
-        builder: (BuildContext context, BankTransactionState state) {
-          return Column(
-            children: [
-              // Header
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 24.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Choose your bank',
-                      style: TextStyle(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      state.isLoadingBanks
-                          ? 'Loading banks...'
-                          : 'Tap on any bank to continue',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Banks List
-              Expanded(
-                child: state.isLoadingBanks
-                    ? _buildShimmerLoading()
-                    : state.availableBanks.isEmpty
-                    ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.account_balance_outlined,
-                        size: 64.sp,
-                        color: Colors.grey.shade400,
-                      ),
-                      SizedBox(height: 16.h),
-                      Text(
-                        'No Banks Available',
-                        style: TextStyle(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey.shade700,
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          BlocConsumer<BankTransactionBloc, BankTransactionState>(
+            listener: (BuildContext context, BankTransactionState state) {
+              if (state.errorMessage != null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.errorMessage!),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            builder: (BuildContext context, BankTransactionState state) {
+              return Column(
+                children: [
+                  // Header
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 24.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Choose your bank',
+                          style: TextStyle(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 8.h),
-                      TextButton(
-                        onPressed: () => context.read<BankTransactionBloc>().add(const FetchBanks()),
-                        child: Text('Retry'),
-                      ),
-                    ],
+                        SizedBox(height: 8.h),
+                        Text(
+                          state.isLoadingBanks
+                              ? 'Loading banks...'
+                              : 'Tap on any bank to continue',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                )
-                    : RefreshIndicator(
-                  onRefresh: () async {
-                    context.read<BankTransactionBloc>().add(const FetchBanks());
-                  },
-                  child: ListView.builder(
-                    padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
-                    itemCount: state.availableBanks.length,
-                    itemBuilder: (context, index) {
-                      final bank = state.availableBanks[index];
-                      return _buildBankCard(bank);
-                    },
+
+                  // Banks List
+                  Expanded(
+                    child: state.isLoadingBanks
+                        ? _buildShimmerLoading()
+                        : state.availableBanks.isEmpty
+                        ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.account_balance_outlined,
+                            size: 64.sp,
+                            color: Colors.grey.shade400,
+                          ),
+                          SizedBox(height: 16.h),
+                          Text(
+                            'No Banks Available',
+                            style: TextStyle(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey.shade700,
+                            ),
+                          ),
+                          SizedBox(height: 8.h),
+                          TextButton(
+                            onPressed: () => context.read<BankTransactionBloc>().add(const FetchBanks()),
+                            child: Text('Retry'),
+                          ),
+                        ],
+                      ),
+                    )
+                        : RefreshIndicator(
+                      onRefresh: () async {
+                        context.read<BankTransactionBloc>().add(const FetchBanks());
+                      },
+                      child: ListView.builder(
+                        padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
+                        itemCount: state.availableBanks.length,
+                        itemBuilder: (context, index) {
+                          final bank = state.availableBanks[index];
+                          return _buildBankCard(bank);
+                        },
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ],
-          );
-        },
+                ],
+              );
+            },
+          ),
+        ],
       ),
     );
   }
