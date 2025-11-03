@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
 import '../../../core/constants/routes_name.dart';
+import '../../widgets/background_theme.dart';
 
 class InternetBillScreen extends StatefulWidget {
   const InternetBillScreen({super.key});
@@ -19,7 +20,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
   // Animation controllers
   late AnimationController _headerController;
   late AnimationController _listController;
-
+  late AnimationController _backgroundAnimationController;
   late Animation<double> _headerFade;
   late Animation<Offset> _headerSlide;
   late Animation<double> _listFade;
@@ -167,6 +168,10 @@ class _InternetBillScreenState extends State<InternetBillScreen>
     super.initState();
     _initAnimations();
     _startAnimationSequence();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   void _initAnimations() {
@@ -206,6 +211,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
   void dispose() {
     _headerController.dispose();
     _listController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -234,55 +240,62 @@ class _InternetBillScreenState extends State<InternetBillScreen>
           ),
         ),
       ),
-      body: FadeTransition(
-        opacity: _listFade,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Section
-            Padding(
-              padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Pay Your",
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w300,
-                      color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.8) : const Color(0xff718096),
-                      fontSize: 18,
-                    ),
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          FadeTransition(
+            opacity: _listFade,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header Section
+                Padding(
+                  padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Pay Your",
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.w300,
+                          color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.8) : const Color(0xff718096),
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        "Internet Bill",
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.primaryColor != Colors.white
+                              ? Colors.white
+                              : const Color(0xff2D3748),
+                          fontSize: 16,
+                        ),
+                      ),
+                      SizedBox(height: 8.h),
+                      Text(
+                        "Select your internet provider for instant bill payment",
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.primaryColor != Colors.white
+                              ? Colors.white.withOpacity(0.7)
+                              : const Color(0xff718096),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    "Internet Bill",
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.primaryColor != Colors.white
-                          ? Colors.white
-                          : const Color(0xff2D3748),
-                      fontSize: 16,
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    "Select your internet provider for instant bill payment",
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.primaryColor != Colors.white
-                          ? Colors.white.withOpacity(0.7)
-                          : const Color(0xff718096),
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                ),
 
-            // Internet Providers List
-            Expanded(
-              child: _buildInternetProvidersList(theme),
+                // Internet Providers List
+                Expanded(
+                  child: _buildInternetProvidersList(theme),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
