@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import '../../widgets/background_theme.dart';
 import 'governement_pay_fee_screen.dart';
 
 class GovernmentFeesScreen extends StatefulWidget {
@@ -218,6 +219,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
   late Animation<double> _headerFade;
   late Animation<Offset> _headerSlide;
   late Animation<double> _feesFade;
+  late AnimationController _backgroundAnimationController;
 
   String selectedCategory = "All";
   final List<String> categories = ["All", "Federal", "State", "Local", "Judicial"];
@@ -227,6 +229,10 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
     super.initState();
     _initAnimations();
     _startAnimationSequence();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   void _initAnimations() {
@@ -266,6 +272,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
   void dispose() {
     _headerController.dispose();
     _feesController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -352,67 +359,74 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
           color: MyTheme.secondaryColor,
         ),
       ),
-      body: FadeTransition(
-        opacity: _feesFade,
-        child: SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0, 0.3),
-            end: Offset.zero,
-          ).animate(_feesController),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header Section
-              Padding(
-                padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "US Government",
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w300,
-                        fontSize: 18,
-                        color: theme.primaryColor != Colors.white
-                            ? Colors.white.withOpacity(0.8)
-                            : const Color(0xff718096),
-                      ),
-                    ),
-                    Text(
-                      "Service Payments",
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: theme.primaryColor != Colors.white
-                            ? Colors.white
-                            : const Color(0xff2D3748),
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      "Pay federal, state, and local government fees",
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontSize: 12,
-                        color: theme.primaryColor != Colors.white
-                            ? Colors.white.withOpacity(0.7)
-                            : const Color(0xff718096),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Category Filter
-              _buildCategoryFilter(theme),
-              SizedBox(height: 16.h),
-
-              // Government Services List
-              Expanded(
-                child: _buildGovernmentServicesList(theme),
-              ),
-            ],
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
           ),
-        ),
+          FadeTransition(
+            opacity: _feesFade,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0, 0.3),
+                end: Offset.zero,
+              ).animate(_feesController),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header Section
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "US Government",
+                          style: theme.textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.w300,
+                            fontSize: 18,
+                            color: theme.primaryColor != Colors.white
+                                ? Colors.white.withOpacity(0.8)
+                                : const Color(0xff718096),
+                          ),
+                        ),
+                        Text(
+                          "Service Payments",
+                          style: theme.textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: theme.primaryColor != Colors.white
+                                ? Colors.white
+                                : const Color(0xff2D3748),
+                          ),
+                        ),
+                        SizedBox(height: 8.h),
+                        Text(
+                          "Pay federal, state, and local government fees",
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontSize: 12,
+                            color: theme.primaryColor != Colors.white
+                                ? Colors.white.withOpacity(0.7)
+                                : const Color(0xff718096),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Category Filter
+                  _buildCategoryFilter(theme),
+                  SizedBox(height: 16.h),
+
+                  // Government Services List
+                  Expanded(
+                    child: _buildGovernmentServicesList(theme),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
