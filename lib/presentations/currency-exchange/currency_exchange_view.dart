@@ -12,6 +12,7 @@ import '../../data/models/currency_model.dart';
 import '../../logic/blocs/currency_convert/currency_convert_bloc.dart';
 import '../../logic/blocs/currency_convert/currency_convert_event.dart';
 import '../../logic/blocs/currency_convert/currency_convert_state.dart';
+import '../widgets/background_theme.dart';
 import '../widgets/payment_selector_widget.dart';
 import 'currency_graph_screen.dart';
 import 'currency_viewmodel.dart';
@@ -23,10 +24,11 @@ class CurrencyExchangeView extends StatefulWidget {
   State<CurrencyExchangeView> createState() => _CurrencyExchangeViewState();
 }
 
-class _CurrencyExchangeViewState extends State<CurrencyExchangeView> {
+class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with TickerProviderStateMixin{
   Currency? selectedCurrencyFrom;
   Currency? selectedCurrencyTo;
   List<Currency> availableCurrencies = [];
+  late AnimationController _backgroundAnimationController;
 
   final CurrencyViewmodel currencyViewmodel = CurrencyViewmodel();
   final TextEditingController _amountController = TextEditingController();
@@ -38,12 +40,17 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> {
     _initializeCurrencies();
     // Load exchange rates when the widget initializes
     context.read<CurrencyConversionBloc>().add(const LoadExchangeRates());
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   @override
   void dispose() {
     _amountController.dispose();
     _convertedAmountController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -95,7 +102,16 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> {
         elevation: 0,
       ),
       resizeToAvoidBottomInset: true,
-      body: isLoading ? _buildLoadingView() : _buildMainView(isDark),
+      body: isLoading ?
+      _buildLoadingView() :
+      Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          _buildMainView(isDark),
+        ],
+      ),
     );
   }
 
