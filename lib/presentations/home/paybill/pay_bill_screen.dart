@@ -8,10 +8,10 @@ import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/constants/routes_name.dart';
 import 'package:payfussion/presentations/pay_bills/widgets/quick_access_avatar.dart';
 import 'package:shimmer/shimmer.dart';
-
 import '../../../core/constants/image_url.dart';
 import '../../../core/theme/theme.dart';
 import '../../../data/models/recipient/recipient_model.dart';
+import '../../widgets/background_theme.dart';
 import '../tickets/bus/bus_screen.dart';
 import '../tickets/car/car_screen.dart';
 import '../tickets/flight/flight_screen.dart';
@@ -126,7 +126,7 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
   late AnimationController _quickAccessController;
   late AnimationController _billsController;
   late AnimationController _ticketsController;
-
+  late AnimationController _backgroundAnimationController;
   late Animation<double> _headerFade;
   late Animation<Offset> _headerSlide;
   late Animation<double> _cardScale;
@@ -139,6 +139,10 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
     super.initState();
     _initAnimations();
     _startAnimationSequence();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
   }
 
   void _initAnimations() {
@@ -217,6 +221,7 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
     _quickAccessController.dispose();
     _billsController.dispose();
     _ticketsController.dispose();
+    _backgroundAnimationController.dispose();
     super.dispose();
   }
 
@@ -319,57 +324,64 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
           ),
         ),
       ),
-      body: FadeTransition(
-        opacity: _billsFade,
-        child: SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0, 0.3),
-            end: Offset.zero,
-          ).animate(_billsController),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header Section
-              Padding(
-                padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Quick & Easy",
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w300,
-                        fontSize: 18,
-                        color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.8) : const Color(0xff718096),
-                      ),
-                    ),
-                    Text(
-                      "Bill Payments",
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
-                        fontSize: 16,
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      "Pay all your bills in one place, anytime",
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.7) : const Color(0xff718096),
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Bills List
-              Expanded(
-                child: _buildBillPaymentList(theme),
-              ),
-            ],
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
           ),
-        ),
+          FadeTransition(
+            opacity: _billsFade,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0, 0.3),
+                end: Offset.zero,
+              ).animate(_billsController),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header Section
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Quick & Easy",
+                          style: theme.textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.w300,
+                            fontSize: 18,
+                            color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.8) : const Color(0xff718096),
+                          ),
+                        ),
+                        Text(
+                          "Bill Payments",
+                          style: theme.textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+                            fontSize: 16,
+                          ),
+                        ),
+                        SizedBox(height: 8.h),
+                        Text(
+                          "Pay all your bills in one place, anytime",
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.7) : const Color(0xff718096),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Bills List
+                  Expanded(
+                    child: _buildBillPaymentList(theme),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
