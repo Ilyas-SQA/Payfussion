@@ -8,7 +8,7 @@ import 'package:payfussion/logic/blocs/recipient/recipient_bloc.dart';
 import 'package:payfussion/logic/blocs/recipient/recipient_event.dart';
 import 'package:payfussion/logic/blocs/recipient/recipient_state.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
-
+import '../../../core/constants/fonts.dart';
 import '../../../core/theme/theme.dart';
 import 'add_recipient_screen.dart';
 
@@ -39,10 +39,9 @@ class BankDropdownWidget extends StatelessWidget {
       padding: EdgeInsets.only(left: 4.w),
       child: Text(
         RecipientStrings.bankName,
-        style: TextStyle(
+        style: Font.montserratFont(
           fontSize: 14.sp,
           fontWeight: FontWeight.w600,
-          color: AppColors.textSecondary,
         ),
       ),
     );
@@ -80,7 +79,7 @@ class BankDropdownWidget extends StatelessWidget {
                 Expanded(
                   child: Text(
                     state.selectedBank?.name ?? RecipientStrings.selectBank,
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontSize: 15.sp,
                     ),
                   ),
@@ -117,7 +116,7 @@ class BankDropdownWidget extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Text(
                 state.bankError!,
-                style: TextStyle(
+                style: Font.montserratFont(
                   color: Colors.red,
                   fontSize: 12.sp,
                 ),
@@ -155,7 +154,7 @@ class BankDropdownWidget extends StatelessWidget {
               SizedBox(width: 8.w),
               Text(
                 'Bank Details',
-                style: TextStyle(
+                style: Font.montserratFont(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w600,
                   color: MyTheme.primaryColor,
@@ -172,7 +171,7 @@ class BankDropdownWidget extends StatelessWidget {
                   ),
                   child: Text(
                     'Change',
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       color: MyTheme.primaryColor,
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w500,
@@ -225,7 +224,7 @@ class BankDropdownWidget extends StatelessWidget {
           width: 80.w,
           child: Text(
             '$label:',
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 12.sp,
               fontWeight: FontWeight.w500,
             ),
@@ -235,7 +234,7 @@ class BankDropdownWidget extends StatelessWidget {
         Expanded(
           child: Text(
             value,
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 12.sp,
               fontWeight: FontWeight.w600,
             ),
@@ -246,7 +245,7 @@ class BankDropdownWidget extends StatelessWidget {
   }
 
   void _showBankSelectionModal(BuildContext context) {
-    final bloc = context.read<RecipientBloc>();
+    final RecipientBloc bloc = context.read<RecipientBloc>();
 
     showModalBottomSheet(
       context: context,
@@ -304,10 +303,10 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
-      initialChildSize: 0.7,
+      initialChildSize: 0.95,  // Changed from 0.7
       minChildSize: 0.5,
-      maxChildSize: 0.9,
-      builder: (context, scrollController) {
+      maxChildSize: 0.95,
+      builder: (BuildContext context, ScrollController scrollController) {
         return Container(
           decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor,
@@ -339,7 +338,7 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
           Expanded(
             child: Text(
               'Select Bank',
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
               ),
@@ -402,16 +401,16 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
                   SizedBox(height: 16.h),
                   Text(
                     'No banks found',
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontSize: 16.sp,
                     ),
                   ),
                   SizedBox(height: 8.h),
                   TextButton(
                     onPressed: () => _showAddBankModal(context),
-                    child: const Text(
+                    child: Text(
                       'Add New Bank',
-                      style: TextStyle(color: MyTheme.primaryColor),
+                      style: Font.montserratFont(color: MyTheme.primaryColor),
                     ),
                   ),
                 ],
@@ -442,7 +441,7 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
                 ),
                 title: Text(
                   bank.name,
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 15.sp,
                     fontWeight: FontWeight.w600,
                   ),
@@ -450,9 +449,8 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
                 subtitle: bank.code.isNotEmpty
                     ? Text(
                   'Code: ${bank.code}',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 12.sp,
-                    color: AppColors.textSecondary,
                   ),
                 )
                     : null,
@@ -476,7 +474,7 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      // backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       builder: (context) => BlocProvider.value(
         value: context.read<RecipientBloc>(),
         child: const AddBankModal(),
@@ -515,13 +513,12 @@ class _AddBankModalState extends State<AddBankModal> {
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
-      initialChildSize: 0.8,
+      initialChildSize: 0.95,
       minChildSize: 0.6,
       maxChildSize: 0.95,
       builder: (context, scrollController) {
         return Container(
           decoration: BoxDecoration(
-            color: Colors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
           ),
           child: Column(
@@ -617,17 +614,15 @@ class _AddBankModalState extends State<AddBankModal> {
               children: [
                 Text(
                   'Add New Bank',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
                   ),
                 ),
                 Text(
                   'Fill in the bank details',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 12.sp,
-                    color: AppColors.textSecondary,
                   ),
                 ),
               ],
@@ -743,7 +738,7 @@ class _AddBankModalState extends State<AddBankModal> {
                 SizedBox(width: 12.w),
                 Text(
                   'Adding Bank...',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     color: Colors.white,
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
@@ -753,7 +748,7 @@ class _AddBankModalState extends State<AddBankModal> {
             )
                 : Text(
               'Add Bank',
-              style: TextStyle(
+              style: Font.montserratFont(
                 color: Colors.white,
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w600,
