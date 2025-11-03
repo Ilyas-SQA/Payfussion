@@ -8,9 +8,33 @@ import 'package:payfussion/logic/blocs/graph_currency/graph_currency_bloc.dart';
 import '../../core/theme/theme.dart';
 import '../../logic/blocs/graph_currency/graph_currency_event.dart';
 import '../../logic/blocs/graph_currency/graph_currency_state.dart';
+import '../widgets/background_theme.dart';
 
-class CurrencyGraphView extends StatelessWidget {
+class CurrencyGraphView extends StatefulWidget {
   const CurrencyGraphView({super.key});
+
+  @override
+  State<CurrencyGraphView> createState() => _CurrencyGraphViewState();
+}
+
+class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProviderStateMixin {
+  late AnimationController _backgroundAnimationController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _backgroundAnimationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,22 +43,29 @@ class CurrencyGraphView extends StatelessWidget {
 
     return Scaffold(
       appBar: _buildAppBar(isDark, context),
-      body: BlocBuilder<GraphCurrencyBloc, GraphCurrencyState>(
-        builder: (context, state) {
-          if (state is CurrencyLoading) {
-            return _buildLoadingState(isDark);
-          }
+      body: Stack(
+        children: [
+          AnimatedBackground(
+            animationController: _backgroundAnimationController,
+          ),
+          BlocBuilder<GraphCurrencyBloc, GraphCurrencyState>(
+            builder: (BuildContext context, GraphCurrencyState state) {
+              if (state is CurrencyLoading) {
+                return _buildLoadingState(isDark);
+              }
 
-          if (state is CurrencyError) {
-            return _buildErrorState(state, isDark, context);
-          }
+              if (state is CurrencyError) {
+                return _buildErrorState(state, isDark, context);
+              }
 
-          if (state is CurrencyLoaded) {
-            return _buildLoadedState(state, isDark, context);
-          }
+              if (state is CurrencyLoaded) {
+                return _buildLoadedState(state, isDark, context);
+              }
 
-          return const SizedBox();
-        },
+              return const SizedBox();
+            },
+          ),
+        ],
       ),
     );
   }
