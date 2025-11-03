@@ -203,7 +203,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
   Widget build(BuildContext context) {
     return BlocConsumer<RecipientBloc, AddRecipientState>(
       listenWhen: (p, c) => p.submitStatus != c.submitStatus,
-      listener: (context, state) {
+      listener: (BuildContext context, AddRecipientState state) {
         if (state.submitStatus == SubmitStatus.success) {
           showDialog(
             context: context,
@@ -211,7 +211,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
           );
         }
       },
-      builder: (context, state) {
+      builder: (BuildContext context, AddRecipientState state) {
         _nameCtrl.value = _nameCtrl.value.copyWith(
             text: state.name,
             selection: TextSelection.collapsed(offset: state.name.length)
@@ -372,7 +372,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
               children: [
                 Text(RecipientStrings.addNewRecipient, style: AppStyles.subtitle),
                 SizedBox(height: 8.h),
-                Text(RecipientStrings.recipientDetails, style: AppStyles.caption),
+                Text(RecipientStrings.recipientDetails, style: TextStyle(fontSize: 12)),
               ],
             ),
           ),
@@ -522,7 +522,6 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
               style: TextStyle(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
               ),
             ),
           ),
@@ -552,9 +551,9 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
   }
 
   Widget _accountField(AddRecipientState state) {
-    final bloc = context.read<RecipientBloc>();
-    final verifying = state.verifyStatus == VerifyStatus.verifying;
-    final verified = state.verifyStatus == VerifyStatus.verified;
+    final RecipientBloc bloc = context.read<RecipientBloc>();
+    final bool verifying = state.verifyStatus == VerifyStatus.verifying;
+    final bool verified = state.verifyStatus == VerifyStatus.verified;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
@@ -568,7 +567,6 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
               style: TextStyle(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
               ),
             ),
           ),
@@ -583,7 +581,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                     offset: const Offset(0, 2)
                 )
               ],
-              border: verified ? Border.all(color: Colors.green, width: 1) : null,
+              border: verified ? Border.all(color: Colors.green, width: 1) : Border.all(color: Colors.white, width: 1),
             ),
             child: TextField(
               controller: _accCtrl,
@@ -711,7 +709,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
   }
 
   Widget _submitButton(AddRecipientState state) {
-    final bloc = context.read<RecipientBloc>();
+    final RecipientBloc bloc = context.read<RecipientBloc>();
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       height: 56.h,
@@ -754,8 +752,9 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
 
   Widget _successDialog(BuildContext context) {
     return AlertDialog(
-      title: Text(RecipientStrings.successTitle),
-      content: Text(RecipientStrings.successMessage),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      title: const Text(RecipientStrings.successTitle),
+      content: const Text(RecipientStrings.successMessage),
       actions: [
         TextButton(
           onPressed: () {
@@ -763,9 +762,9 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
             Navigator.pop(context);
             Navigator.pop(context, {'action': 'back_to_list'});
           },
-          child: Text(
+          child: const Text(
               RecipientStrings.backToRecipients,
-              style: const TextStyle(color: MyTheme.primaryColor)
+              style: TextStyle(color: MyTheme.primaryColor)
           ),
         ),
       ],
