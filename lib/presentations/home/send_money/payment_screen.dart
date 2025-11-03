@@ -208,7 +208,7 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
   }
 
   Widget _buildFormContent(TransactionState state) {
-    final totalAmount = _calculateTotalAmount(state.amount);
+    final double totalAmount = _calculateTotalAmount(state.amount);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -732,16 +732,15 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                     fontWeight: FontWeight.w400,
                   ),
                   border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
                   prefixIcon: AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
                     child: Text(
                       '\$',
                       style: TextStyle(
-                        fontSize: 42.sp,
+                        fontSize: 40.sp,
                         fontWeight: FontWeight.bold,
-                        color: state.amount > 0
-                            ? AppColors.textPrimary
-                            : Colors.transparent,
                       ),
                     ),
                   ),
