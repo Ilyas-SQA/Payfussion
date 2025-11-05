@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:nested/nested.dart';
 import 'package:payfussion/data/repositories/insurance/insurance_repository.dart';
 import 'package:payfussion/data/repositories/notification/notification_repository.dart';
 import 'package:payfussion/data/repositories/ticket/movies_repository.dart';
@@ -81,7 +82,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [
+      providers: <SingleChildWidget>[
         BlocProvider<ThemeBloc>(
           create: (_) => ThemeBloc(localStorage: getIt<LocalStorage>()),
         ),
