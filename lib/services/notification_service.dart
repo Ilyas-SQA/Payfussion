@@ -59,8 +59,8 @@ class LocalNotificationService {
     required double amount,
     required String currency,
   }) async {
-    String title = getTransactionTitle(transactionType);
-    String body = 'Amount: $currency ${amount.toStringAsFixed(2)}';
+    final String title = getTransactionTitle(transactionType);
+    final String body = 'Amount: $currency ${amount.toStringAsFixed(2)}';
 
     const AndroidNotificationDetails androidDetails =
     AndroidNotificationDetails(
@@ -85,7 +85,7 @@ class LocalNotificationService {
     );
 
     // Generate unique notification ID
-    int notificationId = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    final int notificationId = DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
     await _localNotifications.show(
       notificationId,
@@ -139,7 +139,7 @@ class LocalNotificationService {
       iOS: iosDetails,
     );
 
-    int notificationId = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    final int notificationId = DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
     await _localNotifications.show(
       notificationId,
