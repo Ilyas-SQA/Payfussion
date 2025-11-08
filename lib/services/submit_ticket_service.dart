@@ -15,13 +15,13 @@ class TicketRepository {
   }) async {
     try {
       // Get current user ID
-      final user = _auth.currentUser;
+      final User? user = _auth.currentUser;
       if (user == null) {
         throw Exception('User not authenticated');
       }
 
       // Create ticket model
-      final ticket = TicketModel(
+      final TicketModel ticket = TicketModel(
         userId: user.uid,
         title: title,
         description: description,
@@ -30,7 +30,7 @@ class TicketRepository {
       );
 
       // Add to Firestore
-      final docRef = await _firestore
+      final DocumentReference<Map<String, dynamic>> docRef = await _firestore
           .collection(_collectionName)
           .add(ticket.toMap());
 
@@ -77,7 +77,7 @@ class TicketRepository {
       await _firestore
           .collection('submitTicket')
           .doc(ticketId)
-          .update({
+          .update(<Object, Object?>{
         'status': status,
         'updatedAt': FieldValue.serverTimestamp(),
       });
@@ -118,9 +118,9 @@ class TicketRepository {
   }
 
   Stream<QuerySnapshot> getCurrentUserTicketsStream() {
-    final currentUser = _auth.currentUser;
+    final User? currentUser = _auth.currentUser;
     if (currentUser == null) {
-      return Stream.empty();
+      return const Stream.empty();
     }
 
     return _firestore
@@ -131,9 +131,9 @@ class TicketRepository {
 
   // Option B: If you really need server-side ordering, create the index first
   Stream<QuerySnapshot> getCurrentUserTicketsStreamWithOrdering() {
-    final currentUser = _auth.currentUser;
+    final User? currentUser = _auth.currentUser;
     if (currentUser == null) {
-      return Stream.empty();
+      return const Stream.empty();
     }
 
     return _firestore
@@ -145,9 +145,9 @@ class TicketRepository {
 
   // Option C: Alternative - order by document creation time instead
   Stream<QuerySnapshot> getCurrentUserTicketsStreamAlternative() {
-    final currentUser = _auth.currentUser;
+    final User? currentUser = _auth.currentUser;
     if (currentUser == null) {
-      return Stream.empty();
+      return const Stream.empty();
     }
 
     return _firestore
