@@ -16,10 +16,10 @@ class PaymentService {
   /// Create Stripe Customer and store in Firestore
   Future<String?> createCustomerIfNotExists() async {
     try {
-      final response = await dio.post(
+      final Response response = await dio.post(
         'https://api.stripe.com/v1/customers',
         options: Options(
-          headers: {
+          headers: <String, dynamic>{
             'Authorization': 'Bearer ${dotenv.env['STRIPE_SECRET_KEY']}',
             'Content-Type': 'application/x-www-form-urlencoded',
           },
@@ -28,7 +28,7 @@ class PaymentService {
 
       if (response.statusCode == 200) {
         // Dio already parses JSON, so directly access response.data
-        final customerId = response.data['id'] as String;
+        final String customerId = response.data['id'] as String;
         print("Customer created: $customerId");
         return customerId;
       }
@@ -42,15 +42,15 @@ class PaymentService {
   /// Create SetupIntent for saving card
   Future<Map<String, dynamic>?> createSetupIntent(String customerId) async {
     try {
-      final response = await dio.post(
+      final Response response = await dio.post(
         'https://api.stripe.com/v1/setup_intents',
         options: Options(
-          headers: {
+          headers: <String, dynamic>{
             'Authorization': 'Bearer ${dotenv.env['STRIPE_SECRET_KEY']}',
             'Content-Type': 'application/x-www-form-urlencoded',
           },
         ),
-        data: {
+        data: <String, String>{
           'customer': customerId,
         },
       );
@@ -69,13 +69,13 @@ class PaymentService {
   /// Save card using SetupIntent and store it in Firestore
   Future<void> saveCard(BuildContext context) async {
     try {
-      final customerId = await createCustomerIfNotExists();
+      final String? customerId = await createCustomerIfNotExists();
       if (customerId == null) {
         print("Failed to create customer");
         return;
       }
 
-      final setupIntent = await createSetupIntent(customerId);
+      final Map<String, dynamic>? setupIntent = await createSetupIntent(customerId);
       if (setupIntent == null) {
         print("Failed to create setup intent");
         return;
@@ -96,7 +96,7 @@ class PaymentService {
       await Stripe.instance.presentPaymentSheet();
 
       /// Fetch saved cards from Stripe
-      final cards = await listSavedCards(customerId);
+      final List cards = await listSavedCards(customerId);
 
       // Use BLoC to add each card with duplicate check
       for (final card in cards) {
@@ -117,10 +117,10 @@ class PaymentService {
   /// List saved payment methods (cards)
   Future<List<dynamic>> listSavedCards(String customerId) async {
     try {
-      final response = await dio.get(
+      final Response response = await dio.get(
         'https://api.stripe.com/v1/payment_methods?customer=$customerId&type=card',
         options: Options(
-          headers: {
+          headers: <String, dynamic>{
             'Authorization': 'Bearer ${dotenv.env['STRIPE_SECRET_KEY']}',
             'Content-Type': 'application/x-www-form-urlencoded',
           },
@@ -135,7 +135,7 @@ class PaymentService {
       print("Error listing saved cards: $e");
     }
 
-    return [];
+    return <dynamic>[];
   }
 
   /// Pay with saved card
@@ -145,15 +145,15 @@ class PaymentService {
     required int amount,
   }) async {
     try {
-      final response = await dio.post(
+      final Response response = await dio.post(
         'https://api.stripe.com/v1/payment_intents',
         options: Options(
-          headers: {
+          headers: <String, dynamic>{
             'Authorization': 'Bearer ${dotenv.env['STRIPE_SECRET_KEY']}',
             'Content-Type': 'application/x-www-form-urlencoded',
           },
         ),
-        data: {
+        data: <String, String>{
           'amount': amount.toString(),
           'currency': 'inr',
           'customer': customerId,
@@ -164,7 +164,7 @@ class PaymentService {
       );
 
       // Access response.data directly
-      final data = response.data as Map<String, dynamic>;
+      final Map<String, dynamic> data = response.data as Map<String, dynamic>;
 
       if (data['status'] == 'succeeded') {
         print("Payment succeeded!");
@@ -182,20 +182,20 @@ class PaymentService {
   /// Get saved cards from Firestore for current user
   Future<List<Map<String, dynamic>>> getSavedCardsFromFirestore() async {
     try {
-      final snapshot = await FirebaseFirestore.instance
+      final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
           .collection("users")
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .collection("card")
           .orderBy("create_date", descending: true)
           .get();
 
-      return snapshot.docs.map((doc) => {
+      return snapshot.docs.map((QueryDocumentSnapshot<Map<String, dynamic>> doc) => <String, dynamic>{
         'id': doc.id,
         ...doc.data(),
       }).toList();
     } catch (e) {
       print("Error getting saved cards: $e");
-      return [];
+      return <Map<String, dynamic>>[];
     }
   }
 }
