@@ -7,17 +7,17 @@ class LocalStorage {
   }
 
   Future<bool> setValue(String key, String value) async {
-    final prefs = await _getPreferences();
+    final SharedPreferences prefs = await _getPreferences();
     return prefs.setString(key, value);
   }
 
   Future<String?> readValue(String key) async {
-    final prefs = await _getPreferences();
+    final SharedPreferences prefs = await _getPreferences();
     return prefs.getString(key);
   }
 
   Future<bool> clearValue(String key) async {
-    final prefs = await _getPreferences();
+    final SharedPreferences prefs = await _getPreferences();
     return prefs.remove(key);
   }
 }

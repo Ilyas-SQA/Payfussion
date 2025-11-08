@@ -145,7 +145,7 @@ class LiveChatServices {
           .collection('users')
           .doc(userId.trim())
           .collection('chatbots')
-          .add({
+          .add(<String, dynamic>{
         'text': text.trim(),
         'sender': sender.trim(),
         'timestamp': FieldValue.serverTimestamp(),
@@ -163,7 +163,7 @@ class LiveChatServices {
   // Load messages from Firestore with null safety
   static Stream<List<Message>> getMessagesStream(String userId) {
     if (userId.trim().isEmpty) {
-      return Stream.value([]);
+      return Stream.value(<Message>[]);
     }
 
     return _firestore
@@ -172,10 +172,10 @@ class LiveChatServices {
         .collection('chatbots')
         .orderBy('timestamp', descending: false)
         .snapshots()
-        .map((snapshot) {
+        .map((QuerySnapshot<Map<String, dynamic>> snapshot) {
       try {
         return snapshot.docs
-            .map((doc) {
+            .map((QueryDocumentSnapshot<Map<String, dynamic>> doc) {
           try {
             return Message.fromSnapshot(doc);
           } catch (e) {
@@ -183,7 +183,7 @@ class LiveChatServices {
             return null;
           }
         })
-            .where((message) => message != null)
+            .where((Message? message) => message != null)
             .cast<Message>()
             .toList();
       } catch (e) {
@@ -198,18 +198,18 @@ class LiveChatServices {
     try {
       if (userId.trim().isEmpty) {
         print('Warning: Empty userId provided to getInitialMessages');
-        return [];
+        return <Message>[];
       }
 
-      final querySnapshot = await _firestore
+      final QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
           .collection('users')
           .doc(userId.trim())
           .collection('chatbots')
           .orderBy('timestamp', descending: false)
           .get();
 
-      final messages = querySnapshot.docs
-          .map((doc) {
+      final List<Message> messages = querySnapshot.docs
+          .map((QueryDocumentSnapshot<Map<String, dynamic>> doc) {
         try {
           return Message.fromSnapshot(doc);
         } catch (e) {
@@ -217,7 +217,7 @@ class LiveChatServices {
           return null;
         }
       })
-          .where((message) => message != null)
+          .where((Message? message) => message != null)
           .cast<Message>()
           .toList();
 
@@ -225,7 +225,7 @@ class LiveChatServices {
       return messages;
     } catch (e) {
       print('Error loading messages from Firestore: $e');
-      return [];
+      return <Message>[];
     }
   }
 }
