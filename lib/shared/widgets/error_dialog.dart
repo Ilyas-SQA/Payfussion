@@ -34,7 +34,7 @@ class ErrorDialog {
         return AlertDialog(
           title: Text(title),
           content: Text(message),
-          actions: [
+          actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: Text('OK',style: TextStyle(color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white),),
