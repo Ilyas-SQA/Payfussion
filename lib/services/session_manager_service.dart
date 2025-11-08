@@ -7,7 +7,7 @@ import 'local_storage.dart';
 import 'service_locator.dart';
 
 class SessionController {
-  final _localDb = getIt<LocalStorage>();
+  final LocalStorage _localDb = getIt<LocalStorage>();
 
   /// Flag indicating whether the user is logged in or not.
   static bool? isBiometric = false;
@@ -35,8 +35,8 @@ class SessionController {
 
   Future<UserModel?> getUserFromPreference() async {
     try {
-      var userData = await _localDb.readValue('userData');
-      var isBiometric = await _localDb.readValue('isBiometric');
+      final String? userData = await _localDb.readValue('userData');
+      final String? isBiometric = await _localDb.readValue('isBiometric');
 
       if (userData != null && userData.isNotEmpty) {
         SessionController.user = UserModel.fromJson(jsonDecode(userData));
