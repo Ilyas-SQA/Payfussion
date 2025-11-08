@@ -29,7 +29,7 @@ class PayBillBloc extends Bloc<PayBillEvent, PayBillState> {
       ) async {
     emit(PayBillLoading());
     try {
-      final payBills = await _payBillRepository.getUserPayBills();
+      final List<PayBillModel> payBills = await _payBillRepository.getUserPayBills();
       emit(PayBillLoaded(payBills));
     } catch (e) {
       emit(PayBillError(e.toString()));
@@ -49,7 +49,7 @@ class PayBillBloc extends Bloc<PayBillEvent, PayBillState> {
       final double totalAmount = originalAmount + taxAmount;
 
       // Update bill with tax included - companyName preserved from event
-      final updatedBill = event.payBill.copyWith(
+      final PayBillModel updatedBill = event.payBill.copyWith(
         amount: totalAmount,
         feeAmount: taxAmount,
         hasFee: true,
@@ -59,7 +59,7 @@ class PayBillBloc extends Bloc<PayBillEvent, PayBillState> {
       await _payBillRepository.addPayBill(updatedBill);
 
       // Reload all pay bills after adding
-      final payBills = await _payBillRepository.getUserPayBills();
+      final List<PayBillModel> payBills = await _payBillRepository.getUserPayBills();
       emit(PayBillLoaded(payBills));
 
       // NO NOTIFICATION HERE - Silent operation
@@ -82,7 +82,7 @@ class PayBillBloc extends Bloc<PayBillEvent, PayBillState> {
       );
 
       // Reload all pay bills after updating
-      final payBills = await _payBillRepository.getUserPayBills();
+      final List<PayBillModel> payBills = await _payBillRepository.getUserPayBills();
       emit(PayBillLoaded(payBills));
 
       // NO NOTIFICATION HERE - Silent operation
@@ -99,7 +99,7 @@ class PayBillBloc extends Bloc<PayBillEvent, PayBillState> {
       ) async {
     emit(PayBillLoading());
     try {
-      final payBills = await _payBillRepository.getPayBillsByStatus(event.status);
+      final List<PayBillModel> payBills = await _payBillRepository.getPayBillsByStatus(event.status);
       emit(PayBillLoaded(payBills));
     } catch (e) {
       emit(PayBillError(e.toString()));
@@ -116,7 +116,7 @@ class PayBillBloc extends Bloc<PayBillEvent, PayBillState> {
       await _payBillRepository.deletePayBill(event.billId);
 
       // Reload all pay bills after deleting
-      final payBills = await _payBillRepository.getUserPayBills();
+      final List<PayBillModel> payBills = await _payBillRepository.getUserPayBills();
       emit(PayBillLoaded(payBills));
 
       // NO NOTIFICATION HERE - Silent operation
@@ -141,7 +141,7 @@ class PayBillBloc extends Bloc<PayBillEvent, PayBillState> {
       );
 
       // Get the updated bill with complete company information
-      final updatedBill = await _payBillRepository.getPayBillById(event.billId);
+      final PayBillModel? updatedBill = await _payBillRepository.getPayBillById(event.billId);
 
       if (updatedBill != null) {
         // Extract company name for notifications
@@ -165,7 +165,7 @@ class PayBillBloc extends Bloc<PayBillEvent, PayBillState> {
         try {
           print('🔥 Adding notification to Firestore for company: $companyName');
 
-          final notificationData = {
+          final Map<String, Object> notificationData = <String, Object>{
             'billId': event.billId,
             'amount': updatedBill.amount ?? 0.0,
             'originalAmount': (updatedBill.amount ?? 0.0) - (updatedBill.feeAmount ?? 0.0),
@@ -197,7 +197,7 @@ class PayBillBloc extends Bloc<PayBillEvent, PayBillState> {
         }
 
         // Update state silently
-        final payBills = await _payBillRepository.getUserPayBills();
+        final List<PayBillModel> payBills = await _payBillRepository.getUserPayBills();
         emit(PayBillLoaded(payBills));
         emit(PayBillPaymentSuccess(updatedBill));
       } else {
@@ -219,7 +219,7 @@ class PayBillBloc extends Bloc<PayBillEvent, PayBillState> {
         title: 'Payment Failed',
         message: 'Bill payment failed: ${e.toString()}',
         type: 'bill_payment_failed',
-        data: {
+        data: <String, dynamic>{
           'billId': event.billId,
           'error': e.toString(),
           'timestamp': DateTime.now().toIso8601String(),
@@ -234,7 +234,7 @@ class PayBillBloc extends Bloc<PayBillEvent, PayBillState> {
   String _getBillType(String companyName) {
     if (companyName.isEmpty) return 'Bill Payment';
 
-    final company = companyName.toLowerCase().trim();
+    final String company = companyName.toLowerCase().trim();
 
     // Electricity providers
     if (company.contains('electric') ||

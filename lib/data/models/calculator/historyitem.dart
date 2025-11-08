@@ -19,7 +19,7 @@ class HistoryItem extends HiveObject {
     this.timestamp = timestamp ?? DateTime.now();
   }
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => <String, dynamic>{
     'title': title,
     'subtitle': subtitle,
     'timestamp': timestamp.toIso8601String(),

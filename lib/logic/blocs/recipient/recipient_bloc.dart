@@ -43,10 +43,10 @@ class RecipientBloc extends Bloc<AddRecipientEvent, AddRecipientState> {
   }
 
   String _formatAccount(String value) {
-    final digits = value.replaceAll(RegExp(r'\D'), '');
+    final String digits = value.replaceAll(RegExp(r'\D'), '');
     if (digits.isEmpty) return '';
 
-    final sb = StringBuffer();
+    final StringBuffer sb = StringBuffer();
     for (int i = 0; i < digits.length; i++) {
       if (i > 0 && i % 4 == 0) sb.write(' ');
       sb.write(digits[i]);
@@ -55,13 +55,13 @@ class RecipientBloc extends Bloc<AddRecipientEvent, AddRecipientState> {
   }
 
   void _validateAll(Emitter<AddRecipientState> emit, {AddRecipientState? s}) {
-    final st = s ?? state;
+    final AddRecipientState st = s ?? state;
     String? nameErr;
     String? bankErr;
     String? accErr;
 
     // Name validation
-    final trimmedName = st.name.trim();
+    final String trimmedName = st.name.trim();
     if (trimmedName.isEmpty) {
       nameErr = 'Name is required';
     } else if (trimmedName.length < 2) {
@@ -78,7 +78,7 @@ class RecipientBloc extends Bloc<AddRecipientEvent, AddRecipientState> {
     }
 
     // Account validation
-    final rawAccount = st.accountNumber.replaceAll(' ', '');
+    final String rawAccount = st.accountNumber.replaceAll(' ', '');
     if (rawAccount.isEmpty) {
       accErr = 'Account number is required';
     } else if (rawAccount.length < 8) {
@@ -101,7 +101,7 @@ class RecipientBloc extends Bloc<AddRecipientEvent, AddRecipientState> {
     emit(state.copyWith(banksLoading: true));
 
     try {
-      final banks = await _repo.getBanks();
+      final List<Bank> banks = await _repo.getBanks();
       emit(state.copyWith(
         banks: banks,
         banksLoading: false,
@@ -110,8 +110,8 @@ class RecipientBloc extends Bloc<AddRecipientEvent, AddRecipientState> {
     } catch (e) {
       print('Error loading banks: $e');
       emit(state.copyWith(
-          banks: [],
-          filteredBanks: [],
+          banks: <Bank>[],
+          filteredBanks: <Bank>[],
           banksLoading: false,
           errorMessage: 'Failed to load banks. Please check your connection.'
       ));
@@ -124,9 +124,9 @@ class RecipientBloc extends Bloc<AddRecipientEvent, AddRecipientState> {
 
     await emit.forEach<List<Bank>>(
       _repo.streamBanks(),
-      onData: (banks) {
+      onData: (List<Bank> banks) {
         // Apply current search filter to new bank list
-        final filteredBanks = _filterBanks(banks, state.bankSearchQuery);
+        final List<Bank> filteredBanks = _filterBanks(banks, state.bankSearchQuery);
 
         return state.copyWith(
           banks: banks,
@@ -135,7 +135,7 @@ class RecipientBloc extends Bloc<AddRecipientEvent, AddRecipientState> {
           errorMessage: null,
         );
       },
-      onError: (error, stackTrace) {
+      onError: (Object error, StackTrace stackTrace) {
         print('Banks stream error: $error');
         return state.copyWith(
           banksLoading: false,
@@ -151,8 +151,8 @@ class RecipientBloc extends Bloc<AddRecipientEvent, AddRecipientState> {
     emit(state.copyWith(isAddingBank: true, errorMessage: null));
 
     try {
-      final bankData = event.bankData;
-      final newBank = await _repo.addNewBankWithDetails(bankData);
+      final Map<String, String> bankData = event.bankData;
+      final Bank newBank = await _repo.addNewBankWithDetails(bankData);
 
       emit(state.copyWith(
         isAddingBank: false,
@@ -176,7 +176,7 @@ class RecipientBloc extends Bloc<AddRecipientEvent, AddRecipientState> {
 
   // New method for bank search
   void _onBankSearchChanged(BankSearchChanged event, Emitter<AddRecipientState> emit,) {
-    final filteredBanks = _filterBanks(state.banks, event.query);
+    final List<Bank> filteredBanks = _filterBanks(state.banks, event.query);
 
     emit(state.copyWith(
       bankSearchQuery: event.query,
@@ -188,20 +188,20 @@ class RecipientBloc extends Bloc<AddRecipientEvent, AddRecipientState> {
   List<Bank> _filterBanks(List<Bank> banks, String query) {
     if (query.trim().isEmpty) return banks;
 
-    final lowercaseQuery = query.toLowerCase().trim();
-    return banks.where((bank) =>
+    final String lowercaseQuery = query.toLowerCase().trim();
+    return banks.where((Bank bank) =>
         bank.name.toLowerCase().contains(lowercaseQuery)
     ).toList();
   }
 
   void _onNameChanged(NameChanged e, Emitter<AddRecipientState> emit) {
-    final s = state.copyWith(name: e.name, errorMessage: null);
+    final AddRecipientState s = state.copyWith(name: e.name, errorMessage: null);
     emit(s);
     _validateAll(emit, s: s);
   }
 
   void _onBankChanged(BankChanged e, Emitter<AddRecipientState> emit) {
-    final s = state.copyWith(
+    final AddRecipientState s = state.copyWith(
       selectedBank: e.bank,
       verifyStatus: VerifyStatus.idle,
       duplicateFound: false,
@@ -213,8 +213,8 @@ class RecipientBloc extends Bloc<AddRecipientEvent, AddRecipientState> {
   }
 
   void _onAccountChanged(AccountNumberChanged e, Emitter<AddRecipientState> emit) {
-    final formatted = _formatAccount(e.account);
-    final s = state.copyWith(
+    final String formatted = _formatAccount(e.account);
+    final AddRecipientState s = state.copyWith(
       accountNumber: formatted,
       verifyStatus: VerifyStatus.idle,
       duplicateFound: false,
@@ -251,12 +251,12 @@ class RecipientBloc extends Bloc<AddRecipientEvent, AddRecipientState> {
     ));
 
     try {
-      final rawAccount = state.accountNumber.replaceAll(' ', '');
-      final bankName = state.selectedBank!.name;
+      final String rawAccount = state.accountNumber.replaceAll(' ', '');
+      final String bankName = state.selectedBank!.name;
 
       print('Verifying: $rawAccount for bank: $bankName');
 
-      final isDuplicate = await _repo.isRecipientExist(
+      final bool isDuplicate = await _repo.isRecipientExist(
         userId: userId,
         bankName: bankName,
         accountNumber: rawAccount,
@@ -271,7 +271,7 @@ class RecipientBloc extends Bloc<AddRecipientEvent, AddRecipientState> {
         return;
       }
 
-      final isValid = await _repo.verifyAccountNumber(rawAccount);
+      final bool isValid = await _repo.verifyAccountNumber(rawAccount);
 
       if (isValid) {
         emit(state.copyWith(
@@ -363,11 +363,11 @@ class RecipientBloc extends Bloc<AddRecipientEvent, AddRecipientState> {
 
     await emit.forEach<List<RecipientModel>>(
       _repo.streamRecipients(userId: userId),
-      onData: (items) {
-        final q = state.searchQuery.trim().toLowerCase();
-        final filtered = q.isEmpty
+      onData: (List<RecipientModel> items) {
+        final String q = state.searchQuery.trim().toLowerCase();
+        final List<RecipientModel> filtered = q.isEmpty
             ? items
-            : items.where((r) => r.name.toLowerCase().contains(q)).toList();
+            : items.where((RecipientModel r) => r.name.toLowerCase().contains(q)).toList();
 
         return state.copyWith(
           recipientsStatus: RecipientsStatus.success,
@@ -375,7 +375,7 @@ class RecipientBloc extends Bloc<AddRecipientEvent, AddRecipientState> {
           filteredRecipients: filtered,
         );
       },
-      onError: (error, stackTrace) {
+      onError: (Object error, StackTrace stackTrace) {
         print('Recipients stream error: $error');
         return state.copyWith(
             recipientsStatus: RecipientsStatus.failure,
@@ -386,11 +386,11 @@ class RecipientBloc extends Bloc<AddRecipientEvent, AddRecipientState> {
   }
 
   void _onRecipientsSearch(RecipientsSearchChanged event, Emitter<AddRecipientState> emit,) {
-    final q = event.query.trim().toLowerCase();
-    final filtered = q.isEmpty
+    final String q = event.query.trim().toLowerCase();
+    final List<RecipientModel> filtered = q.isEmpty
         ? state.allRecipients
         : state.allRecipients
-        .where((r) => r.name.toLowerCase().contains(q))
+        .where((RecipientModel r) => r.name.toLowerCase().contains(q))
         .toList();
 
     emit(state.copyWith(

@@ -6,7 +6,7 @@ abstract class BankTransactionEvent extends Equatable {
   const BankTransactionEvent();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 // Events for bank selection
@@ -20,14 +20,14 @@ class BankSelected extends BankTransactionEvent {
   final Bank? bank;
 
   @override
-  List<Object?> get props => [bank];
+  List<Object?> get props => <Object?>[bank];
 }
 
 class BankUnselected extends BankTransactionEvent {
   const BankUnselected();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 // Events for bank details
@@ -45,7 +45,7 @@ class BankDetailsSubmitted extends BankTransactionEvent {
   });
 
   @override
-  List<Object?> get props => [accountNumber, paymentPurpose, phoneNumber, bank];
+  List<Object?> get props => <Object?>[accountNumber, paymentPurpose, phoneNumber, bank];
 }
 
 // Events for amount handling
@@ -55,7 +55,7 @@ class BankTransferAmountChanged extends BankTransactionEvent {
   const BankTransferAmountChanged(this.rawAmount);
 
   @override
-  List<Object?> get props => [rawAmount];
+  List<Object?> get props => <Object?>[rawAmount];
 }
 
 class BankTransferAmountSet extends BankTransactionEvent {
@@ -64,7 +64,7 @@ class BankTransferAmountSet extends BankTransactionEvent {
   const BankTransferAmountSet(this.amount);
 
   @override
-  List<Object?> get props => [amount];
+  List<Object?> get props => <Object?>[amount];
 }
 
 // Events for transaction processing
@@ -78,7 +78,7 @@ class BankTransferCompleted extends BankTransactionEvent {
   const BankTransferCompleted(this.transactionId);
 
   @override
-  List<Object?> get props => [transactionId];
+  List<Object?> get props => <Object?>[transactionId];
 }
 
 class BankTransferFailed extends BankTransactionEvent {
@@ -87,7 +87,7 @@ class BankTransferFailed extends BankTransactionEvent {
   const BankTransferFailed(this.errorMessage);
 
   @override
-  List<Object?> get props => [errorMessage];
+  List<Object?> get props => <Object?>[errorMessage];
 }
 
 // Events for fetching transactions
@@ -105,7 +105,7 @@ class FetchBankTransactionsByDate extends BankTransactionEvent {
   });
 
   @override
-  List<Object?> get props => [startDate, endDate];
+  List<Object?> get props => <Object?>[startDate, endDate];
 }
 
 // Events for validation
@@ -119,7 +119,7 @@ class ValidateAccountNumber extends BankTransactionEvent {
   });
 
   @override
-  List<Object?> get props => [accountNumber, bank];
+  List<Object?> get props => <Object?>[accountNumber, bank];
 }
 
 // Events for resetting state
@@ -144,7 +144,7 @@ class AddBankToFavorites extends BankTransactionEvent {
   });
 
   @override
-  List<Object?> get props => [bank, accountNumber, recipientName];
+  List<Object?> get props => <Object?>[bank, accountNumber, recipientName];
 }
 
 class RemoveBankFromFavorites extends BankTransactionEvent {
@@ -153,7 +153,7 @@ class RemoveBankFromFavorites extends BankTransactionEvent {
   const RemoveBankFromFavorites(this.favoriteId);
 
   @override
-  List<Object?> get props => [favoriteId];
+  List<Object?> get props => <Object?>[favoriteId];
 }
 
 class FetchFavoriteBanks extends BankTransactionEvent {

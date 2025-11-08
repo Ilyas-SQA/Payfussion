@@ -52,7 +52,7 @@ class SettingsState extends Equatable {
       );
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
     linkedAccounts,
     security,
     currencyCode,
@@ -66,14 +66,14 @@ class SettingsState extends Equatable {
   ];
 
   factory SettingsState.initial() => const SettingsState(
-    linkedAccounts: {
+    linkedAccounts: <String, bool>{
       'cityBank': true,
       'paypal': false,
       'fingerprint': false, // This will be updated based on user preference
       '2fa': false,
       'lock': false,
     },
-    security: {
+    security: <String, bool>{
       'fingerprint': false, // Initially false, will be loaded from preferences
       '2fa': true,
       'lock': true,

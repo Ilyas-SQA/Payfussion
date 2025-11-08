@@ -39,7 +39,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
   late AnimationController _backgroundAnimationController;
 
   // Filters
-  Map<String, dynamic> activeFilters = {
+  Map<String, dynamic> activeFilters = <String, dynamic>{
     'period': 'All time',
     'dateRange': null,
     'statuses': <String>{},
@@ -113,7 +113,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
   TransactionModel _fromFirestore(
       DocumentSnapshot<Map<String, dynamic>> doc,
       ) {
-    final data = doc.data() ?? {};
+    final Map<String, dynamic> data = doc.data() ?? <String, dynamic>{};
 
     switch (selectedCategory) {
       case TransactionCategory.transaction:
@@ -138,7 +138,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
       createdAt = DateTime.now();
     }
 
-    final rawStatus = (data['status'] ?? '').toString().toLowerCase();
+    final String rawStatus = (data['status'] ?? '').toString().toLowerCase();
     String uiStatus;
     switch (rawStatus) {
       case 'success':
@@ -156,7 +156,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
         uiStatus = 'Completed';
     }
 
-    final title = (data['recipient_name'] ?? data['title'] ?? 'Payment').toString();
+    final String title = (data['recipient_name'] ?? data['title'] ?? 'Payment').toString();
     final String iconPath = uiStatus == 'Failed'
         ? TImageUrl.iconConversionTransaction
         : TImageUrl.iconCreditCardTransaction;
@@ -182,7 +182,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
       createdAt = DateTime.now();
     }
 
-    final rawStatus = (data['status'] ?? '').toString().toLowerCase();
+    final String rawStatus = (data['status'] ?? '').toString().toLowerCase();
     String uiStatus;
     switch (rawStatus) {
       case 'completed':
@@ -225,7 +225,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
       createdAt = DateTime.now();
     }
 
-    final rawStatus = (data['status'] ?? '').toString().toLowerCase();
+    final String rawStatus = (data['status'] ?? '').toString().toLowerCase();
     String uiStatus;
     switch (rawStatus) {
       case 'completed':
@@ -244,7 +244,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
     // Show company name and insurance type in title
     final companyName = data['companyName'] ?? 'Insurance Company';
     final insuranceType = data['insuranceType'] ?? 'Insurance';
-    final title = '$companyName - $insuranceType';
+    final String title = '$companyName - $insuranceType';
     final amount = (data['premiumAmount'] ?? 0).toDouble();
 
     return TransactionModel(
@@ -266,7 +266,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
       createdAt = DateTime.now();
     }
 
-    final rawStatus = (data['paymentStatus'] ?? '').toString().toLowerCase();
+    final String rawStatus = (data['paymentStatus'] ?? '').toString().toLowerCase();
     String uiStatus;
     switch (rawStatus) {
       case 'completed':
@@ -289,7 +289,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
     final seatType = data['seatType'] ?? '';
 
     // Create a more user-friendly ID display
-    final displayId = 'Tickets: $numberOfTickets${seatType.isNotEmpty ? ' ($seatType)' : ''}';
+    final String displayId = 'Tickets: $numberOfTickets${seatType.isNotEmpty ? ' ($seatType)' : ''}';
 
     return TransactionModel(
       id: displayId, // Show ticket count and seat type instead of UUID
@@ -307,20 +307,20 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
 
     // search
     if (searchQuery.isNotEmpty) {
-      filtered = filtered.where((txn) =>
+      filtered = filtered.where((TransactionModel txn) =>
       txn.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
           txn.id.toLowerCase().contains(searchQuery.toLowerCase())).toList();
     }
 
     // status
     if (activeFilters['statuses'].isNotEmpty) {
-      filtered = filtered.where((txn) => activeFilters['statuses'].contains(txn.status)).toList();
+      filtered = filtered.where((TransactionModel txn) => activeFilters['statuses'].contains(txn.status)).toList();
     }
 
     // date range
     if (activeFilters['dateRange'] != null) {
       final DateTimeRange range = activeFilters['dateRange'];
-      filtered = filtered.where((txn) =>
+      filtered = filtered.where((TransactionModel txn) =>
       txn.dateTime.isAfter(range.start) &&
           txn.dateTime.isBefore(range.end.add(const Duration(days: 1)))).toList();
     } else if (activeFilters['period'] != 'All time') {
@@ -329,13 +329,13 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
 
       switch (activeFilters['period']) {
         case 'Today':
-          filtered = filtered.where((txn) =>
+          filtered = filtered.where((TransactionModel txn) =>
           txn.dateTime.isAfter(today.subtract(const Duration(days: 1))) &&
               txn.dateTime.isBefore(today.add(const Duration(days: 1)))).toList();
           break;
         case 'This week':
           final DateTime startOfWeek = today.subtract(Duration(days: today.weekday % 7));
-          filtered = filtered.where((txn) =>
+          filtered = filtered.where((TransactionModel txn) =>
           txn.dateTime.isAfter(startOfWeek) &&
               txn.dateTime.isBefore(startOfWeek.add(const Duration(days: 7)))).toList();
           break;
@@ -345,7 +345,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
               ? DateTime(today.year, today.month + 1, 1)
               : DateTime(today.year + 1, 1, 1);
           filtered = filtered
-              .where((txn) =>
+              .where((TransactionModel txn) =>
           txn.dateTime.isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
               txn.dateTime.isBefore(nextMonth))
               .toList();
@@ -358,10 +358,10 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
 
   /// Group by date buckets (Today / Yesterday / This Week / This Month / MMMM yyyy)
   Map<String, List<TransactionModel>> _groupTransactionsByDate(List<TransactionModel> txnList) {
-    final Map<String, List<TransactionModel>> grouped = {};
+    final Map<String, List<TransactionModel>> grouped = <String, List<TransactionModel>>{};
     if (txnList.isEmpty) return grouped;
 
-    for (var transaction in txnList) {
+    for (TransactionModel transaction in txnList) {
       String dateKey;
       final DateTime now = DateTime.now();
       final DateTime today = DateTime(now.year, now.month, now.day);
@@ -387,7 +387,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
         dateKey = DateFormat('MMMM yyyy').format(transaction.dateTime);
       }
 
-      grouped.putIfAbsent(dateKey, () => []);
+      grouped.putIfAbsent(dateKey, () => <TransactionModel>[]);
       grouped[dateKey]!.add(transaction);
     }
 
@@ -399,9 +399,9 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
       context: context,
       isScrollControlled: true,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      builder: (context) => TransactionFilterSheet(
+      builder: (BuildContext context) => TransactionFilterSheet(
         initialFilters: activeFilters,
-        onApply: (filters) {
+        onApply: (Map<String, dynamic> filters) {
           setState(() {
             activeFilters = filters;
           });
@@ -415,7 +415,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
       child: Row(
-        children: [
+        children: <Widget>[
           Expanded(child: _buildCategoryButton('Transaction', TransactionCategory.transaction)),
           SizedBox(width: 6.w),
           Expanded(child: _buildCategoryButton('PayBills', TransactionCategory.payBills)),
@@ -447,7 +447,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
           decoration: BoxDecoration(
             color: isSelected ? MyTheme.primaryColor : Theme.of(context).scaffoldBackgroundColor,
             borderRadius: BorderRadius.circular(5.r),
-            boxShadow: [
+            boxShadow: <BoxShadow>[
               BoxShadow(
                 color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                 blurRadius: 5,
@@ -477,11 +477,11 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
         padding: EdgeInsets.symmetric(vertical: 10.h),
         children: AnimationConfiguration.toStaggeredList(
           duration: const Duration(milliseconds: 375),
-          childAnimationBuilder: (widget) => SlideAnimation(
+          childAnimationBuilder: (Widget widget) => SlideAnimation(
             verticalOffset: 50.0,
             child: FadeInAnimation(child: widget),
           ),
-          children: [
+          children: <Widget>[
             _buildShimmerSection(),
             SizedBox(height: 20.h),
             _buildShimmerSection(),
@@ -498,14 +498,14 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
       duration: AppDurations.quickAnimation,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           // Header shimmer
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
             child: _buildShimmerBox(width: 120.w, height: 20.h),
           ),
           // Transaction items shimmer
-          ...List.generate(3, (index) => _buildTransactionShimmer()),
+          ...List.generate(3, (int index) => _buildTransactionShimmer()),
         ],
       ),
     );
@@ -522,7 +522,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
           borderRadius: BorderRadius.circular(12.r),
         ),
         child: Row(
-          children: [
+          children: <Widget>[
             // Icon shimmer
             _buildShimmerBox(width: 48.w, height: 48.h, borderRadius: 24.r),
             SizedBox(width: 12.w),
@@ -530,10 +530,10 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
+                    children: <Widget>[
                       _buildShimmerBox(width: 140.w, height: 18.h),
                       _buildShimmerBox(width: 80.w, height: 18.h),
                     ],
@@ -541,7 +541,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
                   SizedBox(height: 8.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
+                    children: <Widget>[
                       _buildShimmerBox(width: 100.w, height: 14.h),
                       _buildShimmerBox(width: 70.w, height: 24.h, borderRadius: 12.r),
                     ],
@@ -570,12 +570,12 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
         gradient: LinearGradient(
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
-          colors: [
+          colors: <Color>[
             Colors.grey.shade100,
             Colors.grey.shade50,
             Colors.grey.shade100,
           ],
-          stops: const [0.0, 0.5, 1.0],
+          stops: const <double>[0.0, 0.5, 1.0],
         ),
       ),
       child: _ShimmerAnimation(
@@ -591,19 +591,19 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
 
   @override
   Widget build(BuildContext context) {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final String? uid = FirebaseAuth.instance.currentUser?.uid;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Transactions"),
         centerTitle: true,
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
           Column(
-            children: [
+            children: <Widget>[
               SizedBox(height: 20.h),
               // Animated header
               SlideTransition(
@@ -627,19 +627,19 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
                     if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     }
-                    final docs = snapshot.data?.docs ?? [];
-                    final base = docs.map(_fromFirestore).toList();
+                    final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs = snapshot.data?.docs ?? <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+                    final List<TransactionModel> base = docs.map(_fromFirestore).toList();
 
                     if (base.isEmpty) {
                       return _buildNoTransactionsView();
                     }
 
-                    final filtered = _getFilteredTransactions(base);
+                    final List<TransactionModel> filtered = _getFilteredTransactions(base);
                     if (filtered.isEmpty) {
                       return _buildNoTransactionsView();
                     }
 
-                    final grouped = _groupTransactionsByDate(filtered);
+                    final Map<String, List<TransactionModel>> grouped = _groupTransactionsByDate(filtered);
                     return _buildTransactionsList(grouped);
                   },
                 ),
@@ -690,7 +690,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
         ),
         child: Row(
           spacing: 5,
-          children: [
+          children: <Widget>[
             Expanded(
               flex: 5,
               child: AnimatedContainer(
@@ -753,7 +753,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             ScaleTransition(
               scale: Tween<double>(begin: 0.5, end: 1.0).animate(
                 CurvedAnimation(
@@ -773,7 +773,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
                 curve: Curves.easeOutCubic,
               )),
               child: Column(
-                children: [
+                children: <Widget>[
                   Text(
                     'No ${_getCategoryTitle()}',
                     style: TextStyle(
@@ -808,8 +808,8 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
         padding: EdgeInsets.symmetric(vertical: 10.h),
         itemCount: groupedTransactions.length,
         itemBuilder: (BuildContext context, int index) {
-          final dateKey = groupedTransactions.keys.elementAt(index);
-          final transactionsForDate = groupedTransactions[dateKey]!;
+          final String dateKey = groupedTransactions.keys.elementAt(index);
+          final List<TransactionModel> transactionsForDate = groupedTransactions[dateKey]!;
 
           return AnimationConfiguration.staggeredList(
             position: index,
@@ -819,7 +819,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
               child: FadeInAnimation(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     TransactionItemHeader(
                       heading: dateKey,
                       showTrailingButton: false,
@@ -906,18 +906,18 @@ class _ShimmerAnimationState extends State<_ShimmerAnimation> with SingleTickerP
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _animation,
-      builder: (context, child) {
+      builder: (BuildContext context, Widget? child) {
         return ShaderMask(
-          shaderCallback: (bounds) {
+          shaderCallback: (Rect bounds) {
             return LinearGradient(
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
-              colors: const [
+              colors: const <Color>[
                 Colors.transparent,
                 Colors.white54,
                 Colors.transparent,
               ],
-              stops: [
+              stops: <double>[
                 _animation.value - 0.3,
                 _animation.value,
                 _animation.value + 0.3,
@@ -948,8 +948,8 @@ class TransactionFilterSheet extends StatefulWidget {
 
 class _TransactionFilterSheetState extends State<TransactionFilterSheet> with SingleTickerProviderStateMixin {
   late Map<String, dynamic> filters;
-  final List<String> periodOptions = ['All time', 'Today', 'This week', 'This month'];
-  final List<String> statusOptions = ['Completed', 'Pending', 'Failed'];
+  final List<String> periodOptions = <String>['All time', 'Today', 'This week', 'This month'];
+  final List<String> statusOptions = <String>['Completed', 'Pending', 'Failed'];
   late AnimationController _animationController;
 
   @override
@@ -996,11 +996,11 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
           opacity: _animationController,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               // header
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: <Widget>[
                   Text('Filter Transactions', style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
                   IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close)),
                 ],
@@ -1014,8 +1014,8 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
               SizedBox(height: 10.h),
               Wrap(
                 spacing: 10.w,
-                children: periodOptions.map((option) {
-                  final isSelected = filters['period'] == option;
+                children: periodOptions.map((String option) {
+                  final bool isSelected = filters['period'] == option;
                   return AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     child: ChoiceChip(
@@ -1026,7 +1026,7 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
                       ),
                       selected: isSelected,
                       selectedColor: MyTheme.primaryColor,
-                      onSelected: (selected) {
+                      onSelected: (bool selected) {
                         setState(() {
                           if (selected) {
                             filters['period'] = option;
@@ -1054,7 +1054,7 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
                           start: DateTime.now().subtract(const Duration(days: 7)),
                           end: DateTime.now(),
                         ),
-                    builder: (context, child) {
+                    builder: (BuildContext context, Widget? child) {
                       return Theme(
                         data: Theme.of(context).copyWith(
                           colorScheme:  const ColorScheme.light(primary: MyTheme.primaryColor),
@@ -1079,7 +1079,7 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
                     color: filters['dateRange'] != null ? MyTheme.primaryColor : Colors.transparent,
                   ),
                   child: Row(
-                    children: [
+                    children: <Widget>[
                       Icon(Icons.calendar_today, color:  MyTheme.primaryColor, size: 18.sp),
                       SizedBox(width: 10.w),
                       filters['dateRange'] != null
@@ -1100,7 +1100,7 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
               SizedBox(height: 10.h),
               Wrap(
                 spacing: 10.w,
-                children: statusOptions.map((status) {
+                children: statusOptions.map((String status) {
                   final isSelected = filters['statuses'].contains(status);
                   return AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
@@ -1108,7 +1108,7 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
                       label: Text(status, style: TextStyle(color: isSelected ? Colors.white : Colors.black)),
                       selected: isSelected,
                       selectedColor:  MyTheme.primaryColor,
-                      onSelected: (selected) {
+                      onSelected: (bool selected) {
                         setState(() {
                           if (selected) {
                             filters['statuses'].add(status);
@@ -1126,14 +1126,14 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
 
               // Actions
               Row(
-                children: [
+                children: <Widget>[
                   Expanded(
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       child: OutlinedButton(
                         onPressed: () {
                           setState(() {
-                            filters = {
+                            filters = <String, dynamic>{
                               'period': 'All time',
                               'dateRange': null,
                               'statuses': <String>{},

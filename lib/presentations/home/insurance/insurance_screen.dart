@@ -23,10 +23,10 @@ class _InsuranceScreenState extends State<InsuranceScreen> with TickerProviderSt
   late Animation<Offset> _headerSlide;
   late Animation<double> _listFade;
 
-  final List<Map<String, dynamic>> insuranceCompanies = [
-    {
+  final List<Map<String, dynamic>> insuranceCompanies = <Map<String, dynamic>>[
+    <String, dynamic>{
       "name": "State Farm",
-      "types": [
+      "types": <String>[
         "Auto Insurance",
         "Homeowners Insurance",
         "Property & Casualty"
@@ -35,9 +35,9 @@ class _InsuranceScreenState extends State<InsuranceScreen> with TickerProviderSt
       "color": MyTheme.secondaryColor,
       "description": "America's largest auto insurer"
     },
-    {
+    <String, dynamic>{
       "name": "Berkshire Hathaway",
-      "types": [
+      "types": <String>[
         "Auto Insurance (GEICO)",
         "Reinsurance (Gen Re)",
         "Property & Casualty",
@@ -47,9 +47,9 @@ class _InsuranceScreenState extends State<InsuranceScreen> with TickerProviderSt
       "color": MyTheme.secondaryColor,
       "description": "Warren Buffett's insurance empire"
     },
-    {
+    <String, dynamic>{
       "name": "MetLife",
-      "types": [
+      "types": <String>[
         "Life Insurance",
         "Health Insurance",
         "Dental & Vision Insurance",
@@ -59,9 +59,9 @@ class _InsuranceScreenState extends State<InsuranceScreen> with TickerProviderSt
       "color": MyTheme.secondaryColor,
       "description": "Leading life insurance provider"
     },
-    {
+    <String, dynamic>{
       "name": "Prudential Financial",
-      "types": [
+      "types": <String>[
         "Life Insurance",
         "Annuities",
         "Investment & Retirement Solutions"
@@ -70,9 +70,9 @@ class _InsuranceScreenState extends State<InsuranceScreen> with TickerProviderSt
       "color": MyTheme.secondaryColor,
       "description": "Financial wellness solutions"
     },
-    {
+    <String, dynamic>{
       "name": "Allstate Corporation",
-      "types": [
+      "types": <String>[
         "Auto Insurance",
         "Homeowners Insurance",
         "Renters & Condo Insurance",
@@ -82,9 +82,9 @@ class _InsuranceScreenState extends State<InsuranceScreen> with TickerProviderSt
       "color": MyTheme.secondaryColor,
       "description": "You're in good hands"
     },
-    {
+    <String, dynamic>{
       "name": "American International Group (AIG)",
-      "types": [
+      "types": <String>[
         "Life Insurance",
         "Property & Casualty Insurance",
         "Retirement Products",
@@ -94,9 +94,9 @@ class _InsuranceScreenState extends State<InsuranceScreen> with TickerProviderSt
       "color": MyTheme.secondaryColor,
       "description": "Global insurance leader"
     },
-    {
+    <String, dynamic>{
       "name": "Chubb Limited",
-      "types": [
+      "types": <String>[
         "Commercial Insurance",
         "Property & Casualty",
         "Accident & Health",
@@ -106,9 +106,9 @@ class _InsuranceScreenState extends State<InsuranceScreen> with TickerProviderSt
       "color": MyTheme.secondaryColor,
       "description": "Premium insurance solutions"
     },
-    {
+    <String, dynamic>{
       "name": "Northwestern Mutual",
-      "types": [
+      "types": <String>[
         "Life Insurance",
         "Disability Insurance",
         "Long-Term Care Insurance",
@@ -118,9 +118,9 @@ class _InsuranceScreenState extends State<InsuranceScreen> with TickerProviderSt
       "color": MyTheme.secondaryColor,
       "description": "Financial planning expertise"
     },
-    {
+    <String, dynamic>{
       "name": "Lincoln Financial Group",
-      "types": [
+      "types": <String>[
         "Life Insurance",
         "Retirement Plans",
         "Annuities",
@@ -130,9 +130,9 @@ class _InsuranceScreenState extends State<InsuranceScreen> with TickerProviderSt
       "color": MyTheme.secondaryColor,
       "description": "Retirement planning specialists"
     },
-    {
+    <String, dynamic>{
       "name": "MassMutual",
-      "types": [
+      "types": <String>[
         "Life Insurance",
         "Disability Income Insurance",
         "Long-Term Care Insurance",
@@ -222,7 +222,7 @@ class _InsuranceScreenState extends State<InsuranceScreen> with TickerProviderSt
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -230,13 +230,13 @@ class _InsuranceScreenState extends State<InsuranceScreen> with TickerProviderSt
             opacity: _listFade,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 // Header Section
                 Padding(
                   padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(
                         "Choose Your",
                         style: theme.textTheme.headlineMedium?.copyWith(
@@ -290,7 +290,7 @@ class _InsuranceScreenState extends State<InsuranceScreen> with TickerProviderSt
             childAspectRatio: 8 / 12,
           ),
           itemCount: insuranceCompanies.length,
-          itemBuilder: (context, index) {
+          itemBuilder: (BuildContext context, int index) {
             return AnimationConfiguration.staggeredList(
               position: index,
               duration: const Duration(milliseconds: 500),
@@ -317,7 +317,7 @@ class _InsuranceScreenState extends State<InsuranceScreen> with TickerProviderSt
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -354,7 +354,7 @@ class _InsuranceScreenState extends State<InsuranceScreen> with TickerProviderSt
           padding: EdgeInsets.all(10.w),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
+            children: <Widget>[
               // Icon Container
               Hero(
                 tag: 'insurance_icon_${company['name']}',
@@ -370,7 +370,7 @@ class _InsuranceScreenState extends State<InsuranceScreen> with TickerProviderSt
               // Content
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Text(
                     company['name'] as String,
                     textAlign: TextAlign.center,

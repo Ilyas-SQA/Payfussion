@@ -29,7 +29,7 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
   int currentLimit = 250000;
   int currentUtilityBills = 5;
 
-  final List<LimitOption> limitOptions = [
+  final List<LimitOption> limitOptions = <LimitOption>[
     LimitOption(amount: 1000000, utilityBills: 15),
     LimitOption(amount: 500000, utilityBills: 10),
     LimitOption(amount: 250000, utilityBills: 5),
@@ -38,7 +38,7 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
 
   void _showLimitOptions() {
     LimitOption tempSelectedLimit = limitOptions.firstWhere(
-          (option) =>
+          (LimitOption option) =>
       option.amount == currentLimit &&
           option.utilityBills == currentUtilityBills,
       orElse: () => limitOptions[2],
@@ -48,14 +48,14 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) {
+      builder: (BuildContext context) => StatefulBuilder(
+        builder: (BuildContext context, setModalState) {
           return Container(
             height: MediaQuery.of(context).size.height * 0.75,
             decoration: BoxDecoration(
               color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(5.r),
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                   blurRadius: 5,
@@ -64,19 +64,19 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
               ],
             ),
             child: Column(
-              children: [
+              children: <Widget>[
                 // Header
                 Container(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Theme.of(context).scaffoldBackgroundColor,
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(24),
                       topRight: Radius.circular(24),
                     ),
                   ),
                   child: Column(
-                    children: [
+                    children: <Widget>[
                       // Drag handle
                       Container(
                         width: 40,
@@ -86,9 +86,9 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Row(
-                        children: [
+                        children: <Widget>[
                           Text(
                             'Available limits',
                             style: Font.montserratFont(
@@ -104,14 +104,14 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
                 // Options List
                 Expanded(
                   child: ListView.builder(
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     itemCount: limitOptions.length,
-                    itemBuilder: (context, index) {
-                      final option = limitOptions[index];
-                      final isSelected = tempSelectedLimit == option;
+                    itemBuilder: (BuildContext context, int index) {
+                      final LimitOption option = limitOptions[index];
+                      final bool isSelected = tempSelectedLimit == option;
 
                       return Container(
-                        margin: EdgeInsets.only(bottom: 16),
+                        margin: const EdgeInsets.only(bottom: 16),
                         decoration: BoxDecoration(
                           color: Theme.of(context).scaffoldBackgroundColor,
                           borderRadius: BorderRadius.circular(16),
@@ -121,11 +121,11 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
                                 : Colors.transparent,
                             width: 2,
                           ),
-                          boxShadow: [
+                          boxShadow: <BoxShadow>[
                             BoxShadow(
                               color: Colors.black.withOpacity(0.05),
                               blurRadius: 10,
-                              offset: Offset(0, 2),
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
@@ -137,9 +137,9 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
                           },
                           borderRadius: BorderRadius.circular(16),
                           child: Padding(
-                            padding: EdgeInsets.all(20),
+                            padding: const EdgeInsets.all(20),
                             child: Row(
-                              children: [
+                              children: <Widget>[
                                 // Radio button
                                 Container(
                                   width: 28,
@@ -158,7 +158,7 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
                                     child: Container(
                                       width: 16,
                                       height: 16,
-                                      decoration: BoxDecoration(
+                                      decoration: const BoxDecoration(
                                         shape: BoxShape.circle,
                                         color: MyTheme.primaryColor
                                       ),
@@ -166,13 +166,13 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
                                   )
                                       : null,
                                 ),
-                                SizedBox(width: 16),
+                                const SizedBox(width: 16),
                                 // Limit details
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
                                     CrossAxisAlignment.start,
-                                    children: [
+                                    children: <Widget>[
                                       Text(
                                         'PKR ${option.amount.toString().replaceAllMapped(
                                           RegExp(
@@ -184,7 +184,7 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
-                                      SizedBox(height: 8),
+                                      const SizedBox(height: 8),
                                       Text(
                                         option.period,
                                         style: Font.montserratFont(
@@ -206,14 +206,14 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
                 ),
                 // Bottom button
                 Container(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Theme.of(context).scaffoldBackgroundColor,
-                    boxShadow: [
+                    boxShadow: <BoxShadow>[
                       BoxShadow(
                         color: Colors.black.withOpacity(0.1),
                         blurRadius: 10,
-                        offset: Offset(0, -2),
+                        offset: const Offset(0, -2),
                       ),
                     ],
                   ),
@@ -228,7 +228,7 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: MyTheme.primaryColor,
-                        minimumSize: Size(double.infinity, 56),
+                        minimumSize: const Size(double.infinity, 56),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -260,11 +260,11 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
       child: Container(
         height: 170,
         width: double.infinity,
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -274,7 +274,7 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             Text(
               'Limit',
               style: Font.montserratFont(
@@ -283,10 +283,10 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
                 color: Colors.grey[600],
               ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+              children: <Widget>[
                 Text(
                   'Incoming',
                   style: Font.montserratFont(
@@ -307,7 +307,7 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
                 ),
               ],
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             // Progress bar
             Container(
               height: 8,
@@ -321,8 +321,8 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
                 widthFactor: 1.0,
                 child: Container(
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
+                    gradient: const LinearGradient(
+                      colors: <Color>[
                         MyTheme.primaryColor,
                         MyTheme.primaryColor,
                       ],
@@ -332,7 +332,7 @@ class _LimitSettingContainerState extends State<LimitSettingContainer> {
                 ),
               ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text(
               'Your Rs. ${(currentLimit / 1000).toStringAsFixed(0)}k monthly limit resets on the 1st of next month',
               style: Font.montserratFont(

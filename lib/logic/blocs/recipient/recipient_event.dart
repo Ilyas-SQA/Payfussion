@@ -11,7 +11,7 @@ enum RecipientsStatus { loading, success, failure }
 abstract class AddRecipientEvent extends Equatable {
   const AddRecipientEvent();
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 // Bank-related events
@@ -23,14 +23,14 @@ class AddNewBankEvent extends AddRecipientEvent {
   const AddNewBankEvent(this.bankData);
 
   @override
-  List<Object?> get props => [bankData];
+  List<Object?> get props => <Object?>[bankData];
 }
 
 class BankSearchChanged extends AddRecipientEvent {
   final String query;
   const BankSearchChanged(this.query);
   @override
-  List<Object?> get props => [query];
+  List<Object?> get props => <Object?>[query];
 }
 
 // Form events
@@ -38,28 +38,28 @@ class NameChanged extends AddRecipientEvent {
   final String name;
   const NameChanged(this.name);
   @override
-  List<Object?> get props => [name];
+  List<Object?> get props => <Object?>[name];
 }
 
 class BankChanged extends AddRecipientEvent {
   final Bank? bank;
   const BankChanged(this.bank);
   @override
-  List<Object?> get props => [bank];
+  List<Object?> get props => <Object?>[bank];
 }
 
 class AccountNumberChanged extends AddRecipientEvent {
   final String account;
   const AccountNumberChanged(this.account);
   @override
-  List<Object?> get props => [account];
+  List<Object?> get props => <Object?>[account];
 }
 
 class PickImageRequested extends AddRecipientEvent {
   final File file;
   const PickImageRequested(this.file);
   @override
-  List<Object?> get props => [file];
+  List<Object?> get props => <Object?>[file];
 }
 
 class RemovePhotoRequested extends AddRecipientEvent {}
@@ -70,7 +70,7 @@ class SubmitPressed extends AddRecipientEvent {
   final bool addAnother;
   const SubmitPressed({this.addAnother = false});
   @override
-  List<Object?> get props => [addAnother];
+  List<Object?> get props => <Object?>[addAnother];
 }
 
 /// Recipients (list/search)
@@ -79,5 +79,5 @@ class RecipientsSearchChanged extends AddRecipientEvent {
   final String query;
   const RecipientsSearchChanged(this.query);
   @override
-  List<Object?> get props => [query];
+  List<Object?> get props => <Object?>[query];
 }

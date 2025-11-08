@@ -5,7 +5,7 @@ class ExpiryDateFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
-    final text = newValue.text.replaceAll('/', '');
+    final String text = newValue.text.replaceAll('/', '');
     if (text.length > 4) return oldValue;
 
     String formatted = '';
@@ -25,15 +25,15 @@ class ExpiryDateFormatter extends TextInputFormatter {
 bool isExpiryDateValid(String expiryDate) {
   if (!RegExp(r'^\d{2}/\d{2}$').hasMatch(expiryDate)) return false;
 
-  final parts = expiryDate.split('/');
-  final month = int.tryParse(parts[0]);
-  final year = int.tryParse(parts[1]);
+  final List<String> parts = expiryDate.split('/');
+  final int? month = int.tryParse(parts[0]);
+  final int? year = int.tryParse(parts[1]);
 
   if (month == null || year == null || month < 1 || month > 12) return false;
 
-  final now = DateTime.now();
-  final currentYear = int.parse(DateFormat('yy').format(now));
-  final currentMonth = now.month;
+  final DateTime now = DateTime.now();
+  final int currentYear = int.parse(DateFormat('yy').format(now));
+  final int currentMonth = now.month;
 
   if (year < currentYear || (year == currentYear && month < currentMonth)) {
     return false;

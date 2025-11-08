@@ -38,7 +38,7 @@ class _AuthButtonState extends State<AuthButton> {
                 24.r,
               ),
             ),
-            gradient: LinearGradient(colors: widget.colors, stops: const [0.5, 1]),
+            gradient: LinearGradient(colors: widget.colors, stops: const <double>[0.5, 1]),
           ),
           child: Align(
             alignment: Alignment.center,

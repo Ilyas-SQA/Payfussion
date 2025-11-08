@@ -16,8 +16,8 @@ class _SpecificRewardScreenState extends State<SpecificRewardScreen> {
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Center(child: Text("${widget.title.toString()} Coming song .... ",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),))
+        children: <Widget>[
+          Center(child: Text("${widget.title.toString()} Coming song .... ",style: const TextStyle(fontSize: 18,fontWeight: FontWeight.bold),))
         ],
       ),
     );

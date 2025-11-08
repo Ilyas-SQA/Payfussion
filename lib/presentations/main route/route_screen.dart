@@ -15,7 +15,7 @@ class RouteScreen extends StatefulWidget {
 }
 
 class _RouteScreenState extends State<RouteScreen> {
-  final List<GlobalKey<State>> _screenKeys = [
+  final List<GlobalKey<State>> _screenKeys = <GlobalKey<State<StatefulWidget>>>[
     GlobalKey(),
     GlobalKey(),
     GlobalKey(),
@@ -35,7 +35,7 @@ class _RouteScreenState extends State<RouteScreen> {
         });
 
         /// Pre-define screens with keys
-        final List<Widget> screens = [
+        final List<Widget> screens = <Widget>[
           HomeScreen(key: _screenKeys[0]),
           ScanToPayHomeScreen(key: _screenKeys[1]),
           TransactionHomeScreen(key: _screenKeys[2]),

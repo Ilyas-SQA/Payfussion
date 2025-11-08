@@ -92,7 +92,7 @@ class _SignUpHeaderState extends State<SignUpHeader>
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [
+      children: <Widget>[
         SizedBox(height: 50.h),
         ScaleTransition(
           scale: _logoScale,

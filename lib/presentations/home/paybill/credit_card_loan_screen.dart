@@ -1,5 +1,6 @@
 // Updated BankTransactionBloc to fetch from Firebase
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/constants/fonts.dart';
 import '../../../core/constants/routes_name.dart';
 import '../../../data/models/recipient/recipient_model.dart';
 import 'package:flutter/material.dart';
@@ -41,10 +42,10 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> with Ticker
     // Next screen par navigate karein
     context.push(
       RouteNames.payBillsDetailView,
-      extra: {
+      extra: <String, Object>{
         'billType': "creditcardloan",
         'companyName': bank.name,
-        'plans': bank.branchName.isNotEmpty ? [bank.branchName] : [],
+        'plans': bank.branchName.isNotEmpty ? <String>[bank.branchName] : <dynamic>[],
         'rating': 4.5,
       },
     );
@@ -57,7 +58,7 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> with Ticker
       child: ListView.builder(
         padding: EdgeInsets.all(16.w),
         itemCount: 5,
-        itemBuilder: (context, index) => Container(
+        itemBuilder: (BuildContext context, int index) => Container(
           margin: EdgeInsets.only(bottom: 12.h),
           height: 80.h,
           decoration: BoxDecoration(
@@ -76,7 +77,7 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> with Ticker
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -90,7 +91,7 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> with Ticker
           child: Padding(
             padding: EdgeInsets.all(16.w),
             child: Row(
-              children: [
+              children: <Widget>[
                 Container(
                   width: 50.w,
                   height: 50.w,
@@ -108,10 +109,10 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> with Ticker
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(
                         bank.name,
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
                         ),
@@ -120,7 +121,7 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> with Ticker
                       if (bank.branchName.isNotEmpty)
                         Text(
                           bank.branchName,
-                          style: TextStyle(
+                          style: Font.montserratFont(
                             fontSize: 12.sp,
                             color: Colors.grey.shade600,
                           ),
@@ -128,7 +129,7 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> with Ticker
                       if (bank.city.isNotEmpty)
                         Text(
                           '${bank.city} • ${bank.branchCode}',
-                          style: TextStyle(
+                          style: Font.montserratFont(
                             fontSize: 11.sp,
                             color: Colors.grey.shade500,
                           ),
@@ -163,7 +164,7 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> with Ticker
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -180,17 +181,17 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> with Ticker
             },
             builder: (BuildContext context, BankTransactionState state) {
               return Column(
-                children: [
+                children: <Widget>[
                   // Header
                   Container(
                     width: double.infinity,
                     padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 24.h),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         Text(
                           'Choose your bank',
-                          style: TextStyle(
+                          style: Font.montserratFont(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
                           ),
@@ -200,7 +201,7 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> with Ticker
                           state.isLoadingBanks
                               ? 'Loading banks...'
                               : 'Tap on any bank to continue',
-                          style: TextStyle(
+                          style: Font.montserratFont(
                             fontSize: 12.sp,
                             color: Colors.grey.shade600,
                           ),
@@ -217,7 +218,7 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> with Ticker
                         ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                        children: <Widget>[
                           Icon(
                             Icons.account_balance_outlined,
                             size: 64.sp,
@@ -226,7 +227,7 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> with Ticker
                           SizedBox(height: 16.h),
                           Text(
                             'No Banks Available',
-                            style: TextStyle(
+                            style: Font.montserratFont(
                               fontSize: 18.sp,
                               fontWeight: FontWeight.w600,
                               color: Colors.grey.shade700,
@@ -235,7 +236,7 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> with Ticker
                           SizedBox(height: 8.h),
                           TextButton(
                             onPressed: () => context.read<BankTransactionBloc>().add(const FetchBanks()),
-                            child: Text('Retry'),
+                            child: const Text('Retry'),
                           ),
                         ],
                       ),
@@ -247,8 +248,8 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> with Ticker
                       child: ListView.builder(
                         padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
                         itemCount: state.availableBanks.length,
-                        itemBuilder: (context, index) {
-                          final bank = state.availableBanks[index];
+                        itemBuilder: (BuildContext context, int index) {
+                          final Bank bank = state.availableBanks[index];
                           return _buildBankCard(bank);
                         },
                       ),

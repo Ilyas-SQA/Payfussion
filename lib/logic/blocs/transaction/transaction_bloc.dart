@@ -22,7 +22,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     required this.notificationRepo,
   }) : super(TransactionState.initial()) {
 
-    on<PaymentStarted>((event, emit) {
+    on<PaymentStarted>((PaymentStarted event, Emitter<TransactionState> emit) {
       print('Payment started for recipient: ${event.recipient.name}');
       emit(state.copyWith(
           recipient: event.recipient,
@@ -31,8 +31,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           isSuccess: false));
     });
 
-    on<PaymentAmountChanged>((event, emit) {
-      final sanitized = event.raw.replaceAll(RegExp(r'[^\d.]'), '');
+    on<PaymentAmountChanged>((PaymentAmountChanged event, Emitter<TransactionState> emit) {
+      final String sanitized = event.raw.replaceAll(RegExp(r'[^\d.]'), '');
       double amount = 0.0;
       String? err;
 
@@ -56,7 +56,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           isSuccess: false));
     });
 
-    on<PaymentSelectCard>((event, emit) {
+    on<PaymentSelectCard>((PaymentSelectCard event, Emitter<TransactionState> emit) {
       print('Card selected: ${event.card.brand} **** ${event.card.last4}');
       emit(state.copyWith(
           selectedCard: event.card,
@@ -65,7 +65,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
     on<PaymentSubmit>(_onSubmit);
 
-    on<PaymentReset>((event, emit) {
+    on<PaymentReset>((PaymentReset event, Emitter<TransactionState> emit) {
       print('Payment reset');
       emit(state.copyWith(
         amount: 0.0,
@@ -76,21 +76,21 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       ));
     });
 
-    on<FetchTodaysTransactions>((event, emit) async {
+    on<FetchTodaysTransactions>((FetchTodaysTransactions event, Emitter<TransactionState> emit) async {
       try {
         print('Fetching today\'s transactions...');
 
-        final currentUser = FirebaseAuth.instance.currentUser;
+        final User? currentUser = FirebaseAuth.instance.currentUser;
         if (currentUser == null) {
           throw Exception('User not authenticated');
         }
 
-        final uid = currentUser.uid;
-        final snapshot = await txRepo.getTransactions(uid);
+        final String uid = currentUser.uid;
+        final List<TransactionModel> snapshot = await txRepo.getTransactions(uid);
 
-        final today = DateTime.now();
-        final todaysTransactions = snapshot.where((tx) {
-          final txDate = tx.createdAt;
+        final DateTime today = DateTime.now();
+        final List<TransactionModel> todaysTransactions = snapshot.where((TransactionModel tx) {
+          final DateTime txDate = tx.createdAt;
           return txDate.year == today.year &&
               txDate.month == today.month &&
               txDate.day == today.day;
@@ -123,9 +123,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     print('Card: ${state.selectedCard?.brand} **** ${state.selectedCard?.last4}');
 
     // Validate inputs
-    final err = _validateAmount(state.amount);
+    final String? err = _validateAmount(state.amount);
     if (err != null || state.selectedCard == null || state.recipient == null) {
-      final errorMsg = err ?? (state.selectedCard == null ? 'Select a card' : 'Select a recipient');
+      final String errorMsg = err ?? (state.selectedCard == null ? 'Select a card' : 'Select a recipient');
       print('Validation failed: $errorMsg');
       emit(state.copyWith(
           amountError: err ?? state.amountError,
@@ -134,14 +134,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
 
     // Calculate total amount with fee
-    final totalAmount = _calculateTotalAmount(state.amount);
+    final double totalAmount = _calculateTotalAmount(state.amount);
     print('Total amount with fee: \$${totalAmount.toStringAsFixed(2)} (Amount: \$${state.amount.toStringAsFixed(2)} + Fee: \$${Taxes.transactionFee.toStringAsFixed(2)})');
 
     emit(state.copyWith(isProcessing: true, errorMessage: null));
 
     try {
       // Check if user is authenticated
-      final currentUser = FirebaseAuth.instance.currentUser;
+      final User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) {
         throw Exception('User not authenticated. Please log in again.');
       }
@@ -149,11 +149,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       print('Starting biometric authentication...');
 
       // Biometric authentication
-      final isBioAvailable = await biometricService.isBiometricAvailable();
-      final hasBiometrics = await biometricService.hasBiometricsEnrolled();
+      final bool isBioAvailable = await biometricService.isBiometricAvailable();
+      final bool hasBiometrics = await biometricService.hasBiometricsEnrolled();
 
       if (isBioAvailable && hasBiometrics) {
-        final auth = await biometricService.authenticate(
+        final Map<String, dynamic> auth = await biometricService.authenticate(
           reason: 'Authenticate to send \$${totalAmount.toStringAsFixed(2)} to ${state.recipient!.name} (includes \$${Taxes.transactionFee.toStringAsFixed(2)} fee)',
         );
         if (!(auth['success'] == true)) {
@@ -169,7 +169,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       }
 
       // Test repository connection
-      final connectionTest = await txRepo.testConnection();
+      final bool connectionTest = await txRepo.testConnection();
       if (!connectionTest) {
         throw Exception('Unable to connect to database. Please check your internet connection.');
       }
@@ -181,7 +181,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       await Future.delayed(const Duration(milliseconds: 1200));
 
       print('Creating transaction record...');
-      final tx = TransactionModel(
+      final TransactionModel tx = TransactionModel(
         id: '',
         userId: currentUser.uid,
         recipientId: state.recipient!.id,
@@ -197,7 +197,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       );
 
       print('Saving transaction to repository...');
-      final transactionId = await txRepo.addTransaction(tx);
+      final String transactionId = await txRepo.addTransaction(tx);
       print('Transaction saved successfully with ID: $transactionId');
 
       // Create and save notification to Firebase
@@ -285,13 +285,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     try {
       print('Creating transaction notification...');
 
-      final notification = NotificationModel(
+      final NotificationModel notification = NotificationModel(
         title: 'Payment Sent Successfully',
         message: 'You sent $currency${amount.toStringAsFixed(2)} to $recipientName',
         type: 'transaction',
         isRead: false,
         createdAt: DateTime.now(),
-        data: {
+        data: <String, dynamic>{
           'transactionId': transactionId,
           'recipientName': recipientName,
           'amount': amount,
@@ -303,7 +303,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         },
       );
 
-      final notificationId = await notificationRepo.addNotification(notification);
+      final String notificationId = await notificationRepo.addNotification(notification);
       print('Transaction notification saved to Firebase with ID: $notificationId');
 
     } catch (e) {
@@ -320,13 +320,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     try {
       print('Creating failure notification...');
 
-      final notification = NotificationModel(
+      final NotificationModel notification = NotificationModel(
         title: 'Payment Failed',
         message: 'Your payment of \$${amount.toStringAsFixed(2)} to $recipientName failed',
         type: 'transaction',
         isRead: false,
         createdAt: DateTime.now(),
-        data: {
+        data: <String, dynamic>{
           'recipientName': recipientName,
           'amount': amount,
           'currency': 'USD',
@@ -336,7 +336,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         },
       );
 
-      final notificationId = await notificationRepo.addNotification(notification);
+      final String notificationId = await notificationRepo.addNotification(notification);
       print('Failure notification saved to Firebase with ID: $notificationId');
 
     } catch (e) {

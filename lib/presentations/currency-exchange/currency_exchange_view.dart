@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import '../../core/constants/fonts.dart';
 import '../../core/constants/image_url.dart';
 import '../../core/constants/routes_name.dart';
 import '../../core/theme/theme.dart';
@@ -27,7 +28,7 @@ class CurrencyExchangeView extends StatefulWidget {
 class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with TickerProviderStateMixin{
   Currency? selectedCurrencyFrom;
   Currency? selectedCurrencyTo;
-  List<Currency> availableCurrencies = [];
+  List<Currency> availableCurrencies = <Currency>[];
   late AnimationController _backgroundAnimationController;
 
   final CurrencyViewmodel currencyViewmodel = CurrencyViewmodel();
@@ -74,7 +75,7 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with Ticker
     }
 
     try {
-      final amount = double.parse(value);
+      final double amount = double.parse(value);
       context.read<CurrencyConversionBloc>().add(
         ConvertCurrency(
           fromCurrency: selectedCurrencyFrom?.code ?? 'USD',
@@ -92,7 +93,7 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with Ticker
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final bool isDark = theme.brightness == Brightness.dark;
-    final isLoading = selectedCurrencyFrom == null || availableCurrencies.isEmpty;
+    final bool isLoading = selectedCurrencyFrom == null || availableCurrencies.isEmpty;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -105,7 +106,7 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with Ticker
       body: isLoading ?
       _buildLoadingView() :
       Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -118,24 +119,24 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with Ticker
   Widget _buildLoadingView() {
     return SingleChildScrollView(
       child: Column(
-        children: [
+        children: <Widget>[
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.6,
             child: Center(
               child: BlocBuilder<CurrencyConversionBloc, CurrencyConversionState>(
-                builder: (context, state) {
+                builder: (BuildContext context, CurrencyConversionState state) {
                   if (state.isLoading) {
                     return const CircularProgressIndicator();
                   }
                   if (state.error != null) {
                     return Text(
                       state.error!,
-                      style: TextStyle(fontSize: 16.sp),
+                      style: Font.montserratFont(fontSize: 16.sp),
                     );
                   }
                   return Text(
                     'Loading currencies...',
-                    style: TextStyle(fontSize: 16.sp),
+                    style: Font.montserratFont(fontSize: 16.sp),
                   );
                 },
               ),
@@ -159,7 +160,7 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with Ticker
           child: IntrinsicHeight(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 const SizedBox(height: 15),
                 PaymentCardSelector(
                   userId: FirebaseAuth.instance.currentUser?.uid ?? '',
@@ -175,7 +176,7 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with Ticker
                   selectedCurrencyFrom!,
                   context: context,
                   controller: _amountController,
-                  onCurrencyChanged: (val) {
+                  onCurrencyChanged: (Currency? val) {
                     setState(() => selectedCurrencyFrom = val);
                     context.read<CurrencyConversionBloc>().add(
                       UpdateFromCurrency(val?.code ?? 'USD'),
@@ -190,7 +191,7 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with Ticker
                   context: context,
                   selectedCurrencyTo!,
                   controller: _convertedAmountController,
-                  onCurrencyChanged: (val) {
+                  onCurrencyChanged: (Currency? val) {
                     setState(() => selectedCurrencyTo = val);
                     context.read<CurrencyConversionBloc>().add(
                       UpdateToCurrency(val?.code ?? 'EUR'),
@@ -213,17 +214,17 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with Ticker
 
   Widget _buildRateInfo() {
     return BlocBuilder<CurrencyConversionBloc, CurrencyConversionState>(
-      builder: (context, state) {
+      builder: (BuildContext context, CurrencyConversionState state) {
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Row(
-            children: [
+            children: <Widget>[
               Image.asset(TImageUrl.iconUpDown, width: 35.w, height: 35.h),
               10.horizontalSpace,
-              if (state.currentRate != null) ...[
+              if (state.currentRate != null) ...<Widget>[
                 Text(
                   '1 ${state.currentRate!.from} = ${state.currentRate!.rate.toStringAsFixed(4)} ${state.currentRate!.to}',
-                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w500),
+                  style: Font.montserratFont(fontSize: 12.sp, fontWeight: FontWeight.w500),
                 ),
                 10.horizontalSpace,
                 Icon(
@@ -234,23 +235,23 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with Ticker
                 2.horizontalSpace,
                 Text(
                   '${state.currentRate!.changePercent >= 0 ? '+' : ''}${state.currentRate!.changePercent.toStringAsFixed(2)}% 1hr ago',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w500,
                     color: state.currentRate!.changePercent >= 0 ? Colors.green : Colors.red,
                   ),
                 ),
-              ] else ...[
+              ] else ...<Widget>[
                 Text(
                   '₪1 ILS = \$0.27 USD',
-                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w500),
+                  style: Font.montserratFont(fontSize: 12.sp, fontWeight: FontWeight.w500),
                 ),
                 10.horizontalSpace,
                 Image.asset(TImageUrl.iconDown, width: 35.w, height: 35.h),
                 2.horizontalSpace,
                 Text(
                   'Down -0.2% 1hr ago',
-                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w500),
+                  style: Font.montserratFont(fontSize: 12.sp, fontWeight: FontWeight.w500),
                 ),
               ],
             ],
@@ -272,7 +273,7 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with Ticker
     final bool isDark = theme.brightness == Brightness.dark;
 
     return BlocListener<CurrencyConversionBloc, CurrencyConversionState>(
-      listener: (context, state) {
+      listener: (BuildContext context, CurrencyConversionState state) {
         if (isReadOnly && state.convertedAmount > 0) {
           controller.text = state.convertedAmount.toStringAsFixed(2);
         }
@@ -291,10 +292,10 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with Ticker
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
+          children: <Widget>[
             Text(
               getCurrencySymbol(selectedCurrency.code),
-              style: TextStyle(
+              style: Font.montserratFont(
                 color: isDark ? Colors.white : Colors.black38,
                 height: 1.2.h,
                 fontSize: 16.sp,
@@ -309,7 +310,7 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with Ticker
                 cursorHeight: 24.h,
                 readOnly: isReadOnly,
                 onChanged: onAmountChanged,
-                style: TextStyle(
+                style: Font.montserratFont(
                   fontSize: 24.sp,
                   fontWeight: FontWeight.bold,
                   color: isDark ? Colors.white : Colors.black38,
@@ -320,7 +321,7 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with Ticker
                   contentPadding: EdgeInsets.zero,
                   border: InputBorder.none,
                   hintText: '0.00',
-                  hintStyle: TextStyle(
+                  hintStyle: Font.montserratFont(
                     fontSize: 24.sp,
                     fontWeight: FontWeight.bold,
                     height: 1.5.h,
@@ -338,16 +339,16 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with Ticker
               ),
               underline: const SizedBox.shrink(),
               onChanged: onCurrencyChanged,
-              items: availableCurrencies.map((currency) {
+              items: availableCurrencies.map((Currency currency) {
                 return DropdownMenuItem(
                   value: currency,
                   child: Row(
-                    children: [
-                      Text(currency.flag, style: TextStyle(fontSize: 20.sp)),
+                    children: <Widget>[
+                      Text(currency.flag, style: Font.montserratFont(fontSize: 20.sp)),
                       8.horizontalSpace,
                       Text(
                         currency.code,
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.bold,
                           color: Colors.grey,
@@ -373,7 +374,7 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with Ticker
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -383,7 +384,7 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with Ticker
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             _buildForesightHeader(isDark),
             10.verticalSpace,
             InkWell(
@@ -418,13 +419,13 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with Ticker
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8.r),
       ),
-      children: [
-        ...[
+      children: <Widget>[
+        ...<String>[
           'Rates usually drop between 1AM to 6PM on Monday',
           'Rates usually are up during holidays',
           'Rates usually are up during holidays',
         ].map(
-                (e) =>
+                (String e) =>
                 Padding(
                   padding: EdgeInsets.only(bottom: 10.h),
                   child: _buildForesightItem(e, isDark),
@@ -450,7 +451,7 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with Ticker
 
   Widget _buildForesightItem(String text, bool isDark) {
     return Row(
-      children: [
+      children: <Widget>[
         Container(
           margin: EdgeInsets.only(top: 6.h, right: 8.w),
           width: 4.w,
@@ -484,7 +485,7 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with Ticker
   Text _whiteText(String text, double size, FontWeight weight, bool isDark) {
     return Text(
       text,
-      style: TextStyle(
+      style: Font.montserratFont(
         fontSize: size,
         fontWeight: weight,
         color: isDark ? Colors.white : Colors.black,

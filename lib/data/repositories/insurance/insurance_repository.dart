@@ -24,7 +24,7 @@ class InsurancePaymentRepository {
       if (_userId == null) throw Exception('User not authenticated');
       if (_insurancePaymentsCollection == null) throw Exception('Collection not available');
 
-      final paymentData = payment.toMap();
+      final Map<String, dynamic> paymentData = payment.toMap();
       paymentData['timestamp'] = FieldValue.serverTimestamp();
 
       await _insurancePaymentsCollection!.doc(payment.id).set(paymentData);
@@ -39,12 +39,12 @@ class InsurancePaymentRepository {
       if (_userId == null) throw Exception('User not authenticated');
       if (_insurancePaymentsCollection == null) throw Exception('Collection not available');
 
-      final querySnapshot = await _insurancePaymentsCollection!
+      final QuerySnapshot<Object?> querySnapshot = await _insurancePaymentsCollection!
           .orderBy('createdAt', descending: true)
           .get();
 
       return querySnapshot.docs
-          .map((doc) => InsurancePaymentModel.fromSnapshot(doc))
+          .map((QueryDocumentSnapshot<Object?> doc) => InsurancePaymentModel.fromSnapshot(doc))
           .toList();
     } catch (e) {
       throw Exception('Failed to fetch insurance payments: $e');
@@ -57,7 +57,7 @@ class InsurancePaymentRepository {
       if (_userId == null) throw Exception('User not authenticated');
       if (_insurancePaymentsCollection == null) throw Exception('Collection not available');
 
-      final doc = await _insurancePaymentsCollection!.doc(paymentId).get();
+      final DocumentSnapshot<Object?> doc = await _insurancePaymentsCollection!.doc(paymentId).get();
 
       if (doc.exists && doc.data() != null) {
         return InsurancePaymentModel.fromSnapshot(doc);
@@ -74,7 +74,7 @@ class InsurancePaymentRepository {
       if (_userId == null) throw Exception('User not authenticated');
       if (_insurancePaymentsCollection == null) throw Exception('Collection not available');
 
-      final paymentData = payment.toMap();
+      final Map<String, dynamic> paymentData = payment.toMap();
       paymentData['updatedAt'] = FieldValue.serverTimestamp();
 
       await _insurancePaymentsCollection!.doc(payment.id).update(paymentData);
@@ -90,7 +90,7 @@ class InsurancePaymentRepository {
       if (_insurancePaymentsCollection == null) throw Exception('Collection not available');
 
       // Check if payment exists
-      final payment = await getInsurancePaymentById(paymentId);
+      final InsurancePaymentModel? payment = await getInsurancePaymentById(paymentId);
       if (payment == null) {
         throw Exception('Payment not found');
       }
@@ -107,13 +107,13 @@ class InsurancePaymentRepository {
       if (_userId == null) throw Exception('User not authenticated');
       if (_insurancePaymentsCollection == null) throw Exception('Collection not available');
 
-      final querySnapshot = await _insurancePaymentsCollection!
+      final QuerySnapshot<Object?> querySnapshot = await _insurancePaymentsCollection!
           .where('companyName', isEqualTo: companyName)
           .orderBy('createdAt', descending: true)
           .get();
 
       return querySnapshot.docs
-          .map((doc) => InsurancePaymentModel.fromSnapshot(doc))
+          .map((QueryDocumentSnapshot<Object?> doc) => InsurancePaymentModel.fromSnapshot(doc))
           .toList();
     } catch (e) {
       throw Exception('Failed to fetch payments by company: $e');
@@ -126,13 +126,13 @@ class InsurancePaymentRepository {
       if (_userId == null) throw Exception('User not authenticated');
       if (_insurancePaymentsCollection == null) throw Exception('Collection not available');
 
-      final querySnapshot = await _insurancePaymentsCollection!
+      final QuerySnapshot<Object?> querySnapshot = await _insurancePaymentsCollection!
           .where('insuranceType', isEqualTo: insuranceType)
           .orderBy('createdAt', descending: true)
           .get();
 
       return querySnapshot.docs
-          .map((doc) => InsurancePaymentModel.fromSnapshot(doc))
+          .map((QueryDocumentSnapshot<Object?> doc) => InsurancePaymentModel.fromSnapshot(doc))
           .toList();
     } catch (e) {
       throw Exception('Failed to fetch payments by type: $e');
@@ -145,13 +145,13 @@ class InsurancePaymentRepository {
       if (_userId == null) throw Exception('User not authenticated');
       if (_insurancePaymentsCollection == null) throw Exception('Collection not available');
 
-      final querySnapshot = await _insurancePaymentsCollection!
+      final QuerySnapshot<Object?> querySnapshot = await _insurancePaymentsCollection!
           .where('status', isEqualTo: status)
           .orderBy('createdAt', descending: true)
           .get();
 
       return querySnapshot.docs
-          .map((doc) => InsurancePaymentModel.fromSnapshot(doc))
+          .map((QueryDocumentSnapshot<Object?> doc) => InsurancePaymentModel.fromSnapshot(doc))
           .toList();
     } catch (e) {
       throw Exception('Failed to fetch payments by status: $e');
@@ -165,14 +165,14 @@ class InsurancePaymentRepository {
       if (_userId == null) throw Exception('User not authenticated');
       if (_insurancePaymentsCollection == null) throw Exception('Collection not available');
 
-      final querySnapshot = await _insurancePaymentsCollection!
+      final QuerySnapshot<Object?> querySnapshot = await _insurancePaymentsCollection!
           .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(startDate))
           .where('createdAt', isLessThanOrEqualTo: Timestamp.fromDate(endDate))
           .orderBy('createdAt', descending: true)
           .get();
 
       return querySnapshot.docs
-          .map((doc) => InsurancePaymentModel.fromSnapshot(doc))
+          .map((QueryDocumentSnapshot<Object?> doc) => InsurancePaymentModel.fromSnapshot(doc))
           .toList();
     } catch (e) {
       throw Exception('Failed to fetch payments by date range: $e');
@@ -185,7 +185,7 @@ class InsurancePaymentRepository {
     try {
       if (_userId == null) throw Exception('User not authenticated');
 
-      final payment = await getInsurancePaymentById(paymentId);
+      final InsurancePaymentModel? payment = await getInsurancePaymentById(paymentId);
       if (payment == null) {
         throw Exception('Payment not found');
       }
@@ -194,7 +194,7 @@ class InsurancePaymentRepository {
       await Future.delayed(const Duration(seconds: 2));
 
       // Update payment status
-      final updatedPayment = payment.copyWith(
+      final InsurancePaymentModel updatedPayment = payment.copyWith(
         status: 'completed',
         paymentMethod: paymentMethod,
         cardId: cardId,
@@ -214,19 +214,19 @@ class InsurancePaymentRepository {
       if (_userId == null) throw Exception('User not authenticated');
       if (_insurancePaymentsCollection == null) throw Exception('Collection not available');
 
-      final querySnapshot = await _insurancePaymentsCollection!.get();
+      final QuerySnapshot<Object?> querySnapshot = await _insurancePaymentsCollection!.get();
 
-      final payments = querySnapshot.docs
-          .map((doc) => InsurancePaymentModel.fromSnapshot(doc))
+      final List<InsurancePaymentModel> payments = querySnapshot.docs
+          .map((QueryDocumentSnapshot<Object?> doc) => InsurancePaymentModel.fromSnapshot(doc))
           .toList();
 
       double totalPaid = 0;
       double totalFees = 0;
-      Map<String, double> paymentsByCompany = {};
-      Map<String, double> paymentsByType = {};
-      Map<String, int> transactionsByStatus = {};
+      final Map<String, double> paymentsByCompany = <String, double>{};
+      final Map<String, double> paymentsByType = <String, double>{};
+      final Map<String, int> transactionsByStatus = <String, int>{};
 
-      for (final payment in payments) {
+      for (final InsurancePaymentModel payment in payments) {
         totalPaid += payment.premiumAmount;
         totalFees += payment.feeAmount;
 
@@ -243,7 +243,7 @@ class InsurancePaymentRepository {
             (transactionsByStatus[payment.status] ?? 0) + 1;
       }
 
-      return {
+      return <String, dynamic>{
         'totalPaid': totalPaid,
         'totalFees': totalFees,
         'totalTransactions': payments.length,
@@ -263,15 +263,15 @@ class InsurancePaymentRepository {
       if (_userId == null) throw Exception('User not authenticated');
       if (_insurancePaymentsCollection == null) throw Exception('Collection not available');
 
-      final querySnapshot = await _insurancePaymentsCollection!.get();
+      final QuerySnapshot<Object?> querySnapshot = await _insurancePaymentsCollection!.get();
 
-      final allPayments = querySnapshot.docs
-          .map((doc) => InsurancePaymentModel.fromSnapshot(doc))
+      final List<InsurancePaymentModel> allPayments = querySnapshot.docs
+          .map((QueryDocumentSnapshot<Object?> doc) => InsurancePaymentModel.fromSnapshot(doc))
           .toList();
 
       // Filter payments based on query
-      final searchResults = allPayments.where((payment) {
-        final searchTerm = query.toLowerCase();
+      final List<InsurancePaymentModel> searchResults = allPayments.where((InsurancePaymentModel payment) {
+        final String searchTerm = query.toLowerCase();
         return payment.companyName.toLowerCase().contains(searchTerm) ||
             payment.insuranceType.toLowerCase().contains(searchTerm) ||
             payment.policyNumber.toLowerCase().contains(searchTerm) ||
@@ -296,8 +296,8 @@ class InsurancePaymentRepository {
     return _insurancePaymentsCollection!
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-        .map((doc) => InsurancePaymentModel.fromSnapshot(doc))
+        .map((QuerySnapshot<Object?> snapshot) => snapshot.docs
+        .map((QueryDocumentSnapshot<Object?> doc) => InsurancePaymentModel.fromSnapshot(doc))
         .toList());
   }
 
@@ -307,10 +307,10 @@ class InsurancePaymentRepository {
       if (_userId == null) throw Exception('User not authenticated');
       if (_insurancePaymentsCollection == null) throw Exception('Collection not available');
 
-      final batch = _firestore.batch();
+      final WriteBatch batch = _firestore.batch();
 
-      for (final payment in payments) {
-        final paymentData = payment.toMap();
+      for (final InsurancePaymentModel payment in payments) {
+        final Map<String, dynamic> paymentData = payment.toMap();
         paymentData['timestamp'] = FieldValue.serverTimestamp();
 
         batch.set(_insurancePaymentsCollection!.doc(payment.id), paymentData);
@@ -328,9 +328,9 @@ class InsurancePaymentRepository {
       if (_userId == null) throw Exception('User not authenticated');
       if (_insurancePaymentsCollection == null) throw Exception('Collection not available');
 
-      final batch = _firestore.batch();
+      final WriteBatch batch = _firestore.batch();
 
-      for (final paymentId in paymentIds) {
+      for (final String paymentId in paymentIds) {
         batch.delete(_insurancePaymentsCollection!.doc(paymentId));
       }
 
@@ -346,7 +346,7 @@ class InsurancePaymentRepository {
       if (_userId == null) return false;
       if (_insurancePaymentsCollection == null) return false;
 
-      final doc = await _insurancePaymentsCollection!.doc(paymentId).get();
+      final DocumentSnapshot<Object?> doc = await _insurancePaymentsCollection!.doc(paymentId).get();
       return doc.exists;
     } catch (e) {
       return false;
@@ -359,18 +359,18 @@ class InsurancePaymentRepository {
       if (_userId == null) throw Exception('User not authenticated');
       if (_insurancePaymentsCollection == null) throw Exception('Collection not available');
 
-      final now = DateTime.now();
-      final futureDate = now.add(Duration(days: daysAhead));
+      final DateTime now = DateTime.now();
+      final DateTime futureDate = now.add(Duration(days: daysAhead));
 
-      final querySnapshot = await _insurancePaymentsCollection!
+      final QuerySnapshot<Object?> querySnapshot = await _insurancePaymentsCollection!
           .where('dueDate', isGreaterThan: Timestamp.fromDate(now))
           .where('dueDate', isLessThanOrEqualTo: Timestamp.fromDate(futureDate))
-          .where('status', whereIn: ['pending', 'due'])
+          .where('status', whereIn: <Object?>['pending', 'due'])
           .orderBy('dueDate')
           .get();
 
       return querySnapshot.docs
-          .map((doc) => InsurancePaymentModel.fromSnapshot(doc))
+          .map((QueryDocumentSnapshot<Object?> doc) => InsurancePaymentModel.fromSnapshot(doc))
           .toList();
     } catch (e) {
       throw Exception('Failed to fetch upcoming payments: $e');
@@ -383,16 +383,16 @@ class InsurancePaymentRepository {
       if (_userId == null) throw Exception('User not authenticated');
       if (_insurancePaymentsCollection == null) throw Exception('Collection not available');
 
-      final now = DateTime.now();
+      final DateTime now = DateTime.now();
 
-      final querySnapshot = await _insurancePaymentsCollection!
+      final QuerySnapshot<Object?> querySnapshot = await _insurancePaymentsCollection!
           .where('dueDate', isLessThan: Timestamp.fromDate(now))
-          .where('status', whereNotIn: ['completed', 'cancelled'])
+          .where('status', whereNotIn: <Object?>['completed', 'cancelled'])
           .orderBy('dueDate')
           .get();
 
       return querySnapshot.docs
-          .map((doc) => InsurancePaymentModel.fromSnapshot(doc))
+          .map((QueryDocumentSnapshot<Object?> doc) => InsurancePaymentModel.fromSnapshot(doc))
           .toList();
     } catch (e) {
       throw Exception('Failed to fetch overdue payments: $e');
@@ -404,11 +404,11 @@ class InsurancePaymentRepository {
     try {
       if (_userId == null) throw Exception('User not authenticated');
 
-      final userDoc = _firestore.collection('users').doc(_userId!);
-      final docSnapshot = await userDoc.get();
+      final DocumentReference<Map<String, dynamic>> userDoc = _firestore.collection('users').doc(_userId!);
+      final DocumentSnapshot<Map<String, dynamic>> docSnapshot = await userDoc.get();
 
       if (!docSnapshot.exists) {
-        await userDoc.set({
+        await userDoc.set(<String, dynamic>{
           'createdAt': FieldValue.serverTimestamp(),
           'lastUpdated': FieldValue.serverTimestamp(),
         });

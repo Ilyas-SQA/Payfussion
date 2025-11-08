@@ -7,7 +7,7 @@ abstract class RideState extends Equatable {
   const RideState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class RideInitial extends RideState {}
@@ -20,7 +20,7 @@ class RideLoaded extends RideState {
   const RideLoaded(this.rides);
 
   @override
-  List<Object> get props => [rides];
+  List<Object> get props => <Object>[rides];
 }
 
 class RideError extends RideState {
@@ -29,14 +29,14 @@ class RideError extends RideState {
   const RideError(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 abstract class RideBookingState extends Equatable {
   const RideBookingState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class RideBookingInitial extends RideBookingState {}
@@ -49,7 +49,7 @@ class RideBookingSuccess extends RideBookingState {
   const RideBookingSuccess(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class RideBookingError extends RideBookingState {
@@ -58,7 +58,7 @@ class RideBookingError extends RideBookingState {
   const RideBookingError(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class UserRideBookingsLoaded extends RideBookingState {
@@ -67,5 +67,5 @@ class UserRideBookingsLoaded extends RideBookingState {
   const UserRideBookingsLoaded(this.bookings);
 
   @override
-  List<Object> get props => [bookings];
+  List<Object> get props => <Object>[bookings];
 }

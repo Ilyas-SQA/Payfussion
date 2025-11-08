@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shimmer/shimmer.dart';
+import '../../core/circular_indicator.dart';
 import '../../core/constants/fonts.dart';
 import '../../core/theme/theme.dart';
 import '../../data/models/device_manager/deevice_manager_model.dart';
@@ -64,7 +64,7 @@ class _DevicesManagementScreenState extends State<DevicesManagementScreen> with 
 
     showDialog(
       context: context,
-      builder: (dialogContext) => FuturisticLogoutDialog(
+      builder: (BuildContext dialogContext) => FuturisticLogoutDialog(
         deviceName: device.manufacturer,
         onConfirmLogout: () async {
           await Future.delayed(const Duration(seconds: 2));
@@ -78,20 +78,19 @@ class _DevicesManagementScreenState extends State<DevicesManagementScreen> with 
   }
 
   void _showSnackBar(BuildContext context, String message, {bool isError = false}) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isError
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color backgroundColor = isError
         ? Theme.of(context).colorScheme.error
         : (isDark ? Colors.green.shade900.withOpacity(0.8) : Colors.green.shade50);
-    final contentColor = isError
+    final Color contentColor = isError
         ? Colors.white
         : (isDark ? Colors.green.shade300 : Colors.green.shade800);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
-          children: [
-            Icon(isError ? Icons.warning_amber_rounded : Icons.check_circle,
-                color: contentColor, size: 24.sp),
+          children: <Widget>[
+            Icon(isError ? Icons.warning_amber_rounded : Icons.check_circle, color: contentColor, size: 24.sp),
             SizedBox(width: 12.w),
             Expanded(child: Text(message, style: Font.montserratFont(color: contentColor))),
           ],
@@ -104,85 +103,6 @@ class _DevicesManagementScreenState extends State<DevicesManagementScreen> with 
     );
   }
 
-  Widget _buildShimmerLoading() {
-    final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color baseColor = isDark ? Colors.grey[800]! : Colors.grey[300]!;
-    final Color highlightColor = isDark ? Colors.grey[600]! : Colors.grey[100]!;
-
-    return Shimmer.fromColors(
-      baseColor: baseColor,
-      highlightColor: highlightColor,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 25.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 60.h),
-            _buildShimmerContainer(24.h, 80.w),
-            SizedBox(height: 10.h),
-            _buildShimmerContainer(24.h, 180.w),
-            SizedBox(height: 40.h),
-            _buildShimmerContainer(20.h, 120.w),
-            SizedBox(height: 20.h),
-            _buildShimmerCard(),
-            SizedBox(height: 40.h),
-            _buildShimmerContainer(20.h, 120.w),
-            SizedBox(height: 20.h),
-            ...List.generate(3, (index) => Padding(
-              padding: EdgeInsets.only(bottom: 16.h),
-              child: _buildShimmerCard(),
-            )),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildShimmerContainer(double height, double width) {
-    return Container(
-      height: height,
-      width: width,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(4.r),
-      ),
-    );
-  }
-
-  Widget _buildShimmerCard() {
-    return Container(
-      height: 120.h,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
-        child: Row(
-          children: [
-            _buildShimmerContainer(50.h, 50.w),
-            SizedBox(width: 20.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildShimmerContainer(16.h, 150.w),
-                  SizedBox(height: 8.h),
-                  _buildShimmerContainer(12.h, 120.w),
-                  SizedBox(height: 5.h),
-                  _buildShimmerContainer(12.h, 80.w),
-                  SizedBox(height: 5.h),
-                  _buildShimmerContainer(12.h, 100.w),
-                ],
-              ),
-            ),
-            _buildShimmerContainer(30.h, 30.w),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildAnimatedSection(String title, List<DeviceModel> devices, int delay) {
     return TweenAnimationBuilder<double>(
@@ -196,7 +116,7 @@ class _DevicesManagementScreenState extends State<DevicesManagementScreen> with 
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Text(title, style: Theme.of(context).textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w600,
             color: Theme.of(context).colorScheme.onSurface,
@@ -207,7 +127,7 @@ class _DevicesManagementScreenState extends State<DevicesManagementScreen> with 
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: devices.length,
-              itemBuilder: (context, index) => AnimatedCommonDeviceCard(
+              itemBuilder: (BuildContext context, int index) => AnimatedCommonDeviceCard(
                 leadingIconPath: _getDeviceIcon(devices[index].os ?? 'android'),
                 mobileName: '${devices[index].manufacturer} ${devices[index].model}',
                 lastLoginDate: _formatDate(devices[index].lastLogin),
@@ -217,7 +137,7 @@ class _DevicesManagementScreenState extends State<DevicesManagementScreen> with 
                 location: devices[index].location ?? 'Unknown',
                 animationDelay: index * 200,
               ),
-              separatorBuilder: (context, index) => SizedBox(height: 16.h),
+              separatorBuilder: (BuildContext context, int index) => SizedBox(height: 16.h),
             )
           else
             _buildEmptyState(),
@@ -231,7 +151,7 @@ class _DevicesManagementScreenState extends State<DevicesManagementScreen> with 
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 40.h),
         child: Column(
-          children: [
+          children: <Widget>[
             Icon(Icons.devices_other, size: 80.sp, color: MyTheme.primaryColor),
             SizedBox(height: 16.h),
             Text('No other devices found',
@@ -251,7 +171,7 @@ class _DevicesManagementScreenState extends State<DevicesManagementScreen> with 
       ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -259,14 +179,14 @@ class _DevicesManagementScreenState extends State<DevicesManagementScreen> with 
             create: (BuildContext context) => DeviceBloc(DeviceRepository())..add(FetchDevices()),
             child: BlocBuilder<DeviceBloc, DeviceState>(
               builder: (BuildContext context, DeviceState state) {
-                if (state is DeviceLoading) return _buildShimmerLoading();
+                if (state is DeviceLoading) return CircularIndicator.circular;
 
                 if (state is DeviceLoaded) {
                   _fadeController.forward();
                   _slideController.forward();
 
-                  final List<DeviceModel> currentDevice = state.devices.where((d) => d.isActive == true).toList();
-                  final List<DeviceModel> otherDevices = state.devices.where((d) => d.isActive != true).toList();
+                  final List<DeviceModel> currentDevice = state.devices.where((DeviceModel d) => d.isActive == true).toList();
+                  final List<DeviceModel> otherDevices = state.devices.where((DeviceModel d) => d.isActive != true).toList();
 
                   return FadeTransition(
                     opacity: _fadeAnimation,
@@ -274,14 +194,14 @@ class _DevicesManagementScreenState extends State<DevicesManagementScreen> with 
                       position: _slideAnimation,
                       child: SingleChildScrollView(
                         child: Column(
-                          children: [
+                          children: <Widget>[
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 25.w),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
+                                children: <Widget>[
                                   SizedBox(height: 20.h),
-                                  if (currentDevice.isNotEmpty) ...[
+                                  if (currentDevice.isNotEmpty) ...<Widget>[
                                     _buildAnimatedSection('Current Device', currentDevice, 0),
                                     SizedBox(height: 40.h),
                                   ],
@@ -301,7 +221,7 @@ class _DevicesManagementScreenState extends State<DevicesManagementScreen> with 
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: <Widget>[
                         Icon(Icons.error_outline, size: 60.sp, color: Theme.of(context).colorScheme.error),
                         SizedBox(height: 16.h),
                         Text("Error: ${state.error}", textAlign: TextAlign.center,
@@ -392,7 +312,7 @@ class _AnimatedCommonDeviceCardState extends State<AnimatedCommonDeviceCard>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return SlideTransition(
       position: _slideAnimation,
@@ -405,7 +325,7 @@ class _AnimatedCommonDeviceCardState extends State<AnimatedCommonDeviceCard>
             decoration: BoxDecoration(
               color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(5.r),
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                   blurRadius: 5,
@@ -416,14 +336,14 @@ class _AnimatedCommonDeviceCardState extends State<AnimatedCommonDeviceCard>
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w),
               child: Row(
-                children: [
+                children: <Widget>[
                   Image.asset(widget.leadingIconPath, height: 50.h, width: 50.w, errorBuilder: (_, __, ___) => Icon(Icons.smartphone, size: 50.sp, color: MyTheme.primaryColor)), // Updated to MyTheme.primaryColor
                   SizedBox(width: 20.w),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: <Widget>[
                         Text(widget.mobileName,
                             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                 fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
@@ -513,7 +433,7 @@ class _FuturisticLogoutDialogState extends State<FuturisticLogoutDialog>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return ScaleTransition(
       scale: _scaleAnimation,
@@ -527,7 +447,7 @@ class _FuturisticLogoutDialogState extends State<FuturisticLogoutDialog>
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface.withOpacity(0.95),
               borderRadius: BorderRadius.circular(20.r),
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(color: MyTheme.primaryColor.withOpacity(0.3), blurRadius: 20.r, spreadRadius: 5.r), // Updated to MyTheme.primaryColor
               ],
             ),
@@ -541,7 +461,7 @@ class _FuturisticLogoutDialogState extends State<FuturisticLogoutDialog>
   Widget _buildDialogContent() {
     return Column(
       mainAxisSize: MainAxisSize.min,
-      children: [
+      children: <Widget>[
         Icon(Icons.warning_amber_rounded, color: Theme.of(context).colorScheme.error, size: 60.sp),
         SizedBox(height: 20.h),
         Text('Confirm Logout', style: Font.montserratFont(fontWeight: FontWeight.bold)),
@@ -550,7 +470,7 @@ class _FuturisticLogoutDialogState extends State<FuturisticLogoutDialog>
           textAlign: TextAlign.center,
           text: TextSpan(
             style: Theme.of(context).textTheme.bodyMedium,
-            children: [
+            children: <InlineSpan>[
               const TextSpan(text: 'Are you sure you want to log out from '),
               TextSpan(text: '${widget.deviceName}?', style: Font.montserratFont(fontWeight: FontWeight.bold)),
               const TextSpan(text: ' This action cannot be undone.'),
@@ -560,7 +480,7 @@ class _FuturisticLogoutDialogState extends State<FuturisticLogoutDialog>
         SizedBox(height: 30.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
+          children: <Widget>[
             _buildDialogButton('Cancel', () => Navigator.of(context).pop(), false, Icons.cancel_outlined),
             _buildDialogButton('Logout', () async {
               setState(() => _isLoading = true);
@@ -576,11 +496,11 @@ class _FuturisticLogoutDialogState extends State<FuturisticLogoutDialog>
   Widget _buildLoadingContent() {
     return Column(
       mainAxisSize: MainAxisSize.min,
-      children: [
+      children: <Widget>[
         SizedBox(height: 40.h),
         AnimatedBuilder(
           animation: _loadingAnimation,
-          builder: (context, child) => Transform.rotate(
+          builder: (BuildContext context, Widget? child) => Transform.rotate(
             angle: _loadingAnimation.value * 2 * 3.14159,
             child: const CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(MyTheme.primaryColor)), // Updated to MyTheme.primaryColor
@@ -594,8 +514,8 @@ class _FuturisticLogoutDialogState extends State<FuturisticLogoutDialog>
   }
 
   Widget _buildDialogButton(String text, VoidCallback onPressed, bool isPrimary, IconData icon, [Color? color]) {
-    final buttonColor = color ?? (isPrimary ? MyTheme.primaryColor : Theme.of(context).colorScheme.surfaceVariant); // Updated to MyTheme.primaryColor
-    final textColor = isPrimary ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSurfaceVariant;
+    final Color buttonColor = color ?? (isPrimary ? MyTheme.primaryColor : Theme.of(context).colorScheme.surfaceContainerHighest); // Updated to MyTheme.primaryColor
+    final Color textColor = isPrimary ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSurfaceVariant;
 
     return ElevatedButton.icon(
       icon: Icon(icon, size: 18.sp, color: textColor),

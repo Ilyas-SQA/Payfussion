@@ -4,9 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl_phone_field/phone_number.dart';
-import 'package:password_strength_indicator_plus/password_strength_indicator_plus.dart';
 import 'package:payfussion/core/constants/fonts.dart';
-import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import '../../../core/constants/routes_name.dart';
 import '../../../core/widget/text_field/phone_textfield.dart';
@@ -29,14 +27,14 @@ class SignUpForm extends StatefulWidget {
 }
 
 class _SignUpFormState extends State<SignUpForm> with SingleTickerProviderStateMixin {
-  final firstNameController = TextEditingController();
-  final lastNameController = TextEditingController();
-  final emailController = TextEditingController();
-  final phoneNumberController = TextEditingController();
-  final passwordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneNumberController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
 
-  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   late AnimationController _controller;
   late List<Animation<double>> _fadeAnimations;
@@ -50,7 +48,7 @@ class _SignUpFormState extends State<SignUpForm> with SingleTickerProviderStateM
       vsync: this,
     );
 
-    _fadeAnimations = List.generate(9, (index) {
+    _fadeAnimations = List.generate(9, (int index) {
       final double start = 0.1 + (index * 0.08);
       final double end = start + 0.15;
       return Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -61,7 +59,7 @@ class _SignUpFormState extends State<SignUpForm> with SingleTickerProviderStateM
       );
     });
 
-    _slideAnimations = List.generate(9, (index) {
+    _slideAnimations = List.generate(9, (int index) {
       final double start = 0.1 + (index * 0.08);
       final double end = start + 0.15;
       return Tween<Offset>(
@@ -158,13 +156,13 @@ class _SignUpFormState extends State<SignUpForm> with SingleTickerProviderStateM
       child: Form(
         key: _formKey,
         child: Column(
-          children: [
+          children: <Widget>[
             _buildAnimatedField(
               0,
               AppTextFormField(
                 controller: firstNameController,
                 helpText: "First Name",
-                validator: (value) {
+                validator: (String? value) {
                   if (value == null || value.isEmpty) {
                     return 'First name is required';
                   }
@@ -178,7 +176,7 @@ class _SignUpFormState extends State<SignUpForm> with SingleTickerProviderStateM
               AppTextFormField(
                 controller: lastNameController,
                 helpText: "Last Name",
-                validator: (value) {
+                validator: (String? value) {
                   if (value == null || value.isEmpty) {
                     return 'Last name is required';
                   }
@@ -192,11 +190,11 @@ class _SignUpFormState extends State<SignUpForm> with SingleTickerProviderStateM
               AppTextFormField(
                 controller: emailController,
                 helpText: "Enter Your Email",
-                validator: (value) {
+                validator: (String? value) {
                   if (value == null || value.isEmpty) {
                     return 'Email is required';
                   }
-                  final emailRegex = RegExp(_emailRegex);
+                  final RegExp emailRegex = RegExp(_emailRegex);
                   if (!emailRegex.hasMatch(value)) {
                     return 'Enter a valid email';
                   }
@@ -234,7 +232,7 @@ class _SignUpFormState extends State<SignUpForm> with SingleTickerProviderStateM
                 controller: passwordController,
                 isPasswordField: true,
                 helpText: "Enter Password",
-                validator: (value) {
+                validator: (String? value) {
                   if (value == null || value.isEmpty) {
                     return 'Password is required';
                   }
@@ -252,7 +250,7 @@ class _SignUpFormState extends State<SignUpForm> with SingleTickerProviderStateM
                 controller: confirmPasswordController,
                 isPasswordField: true,
                 helpText: "Confirm Password",
-                validator: (value) {
+                validator: (String? value) {
                   if (value == null || value.isEmpty) {
                     return 'Confirm password is required';
                   }
@@ -281,7 +279,7 @@ class _SignUpFormState extends State<SignUpForm> with SingleTickerProviderStateM
                     fontSize: 14.sp,
                     color: Theme.brightnessOf(context) == Brightness.light ? Colors.black : Colors.white,
                   ),
-                  children: [
+                  children: <InlineSpan>[
                     TextSpan(
                       text: ' Sign In.',
                       recognizer: TapGestureRecognizer()

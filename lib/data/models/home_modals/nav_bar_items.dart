@@ -8,7 +8,7 @@ class NavBarItems {
   NavBarItems({required this.title, required this.icon, required this.index});
 }
 
-List<NavBarItems> navBarItems = [
+List<NavBarItems> navBarItems = <NavBarItems>[
   NavBarItems(title: "Home", icon: TImageUrl.home, index: 0),
   NavBarItems(title: "QR Scan", icon: TImageUrl.qrCode, index: 1),
   NavBarItems(title: "Transactions", icon: TImageUrl.transaction, index: 2),

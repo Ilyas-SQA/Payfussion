@@ -7,7 +7,7 @@ import 'insurance_state.dart';
 
 class InsurancePaymentBloc extends Bloc<InsurancePaymentEvent, InsurancePaymentState> {
   final InsurancePaymentRepository _repository;
-  List<InsurancePaymentModel> _allPayments = [];
+  List<InsurancePaymentModel> _allPayments = <InsurancePaymentModel>[];
 
   InsurancePaymentBloc(this._repository) : super(const InsurancePaymentInitial()) {
     on<LoadInsurancePayments>(_onLoadInsurancePayments);
@@ -34,7 +34,7 @@ class InsurancePaymentBloc extends Bloc<InsurancePaymentEvent, InsurancePaymentS
     try {
       emit(const InsurancePaymentLoading());
 
-      final payments = await _repository.getInsurancePayments();
+      final List<InsurancePaymentModel> payments = await _repository.getInsurancePayments();
       _allPayments = payments;
 
       if (payments.isEmpty) {
@@ -76,7 +76,7 @@ class InsurancePaymentBloc extends Bloc<InsurancePaymentEvent, InsurancePaymentS
       await _repository.updateInsurancePayment(event.payment);
 
       // Update local list
-      final index = _allPayments.indexWhere((p) => p.id == event.payment.id);
+      final int index = _allPayments.indexWhere((InsurancePaymentModel p) => p.id == event.payment.id);
       if (index != -1) {
         _allPayments[index] = event.payment;
       }
@@ -98,7 +98,7 @@ class InsurancePaymentBloc extends Bloc<InsurancePaymentEvent, InsurancePaymentS
       await _repository.deleteInsurancePayment(event.paymentId);
 
       // Remove from local list
-      _allPayments.removeWhere((payment) => payment.id == event.paymentId);
+      _allPayments.removeWhere((InsurancePaymentModel payment) => payment.id == event.paymentId);
 
       emit(const InsurancePaymentDeleted('Insurance payment deleted successfully'));
 
@@ -119,14 +119,14 @@ class InsurancePaymentBloc extends Bloc<InsurancePaymentEvent, InsurancePaymentS
     try {
       emit(const InsurancePaymentProcessing('Processing payment...'));
 
-      final updatedPayment = await _repository.processPayment(
+      final InsurancePaymentModel updatedPayment = await _repository.processPayment(
         event.paymentId,
         event.paymentMethod,
         event.cardId,
       );
 
       // Update local list
-      final index = _allPayments.indexWhere((p) => p.id == event.paymentId);
+      final int index = _allPayments.indexWhere((InsurancePaymentModel p) => p.id == event.paymentId);
       if (index != -1) {
         _allPayments[index] = updatedPayment;
       }
@@ -144,7 +144,7 @@ class InsurancePaymentBloc extends Bloc<InsurancePaymentEvent, InsurancePaymentS
     try {
       emit(const InsurancePaymentLoading());
 
-      final payment = await _repository.getInsurancePaymentById(event.paymentId);
+      final InsurancePaymentModel? payment = await _repository.getInsurancePaymentById(event.paymentId);
 
       if (payment != null) {
         emit(InsurancePaymentFound(payment));
@@ -163,7 +163,7 @@ class InsurancePaymentBloc extends Bloc<InsurancePaymentEvent, InsurancePaymentS
     try {
       emit(const InsurancePaymentLoading());
 
-      final payments = await _repository.getInsurancePaymentsByCompany(event.companyName);
+      final List<InsurancePaymentModel> payments = await _repository.getInsurancePaymentsByCompany(event.companyName);
 
       if (payments.isEmpty) {
         emit(const InsurancePaymentEmpty('No payments found for this company'));
@@ -182,7 +182,7 @@ class InsurancePaymentBloc extends Bloc<InsurancePaymentEvent, InsurancePaymentS
     try {
       emit(const InsurancePaymentLoading());
 
-      final payments = await _repository.getInsurancePaymentsByType(event.insuranceType);
+      final List<InsurancePaymentModel> payments = await _repository.getInsurancePaymentsByType(event.insuranceType);
 
       if (payments.isEmpty) {
         emit(const InsurancePaymentEmpty('No payments found for this insurance type'));
@@ -201,7 +201,7 @@ class InsurancePaymentBloc extends Bloc<InsurancePaymentEvent, InsurancePaymentS
     try {
       emit(const InsurancePaymentLoading());
 
-      final payments = await _repository.getInsurancePaymentsByStatus(event.status);
+      final List<InsurancePaymentModel> payments = await _repository.getInsurancePaymentsByStatus(event.status);
 
       if (payments.isEmpty) {
         emit(const InsurancePaymentEmpty('No payments found with this status'));
@@ -220,7 +220,7 @@ class InsurancePaymentBloc extends Bloc<InsurancePaymentEvent, InsurancePaymentS
     try {
       emit(const InsurancePaymentLoading());
 
-      final payments = await _repository.getInsurancePaymentsInDateRange(
+      final List<InsurancePaymentModel> payments = await _repository.getInsurancePaymentsInDateRange(
         event.startDate,
         event.endDate,
       );
@@ -245,7 +245,7 @@ class InsurancePaymentBloc extends Bloc<InsurancePaymentEvent, InsurancePaymentS
     try {
       emit(const InsurancePaymentLoading());
 
-      final statistics = await _repository.getPaymentStatistics();
+      final Map<String, dynamic> statistics = await _repository.getPaymentStatistics();
 
       emit(InsurancePaymentSummary(
         totalPaid: statistics['totalPaid'],
@@ -265,7 +265,7 @@ class InsurancePaymentBloc extends Bloc<InsurancePaymentEvent, InsurancePaymentS
       Emitter<InsurancePaymentState> emit,
       ) async {
     try {
-      final payments = await _repository.getInsurancePayments();
+      final List<InsurancePaymentModel> payments = await _repository.getInsurancePayments();
       _allPayments = payments;
 
       if (payments.isEmpty) {
@@ -285,10 +285,10 @@ class InsurancePaymentBloc extends Bloc<InsurancePaymentEvent, InsurancePaymentS
     try {
       emit(const InsurancePaymentLoading());
 
-      final searchResults = await _repository.searchInsurancePayments(event.query);
+      final List<InsurancePaymentModel> searchResults = await _repository.searchInsurancePayments(event.query);
 
       if (searchResults.isEmpty) {
-        emit(InsurancePaymentSearchResults([], event.query));
+        emit(InsurancePaymentSearchResults(<InsurancePaymentModel>[], event.query));
       } else {
         emit(InsurancePaymentSearchResults(searchResults, event.query));
       }
@@ -303,12 +303,12 @@ class InsurancePaymentBloc extends Bloc<InsurancePaymentEvent, InsurancePaymentS
       ) {
     try {
       List<InsurancePaymentModel> filteredPayments = List.from(_allPayments);
-      List<String> filterCriteria = [];
+      final List<String> filterCriteria = <String>[];
 
       // Filter by company
       if (event.companyFilter != null && event.companyFilter!.isNotEmpty) {
         filteredPayments = filteredPayments
-            .where((payment) => payment.companyName
+            .where((InsurancePaymentModel payment) => payment.companyName
             .toLowerCase()
             .contains(event.companyFilter!.toLowerCase()))
             .toList();
@@ -318,7 +318,7 @@ class InsurancePaymentBloc extends Bloc<InsurancePaymentEvent, InsurancePaymentS
       // Filter by type
       if (event.typeFilter != null && event.typeFilter!.isNotEmpty) {
         filteredPayments = filteredPayments
-            .where((payment) => payment.insuranceType
+            .where((InsurancePaymentModel payment) => payment.insuranceType
             .toLowerCase()
             .contains(event.typeFilter!.toLowerCase()))
             .toList();
@@ -328,7 +328,7 @@ class InsurancePaymentBloc extends Bloc<InsurancePaymentEvent, InsurancePaymentS
       // Filter by status
       if (event.statusFilter != null && event.statusFilter!.isNotEmpty) {
         filteredPayments = filteredPayments
-            .where((payment) => payment.status.toLowerCase() == event.statusFilter!.toLowerCase())
+            .where((InsurancePaymentModel payment) => payment.status.toLowerCase() == event.statusFilter!.toLowerCase())
             .toList();
         filterCriteria.add('Status: ${event.statusFilter}');
       }
@@ -336,7 +336,7 @@ class InsurancePaymentBloc extends Bloc<InsurancePaymentEvent, InsurancePaymentS
       // Filter by date range
       if (event.startDate != null && event.endDate != null) {
         filteredPayments = filteredPayments
-            .where((payment) =>
+            .where((InsurancePaymentModel payment) =>
         payment.createdAt.isAfter(event.startDate!) &&
             payment.createdAt.isBefore(event.endDate!.add(const Duration(days: 1))))
             .toList();
@@ -344,7 +344,7 @@ class InsurancePaymentBloc extends Bloc<InsurancePaymentEvent, InsurancePaymentS
             'Date: ${event.startDate!.day}/${event.startDate!.month}/${event.startDate!.year} - ${event.endDate!.day}/${event.endDate!.month}/${event.endDate!.year}');
       }
 
-      final criteriaString = filterCriteria.join(', ');
+      final String criteriaString = filterCriteria.join(', ');
 
       if (filteredPayments.isEmpty) {
         emit(const InsurancePaymentEmpty('No payments match the selected filters'));
@@ -361,36 +361,36 @@ class InsurancePaymentBloc extends Bloc<InsurancePaymentEvent, InsurancePaymentS
       Emitter<InsurancePaymentState> emit,
       ) {
     try {
-      List<InsurancePaymentModel> sortedPayments = List.from(_allPayments);
+      final List<InsurancePaymentModel> sortedPayments = List.from(_allPayments);
 
       switch (event.sortBy.toLowerCase()) {
         case 'date':
-          sortedPayments.sort((a, b) => event.ascending
+          sortedPayments.sort((InsurancePaymentModel a, InsurancePaymentModel b) => event.ascending
               ? a.createdAt.compareTo(b.createdAt)
               : b.createdAt.compareTo(a.createdAt));
           break;
         case 'amount':
-          sortedPayments.sort((a, b) => event.ascending
+          sortedPayments.sort((InsurancePaymentModel a, InsurancePaymentModel b) => event.ascending
               ? a.premiumAmount.compareTo(b.premiumAmount)
               : b.premiumAmount.compareTo(a.premiumAmount));
           break;
         case 'company':
-          sortedPayments.sort((a, b) => event.ascending
+          sortedPayments.sort((InsurancePaymentModel a, InsurancePaymentModel b) => event.ascending
               ? a.companyName.compareTo(b.companyName)
               : b.companyName.compareTo(a.companyName));
           break;
         case 'type':
-          sortedPayments.sort((a, b) => event.ascending
+          sortedPayments.sort((InsurancePaymentModel a, InsurancePaymentModel b) => event.ascending
               ? a.insuranceType.compareTo(b.insuranceType)
               : b.insuranceType.compareTo(a.insuranceType));
           break;
         default:
-          sortedPayments.sort((a, b) => event.ascending
+          sortedPayments.sort((InsurancePaymentModel a, InsurancePaymentModel b) => event.ascending
               ? a.createdAt.compareTo(b.createdAt)
               : b.createdAt.compareTo(a.createdAt));
       }
 
-      final sortCriteria = '${event.sortBy.toLowerCase()} (${event.ascending ? 'ascending' : 'descending'})';
+      final String sortCriteria = '${event.sortBy.toLowerCase()} (${event.ascending ? 'ascending' : 'descending'})';
       emit(InsurancePaymentSorted(sortedPayments, sortCriteria));
     } catch (e) {
       emit(InsurancePaymentError('Sort failed: ${e.toString()}'));

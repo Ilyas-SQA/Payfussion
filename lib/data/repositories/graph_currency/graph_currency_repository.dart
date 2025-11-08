@@ -12,13 +12,13 @@ class CurrencyApiService {
   static Future<Map<String, double>> getCurrentRates([String baseCurrency = 'USD']) async {
     try {
       // Try primary API first
-      final response = await http.get(
+      final http.Response response = await http.get(
         Uri.parse('$_exchangeRateApiUrl/$baseCurrency'),
-        headers: {'Content-Type': 'application/json'},
+        headers: <String, String>{'Content-Type': 'application/json'},
       ).timeout(const Duration(seconds: 8));
 
       if (response.statusCode == 200) {
-        final responseBody = response.body;
+        final String responseBody = response.body;
         if (responseBody.isNotEmpty) {
           final data = json.decode(responseBody);
 
@@ -27,11 +27,11 @@ class CurrencyApiService {
               data.containsKey('rates') &&
               data['rates'] != null) {
 
-            final rates = data['rates'] as Map<String, dynamic>;
-            final processedRates = <String, double>{};
+            final Map<String, dynamic> rates = data['rates'] as Map<String, dynamic>;
+            final Map<String, double> processedRates = <String, double>{};
 
             // Safely convert all rates to double
-            rates.forEach((key, value) {
+            rates.forEach((String key, value) {
               if (value != null) {
                 processedRates[key] = (value as num).toDouble();
               }
@@ -54,13 +54,13 @@ class CurrencyApiService {
   /// Fallback API method
   static Future<Map<String, double>> _getCurrentRatesFromFallbackAPI(String baseCurrency) async {
     try {
-      final response = await http.get(
+      final http.Response response = await http.get(
         Uri.parse('$_freeForexApiUrl?base=$baseCurrency'),
-        headers: {'Content-Type': 'application/json'},
+        headers: <String, String>{'Content-Type': 'application/json'},
       ).timeout(const Duration(seconds: 8));
 
       if (response.statusCode == 200) {
-        final responseBody = response.body;
+        final String responseBody = response.body;
         if (responseBody.isNotEmpty) {
           final data = json.decode(responseBody);
 
@@ -69,10 +69,10 @@ class CurrencyApiService {
               data.containsKey('rates') &&
               data['rates'] != null) {
 
-            final rates = data['rates'] as Map<String, dynamic>;
-            final processedRates = <String, double>{};
+            final Map<String, dynamic> rates = data['rates'] as Map<String, dynamic>;
+            final Map<String, double> processedRates = <String, double>{};
 
-            rates.forEach((key, value) {
+            rates.forEach((String key, value) {
               if (value != null) {
                 processedRates[key] = (value as num).toDouble();
               }
@@ -94,7 +94,7 @@ class CurrencyApiService {
 
   /// Get realistic fallback exchange rates (updated to current market rates)
   static Map<String, double> _getRealisticFallbackRates() {
-    return {
+    return <String, double>{
       'USD': 1.0,
       'EUR': 0.92,
       'GBP': 0.78,
@@ -114,8 +114,8 @@ class CurrencyApiService {
   static Future<List<double>> getWeeklyHistoricalRates(String currency, [String baseCurrency = 'USD']) async {
     try {
       // Get current rate first
-      final currentRates = await getCurrentRates(baseCurrency);
-      final currentRate = currentRates[currency] ?? _getRealisticFallbackRates()[currency] ?? 1.0;
+      final Map<String, double> currentRates = await getCurrentRates(baseCurrency);
+      final double currentRate = currentRates[currency] ?? _getRealisticFallbackRates()[currency] ?? 1.0;
 
       // Generate realistic weekly data based on actual forex volatility patterns
       return _generateRealisticWeeklyData(currentRate, currency);
@@ -123,14 +123,14 @@ class CurrencyApiService {
     } catch (e) {
       print('Error getting current rate for weekly data: $e');
       // Ultimate fallback
-      final fallbackRate = _getRealisticFallbackRates()[currency] ?? 1.0;
+      final double fallbackRate = _getRealisticFallbackRates()[currency] ?? 1.0;
       return _generateRealisticWeeklyData(fallbackRate, currency);
     }
   }
 
   /// Generate realistic weekly data based on actual forex patterns
   static List<double> _generateRealisticWeeklyData(double currentRate, String currency) {
-    final random = Random(DateTime.now().millisecondsSinceEpoch);
+    final Random random = Random(DateTime.now().millisecondsSinceEpoch);
 
     // Different volatility for different currency types
     double volatility;
@@ -150,27 +150,27 @@ class CurrencyApiService {
         volatility = 0.010; // 1.0% default
     }
 
-    List<double> weeklyRates = [];
+    final List<double> weeklyRates = <double>[];
     double previousRate = currentRate;
 
     // Generate 7 days of data with realistic patterns
     for (int i = 0; i < 7; i++) {
       // Create trending behavior (not just random)
-      double trendFactor = sin(i * 0.5) * 0.3; // Gentle trending
-      double randomFactor = (random.nextDouble() - 0.5) * 2; // -1 to 1
+      final double trendFactor = sin(i * 0.5) * 0.3; // Gentle trending
+      final double randomFactor = (random.nextDouble() - 0.5) * 2; // -1 to 1
 
       // Combine trend and random movement
       double change = (trendFactor + randomFactor) * volatility;
 
       // Apply mean reversion (currencies tend to revert to mean)
-      double meanReversion = (currentRate - previousRate) * 0.1;
+      final double meanReversion = (currentRate - previousRate) * 0.1;
       change -= meanReversion;
 
       double newRate = previousRate * (1 + change);
 
       // Ensure reasonable bounds (±5% from current rate)
-      double minRate = currentRate * 0.95;
-      double maxRate = currentRate * 1.05;
+      final double minRate = currentRate * 0.95;
+      final double maxRate = currentRate * 1.05;
       newRate = newRate.clamp(minRate, maxRate);
 
       weeklyRates.add(newRate);
@@ -185,11 +185,11 @@ class CurrencyApiService {
   static List<double> _smoothData(List<double> data) {
     if (data.length < 3) return data;
 
-    List<double> smoothed = [data.first]; // Keep first value
+    final List<double> smoothed = <double>[data.first]; // Keep first value
 
     for (int i = 1; i < data.length - 1; i++) {
       // Simple 3-point moving average
-      double smoothedValue = (data[i-1] + data[i] + data[i+1]) / 3;
+      final double smoothedValue = (data[i-1] + data[i] + data[i+1]) / 3;
       smoothed.add(smoothedValue);
     }
 
@@ -200,15 +200,15 @@ class CurrencyApiService {
   /// Get comprehensive currency data with both current and weekly rates
   static Future<Map<String, dynamic>> getCurrencyData(String currencyCode, [String baseCurrency = 'USD']) async {
     try {
-      final results = await Future.wait([
+      final List<Object> results = await Future.wait(<Future<Object>>[
         getCurrentRates(baseCurrency),
         getWeeklyHistoricalRates(currencyCode, baseCurrency),
       ]);
 
-      final currentRates = results[0] as Map<String, double>;
-      final weeklyRates = results[1] as List<double>;
+      final Map<String, double> currentRates = results[0] as Map<String, double>;
+      final List<double> weeklyRates = results[1] as List<double>;
 
-      return {
+      return <String, dynamic>{
         'currentRate': currentRates[currencyCode] ?? _getRealisticFallbackRates()[currencyCode] ?? 1.0,
         'weeklyRates': weeklyRates,
         'lastUpdated': DateTime.now().toIso8601String(),
@@ -217,8 +217,8 @@ class CurrencyApiService {
     } catch (e) {
       print('Error getting currency data: $e');
       // Provide fallback data
-      final fallbackRate = _getRealisticFallbackRates()[currencyCode] ?? 1.0;
-      return {
+      final double fallbackRate = _getRealisticFallbackRates()[currencyCode] ?? 1.0;
+      return <String, dynamic>{
         'currentRate': fallbackRate,
         'weeklyRates': _generateRealisticWeeklyData(fallbackRate, currencyCode),
         'lastUpdated': DateTime.now().toIso8601String(),
@@ -232,19 +232,19 @@ class CurrencyApiService {
       List<String> currencyCodes,
       [String baseCurrency = 'USD']
       ) async {
-    Map<String, Map<String, dynamic>> result = {};
+    final Map<String, Map<String, dynamic>> result = <String, Map<String, dynamic>>{};
 
     try {
       // Get current rates for all currencies first
-      final currentRates = await getCurrentRates(baseCurrency);
+      final Map<String, double> currentRates = await getCurrentRates(baseCurrency);
 
       // Generate weekly data for each currency
       for (String currencyCode in currencyCodes) {
         try {
-          final currentRate = currentRates[currencyCode] ?? _getRealisticFallbackRates()[currencyCode] ?? 1.0;
-          final weeklyRates = _generateRealisticWeeklyData(currentRate, currencyCode);
+          final double currentRate = currentRates[currencyCode] ?? _getRealisticFallbackRates()[currencyCode] ?? 1.0;
+          final List<double> weeklyRates = _generateRealisticWeeklyData(currentRate, currencyCode);
 
-          result[currencyCode] = {
+          result[currencyCode] = <String, dynamic>{
             'currentRate': currentRate,
             'weeklyRates': weeklyRates,
             'lastUpdated': DateTime.now().toIso8601String(),
@@ -253,8 +253,8 @@ class CurrencyApiService {
         } catch (e) {
           print('Failed to process data for $currencyCode: $e');
           // Individual currency fallback
-          final fallbackRate = _getRealisticFallbackRates()[currencyCode] ?? 1.0;
-          result[currencyCode] = {
+          final double fallbackRate = _getRealisticFallbackRates()[currencyCode] ?? 1.0;
+          result[currencyCode] = <String, dynamic>{
             'currentRate': fallbackRate,
             'weeklyRates': _generateRealisticWeeklyData(fallbackRate, currencyCode),
             'lastUpdated': DateTime.now().toIso8601String(),
@@ -266,8 +266,8 @@ class CurrencyApiService {
       print('Error in getMultipleCurrenciesData: $e');
       // Complete fallback for all currencies
       for (String currencyCode in currencyCodes) {
-        final fallbackRate = _getRealisticFallbackRates()[currencyCode] ?? 1.0;
-        result[currencyCode] = {
+        final double fallbackRate = _getRealisticFallbackRates()[currencyCode] ?? 1.0;
+        result[currencyCode] = <String, dynamic>{
           'currentRate': fallbackRate,
           'weeklyRates': _generateRealisticWeeklyData(fallbackRate, currencyCode),
           'lastUpdated': DateTime.now().toIso8601String(),

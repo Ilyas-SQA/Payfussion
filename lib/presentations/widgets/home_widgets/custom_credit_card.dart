@@ -37,7 +37,7 @@ class CustomCreditCard extends StatelessWidget {
         ),
         child: Stack(
           fit: StackFit.expand,
-          children: [
+          children: <Widget>[
             Positioned.fill(
               child: SvgPicture.asset(
                 imageUrl,
@@ -50,11 +50,11 @@ class CustomCreditCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: <Widget>[
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
+                    children: <Widget>[
                       // Balance
                       Image.asset(
                         "assets/images/cards/sim-card.png",
@@ -80,11 +80,11 @@ class CustomCreditCard extends StatelessWidget {
                   // Bottom section - Card holder and expiry
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
+                    children: <Widget>[
                       // Card holder
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                        children: <Widget>[
                           Text(
                             "Card Holder",
                             style: Font.montserratFont(
@@ -110,7 +110,7 @@ class CustomCreditCard extends StatelessWidget {
                       // Expiry date
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
+                        children: <Widget>[
                           Text(
                             "Expires",
                             style: Font.montserratFont(

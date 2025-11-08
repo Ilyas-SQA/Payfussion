@@ -23,7 +23,7 @@ class NotificationModel {
 
   // Create NotificationModel from Firestore document
   factory NotificationModel.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+    final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
     return NotificationModel(
       id: doc.id,
@@ -39,7 +39,7 @@ class NotificationModel {
 
   // Convert NotificationModel to Firestore format
   Map<String, dynamic> toFirestore() {
-    return {
+    return <String, dynamic>{
       'title': title,
       'message': message,
       'type': type,
@@ -111,7 +111,7 @@ class NotificationModel {
     if (a == null || b == null) return false;
     if (a.length != b.length) return false;
 
-    for (final key in a.keys) {
+    for (final String key in a.keys) {
       if (!b.containsKey(key) || a[key] != b[key]) {
         return false;
       }
@@ -136,7 +136,7 @@ class NotificationModel {
           : 'Your payment of \$${amount.toStringAsFixed(2)} to $recipientName failed',
       type: 'transaction',
       createdAt: DateTime.now(),
-      data: {
+      data: <String, dynamic>{
         'transactionId': transactionId,
         'recipientName': recipientName,
         'amount': amount,
@@ -163,7 +163,7 @@ class NotificationModel {
           : 'Your $companyName bill payment of \$${amount.toStringAsFixed(2)} failed',
       type: status == 'success' ? 'bill_payment_success' : 'bill_payment_failed',
       createdAt: DateTime.now(),
-      data: {
+      data: <String, dynamic>{
         'companyName': companyName,
         'amount': amount,
         'billId': billId,
@@ -190,7 +190,7 @@ class NotificationModel {
           : 'Your $companyName bus ticket booking for $passengerText on $formattedDate failed',
       type: 'ticket',
       createdAt: DateTime.now(),
-      data: {
+      data: <String, dynamic>{
         'companyName': companyName,
         'route': route,
         'travelDate': travelDate.toIso8601String(),
@@ -215,7 +215,7 @@ class NotificationModel {
           : 'You received \$${amount.toStringAsFixed(2)} from $recipientName',
       type: 'transfer',
       createdAt: DateTime.now(),
-      data: {
+      data: <String, dynamic>{
         'transferId': transferId,
         'recipientName': recipientName,
         'amount': amount,
@@ -263,7 +263,7 @@ class NotificationModel {
           : 'Your $serviceType ride booking with $driverName failed',
       type: 'ride',
       createdAt: DateTime.now(),
-      data: {
+      data: <String, dynamic>{
         'bookingId': bookingId,
         'driverName': driverName,
         'serviceType': serviceType,
@@ -310,7 +310,7 @@ class NotificationModel {
           : 'Your $airline flight $flightNumber booking for $passengerText on $formattedDate failed',
       type: 'flight',
       createdAt: DateTime.now(),
-      data: {
+      data: <String, dynamic>{
         'bookingId': bookingId,
         'airline': airline,
         'flightNumber': flightNumber,

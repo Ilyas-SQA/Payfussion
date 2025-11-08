@@ -78,7 +78,7 @@ class PaymentRequestModel extends Equatable {
   }
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'id': id,
       'payer': payer,
       'payer_image_url': payerImageUrl,
@@ -99,7 +99,7 @@ class PaymentRequestModel extends Equatable {
   }
 
   factory PaymentRequestModel.fromDoc(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+    final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
     String _toIso(dynamic v) {
       if (v == null) return DateTime.now().toUtc().toIso8601String();
@@ -156,7 +156,7 @@ class PaymentRequestModel extends Equatable {
   // Helper methods
   bool get isExpired {
     try {
-      final expiryDate = DateTime.parse(expiresAt);
+      final DateTime expiryDate = DateTime.parse(expiresAt);
       return DateTime.now().isAfter(expiryDate);
     } catch (e) {
       return false;
@@ -188,7 +188,7 @@ class PaymentRequestModel extends Equatable {
 
   @override
   List<Object?> get props =>
-      [
+      <Object?>[
         id,
         payer,
         payerImageUrl,

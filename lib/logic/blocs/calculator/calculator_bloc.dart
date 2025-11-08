@@ -8,16 +8,16 @@ import 'calculator_event.dart';
 import 'calculator_state.dart';
 
 class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
-  final hiveService = getIt<HiveService>();
-  final Map<String, Map<String, double>> conversionRates = {
-    'USD': {
+  final HiveService hiveService = getIt<HiveService>();
+  final Map<String, Map<String, double>> conversionRates = <String, Map<String, double>>{
+    'USD': <String, double>{
       'INR': 75.0, // Example rate: 1 USD = 75 INR
       'EUR': 0.85, // Example rate: 1 USD = 0.85 EUR
       'GBP': 0.75, // Example rate: 1 USD = 0.75 GBP
     },
-    'EUR': {'INR': 88.0, 'USD': 1.18, 'GBP': 0.88},
-    'INR': {'USD': 0.013, 'EUR': 0.012, 'GBP': 0.010},
-    'GBP': {'USD': 1.33, 'EUR': 1.14, 'INR': 100.0},
+    'EUR': <String, double>{'INR': 88.0, 'USD': 1.18, 'GBP': 0.88},
+    'INR': <String, double>{'USD': 0.013, 'EUR': 0.012, 'GBP': 0.010},
+    'GBP': <String, double>{'USD': 1.33, 'EUR': 1.14, 'INR': 100.0},
   };
   CalculatorBloc()
     : super(
@@ -298,7 +298,7 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
     SourceCurrencyChanged event,
     Emitter<CalculatorState> emit,
   ) {
-    double conversionResult = _convertCurrency(
+    final double conversionResult = _convertCurrency(
       state.inputDisplay,
       event.currency,
       state.targetCurrency,
@@ -316,7 +316,7 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
     TargetCurrencyChanged event,
     Emitter<CalculatorState> emit,
   ) {
-    double conversionResult = _convertCurrency(
+    final double conversionResult = _convertCurrency(
       state.inputDisplay,
       state.sourceCurrency,
       event.currency,
@@ -371,7 +371,7 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
     // Parse the amount and perform conversion
     final double? amount = double.tryParse(newInput);
     if (amount != null) {
-      double conversionResult = _convertCurrency(
+      final double conversionResult = _convertCurrency(
         newInput,
         state.sourceCurrency,
         state.targetCurrency,
@@ -409,7 +409,7 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
 
   Future<void> _saveToHistory(String equation, String result) async {
     try {
-      final historyItem = HistoryItem(
+      final HistoryItem historyItem = HistoryItem(
         title: result,
         subtitle: equation,
         timestamp: DateTime.now(),

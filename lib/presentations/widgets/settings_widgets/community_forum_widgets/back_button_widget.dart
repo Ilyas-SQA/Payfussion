@@ -10,7 +10,7 @@ Widget createBackButton(String path, BuildContext context){
     child: Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
-      children: [
+      children: <Widget>[
         Icon(Icons.arrow_back_ios_new, color: const Color(0xff2D9CDB), size: 24.r),
         SizedBox(width: 2.w),
         Text(

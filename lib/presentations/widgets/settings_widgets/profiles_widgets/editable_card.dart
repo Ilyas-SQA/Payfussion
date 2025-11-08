@@ -125,8 +125,8 @@ class _EditableCardState extends State<EditableCard> {
     return InkWell(
       onTap: widget.isShowTralingIcon && !_isLoading ? () => setState(() => _isEditing = true) : null,
       child: Row(
-        children: [
-          if (widget.leadingIcon != null) ...[
+        children: <Widget>[
+          if (widget.leadingIcon != null) ...<Widget>[
             Icon(
               widget.leadingIcon,
               color: MyTheme.primaryColor,
@@ -137,7 +137,7 @@ class _EditableCardState extends State<EditableCard> {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Text(
                   widget.title,
                   style:
@@ -195,7 +195,7 @@ class _EditableCardState extends State<EditableCard> {
       ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         Text(
           "Edit ${widget.title}",
           style:
@@ -239,7 +239,7 @@ class _EditableCardState extends State<EditableCard> {
         SizedBox(height: 16.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
-          children: [
+          children: <Widget>[
             TextButton(
               onPressed: _isLoading ? null : () => setState(() {
                 _isEditing = false;

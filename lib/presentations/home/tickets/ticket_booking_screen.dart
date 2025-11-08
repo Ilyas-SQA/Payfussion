@@ -104,7 +104,7 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -112,13 +112,13 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
             opacity: _listFade,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 // Header Section
                 Padding(
                   padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(
                         "Choose Your",
                         style: theme.textTheme.headlineMedium?.copyWith(
@@ -160,8 +160,8 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
   }
 
   Widget _buildTicketBookingList(ThemeData theme) {
-    final ticketItems = [
-      {
+    final List<Map<String, Object>> ticketItems = <Map<String, Object>>[
+      <String, Object>{
         'icon': TImageUrl.iconMovies,
         'label': 'Movies',
         'subtitle': 'Book movie tickets',
@@ -169,7 +169,7 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
         'iconColor': Colors.white,
         'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => MovieListScreen()))
       },
-      {
+      <String, Object>{
         'icon': TImageUrl.iconTrains,
         'label': 'Trains',
         'subtitle': 'Railway reservations',
@@ -177,29 +177,29 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
         'iconColor': Colors.white,
         'onTap': () => context.push(RouteNames.trainListScreen)
       },
-      {
+      <String, Object>{
         'icon': TImageUrl.iconBus,
         'label': 'Bus',
         'subtitle': 'Bus ticket booking',
         'color': MyTheme.primaryColor,
         'iconColor': Colors.white,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => BusListScreen()))
+        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const BusListScreen()))
       },
-      {
+      <String, Object>{
         'icon': TImageUrl.iconFlight,
         'label': 'Flights',
         'subtitle': 'Domestic & international flights',
         'color': MyTheme.primaryColor,
         'iconColor': Colors.white,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => FlightListScreen()))
+        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const FlightListScreen()))
       },
-      {
+      <String, Object>{
         'icon': TImageUrl.iconCar,
         'label': 'Car Rental',
         'subtitle': 'Book rides & car rentals',
         'color': MyTheme.primaryColor,
         'iconColor': Colors.white,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => RideServiceListScreen()))
+        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const RideServiceListScreen()))
       },
     ];
 
@@ -215,7 +215,7 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
             childAspectRatio: 8 / 10,
           ),
           itemCount: ticketItems.length,
-          itemBuilder: (context, index) {
+          itemBuilder: (BuildContext context, int index) {
             return AnimationConfiguration.staggeredList(
               position: index,
               duration: const Duration(milliseconds: 500),
@@ -242,7 +242,7 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -257,7 +257,7 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
           padding: EdgeInsets.all(10.w),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
+            children: <Widget>[
               // Icon Container
               Hero(
                 tag: 'ticket_icon_${item['label']}',
@@ -274,7 +274,7 @@ class _TicketBookingScreenState extends State<TicketBookingScreen> with TickerPr
               // Content
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Text(
                     item['label'] as String,
                     textAlign: TextAlign.center,

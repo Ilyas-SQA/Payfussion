@@ -66,7 +66,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
         iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -76,14 +76,14 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   // Driver Info Card
                   TweenAnimationBuilder<double>(
                     tween: Tween(begin: 0, end: 1),
                     duration: const Duration(milliseconds: 600),
                     curve: Curves.easeOutBack,
-                    builder: (context, value, child) {
-                      final clampedValue = value.clamp(0.0, 1.0);
+                    builder: (BuildContext context, double value, Widget? child) {
+                      final double clampedValue = value.clamp(0.0, 1.0);
                       return Transform.translate(
                         offset: Offset(0, 30 * (1 - clampedValue)),
                         child: Transform.scale(
@@ -104,8 +104,8 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
                     tween: Tween(begin: 0, end: 1),
                     duration: const Duration(milliseconds: 800),
                     curve: Curves.easeOutBack,
-                    builder: (context, value, child) {
-                      final clampedValue = value.clamp(0.0, 1.0);
+                    builder: (BuildContext context, double value, Widget? child) {
+                      final double clampedValue = value.clamp(0.0, 1.0);
                       return Transform.translate(
                         offset: Offset(0, 30 * (1 - clampedValue)),
                         child: Opacity(
@@ -119,12 +119,12 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
                   const SizedBox(height: 16),
 
                   // Special Services Card
-                  if (widget.ride.specialServices.isNotEmpty) ...[
+                  if (widget.ride.specialServices.isNotEmpty) ...<Widget>[
                     TweenAnimationBuilder<double>(
                       tween: Tween(begin: 0, end: 1),
                       duration: const Duration(milliseconds: 1000),
                       curve: Curves.easeOutBack,
-                      builder: (context, value, child) {
+                      builder: (BuildContext context, double value, Widget? child) {
                         final double clampedValue = value.clamp(0.0, 1.0);
                         return Transform.translate(
                           offset: Offset(0, 30 * (1 - clampedValue)),
@@ -143,8 +143,8 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
                     tween: Tween(begin: 0, end: 1),
                     duration: const Duration(milliseconds: 1200),
                     curve: Curves.elasticOut,
-                    builder: (context, value, child) {
-                      final clampedValue = value.clamp(0.0, 1.0);
+                    builder: (BuildContext context, double value, Widget? child) {
+                      final double clampedValue = value.clamp(0.0, 1.0);
                       return Transform.translate(
                         offset: Offset(0, 50 * (1 - clampedValue)),
                         child: Opacity(
@@ -168,7 +168,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -180,14 +180,14 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             Row(
-              children: [
+              children: <Widget>[
                 // Avatar
                 TweenAnimationBuilder<double>(
                   tween: Tween(begin: 0, end: 1),
                   duration: const Duration(milliseconds: 600),
-                  builder: (context, scale, child) {
+                  builder: (BuildContext context, double scale, Widget? child) {
                     return Transform.scale(
                       scale: scale,
                       child: Hero(
@@ -195,7 +195,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
                         child: Container(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            boxShadow: [
+                            boxShadow: <BoxShadow>[
                               BoxShadow(
                                 color: _getServiceColor(widget.ride.serviceType).withOpacity(0.3),
                                 blurRadius: 10,
@@ -224,7 +224,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       // Name
                       TweenAnimationBuilder<Offset>(
                         tween: Tween(
@@ -232,7 +232,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
                           end: Offset.zero,
                         ),
                         duration: const Duration(milliseconds: 600),
-                        builder: (context, offset, child) {
+                        builder: (BuildContext context, Offset offset, Widget? child) {
                           return Transform.translate(
                             offset: offset * 50,
                             child: Text(
@@ -250,10 +250,10 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
                       TweenAnimationBuilder<double>(
                         tween: Tween(begin: 0, end: 1),
                         duration: const Duration(milliseconds: 800),
-                        builder: (context, value, child) {
-                          final clampedValue = value.clamp(0.0, 1.0);
+                        builder: (BuildContext context, double value, Widget? child) {
+                          final double clampedValue = value.clamp(0.0, 1.0);
                           return Row(
-                            children: [
+                            children: <Widget>[
                               Transform.scale(
                                 scale: clampedValue,
                                 child: const Icon(Icons.star, size: 20, color: Colors.amber),
@@ -277,11 +277,11 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
                       // Service type and availability
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
+                        children: <Widget>[
                           TweenAnimationBuilder<double>(
                             tween: Tween(begin: 0, end: 1),
                             duration: const Duration(milliseconds: 1000),
-                            builder: (context, scale, child) {
+                            builder: (BuildContext context, double scale, Widget? child) {
                               return Transform.scale(
                                 scale: scale,
                                 child: Container(
@@ -307,7 +307,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
                             TweenAnimationBuilder<double>(
                               tween: Tween(begin: 0, end: 1),
                               duration: const Duration(milliseconds: 1200),
-                              builder: (context, scale, child) {
+                              builder: (BuildContext context, double scale, Widget? child) {
                                 return Transform.scale(
                                   scale: scale,
                                   child: Container(
@@ -315,7 +315,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
                                     decoration: BoxDecoration(
                                       color: MyTheme.secondaryColor,
                                       borderRadius: BorderRadius.circular(20),
-                                      boxShadow: [
+                                      boxShadow: <BoxShadow>[
                                         BoxShadow(
                                           color: MyTheme.primaryColor.withOpacity(0.3),
                                           blurRadius: 8,
@@ -345,16 +345,16 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
             const SizedBox(height: 20),
 
             // Detail rows
-            ...([
-              [Icons.directions_car, "Vehicle", "${widget.ride.carMake} ${widget.ride.carModel} ${widget.ride.carYear}"],
-              [Icons.palette, "Color", widget.ride.carColor],
-              [Icons.confirmation_number, "License Plate", widget.ride.licensePlate],
-              [Icons.phone, "Phone", widget.ride.phoneNumber],
-              [Icons.attach_money, "Base Rate", "\$${widget.ride.baseRate.toStringAsFixed(2)} per mile"],
-              [Icons.language, "Languages", widget.ride.languages.join(', ')],
-            ].asMap().entries.map((entry) {
-              final index = entry.key;
-              final detail = entry.value;
+            ...(<List<Object>>[
+              <Object>[Icons.directions_car, "Vehicle", "${widget.ride.carMake} ${widget.ride.carModel} ${widget.ride.carYear}"],
+              <Object>[Icons.palette, "Color", widget.ride.carColor],
+              <Object>[Icons.confirmation_number, "License Plate", widget.ride.licensePlate],
+              <Object>[Icons.phone, "Phone", widget.ride.phoneNumber],
+              <Object>[Icons.attach_money, "Base Rate", "\$${widget.ride.baseRate.toStringAsFixed(2)} per mile"],
+              <Object>[Icons.language, "Languages", widget.ride.languages.join(', ')],
+            ].asMap().entries.map((MapEntry<int, List<Object>> entry) {
+              final int index = entry.key;
+              final List<Object> detail = entry.value;
               return TweenAnimationBuilder<double>(
                 tween: Tween(begin: 0, end: 1),
                 duration: Duration(milliseconds: 400 + (index * 80)),
@@ -385,7 +385,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -397,14 +397,14 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             TweenAnimationBuilder<Offset>(
               tween: Tween(
                 begin: const Offset(-1, 0),
                 end: Offset.zero,
               ),
               duration: const Duration(milliseconds: 600),
-              builder: (context, offset, child) {
+              builder: (BuildContext context, Offset offset, Widget? child) {
                 return Transform.translate(
                   offset: offset * 30,
                   child: const Text(
@@ -421,13 +421,13 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: widget.ride.serviceAreas.asMap().entries.map((entry) {
-                final index = entry.key;
-                final area = entry.value;
+              children: widget.ride.serviceAreas.asMap().entries.map((MapEntry<int, String> entry) {
+                final int index = entry.key;
+                final String area = entry.value;
                 return TweenAnimationBuilder<double>(
                   tween: Tween(begin: 0, end: 1),
                   duration: Duration(milliseconds: 300 + (index * 100)),
-                  builder: (context, scale, child) {
+                  builder: (BuildContext context, double scale, Widget? child) {
                     return Transform.scale(
                       scale: scale,
                       child: Container(
@@ -461,7 +461,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -473,14 +473,14 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             TweenAnimationBuilder<Offset>(
               tween: Tween(
                 begin: const Offset(-1, 0),
                 end: Offset.zero,
               ),
               duration: const Duration(milliseconds: 600),
-              builder: (context, offset, child) {
+              builder: (BuildContext context, Offset offset, Widget? child) {
                 return Transform.translate(
                   offset: offset * 30,
                   child: const Text(
@@ -494,14 +494,14 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
               },
             ),
             const SizedBox(height: 8),
-            ...widget.ride.specialServices.asMap().entries.map((entry) {
-              final index = entry.key;
-              final service = entry.value;
+            ...widget.ride.specialServices.asMap().entries.map((MapEntry<int, String> entry) {
+              final int index = entry.key;
+              final String service = entry.value;
               return TweenAnimationBuilder<double>(
                 tween: Tween(begin: 0, end: 1),
                 duration: Duration(milliseconds: 400 + (index * 80)),
-                builder: (context, value, child) {
-                  final clampedValue = value.clamp(0.0, 1.0);
+                builder: (BuildContext context, double value, Widget? child) {
+                  final double clampedValue = value.clamp(0.0, 1.0);
                   return Transform.translate(
                     offset: Offset(20 * (1 - clampedValue), 0),
                     child: Opacity(
@@ -509,7 +509,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 2),
                         child: Row(
-                          children: [
+                          children: <Widget>[
                             Transform.scale(
                               scale: clampedValue,
                               child: const Icon(Icons.check, size: 16, color: Colors.green),
@@ -540,7 +540,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(27),
-              boxShadow: widget.ride.isAvailable ? [
+              boxShadow: widget.ride.isAvailable ? <BoxShadow>[
                 BoxShadow(
                   color: MyTheme.secondaryColor.withOpacity(0.3),
                   blurRadius: 15,
@@ -556,8 +556,8 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
                 Navigator.push(
                   context,
                   PageRouteBuilder(
-                    pageBuilder: (context, animation, _) => RideBookingScreen(ride: widget.ride),
-                    transitionsBuilder: (context, animation, _, child) {
+                    pageBuilder: (BuildContext context, Animation<double> animation, _) => RideBookingScreen(ride: widget.ride),
+                    transitionsBuilder: (BuildContext context, Animation<double> animation, _, Widget child) {
                       return SlideTransition(
                         position: Tween<Offset>(
                           begin: const Offset(0.0, 1.0),
@@ -581,13 +581,13 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Icon(icon, size: 20, color: MyTheme.secondaryColor,),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Text(
                   label,
                   style: const TextStyle(

@@ -5,7 +5,6 @@ import 'package:payfussion/core/theme/theme.dart';
 import '../../../../core/constants/fonts.dart';
 import '../../../../core/constants/routes_name.dart';
 import '../../../../core/utils/setting_utils/data_and_permission_utils/app_colors_utils.dart';
-import '../../../../core/utils/setting_utils/data_and_permission_utils/app_styles.dart';
 import '../../background_theme.dart';
 import 'bullet_points.dart';
 import 'feature_card.dart';
@@ -41,7 +40,7 @@ class _DataManagementTabState extends State<DataManagementTab> with TickerProvid
   @override
   Widget build(BuildContext context) {
     return Stack(
-      children: [
+      children: <Widget>[
         AnimatedBackground(
           animationController: _backgroundAnimationController,
         ),
@@ -49,7 +48,7 @@ class _DataManagementTabState extends State<DataManagementTab> with TickerProvid
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
                Text(
                 'Your Data Control Center',
                 style: Font.montserratFont(
@@ -74,7 +73,7 @@ class _DataManagementTabState extends State<DataManagementTab> with TickerProvid
                 colors: widget.colors,
                 content: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     const BulletPoint(
                       'View and download a comprehensive report of all your personal data stored with PayFusion.',
                     ),
@@ -112,7 +111,7 @@ class _DataManagementTabState extends State<DataManagementTab> with TickerProvid
                 colors: widget.colors,
                 content: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     const BulletPoint(
                       'Delete specific data categories or request complete account deletion.',
                     ),
@@ -124,7 +123,7 @@ class _DataManagementTabState extends State<DataManagementTab> with TickerProvid
                     ),
                     const SizedBox(height: 12),
                     Row(
-                      children: [
+                      children: <Widget>[
                         Expanded(
                           child: ElevatedButton(
                             child: Text('Delete Specific Data', style: Font.montserratFont(fontSize: 12,)),
@@ -172,7 +171,7 @@ class _DataManagementTabState extends State<DataManagementTab> with TickerProvid
                 colors: widget.colors,
                 content: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     const BulletPoint(
                       'Update or correct inaccurate personal information in our system.',
                     ),
@@ -205,7 +204,7 @@ class _DataManagementTabState extends State<DataManagementTab> with TickerProvid
                 colors: widget.colors,
                 content: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     const BulletPoint(
                       'Under data protection laws (GDPR, CCPA, etc.), you have specific rights regarding your personal data.',
                     ),
@@ -241,14 +240,14 @@ class _DataManagementTabState extends State<DataManagementTab> with TickerProvid
   void _showDataReportDialog(BuildContext context, AppColors colors) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (BuildContext context) => AlertDialog(
         backgroundColor: colors.cardBackground,
         title: Text('Request Data Report', style: Font.montserratFont(color: colors.textPrimary)),
         content: Text(
           'Your data report will be prepared and sent to your registered email within 48 hours. This report contains all your personal data stored with PayFusion.',
           style: Font.montserratFont(color: colors.textPrimary),
         ),
-        actions: [
+        actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text('Cancel', style: Font.montserratFont(color: colors.primary)),
@@ -271,19 +270,19 @@ class _DataManagementTabState extends State<DataManagementTab> with TickerProvid
   void _showSelectionDialog(BuildContext context, AppColors colors) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (BuildContext context) => AlertDialog(
         backgroundColor: colors.cardBackground,
         title: Text('Select Data to Delete', style: Font.montserratFont(color: colors.textPrimary)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             _buildCheckboxListTile(context, 'Search History', 'Clears your in-app search records', true),
             _buildCheckboxListTile(context, 'Transaction Memos', 'Removes personal notes from transactions', false),
             _buildCheckboxListTile(context, 'Location History', 'Clears stored location data', false),
             _buildCheckboxListTile(context, 'Device Information', 'Removes linked device data', false),
           ],
         ),
-        actions: [
+        actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text('Cancel', style: Font.montserratFont(color: colors.primary)),
@@ -305,13 +304,13 @@ class _DataManagementTabState extends State<DataManagementTab> with TickerProvid
 
   Widget _buildCheckboxListTile(BuildContext context, String title, String subtitle, bool value) {
     return StatefulBuilder(
-        builder: (context, setState) {
+        builder: (BuildContext context, setState) {
           bool isChecked = value;
           return CheckboxListTile(
             title: Text(title, style: Font.montserratFont(color: AppColors.of(context).textPrimary)),
             subtitle: Text(subtitle, style: Font.montserratFont(color: AppColors.of(context).textSecondary)),
             value: isChecked,
-            onChanged: (newValue) {
+            onChanged: (bool? newValue) {
               setState(() {
                 isChecked = newValue ?? false;
               });
@@ -324,13 +323,13 @@ class _DataManagementTabState extends State<DataManagementTab> with TickerProvid
   void _showAccountDeletionDialog(BuildContext context, AppColors colors) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (BuildContext context) => AlertDialog(
         backgroundColor: colors.cardBackground,
         title: Text('Delete Account', style: Font.montserratFont(color: colors.textPrimary)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             Text(
               'Warning: This action cannot be undone.',
               style: Font.montserratFont(color: colors.error, fontWeight: FontWeight.bold),
@@ -350,7 +349,7 @@ class _DataManagementTabState extends State<DataManagementTab> with TickerProvid
             ),
           ],
         ),
-        actions: [
+        actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text('Cancel', style: Font.montserratFont(color: colors.primary)),

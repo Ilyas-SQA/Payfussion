@@ -15,7 +15,7 @@ class FirestorePaymentRepository {
         _auth = auth ?? FirebaseAuth.instance;
 
   String get _uid {
-    final u = _auth.currentUser?.uid;
+    final String? u = _auth.currentUser?.uid;
     if (u == null) throw StateError('User not signed in');
     return u;
   }
@@ -28,7 +28,7 @@ class FirestorePaymentRepository {
         .collection('paymentRequests')
         .orderBy('created_at', descending: true)
         .snapshots()
-        .map((qs) => qs.docs.map(_mapPaymentRequest).toList());
+        .map((QuerySnapshot<Map<String, dynamic>> qs) => qs.docs.map(_mapPaymentRequest).toList());
   }
 
   /// Create payment request document
@@ -43,11 +43,11 @@ class FirestorePaymentRepository {
     String? qrCodeData,
   }) async {
     try {
-      final ref = _db.collection('users').doc(_uid).collection('paymentRequests').doc();
-      final now = DateTime.now().toUtc();
-      final expiresAt = now.add(Duration(days: expiryDays));
+      final DocumentReference<Map<String, dynamic>> ref = _db.collection('users').doc(_uid).collection('paymentRequests').doc();
+      final DateTime now = DateTime.now().toUtc();
+      final DateTime expiresAt = now.add(Duration(days: expiryDays));
 
-      final paymentRequestData = {
+      final Map<String, Object?> paymentRequestData = <String, Object?>{
         'id': ref.id,
         'amount': amount,
         'currency_code': currencyCode,
@@ -78,7 +78,7 @@ class FirestorePaymentRepository {
   /// Get payment requests list
   Future<List<PaymentRequestModel>> getPaymentRequests() async {
     try {
-      final snapshot = await _db
+      final QuerySnapshot<Map<String, dynamic>> snapshot = await _db
           .collection('users')
           .doc(_uid)
           .collection('paymentRequests')
@@ -99,13 +99,13 @@ class FirestorePaymentRepository {
     DateTime? declinedAt,
   }) async {
     try {
-      final ref = _db
+      final DocumentReference<Map<String, dynamic>> ref = _db
           .collection('users')
           .doc(_uid)
           .collection('paymentRequests')
           .doc(requestId);
 
-      final updateData = <String, dynamic>{
+      final Map<String, dynamic> updateData = <String, dynamic>{
         'status': status,
       };
 
@@ -140,7 +140,7 @@ class FirestorePaymentRepository {
   /// Get single payment request by ID
   Future<PaymentRequestModel?> getPaymentRequestById(String requestId) async {
     try {
-      final doc = await _db
+      final DocumentSnapshot<Map<String, dynamic>> doc = await _db
           .collection('users')
           .doc(_uid)
           .collection('paymentRequests')
@@ -158,7 +158,7 @@ class FirestorePaymentRepository {
 
   // ----------------- Helpers -----------------
   PaymentRequestModel _mapPaymentRequest(DocumentSnapshot doc) {
-    final d = (doc.data() as Map<String, dynamic>? ?? {});
+    final Map<String, dynamic> d = (doc.data() as Map<String, dynamic>? ?? <String, dynamic>{});
 
     String _toIso(dynamic v) {
       if (v == null) return DateTime.now().toUtc().toIso8601String();

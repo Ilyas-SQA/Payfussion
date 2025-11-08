@@ -5,6 +5,7 @@ import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/presentations/currency-exchange/widget/calculator_widget.dart';
 import 'package:payfussion/presentations/currency-exchange/widget/convert_widget.dart';
 
+import '../../core/constants/fonts.dart';
 import '../../logic/blocs/calculator/calculator_bloc.dart';
 
 class CalculatorView extends StatelessWidget {
@@ -38,15 +39,15 @@ class CalculatorView extends StatelessWidget {
                     ),
                     labelColor: Colors.white,
                     unselectedLabelColor: Colors.grey,
-                    labelStyle: TextStyle(
+                    labelStyle: Font.montserratFont(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
                     ),
-                    unselectedLabelStyle: TextStyle(
+                    unselectedLabelStyle: Font.montserratFont(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.normal,
                     ),
-                    tabs: [
+                    tabs: <Widget>[
                       const Tab(
                         child: Padding(
                           padding: EdgeInsets.all(10),
@@ -66,7 +67,7 @@ class CalculatorView extends StatelessWidget {
             ),
           ),
           body: const TabBarView(
-            children: [
+            children: <Widget>[
               CalculatorWidget(),
               ConvertWidget(),
             ],

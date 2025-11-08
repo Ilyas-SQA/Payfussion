@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/fonts.dart';
 import '../../../../core/constants/image_url.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../data/models/card/card_model.dart';
@@ -41,7 +42,7 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
       children: <Widget>[
         Text(
           ReceiveMoneyPaymentStrings.selectAccount,
-          style: TextStyle(
+          style: Font.montserratFont(
             fontSize: 16.sp,
             fontWeight: FontWeight.w600,
           ),
@@ -54,7 +55,7 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
 
   Widget _buildCardsList() {
     return BlocConsumer<CardBloc, CardState>(
-      listener: (context, state) {
+      listener: (BuildContext context, CardState state) {
         if (state is CardError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -64,7 +65,7 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
           );
         }
       },
-      builder: (context, state) {
+      builder: (BuildContext context, CardState state) {
         if (state is CardLoading || state is AddCardInitial) {
           return _buildLoadingState();
         } else if (state is CardError) {
@@ -126,7 +127,7 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
           SizedBox(height: 16.h),
           Text(
             'Error Loading Cards',
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 16.sp,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
@@ -135,7 +136,7 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
           SizedBox(height: 8.h),
           Text(
             error,
-            style: TextStyle(
+            style: Font.montserratFont(
                 fontSize: 14.sp,
                 color: AppColors.textSecondary
             ),
@@ -246,7 +247,7 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
         children: <Widget>[
           Text(
             '${card.brand.toUpperCase()} ${card.cardEnding}',
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 12.sp,
               fontWeight: FontWeight.w600,
             ),
@@ -254,7 +255,7 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
           SizedBox(height: 4.h),
           Text(
             'Expires ${card.formattedExpiry}',
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 10.sp,
             ),
           ),
@@ -279,7 +280,7 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
             ),
             child: Text(
               'Selected',
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w500,
                 color: Colors.white,
@@ -311,7 +312,7 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             Icon(
               Icons.add_circle_outline,
               color: MyTheme.primaryColor,
@@ -320,7 +321,7 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
             SizedBox(width: 12.w),
             Text(
               'Add New Card',
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w600,
                 color: MyTheme.primaryColor,
@@ -357,7 +358,7 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
           SizedBox(height: 16.h),
           Text(
             'No Cards Available',
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 16.sp,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
@@ -366,7 +367,7 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
           SizedBox(height: 8.h),
           Text(
             'You need to add a card before requesting payments',
-            style: TextStyle(
+            style: Font.montserratFont(
                 fontSize: 14.sp,
                 color: AppColors.textSecondary
             ),

@@ -12,7 +12,7 @@ class AddContactButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return GestureDetector(
       onTap: onTap,
@@ -20,7 +20,7 @@ class AddContactButton extends StatelessWidget {
         padding: EdgeInsets.only(right: 16.w),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             Container(
               height: 56.h,
               width: 56.w,

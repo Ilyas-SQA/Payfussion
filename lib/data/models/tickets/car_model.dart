@@ -33,12 +33,12 @@ class RideModel {
     required this.baseRate,
     required this.languages,
     required this.serviceAreas,
-    this.specialServices = const [],
+    this.specialServices = const <String>[],
     this.isAvailable = true,
   });
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'id': id,
       'driverName': driverName,
       'serviceType': serviceType,
@@ -72,9 +72,9 @@ class RideModel {
       rating: (map['rating'] ?? 0.0).toDouble(),
       totalRides: map['totalRides'] ?? 0,
       baseRate: (map['baseRate'] ?? 0.0).toDouble(),
-      languages: List<String>.from(map['languages'] ?? []),
-      serviceAreas: List<String>.from(map['serviceAreas'] ?? []),
-      specialServices: List<String>.from(map['specialServices'] ?? []),
+      languages: List<String>.from(map['languages'] ?? <dynamic>[]),
+      serviceAreas: List<String>.from(map['serviceAreas'] ?? <dynamic>[]),
+      specialServices: List<String>.from(map['specialServices'] ?? <dynamic>[]),
       isAvailable: map['isAvailable'] ?? true,
     );
   }
@@ -126,7 +126,7 @@ class RideBookingModel {
   });
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'id': id,
       'rideId': rideId,
       'driverName': driverName,
@@ -176,7 +176,7 @@ class RideBookingModel {
 
 
 // US Ride Services Data
-List<RideModel> usRideServices = [
+List<RideModel> usRideServices = <RideModel>[
   // Uber Drivers
   RideModel(
     id: 'uber_001',
@@ -191,9 +191,9 @@ List<RideModel> usRideServices = [
     rating: 4.9,
     totalRides: 2847,
     baseRate: 1.25,
-    languages: ['English', 'Spanish'],
-    serviceAreas: ['Manhattan', 'Brooklyn', 'Queens', 'Bronx'],
-    specialServices: ['Child Car Seat Available', 'Pet Friendly', 'Airport Pickup'],
+    languages: <String>['English', 'Spanish'],
+    serviceAreas: <String>['Manhattan', 'Brooklyn', 'Queens', 'Bronx'],
+    specialServices: <String>['Child Car Seat Available', 'Pet Friendly', 'Airport Pickup'],
     isAvailable: true,
   ),
 
@@ -210,9 +210,9 @@ List<RideModel> usRideServices = [
     rating: 4.8,
     totalRides: 1956,
     baseRate: 1.30,
-    languages: ['English'],
-    serviceAreas: ['Los Angeles', 'Santa Monica', 'Beverly Hills', 'Hollywood'],
-    specialServices: ['Quiet Ride', 'Phone Charger', 'Bottled Water'],
+    languages: <String>['English'],
+    serviceAreas: <String>['Los Angeles', 'Santa Monica', 'Beverly Hills', 'Hollywood'],
+    specialServices: <String>['Quiet Ride', 'Phone Charger', 'Bottled Water'],
     isAvailable: true,
   ),
 
@@ -230,9 +230,9 @@ List<RideModel> usRideServices = [
     rating: 4.7,
     totalRides: 1456,
     baseRate: 0.95,
-    languages: ['English'],
-    serviceAreas: ['Denver', 'Denver Airport', 'Boulder', 'Colorado Springs'],
-    specialServices: ['Airport Specialist', 'Ski Resort Transport', 'Mountain Weather Expert', 'Large Luggage'],
+    languages: <String>['English'],
+    serviceAreas: <String>['Denver', 'Denver Airport', 'Boulder', 'Colorado Springs'],
+    specialServices: <String>['Airport Specialist', 'Ski Resort Transport', 'Mountain Weather Expert', 'Large Luggage'],
     isAvailable: true,
   ),
 ];

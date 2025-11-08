@@ -80,7 +80,7 @@ class _SettingTileState extends State<SettingTile>
 
   @override
   Widget build(BuildContext context) {
-    final trailing = widget.trailingBuilder?.call(context);
+    final Widget? trailing = widget.trailingBuilder?.call(context);
 
     return GestureDetector(
       onTapDown: _handleTapDown,
@@ -88,7 +88,7 @@ class _SettingTileState extends State<SettingTile>
       onTapCancel: _handleTapCancel,
       child: AnimatedBuilder(
         animation: _animationController,
-        builder: (context, child) {
+        builder: (BuildContext context, Widget? child) {
           return Transform.scale(
             scale: _scaleAnimation.value,
             child: AnimatedContainer(
@@ -102,9 +102,9 @@ class _SettingTileState extends State<SettingTile>
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: <Widget>[
                   Row(
-                    children: [
+                    children: <Widget>[
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
                         width: 42.w,
@@ -114,14 +114,14 @@ class _SettingTileState extends State<SettingTile>
                           color: _colorAnimation.value ?? MyTheme.primaryColor,
                           borderRadius: BorderRadius.circular(8.r),
                           boxShadow: _animationController.isAnimating
-                              ? [
+                              ? <BoxShadow>[
                             BoxShadow(
                               color: MyTheme.primaryColor.withOpacity(0.3),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             )
                           ]
-                              : [],
+                              : <BoxShadow>[],
                         ),
                         child: Center(
                           child: AnimatedScale(
@@ -140,7 +140,7 @@ class _SettingTileState extends State<SettingTile>
                       12.horizontalSpace,
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                        children: <Widget>[
                           AnimatedDefaultTextStyle(
                             duration: const Duration(milliseconds: 200),
                             style: TextStyle(
@@ -201,7 +201,7 @@ Widget switchTrailing({
           child: Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: Colors.white,
+            activeThumbColor: Colors.white,
             activeTrackColor: Color.lerp(
               MyTheme.primaryColor.withOpacity(.4),
               MyTheme.primaryColor.withOpacity(.6),
@@ -266,7 +266,7 @@ Widget currencyPicker({required BuildContext context}) =>
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: <Widget>[
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     transitionBuilder: (Widget child, Animation<double> animation) {
@@ -294,7 +294,7 @@ Widget currencyPicker({required BuildContext context}) =>
                   TweenAnimationBuilder<double>(
                     duration: const Duration(milliseconds: 300),
                     tween: Tween<double>(begin: 0, end: 1),
-                    builder: (context, value, child) {
+                    builder: (BuildContext context, double value, Widget? child) {
                       return Transform.rotate(
                         angle: value * 0.1, // Subtle rotation animation
                         child: AnimatedContainer(

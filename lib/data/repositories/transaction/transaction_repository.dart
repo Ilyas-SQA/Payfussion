@@ -4,14 +4,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/transaction/transaction_model.dart';
 
 class TransactionRepository {
-  final _db = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<List<TransactionModel>> getTransactions(String userId) async {
     try {
       print('Fetching transactions for user: $userId');
 
-      final snapshot = await _db
+      final QuerySnapshot<Map<String, dynamic>> snapshot = await _db
           .collection('users')
           .doc(userId)
           .collection('transactions')
@@ -20,7 +20,7 @@ class TransactionRepository {
 
       print('Found ${snapshot.docs.length} transactions');
 
-      final transactions = snapshot.docs.map((doc) {
+      final List<TransactionModel> transactions = snapshot.docs.map((QueryDocumentSnapshot<Map<String, dynamic>> doc) {
         print('Transaction doc: ${doc.id}, data: ${doc.data()}');
         return TransactionModel.fromDoc(doc);
       }).toList();
@@ -37,16 +37,16 @@ class TransactionRepository {
       print('Starting transaction save process...');
 
       // Check if user is authenticated
-      final currentUser = _auth.currentUser;
+      final User? currentUser = _auth.currentUser;
       if (currentUser == null) {
         throw Exception('User not authenticated');
       }
 
-      final userId = currentUser.uid;
+      final String userId = currentUser.uid;
       print('User ID: $userId');
 
       // Create document reference
-      final userTxRef = _db
+      final DocumentReference<Map<String, dynamic>> userTxRef = _db
           .collection('users')
           .doc(userId)
           .collection('transactions')
@@ -55,7 +55,7 @@ class TransactionRepository {
       print('Generated transaction ID: ${userTxRef.id}');
 
       // Prepare transaction data
-      final txToSave = tx.copyWith(
+      final TransactionModel txToSave = tx.copyWith(
         id: userTxRef.id,
         userId: userId,
       );
@@ -68,7 +68,7 @@ class TransactionRepository {
 
       // Save to global transactions collection (optional)
       try {
-        await _db.collection('transactions').doc(userTxRef.id).set({
+        await _db.collection('transactions').doc(userTxRef.id).set(<String, dynamic>{
           ...txToSave.toMap(),
           'user_id': userId,
         });
@@ -103,17 +103,17 @@ class TransactionRepository {
   Future<void> checkUserPermissions(String userId) async {
     try {
       // Try to read user document
-      final userDoc = await _db.collection('users').doc(userId).get();
+      final DocumentSnapshot<Map<String, dynamic>> userDoc = await _db.collection('users').doc(userId).get();
       print('User document exists: ${userDoc.exists}');
 
       // Try to write to transactions subcollection
-      final testRef = _db
+      final DocumentReference<Map<String, dynamic>> testRef = _db
           .collection('users')
           .doc(userId)
           .collection('transactions')
           .doc('test');
 
-      await testRef.set({'test': true});
+      await testRef.set(<String, dynamic>{'test': true});
       await testRef.delete();
       print('User has write permissions');
     } catch (e) {

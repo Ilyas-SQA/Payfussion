@@ -6,7 +6,7 @@ abstract class TrainEvent extends Equatable {
   const TrainEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class LoadTrains extends TrainEvent {}
@@ -17,7 +17,7 @@ abstract class BookingEvent extends Equatable {
   const BookingEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class CreateBooking extends BookingEvent {
@@ -26,7 +26,7 @@ class CreateBooking extends BookingEvent {
   const CreateBooking(this.booking);
 
   @override
-  List<Object> get props => [booking];
+  List<Object> get props => <Object>[booking];
 }
 
 class LoadUserBookings extends BookingEvent {
@@ -35,5 +35,5 @@ class LoadUserBookings extends BookingEvent {
   const LoadUserBookings(this.email);
 
   @override
-  List<Object> get props => [email];
+  List<Object> get props => <Object>[email];
 }

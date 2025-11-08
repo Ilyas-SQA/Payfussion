@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/constants/routes_name.dart';
 import 'package:payfussion/presentations/pay_bills/widgets/quick_access_avatar.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../core/constants/fonts.dart';
 import '../../../core/constants/image_url.dart';
 import '../../../core/theme/theme.dart';
 import '../../../data/models/recipient/recipient_model.dart';
@@ -227,71 +228,71 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
 
   /// Generate random bill details based on bill type
   Map<String, dynamic> _generateBillDetails(String billType) {
-    final random = DateTime.now().millisecondsSinceEpoch;
+    final int random = DateTime.now().millisecondsSinceEpoch;
 
     switch (billType) {
       case 'mobile':
-        return {
+        return <String, dynamic>{
           'companyName': 'Mobilink Jazz',
           'billNumber': '03XX-XXXXXXX${random.toString().substring(9)}',
           'amount': 450.0 + (random % 500),
         };
       case 'electricity':
-        return {
+        return <String, dynamic>{
           'companyName': 'K-Electric',
           'billNumber': 'KE-${random.toString().substring(7)}',
           'amount': 2500.0 + (random % 3000),
         };
       case 'gas':
-        return {
+        return <String, dynamic>{
           'companyName': 'Sui Southern Gas',
           'billNumber': 'SSGC-${random.toString().substring(6)}',
           'amount': 1200.0 + (random % 1500),
         };
       case 'internet':
-        return {
+        return <String, dynamic>{
           'companyName': 'PTCL Broadband',
           'billNumber': 'PTCL-${random.toString().substring(8)}',
           'amount': 1800.0 + (random % 1000),
         };
       case 'dth':
-        return {
+        return <String, dynamic>{
           'companyName': 'Dish TV',
           'billNumber': 'DTH-${random.toString().substring(9)}',
           'amount': 800.0 + (random % 500),
         };
       case 'postpaid':
-        return {
+        return <String, dynamic>{
           'companyName': 'Telenor Pakistan',
           'billNumber': '03XX-XXXXXXX${random.toString().substring(9)}',
           'amount': 600.0 + (random % 800),
         };
       case 'credit_card':
-        return {
+        return <String, dynamic>{
           'companyName': 'HBL Credit Card',
           'billNumber': '**** **** **** ${random.toString().substring(9)}',
           'amount': 5000.0 + (random % 10000),
         };
       case 'rent':
-        return {
+        return <String, dynamic>{
           'companyName': 'Property Manager',
           'billNumber': 'RENT-${random.toString().substring(7)}',
           'amount': 25000.0 + (random % 20000),
         };
       case 'netflix':
-        return {
+        return <String, dynamic>{
           'companyName': 'Netflix Premium',
           'billNumber': 'NF-${random.toString().substring(10)}',
           'amount': 1500.0,
         };
       case 'bill_split':
-        return {
+        return <String, dynamic>{
           'companyName': 'Group Expense',
           'billNumber': 'SPLIT-${random.toString().substring(8)}',
           'amount': 1200.0 + (random % 2000),
         };
       default:
-        return {
+        return <String, dynamic>{
           'companyName': 'Service Provider',
           'billNumber': 'BILL-${random.toString().substring(9)}',
           'amount': 1000.0 + (random % 2000),
@@ -325,7 +326,7 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -338,13 +339,13 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
               ).animate(_billsController),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   // Header Section
                   Padding(
                     padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         Text(
                           "Quick & Easy",
                           style: theme.textTheme.headlineMedium?.copyWith(
@@ -399,7 +400,7 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
             childAspectRatio: 9 / 10,
           ),
           itemCount: billItems.length,
-          itemBuilder: (context, index) {
+          itemBuilder: (BuildContext context, int index) {
             return AnimationConfiguration.staggeredList(
               position: index,
               duration: const Duration(milliseconds: 375),
@@ -427,7 +428,7 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -446,7 +447,7 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
             padding: EdgeInsets.all(10.w),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
+              children: <Widget>[
                 Center(
                   child: SvgPicture.asset(
                     item.icon,
@@ -484,7 +485,7 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
             .doc(FirebaseAuth.instance.currentUser?.uid)
             .collection("recipients")
             .get(),
-        builder: (context, snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return _buildShimmerList();
           } else if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
@@ -519,7 +520,7 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
                     baseColor: Colors.grey[300]!,
                     highlightColor: Colors.grey[100]!,
                     child: Column(
-                      children: [
+                      children: <Widget>[
                         CircleAvatar(
                           radius: 30.r,
                           backgroundColor: Colors.grey[300],
@@ -553,7 +554,7 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         itemCount: docs.length,
         itemBuilder: (BuildContext context, int index) {
-          var data = docs[index];
+          final QueryDocumentSnapshot<Object?> data = docs[index];
           return AnimationConfiguration.staggeredList(
             position: index,
             duration: const Duration(milliseconds: 200),
@@ -584,7 +585,7 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 Icon(
                   Icons.error_outline,
                   color: Colors.red,
@@ -593,7 +594,7 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
                 SizedBox(height: 8.h),
                 Text(
                   "Failed to load contacts",
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     color: Colors.grey[600],
                     fontSize: 12.sp,
                   ),
@@ -615,7 +616,7 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 Icon(
                   Icons.people_outline,
                   color: Colors.grey[400],
@@ -624,7 +625,7 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
                 SizedBox(height: 8.h),
                 Text(
                   "No contacts found",
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     color: Colors.grey[600],
                     fontSize: 12.sp,
                   ),
@@ -640,12 +641,12 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
   Widget _buildTicketBookingSection() {
     final ThemeData theme = Theme.of(context);
 
-    final ticketItems = [
-      {'icon': TImageUrl.iconMovies, 'label': 'Movies', 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => MovieListScreen()))},
-      {'icon': TImageUrl.iconTrains, 'label': 'Trains', 'onTap': () => context.push(RouteNames.trainListScreen)},
-      {'icon': TImageUrl.iconBus, 'label': 'Bus', 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => BusListScreen()))},
-      {'icon': TImageUrl.iconFlight, 'label': 'Flights', 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => FlightListScreen()))},
-      {'icon': TImageUrl.iconCar, 'label': 'Car', 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => RideServiceListScreen()))},
+    final List<Map<String, Object>> ticketItems = <Map<String, Object>>[
+      <String, Object>{'icon': TImageUrl.iconMovies, 'label': 'Movies', 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => MovieListScreen()))},
+      <String, Object>{'icon': TImageUrl.iconTrains, 'label': 'Trains', 'onTap': () => context.push(RouteNames.trainListScreen)},
+      <String, Object>{'icon': TImageUrl.iconBus, 'label': 'Bus', 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const BusListScreen()))},
+      <String, Object>{'icon': TImageUrl.iconFlight, 'label': 'Flights', 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const FlightListScreen()))},
+      <String, Object>{'icon': TImageUrl.iconCar, 'label': 'Car', 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const RideServiceListScreen()))},
     ];
 
     return Padding(
@@ -655,11 +656,11 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: AnimationConfiguration.toStaggeredList(
             duration: const Duration(milliseconds: 150),
-            childAnimationBuilder: (widget) => SlideAnimation(
+            childAnimationBuilder: (Widget widget) => SlideAnimation(
               verticalOffset: 30.0,
               child: FadeInAnimation(child: widget),
             ),
-            children: ticketItems.map((item) =>
+            children: ticketItems.map((Map<String, Object> item) =>
                 _buildTicketItem(
                   item['icon'] as String,
                   item['label'] as String,
@@ -707,41 +708,41 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
 
   /// Generate ticket booking details based on ticket type
   Map<String, dynamic> _generateTicketDetails(String ticketType) {
-    final random = DateTime.now().millisecondsSinceEpoch;
+    final int random = DateTime.now().millisecondsSinceEpoch;
 
     switch (ticketType) {
       case 'movies':
-        return {
+        return <String, dynamic>{
           'companyName': 'Cinepax Cinema',
           'ticketNumber': 'MOV-${random.toString().substring(8)}',
           'amount': 800.0 + (random % 500),
         };
       case 'trains':
-        return {
+        return <String, dynamic>{
           'companyName': 'Pakistan Railways',
           'ticketNumber': 'TRN-${random.toString().substring(7)}',
           'amount': 1500.0 + (random % 1000),
         };
       case 'bus':
-        return {
+        return <String, dynamic>{
           'companyName': 'Daewoo Express',
           'ticketNumber': 'BUS-${random.toString().substring(9)}',
           'amount': 1200.0 + (random % 800),
         };
       case 'flights':
-        return {
+        return <String, dynamic>{
           'companyName': 'PIA Airlines',
           'ticketNumber': 'FLT-${random.toString().substring(6)}',
           'amount': 15000.0 + (random % 10000),
         };
       case 'car':
-        return {
+        return <String, dynamic>{
           'companyName': 'Car Rental Service',
           'ticketNumber': 'CAR-${random.toString().substring(8)}',
           'amount': 3000.0 + (random % 2000),
         };
       default:
-        return {
+        return <String, dynamic>{
           'companyName': 'Booking Service',
           'ticketNumber': 'TKT-${random.toString().substring(9)}',
           'amount': 1000.0 + (random % 1500),

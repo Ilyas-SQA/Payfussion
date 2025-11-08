@@ -20,12 +20,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     String? oldPassword,
   }) async {
     try {
-      final user = _auth.currentUser;
+      final User? user = _auth.currentUser;
       if (user == null) return left(AuthFailure('No authenticated user.'));
 
       // If oldPassword is provided, reauthenticate first
       if (oldPassword != null && user.email != null) {
-        final cred = EmailAuthProvider.credential(
+        final AuthCredential cred = EmailAuthProvider.credential(
           email: user.email!,
           password: oldPassword,
         );
@@ -45,7 +45,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
   final FirebaseStorage _storage;
-  final _userSession = getIt<SessionController>();
+  final SessionController _userSession = getIt<SessionController>();
 
   AuthRemoteDataSourceImpl(this._auth, this._firestore, this._storage);
   Future<Either<Failure, Unit>> _updateUserField(
@@ -56,7 +56,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final String uid = _auth.currentUser!.uid;
 
       // Update Firestore with the new field value
-      await _firestore.collection('users').doc(uid).update({field: value});
+      await _firestore.collection('users').doc(uid).update(<Object, Object?>{field: value});
 
       // Update SessionController to keep user data in sync
       final UserModel updatedUser = SessionController.user;
@@ -88,16 +88,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String password,
   }) async {
     try {
-      final userCredential = await _auth.createUserWithEmailAndPassword(
+      final UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      final user = userCredential.user;
+      final User? user = userCredential.user;
       if (user == null) return left(AuthFailure('User creation failed.'));
 
       await user.sendEmailVerification();
 
-      await _firestore.collection('users').doc(user.uid).set({
+      await _firestore.collection('users').doc(user.uid).set(<String, dynamic>{
         'uid': user.uid,
         'firstName': firstName,
         'lastName': lastName,
@@ -149,15 +149,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     String password,
   ) async {
     try {
-      final userCredential = await _auth.signInWithEmailAndPassword(
+      final UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
-      final user = userCredential.user;
+      final User? user = userCredential.user;
       if (user == null) {
         return left(AuthFailure('Sign in failed. User is null.'));
       }
-      final userDoc = await _firestore.collection('users').doc(user.uid).get();
+      final DocumentSnapshot<Map<String, dynamic>> userDoc = await _firestore.collection('users').doc(user.uid).get();
       if (userDoc.exists) {
         return right(UserModel.fromJson(userDoc.data()!));
       } else {
@@ -177,7 +177,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   ) async {
     try {
       // Lookup email by phone number in Firestore
-      final userDoc = await _firestore
+      final QuerySnapshot<Map<String, dynamic>> userDoc = await _firestore
           .collection('users')
           .where('phoneNumber', isEqualTo: phoneNumber)
           .limit(1)
@@ -188,15 +188,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
       final email = userDoc.docs.first['email'];
 
-      final userCredential = await _auth.signInWithEmailAndPassword(
+      final UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      final user = userCredential.user;
+      final User? user = userCredential.user;
       if (user == null) {
         return left(AuthFailure('Sign in failed. User is null.'));
       }
-      final userDocData = await _firestore
+      final DocumentSnapshot<Map<String, dynamic>> userDocData = await _firestore
           .collection('users')
           .doc(user.uid)
           .get();
@@ -214,10 +214,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Stream<Either<Failure, UserModel?>> get userStream =>
-      _auth.authStateChanges().asyncMap((user) async {
+      _auth.authStateChanges().asyncMap((User? user) async {
         if (user == null) return right(null);
         try {
-          final userDoc = await _firestore
+          final DocumentSnapshot<Map<String, dynamic>> userDoc = await _firestore
               .collection('users')
               .doc(user.uid)
               .get();
@@ -286,11 +286,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           AuthFailure('No verificationId. Please request OTP first.'),
         );
       }
-      final credential = PhoneAuthProvider.credential(
+      final PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: _verificationId!,
         smsCode: otp,
       );
-      final userCredential = await _auth.signInWithCredential(credential);
+      final UserCredential userCredential = await _auth.signInWithCredential(credential);
       return right(userCredential.user != null);
     } on FirebaseAuthException catch (e) {
       return left(AuthFailure(TFirebaseAuthException(e.code).message));
@@ -302,11 +302,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<Either<Failure, Unit>> linkPhoneNumberWithOtp(String smsCode) async {
     try {
-      final user = _auth.currentUser;
+      final User? user = _auth.currentUser;
       if (user == null) return left(AuthFailure('No authenticated user.'));
       if (_verificationId == null)
         return left(AuthFailure('No verificationId.'));
-      final credential = PhoneAuthProvider.credential(
+      final PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: _verificationId!,
         smsCode: smsCode,
       );
@@ -335,9 +335,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<Either<Failure, UserModel?>> getCurrentUser() async {
     try {
-      final user = _auth.currentUser;
+      final User? user = _auth.currentUser;
       if (user == null) return right(null);
-      final userDoc = await _firestore.collection('users').doc(user.uid).get();
+      final DocumentSnapshot<Map<String, dynamic>> userDoc = await _firestore.collection('users').doc(user.uid).get();
       if (userDoc.exists) {
         return right(UserModel.fromJson(userDoc.data()!));
       }
@@ -360,18 +360,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<Either<Failure, Unit>> updateUserProfileUrl(String imagePath) async {
     try {
-      final user = _auth.currentUser;
+      final User? user = _auth.currentUser;
       if (user == null) return left(PlatformFailure('No authenticated user.'));
-      final file = File(imagePath);
+      final File file = File(imagePath);
       if (!file.existsSync()) {
         return left(FormatFailure('Selected image file does not exist.'));
       }
-      final ref = _storage
+      final Reference ref = _storage
           .ref()
           .child('user_profiles')
           .child('${user.uid}.jpg');
       await ref.putFile(file);
-      final imageUrl = await ref.getDownloadURL();
+      final String imageUrl = await ref.getDownloadURL();
       return _updateUserField('profileUrl', imageUrl);
     } catch (e) {
       return left(AuthFailure(e.toString()));

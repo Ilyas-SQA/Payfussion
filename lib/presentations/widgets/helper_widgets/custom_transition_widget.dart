@@ -6,7 +6,7 @@ class CustomFadeTransitionPage extends CustomTransitionPage<void> {
     required LocalKey super.key,
     required super.child,
   }) : super(
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+    transitionsBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
       return FadeTransition(
         opacity: animation,
         child: child,

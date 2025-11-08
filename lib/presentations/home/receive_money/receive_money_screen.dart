@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
+import '../../../core/constants/fonts.dart';
 import '../../../core/theme/theme.dart';
 import '../../../data/models/payment_request/payment_request_model.dart';
 import '../../../logic/blocs/payment_request/payment_request_bloc.dart';
@@ -44,15 +45,15 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> with TickerProv
       appBar: AppBar(
         centerTitle: true,
         elevation: 0,
-        title: const Text('Receive Money', style: TextStyle(
+        title: Text('Receive Money', style: Font.montserratFont(
           fontSize: 16,
           fontWeight: FontWeight.w600,
         )),
-        actions: [
+        actions: <Widget>[
           TweenAnimationBuilder<double>(
             duration: const Duration(milliseconds: 800),
             tween: Tween(begin: 0.0, end: 1.0),
-            builder: (context, value, child) {
+            builder: (BuildContext context, double value, Widget? child) {
               return Transform.scale(
                 scale: 0.8 + (0.2 * value),
                 child: Opacity(
@@ -65,7 +66,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> with TickerProv
                       );
                     },
                     icon: const Icon(Icons.add_circle_outline, color: MyTheme.primaryColor),
-                    label: const Text('New Request', style: TextStyle(fontSize: 12,color: MyTheme.primaryColor)),
+                    label: Text('New Request', style: Font.montserratFont(fontSize: 12,color: MyTheme.primaryColor)),
                   ),
                 ),
               );
@@ -75,11 +76,11 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> with TickerProv
       ),
       body: SafeArea(
         child: Stack(
-          children: [
+          children: <Widget>[
             AnimatedBackground(
               animationController: _backgroundAnimationController,
             ),
-            PaymentRequestsList(),
+            const PaymentRequestsList(),
           ],
         ),
       ),
@@ -96,7 +97,7 @@ class PaymentRequestsList extends StatefulWidget {
 
 class _PaymentRequestsListState extends State<PaymentRequestsList>
     with TickerProviderStateMixin {
-  final _search = TextEditingController();
+  final TextEditingController _search = TextEditingController();
   Timer? _debounce;
   String _searchQuery = '';
   String _statusFilter = 'All';
@@ -185,11 +186,11 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
 
   /// Filter requests based on search query and status filter
   List<PaymentRequestModel> _getFilteredRequests(List<PaymentRequestModel> requests) {
-    var filtered = requests;
+    List<PaymentRequestModel> filtered = requests;
 
     /// Apply search filter
     if (_searchQuery.isNotEmpty) {
-      filtered = filtered.where((request) {
+      filtered = filtered.where((PaymentRequestModel request) {
         return request.description.toLowerCase().contains(_searchQuery.toLowerCase()) ||
             request.payer.toLowerCase().contains(_searchQuery.toLowerCase());
       }).toList();
@@ -197,7 +198,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
 
     /// Apply status filter
     if (_statusFilter != 'All') {
-      filtered = filtered.where((request) {
+      filtered = filtered.where((PaymentRequestModel request) {
         return request.status.toLowerCase() == _statusFilter.toLowerCase();
       }).toList();
     }
@@ -208,9 +209,9 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PaymentRequestBloc, PaymentRequestState>(
-      builder: (BuildContext context, state) {
+      builder: (BuildContext context, PaymentRequestState state) {
         return Column(
-          children: [
+          children: <Widget>[
             SlideTransition(
               position: _slideAnimation,
               child: FadeTransition(
@@ -256,14 +257,14 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 600),
       tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Transform.scale(
           scale: 0.95 + (0.05 * value),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: AppTextFormField(
               controller: _search,
-              onChanged: (q) {
+              onChanged: (String q) {
                 _debounce?.cancel();
                 _debounce = Timer(const Duration(milliseconds: 400), () {
                   setState(() {
@@ -284,7 +285,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
     Widget chip(String label, int index) => TweenAnimationBuilder<double>(
       duration: Duration(milliseconds: 300 + (index * 100)),
       tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Transform.translate(
           offset: Offset(20 * (1 - value), 0),
           child: Opacity(
@@ -295,7 +296,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
                 duration: const Duration(milliseconds: 200),
                 child: FilterChip(
                   selected: _statusFilter == label,
-                  label: Text(label,style: TextStyle(color: _statusFilter == label ? Colors.white : Colors.black),),
+                  label: Text(label,style: Font.montserratFont(color: _statusFilter == label ? Colors.white : Colors.black),),
                   selectedColor: MyTheme.primaryColor,
                   onSelected: (_) {
                     setState(() {
@@ -310,7 +311,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
       },
     );
 
-    final filters = ['All', 'Pending', 'Completed', 'Expired', 'Declined'];
+    final List<String> filters = <String>['All', 'Pending', 'Completed', 'Expired', 'Declined'];
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -318,7 +319,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
         children: filters
             .asMap()
             .entries
-            .map((entry) => chip(entry.value, entry.key))
+            .map((MapEntry<int, String> entry) => chip(entry.value, entry.key))
             .toList(),
       ),
     );
@@ -337,7 +338,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
       return _empty(context);
     }
 
-    final filteredRequests = _getFilteredRequests(state.requests);
+    final List<PaymentRequestModel> filteredRequests = _getFilteredRequests(state.requests);
 
     if (filteredRequests.isEmpty && (_searchQuery.isNotEmpty || _statusFilter != 'All')) {
       return _buildNoResultsState();
@@ -351,10 +352,10 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
       child: ListView.builder(
         padding: const EdgeInsets.all(12),
         itemCount: filteredRequests.length,
-        itemBuilder: (_, i) => TweenAnimationBuilder<double>(
+        itemBuilder: (_, int i) => TweenAnimationBuilder<double>(
           duration: Duration(milliseconds: 300 + (i * 100)),
           tween: Tween(begin: 0.0, end: 1.0),
-          builder: (context, value, child) {
+          builder: (BuildContext context, double value, Widget? child) {
             return Transform.translate(
               offset: Offset(0, 50 * (1 - value)),
               child: Opacity(
@@ -373,7 +374,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
       child: TweenAnimationBuilder<double>(
         duration: const Duration(milliseconds: 1000),
         tween: Tween(begin: 0.0, end: 1.0),
-        builder: (context, value, child) {
+        builder: (BuildContext context, double value, Widget? child) {
           return Transform.rotate(
             angle: value * 2 * 3.14159,
             child: const CircularProgressIndicator(
@@ -389,7 +390,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 600),
       tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Transform.scale(
           scale: 0.8 + (0.2 * value),
           child: Opacity(
@@ -397,7 +398,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: <Widget>[
                   Icon(
                     Icons.error_outline,
                     size: 64,
@@ -407,7 +408,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
                   Text(
                     state.errorMessage ?? 'An error occurred',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.red),
+                    style: Font.montserratFont(color: Colors.red),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
@@ -429,7 +430,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 500),
       tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Transform.translate(
           offset: Offset(0, 30 * (1 - value)),
           child: Opacity(
@@ -437,7 +438,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
             child: const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: <Widget>[
                   Icon(Icons.search_off, size: 64, color: Colors.grey),
                   SizedBox(height: 16),
                   Text('No matching requests'),
@@ -456,7 +457,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 400),
       tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Transform.scale(
           scale: 0.95 + (0.05 * value),
           child: AnimatedContainer(
@@ -465,7 +466,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
             decoration: BoxDecoration(
               color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(16.r),
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 const BoxShadow(
                   color: Colors.black26,
                   blurRadius: 5,
@@ -494,7 +495,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
                 ),
                 title: Text(
                   r.description,
-                  style: const TextStyle(
+                  style: Font.montserratFont(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
                   ),
@@ -503,13 +504,13 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
                 ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     const SizedBox(height: 4),
                     Text('From: ${r.payer}'),
                     const SizedBox(height: 2),
                     Text(
                       _formatDate(r.createdAt),
-                      style: TextStyle(
+                      style: Font.montserratFont(
                         fontSize: 12,
                         color: Colors.grey[600],
                       ),
@@ -519,16 +520,16 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
                 trailing: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
+                  children: <Widget>[
                     TweenAnimationBuilder<double>(
                       duration: const Duration(milliseconds: 600),
                       tween: Tween(begin: 0.0, end: 1.0),
-                      builder: (context, amountValue, child) {
+                      builder: (BuildContext context, double amountValue, Widget? child) {
                         return Transform.scale(
                           scale: 0.8 + (0.2 * amountValue),
                           child: Text(
                             '${r.currencyCode} ${r.amount.toStringAsFixed(2)}',
-                            style: const TextStyle(
+                            style: Font.montserratFont(
                               fontWeight: FontWeight.w700,
                               color: MyTheme.primaryColor,
                               fontSize: 16,
@@ -571,7 +572,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 500),
       tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Transform.scale(
           scale: value,
           child: AnimatedContainer(
@@ -584,7 +585,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
             ),
             child: Text(
               s,
-              style: TextStyle(
+              style: Font.montserratFont(
                 color: c,
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
@@ -600,7 +601,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 800),
       tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Transform.translate(
           offset: Offset(0, 50 * (1 - value)),
           child: Opacity(
@@ -608,11 +609,11 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: <Widget>[
                   TweenAnimationBuilder<double>(
                     duration: const Duration(milliseconds: 1000),
                     tween: Tween(begin: 0.0, end: 1.0),
-                    builder: (context, iconValue, child) {
+                    builder: (BuildContext context, double iconValue, Widget? child) {
                       return Transform.scale(
                         scale: 0.5 + (0.5 * iconValue),
                         child: Icon(
@@ -624,24 +625,24 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
                     },
                   ),
                   const SizedBox(height: 14),
-                  const Text(
+                   Text(
                     'No payment requests yet',
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                   Text(
                     'Create a new payment request to get started.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey),
+                    style: Font.montserratFont(color: Colors.grey),
                   ),
                   const SizedBox(height: 18),
                   TweenAnimationBuilder<double>(
                     duration: const Duration(milliseconds: 600),
                     tween: Tween(begin: 0.0, end: 1.0),
-                    builder: (context, buttonValue, child) {
+                    builder: (BuildContext context, double buttonValue, Widget? child) {
                       return Transform.scale(
                         scale: 0.8 + (0.2 * buttonValue),
                         child: ElevatedButton(
@@ -675,9 +676,9 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
 
   String _formatDate(String isoDate) {
     try {
-      final date = DateTime.parse(isoDate);
-      final now = DateTime.now();
-      final difference = now.difference(date);
+      final DateTime date = DateTime.parse(isoDate);
+      final DateTime now = DateTime.now();
+      final Duration difference = now.difference(date);
 
       if (difference.inDays == 0) {
         return 'Today';
@@ -698,10 +699,10 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => TweenAnimationBuilder<double>(
+      builder: (BuildContext context) => TweenAnimationBuilder<double>(
         duration: const Duration(milliseconds: 400),
         tween: Tween(begin: 0.0, end: 1.0),
-        builder: (context, value, child) {
+        builder: (BuildContext context, double value, Widget? child) {
           return Transform.translate(
             offset: Offset(0, 200 * (1 - value)),
             child: Opacity(
@@ -715,13 +716,13 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     // Handle bar
                     Center(
                       child: TweenAnimationBuilder<double>(
                         duration: const Duration(milliseconds: 300),
                         tween: Tween(begin: 0.0, end: 1.0),
-                        builder: (context, handleValue, child) {
+                        builder: (BuildContext context, double handleValue, Widget? child) {
                           return Container(
                             width: 40 * handleValue,
                             height: 4,
@@ -739,21 +740,21 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
                     TweenAnimationBuilder<double>(
                       duration: const Duration(milliseconds: 500),
                       tween: Tween(begin: 0.0, end: 1.0),
-                      builder: (context, titleValue, child) {
+                      builder: (BuildContext context, double titleValue, Widget? child) {
                         return Transform.translate(
                           offset: Offset(20 * (1 - titleValue), 0),
                           child: Opacity(
                             opacity: titleValue,
                             child: Row(
-                              children: [
+                              children: <Widget>[
                                 Icon(
                                   Icons.receipt_long,
                                   color: MyTheme.primaryColor.withOpacity(titleValue),
                                 ),
                                 const SizedBox(width: 8),
-                                const Text(
+                                 Text(
                                   'Payment Request Details',
-                                  style: TextStyle(
+                                  style: Font.montserratFont(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -770,7 +771,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
                     TweenAnimationBuilder<double>(
                       duration: const Duration(milliseconds: 700),
                       tween: Tween(begin: 0.0, end: 1.0),
-                      builder: (context, amountValue, child) {
+                      builder: (BuildContext context, double amountValue, Widget? child) {
                         return Transform.scale(
                           scale: 0.9 + (0.1 * amountValue),
                           child: Container(
@@ -784,10 +785,10 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
                               ),
                             ),
                             child: Column(
-                              children: [
+                              children: <Widget>[
                                 Text(
                                   'Amount',
-                                  style: TextStyle(
+                                  style: Font.montserratFont(
                                     fontSize: 14,
                                     color: Colors.grey.withOpacity(amountValue),
                                   ),
@@ -795,7 +796,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
                                 const SizedBox(height: 4),
                                 Text(
                                   '${request.currencyCode} ${request.amount.toStringAsFixed(2)}',
-                                  style: TextStyle(
+                                  style: Font.montserratFont(
                                     fontSize: 28,
                                     fontWeight: FontWeight.bold,
                                     color: MyTheme.primaryColor.withOpacity(amountValue),
@@ -825,7 +826,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
   }
 
   List<Widget> _buildAnimatedDetails(PaymentRequestModel request) {
-    final details = [
+    final List<(String, String)> details = <(String, String)>[
       ('From', request.payer),
       ('Description', request.description),
       ('Status', request.status),
@@ -843,14 +844,14 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
       details.add(('Institution', request.recipientInstitution!));
     }
 
-    return details.asMap().entries.map((entry) {
-      final index = entry.key;
-      final detail = entry.value;
+    return details.asMap().entries.map((MapEntry<int, (String, String)> entry) {
+      final int index = entry.key;
+      final (String, String) detail = entry.value;
 
       return TweenAnimationBuilder<double>(
         duration: Duration(milliseconds: 400 + (index * 100)),
         tween: Tween(begin: 0.0, end: 1.0),
-        builder: (context, value, child) {
+        builder: (BuildContext context, double value, Widget? child) {
           return Transform.translate(
             offset: Offset(30 * (1 - value), 0),
             child: Opacity(
@@ -868,12 +869,12 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           SizedBox(
             width: 90,
             child: Text(
               '$label:',
-              style: const TextStyle(
+              style: Font.montserratFont(
                 fontWeight: FontWeight.w600,
                 color: Colors.grey,
               ),
@@ -883,7 +884,7 @@ class _PaymentRequestsListState extends State<PaymentRequestsList>
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(fontWeight: FontWeight.w500),
+              style: Font.montserratFont(fontWeight: FontWeight.w500),
             ),
           ),
         ],

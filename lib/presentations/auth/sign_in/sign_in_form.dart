@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
-import 'package:payfussion/shared/widgets/error_dialog.dart';
 import '../../../../../logic/blocs/auth/auth_bloc.dart';
 import '../../../../../logic/blocs/auth/auth_event.dart';
 import '../../../core/constants/fonts.dart';
@@ -237,7 +236,7 @@ class _SignInFormState extends State<SignInForm> with SingleTickerProviderStateM
                   opacity: _passwordFieldAnimation,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
+                    children: <Widget>[
                       TextButton(
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,
@@ -284,7 +283,7 @@ class _SignInFormState extends State<SignInForm> with SingleTickerProviderStateM
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       spacing: 10,
                       children: <Widget>[
-                        const Flexible(child: Divider(color: Colors.black)),
+                        const Flexible(child: Divider()),
                         Text(
                           "OR",
                           style: Font.montserratFont(
@@ -292,7 +291,7 @@ class _SignInFormState extends State<SignInForm> with SingleTickerProviderStateM
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const Flexible(child: Divider(color: Colors.black)),
+                        const Flexible(child: Divider()),
                       ],
                     ),
                   ),

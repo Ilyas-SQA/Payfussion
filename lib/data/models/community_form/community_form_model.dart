@@ -19,15 +19,15 @@ class CommunityFormModel {
     required this.comments,
     required this.question,
     required this.content,
-    this.likes = const [],
-    this.dislikes = const [],
+    this.likes = const <String>[],
+    this.dislikes = const <String>[],
     this.userName,
     this.userProfileImage,
   });
 
   // Convert to Map for Firestore
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'userId': userId,
       'postId': postId,
       'createDate': createDate.toIso8601String(),
@@ -45,11 +45,11 @@ class CommunityFormModel {
       userId: map['userId'] ?? '',
       postId: map['postId'] ?? '',
       createDate: DateTime.tryParse(map['createDate'] ?? '') ?? DateTime.now(),
-      comments: List<Map<String, dynamic>>.from(map['comments'] ?? []),
+      comments: List<Map<String, dynamic>>.from(map['comments'] ?? <dynamic>[]),
       question: map['question'] ?? '',
       content: map['content'] ?? '',
-      likes: List<String>.from(map['likes'] ?? []),
-      dislikes: List<String>.from(map['dislikes'] ?? []),
+      likes: List<String>.from(map['likes'] ?? <dynamic>[]),
+      dislikes: List<String>.from(map['dislikes'] ?? <dynamic>[]),
     );
   }
 

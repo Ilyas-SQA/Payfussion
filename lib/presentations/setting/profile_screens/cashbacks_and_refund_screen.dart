@@ -88,9 +88,9 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen> wit
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
+        children: <Widget>[
           Stack(
-            children: [
+            children: <Widget>[
               AnimatedBackground(
                 animationController: _backgroundAnimationController,
               ),
@@ -98,7 +98,7 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen> wit
             ],
           ),
           Stack(
-            children: [
+            children: <Widget>[
               AnimatedBackground(
                 animationController: _backgroundAnimationController,
               ),
@@ -116,7 +116,7 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen> wit
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Text(
             'Earn Rewards with PayFusion Cashback',
             style: Font.montserratFont(
@@ -140,7 +140,7 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen> wit
             title: 'How to Earn Cashback',
             content: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 _buildBulletPoint(
                     'Earn up to 5% cashback on eligible transactions like bill payments, merchant checkouts, and specific promotions.'),
                 _buildBulletPoint(
@@ -162,7 +162,7 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen> wit
             title: 'Your Cashback Wallet',
             content: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Text(
                   'All earned cashback is collected in your dedicated Cashback Wallet. You can use this balance for future transactions within PayFusion or transfer it to your main wallet (subject to terms).',
                   style: Font.montserratFont(
@@ -198,7 +198,7 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen> wit
             title: 'Important Notes',
             content: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 _buildBulletPoint(
                     'Cashback offers are subject to change and may have specific eligibility criteria.'),
                 _buildBulletPoint(
@@ -219,7 +219,7 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen> wit
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Text(
             'Hassle-Free Refunds & Disputes',
             style: Font.montserratFont(
@@ -243,7 +243,7 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen> wit
             title: '24-Hour Instant Refund Policy',
             content: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 _buildBulletPoint(
                     'Sent money to the wrong person or made an accidental payment? You can request an instant refund for eligible P2P (peer-to-peer) transactions within 24 hours of the transaction time.'),
                 _buildBulletPoint(
@@ -287,7 +287,7 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen> wit
             title: 'Disputing Other Transactions',
             content: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 _buildBulletPoint(
                     'For issues with merchant payments, services not rendered, or unauthorized transactions not covered by the 24-hour refund, you can file a dispute.'),
                 _buildBulletPoint(
@@ -307,7 +307,7 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen> wit
             title: 'AI-Driven Chargeback Protection',
             content: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 _buildBulletPoint(
                     'PayFusion uses AI to monitor for suspicious activities and potentially fraudulent transactions.'),
                 _buildBulletPoint(
@@ -325,7 +325,7 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen> wit
             title: 'Important Notes on Refunds',
             content: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 _buildBulletPoint(
                     'Refund policies are subject to PayFusion\'s Terms of Service.'),
                 _buildBulletPoint(
@@ -370,7 +370,7 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen> wit
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -380,10 +380,10 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen> wit
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               Icon(icon, size: 28, color: iconColor),
               const SizedBox(width: 12),
               Expanded(
@@ -407,7 +407,7 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen> wit
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Text("•  ",
               style: Font.montserratFont(
                   fontSize: 16.sp,

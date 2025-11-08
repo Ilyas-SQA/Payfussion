@@ -14,18 +14,18 @@ class CommentModel {
     required this.userProfileImage,
     required this.content,
     required this.createDate,
-    this.replies = const [],
+    this.replies = const <ReplyModel>[],
   });
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'commentId': commentId,
       'userId': userId,
       'userName': userName,
       'userProfileImage': userProfileImage,
       'content': content,
       'createDate': createDate.toIso8601String(),
-      'replies': replies.map((reply) => reply.toMap()).toList(),
+      'replies': replies.map((ReplyModel reply) => reply.toMap()).toList(),
     };
   }
 
@@ -39,7 +39,7 @@ class CommentModel {
       createDate: DateTime.parse(map['createDate']),
       replies: (map['replies'] as List<dynamic>?)
           ?.map((reply) => ReplyModel.fromMap(reply as Map<String, dynamic>))
-          .toList() ?? [],
+          .toList() ?? <ReplyModel>[],
     );
   }
 }
@@ -62,7 +62,7 @@ class ReplyModel {
   });
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'replyId': replyId,
       'userId': userId,
       'userName': userName,

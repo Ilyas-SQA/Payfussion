@@ -92,11 +92,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
   }
 
   PasswordStrength _checkPasswordStrength(String password) {
-    final hasUppercase = password.contains(RegExp(r'[A-Z]'));
-    final hasLowercase = password.contains(RegExp(r'[a-z]'));
-    final hasDigit = password.contains(RegExp(r'\d'));
-    final hasSpecialChar = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
-    final hasMinLength = password.length >= 8;
+    final bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
+    final bool hasLowercase = password.contains(RegExp(r'[a-z]'));
+    final bool hasDigit = password.contains(RegExp(r'\d'));
+    final bool hasSpecialChar = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+    final bool hasMinLength = password.length >= 8;
 
     if (hasUppercase &&
         hasLowercase &&
@@ -122,7 +122,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
       duration: Duration(milliseconds: 600 + (animationDelay * 200)),
       tween: Tween<double>(begin: 0.0, end: 1.0),
       curve: Curves.elasticOut,
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Transform.translate(
           offset: Offset(0, 50 * (1 - value)),
           child: Opacity(
@@ -153,7 +153,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                 child: TweenAnimationBuilder<double>(
                   duration: const Duration(milliseconds: 500),
                   tween: Tween<double>(begin: 0.0, end: 1.0),
-                  builder: (context, value, child) {
+                  builder: (BuildContext context, double value, Widget? child) {
                     return Transform.scale(
                       scale: value,
                       child: Container(
@@ -183,11 +183,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
               ..showSnackBar(
                 SnackBar(
                   content: Row(
-                    children: [
+                    children: <Widget>[
                       TweenAnimationBuilder<double>(
                         duration: const Duration(milliseconds: 500),
                         tween: Tween<double>(begin: 0.0, end: 1.0),
-                        builder: (context, value, child) {
+                        builder: (BuildContext context, double value, Widget? child) {
                           return Transform.scale(
                             scale: value,
                             child: const Icon(
@@ -214,7 +214,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
           }
         }
       },
-      builder: (context, state) {
+      builder: (BuildContext context, ChangePasswordState state) {
         return Scaffold(
           // IMPORTANT: resizeToAvoidBottomInset ko false karna keyboard issue fix karta hai
           resizeToAvoidBottomInset: true,
@@ -244,13 +244,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                 position: _slideAnimation,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
+                  children: <Widget>[
                     // Animated logo
                     TweenAnimationBuilder<double>(
                       duration: const Duration(milliseconds: 1200),
                       tween: Tween<double>(begin: 0.0, end: 1.0),
                       curve: Curves.bounceOut,
-                      builder: (context, value, child) {
+                      builder: (BuildContext context, double value, Widget? child) {
                         return Transform.scale(
                           scale: value,
                           child: Transform.rotate(
@@ -271,7 +271,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                       duration: const Duration(milliseconds: 1000),
                       tween: Tween<double>(begin: 0.0, end: 1.0),
                       curve: Curves.easeInOut,
-                      builder: (context, value, child) {
+                      builder: (BuildContext context, double value, Widget? child) {
                         return Opacity(
                           opacity: value,
                           child: Text(
@@ -291,13 +291,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                       key: _formKey,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
+                        children: <Widget>[
                           // Animated title
                           TweenAnimationBuilder<double>(
                             duration: const Duration(milliseconds: 800),
                             tween: Tween<double>(begin: 0.0, end: 1.0),
                             curve: Curves.easeOutBack,
-                            builder: (context, value, child) {
+                            builder: (BuildContext context, double value, Widget? child) {
                               return Transform.translate(
                                 offset: Offset(0, 30 * (1 - value)),
                                 child: Opacity(
@@ -340,7 +340,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                             duration: const Duration(milliseconds: 1000),
                             tween: Tween<double>(begin: 0.0, end: 1.0),
                             curve: Curves.easeInOut,
-                            builder: (context, value, child) {
+                            builder: (BuildContext context, double value, Widget? child) {
                               return Transform.translate(
                                 offset: Offset(0, 20 * (1 - value)),
                                 child: Opacity(
@@ -371,7 +371,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                             TweenAnimationBuilder<double>(
                               duration: const Duration(milliseconds: 400),
                               tween: Tween<double>(begin: 0.0, end: 1.0),
-                              builder: (context, value, child) {
+                              builder: (BuildContext context, double value, Widget? child) {
                                 return Transform.translate(
                                   offset: Offset(0, 10 * (1 - value)),
                                   child: Opacity(
@@ -398,7 +398,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                             duration: const Duration(milliseconds: 1200),
                             tween: Tween<double>(begin: 0.0, end: 1.0),
                             curve: Curves.elasticOut,
-                            builder: (context, value, child) {
+                            builder: (BuildContext context, double value, Widget? child) {
                               return Transform.scale(
                                 scale: value,
                                 child: AppButton(
@@ -406,9 +406,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                                     // Hide any existing snackbar
                                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
-                                    final oldPassword = oldPasswordController.text.trim();
-                                    final newPassword = newPasswordController.text.trim();
-                                    final confirmNewPassword =
+                                    final String oldPassword = oldPasswordController.text.trim();
+                                    final String newPassword = newPasswordController.text.trim();
+                                    final String confirmNewPassword =
                                     confirmNewPasswordController.text.trim();
 
                                     // Validate empty fields
@@ -438,7 +438,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                                     }
 
                                     // Validate password strength
-                                    final passwordStrength = _checkPasswordStrength(newPassword);
+                                    final PasswordStrength passwordStrength = _checkPasswordStrength(newPassword);
                                     if (passwordStrength != PasswordStrength.strong) {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(

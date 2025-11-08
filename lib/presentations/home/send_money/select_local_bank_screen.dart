@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/presentations/home/send_money/select_bank_screen.dart';
 
+import '../../../core/constants/fonts.dart';
 import '../../../core/theme/theme.dart';
 import '../../widgets/background_theme.dart';
 
@@ -13,27 +14,27 @@ class SelectLocalBankScreen extends StatefulWidget {
 }
 
 class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> with TickerProviderStateMixin{
-  final List<Map<String, String>> financialApps = [
-    {"imageUrl":"assets/images/otherBank/download (10).png" ,'name': 'Cash App', 'type': 'Digital Wallet'},
-    {"imageUrl":"assets/images/otherBank/download (11).png" ,'name': 'Venmo', 'type': 'P2P Payment'},
-    {"imageUrl":"assets/images/otherBank/download (12).png" ,'name': 'Zelle', 'type': 'Bank Transfer'},
-    {"imageUrl":"assets/images/otherBank/download (13).png" ,'name': 'PayPal', 'type': 'Digital Payment'},
-    {"imageUrl":"assets/images/otherBank/download (14).png" ,'name': 'Chime', 'type': 'Digital Bank'},
-    {"imageUrl":"assets/images/otherBank/download (15).png" ,'name': 'SoFi', 'type': 'Online Bank'},
-    {"imageUrl":"assets/images/otherBank/download (16).png" ,'name': 'Revolut', 'type': 'Digital Bank'},
-    {"imageUrl":"assets/images/otherBank/download (1).png" ,'name': 'Wise', 'type': 'International Transfer'},
-    {"imageUrl":"assets/images/otherBank/reward.png" ,'name': 'Google Pay', 'type': 'Digital Wallet'},
-    {"imageUrl":"assets/images/otherBank/download.png" ,'name': 'Apple Pay', 'type': 'Digital Wallet'},
-    {"imageUrl":"assets/images/otherBank/download (2).png" ,'name': 'Robinhood', 'type': 'Investment App'},
-    {"imageUrl":"assets/images/otherBank/download (3).png" ,'name': 'Square', 'type': 'Business Payment'},
-    {"imageUrl":"assets/images/otherBank/download (4).png" ,'name': 'Current', 'type': 'Digital Bank'},
-    {"imageUrl":"assets/images/otherBank/download (5).png" ,'name': 'N26', 'type': 'Digital Bank'},
-    {"imageUrl":"assets/images/otherBank/download (6).png" ,'name': 'Ally Bank', 'type': 'Online Bank'},
-    {"imageUrl":"assets/images/otherBank/download (7).png" ,'name': 'One Finance', 'type': 'Digital Bank'},
-    {"imageUrl":"assets/images/otherBank/download (8).png" ,'name': 'Dave', 'type': 'Banking App'},
-    {"imageUrl":"assets/images/otherBank/download (9).png" ,'name': 'Brigit', 'type': 'Financial App'},
-    {"imageUrl":"assets/images/otherBank/download.jpeg" ,'name': 'Bluebird', 'type': 'Prepaid Card'},
-    {"imageUrl":"assets/images/otherBank/download (1).jpeg" ,'name': 'Tally', 'type': 'Credit Management'},
+  final List<Map<String, String>> financialApps = <Map<String, String>>[
+    <String, String>{"imageUrl":"assets/images/otherBank/download (10).png" ,'name': 'Cash App', 'type': 'Digital Wallet'},
+    <String, String>{"imageUrl":"assets/images/otherBank/download (11).png" ,'name': 'Venmo', 'type': 'P2P Payment'},
+    <String, String>{"imageUrl":"assets/images/otherBank/download (12).png" ,'name': 'Zelle', 'type': 'Bank Transfer'},
+    <String, String>{"imageUrl":"assets/images/otherBank/download (13).png" ,'name': 'PayPal', 'type': 'Digital Payment'},
+    <String, String>{"imageUrl":"assets/images/otherBank/download (14).png" ,'name': 'Chime', 'type': 'Digital Bank'},
+    <String, String>{"imageUrl":"assets/images/otherBank/download (15).png" ,'name': 'SoFi', 'type': 'Online Bank'},
+    <String, String>{"imageUrl":"assets/images/otherBank/download (16).png" ,'name': 'Revolut', 'type': 'Digital Bank'},
+    <String, String>{"imageUrl":"assets/images/otherBank/download (1).png" ,'name': 'Wise', 'type': 'International Transfer'},
+    <String, String>{"imageUrl":"assets/images/otherBank/reward.png" ,'name': 'Google Pay', 'type': 'Digital Wallet'},
+    <String, String>{"imageUrl":"assets/images/otherBank/download.png" ,'name': 'Apple Pay', 'type': 'Digital Wallet'},
+    <String, String>{"imageUrl":"assets/images/otherBank/download (2).png" ,'name': 'Robinhood', 'type': 'Investment App'},
+    <String, String>{"imageUrl":"assets/images/otherBank/download (3).png" ,'name': 'Square', 'type': 'Business Payment'},
+    <String, String>{"imageUrl":"assets/images/otherBank/download (4).png" ,'name': 'Current', 'type': 'Digital Bank'},
+    <String, String>{"imageUrl":"assets/images/otherBank/download (5).png" ,'name': 'N26', 'type': 'Digital Bank'},
+    <String, String>{"imageUrl":"assets/images/otherBank/download (6).png" ,'name': 'Ally Bank', 'type': 'Online Bank'},
+    <String, String>{"imageUrl":"assets/images/otherBank/download (7).png" ,'name': 'One Finance', 'type': 'Digital Bank'},
+    <String, String>{"imageUrl":"assets/images/otherBank/download (8).png" ,'name': 'Dave', 'type': 'Banking App'},
+    <String, String>{"imageUrl":"assets/images/otherBank/download (9).png" ,'name': 'Brigit', 'type': 'Financial App'},
+    <String, String>{"imageUrl":"assets/images/otherBank/download.jpeg" ,'name': 'Bluebird', 'type': 'Prepaid Card'},
+    <String, String>{"imageUrl":"assets/images/otherBank/download (1).jpeg" ,'name': 'Tally', 'type': 'Credit Management'},
   ];
 
   String? selectedApp;
@@ -49,7 +50,7 @@ class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> with Tick
   }
 
   _proceedToNextScreen() {
-    return Navigator.push(context, MaterialPageRoute(builder: (context) => BankDetailsScreen()));
+    return Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const BankDetailsScreen()));
   }
 
   Widget _buildAppCard(Map<String, String> app, bool isSelected) {
@@ -65,12 +66,12 @@ class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> with Tick
         color: Theme.of(context).scaffoldBackgroundColor,
         gradient: isSelected ?
         LinearGradient(
-          colors: [MyTheme.primaryColor, MyTheme.primaryColor.withOpacity(0.8)],
+          colors: <Color>[MyTheme.primaryColor, MyTheme.primaryColor.withOpacity(0.8)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ) : null,
         borderRadius: BorderRadius.circular(12.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -84,7 +85,7 @@ class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> with Tick
         child: Padding(
           padding: EdgeInsets.all(16.w),
           child: Row(
-            children: [
+            children: <Widget>[
               Container(
                 width: 50.w,
                 height: 50.w,
@@ -98,10 +99,10 @@ class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> with Tick
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     Text(
                       app['name']!,
-                      style: TextStyle(
+                      style: Font.montserratFont(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w600,
                       ),
@@ -109,7 +110,7 @@ class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> with Tick
                     SizedBox(height: 4.h),
                     Text(
                       app['type']!,
-                      style: TextStyle(
+                      style: Font.montserratFont(
                         fontSize: 12.sp,
                         color: isSelected
                             ? Colors.white.withOpacity(0.8)
@@ -174,7 +175,7 @@ class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> with Tick
       appBar: AppBar(
         title: Text(
           'Other Wallet',
-          style: TextStyle(
+          style: Font.montserratFont(
             fontSize: 20.sp,
             fontWeight: FontWeight.w600,
           ),
@@ -186,22 +187,22 @@ class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> with Tick
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
           Column(
-            children: [
+            children: <Widget>[
               // Header
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 24.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     Text(
                       'Choose your Other Wallet',
-                      style: TextStyle(
+                      style: Font.montserratFont(
                         fontSize: 18.sp,
                         fontWeight: FontWeight.bold,
                       ),
@@ -209,7 +210,7 @@ class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> with Tick
                     SizedBox(height: 8.h),
                     Text(
                       'Select a Other Wallet from the list below (tap again to unselect)',
-                      style: TextStyle(
+                      style: Font.montserratFont(
                         fontSize: 14.sp,
                         color: Colors.grey.shade400,
                       ),
@@ -224,7 +225,7 @@ class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> with Tick
                     ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                    children: <Widget>[
                       Icon(
                         Icons.account_balance_wallet_outlined,
                         size: 64.sp,
@@ -233,7 +234,7 @@ class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> with Tick
                       SizedBox(height: 16.h),
                       Text(
                         'No Financial Apps Available',
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           fontSize: 18.sp,
                           fontWeight: FontWeight.w600,
                           color: Colors.grey.shade600,
@@ -244,9 +245,9 @@ class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> with Tick
                 ) : ListView.builder(
                   padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
                   itemCount: financialApps.length,
-                  itemBuilder: (context, index) {
-                    final app = financialApps[index];
-                    final isSelected = selectedApp == app['name'];
+                  itemBuilder: (BuildContext context, int index) {
+                    final Map<String, String> app = financialApps[index];
+                    final bool isSelected = selectedApp == app['name'];
                     return _buildAppCard(app, isSelected);
                   },
                 ),
@@ -269,10 +270,10 @@ class _SelectLocalBankScreenState extends State<SelectLocalBankScreen> with Tick
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: <Widget>[
                         Text(
                           'Continue',
-                          style: TextStyle(
+                          style: Font.montserratFont(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,

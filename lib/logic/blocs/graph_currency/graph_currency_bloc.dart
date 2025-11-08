@@ -19,16 +19,16 @@ class GraphCurrencyBloc extends Bloc<GraphCurrencyEvent, GraphCurrencyState> {
 
     try {
       // Define the currencies you want to support
-      final supportedCurrencies = ['USD', 'EUR', 'JPY', 'GBP', 'CAD', 'AUD', 'CHF'];
+      final List<String> supportedCurrencies = <String>['USD', 'EUR', 'JPY', 'GBP', 'CAD', 'AUD', 'CHF'];
 
       // Get real-time data for all currencies
-      final currenciesData = await CurrencyApiService.getMultipleCurrenciesData(
+      final Map<String, Map<String, dynamic>> currenciesData = await CurrencyApiService.getMultipleCurrenciesData(
           supportedCurrencies,
           'USD' // Base currency
       );
 
       // Create currency models with real data
-      final currencies = <GraphCurrencyModel>[];
+      final List<GraphCurrencyModel> currencies = <GraphCurrencyModel>[];
 
       // USD as base currency
       currencies.add(GraphCurrencyModel(
@@ -36,24 +36,24 @@ class GraphCurrencyBloc extends Bloc<GraphCurrencyEvent, GraphCurrencyState> {
         name: 'US Dollar',
         currentPrice: 1.0,
         symbol: '\$',
-        weeklyPrices: currenciesData['USD']?['weeklyRates']?.cast<double>() ?? [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+        weeklyPrices: currenciesData['USD']?['weeklyRates']?.cast<double>() ?? <double>[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
         lastUpdated: DateTime.now(),
       ));
 
       // Add other currencies with real API data
-      final currencyMetadata = {
-        'EUR': {'name': 'Euro', 'symbol': '€'},
-        'JPY': {'name': 'Japanese Yen', 'symbol': '¥'},
-        'GBP': {'name': 'British Pound', 'symbol': '£'},
-        'CAD': {'name': 'Canadian Dollar', 'symbol': 'C\$'},
-        'AUD': {'name': 'Australian Dollar', 'symbol': 'A\$'},
-        'CHF': {'name': 'Swiss Franc', 'symbol': 'CHF'},
+      final Map<String, Map<String, String>> currencyMetadata = <String, Map<String, String>>{
+        'EUR': <String, String>{'name': 'Euro', 'symbol': '€'},
+        'JPY': <String, String>{'name': 'Japanese Yen', 'symbol': '¥'},
+        'GBP': <String, String>{'name': 'British Pound', 'symbol': '£'},
+        'CAD': <String, String>{'name': 'Canadian Dollar', 'symbol': 'C\$'},
+        'AUD': <String, String>{'name': 'Australian Dollar', 'symbol': 'A\$'},
+        'CHF': <String, String>{'name': 'Swiss Franc', 'symbol': 'CHF'},
       };
 
       for (String code in supportedCurrencies) {
         if (code != 'USD' && currenciesData.containsKey(code)) {
-          final data = currenciesData[code]!;
-          final metadata = currencyMetadata[code]!;
+          final Map<String, dynamic> data = currenciesData[code]!;
+          final Map<String, String> metadata = currencyMetadata[code]!;
 
           currencies.add(GraphCurrencyModel(
             code: code,
@@ -67,8 +67,8 @@ class GraphCurrencyBloc extends Bloc<GraphCurrencyEvent, GraphCurrencyState> {
       }
 
       // Automatically select USD as default
-      final defaultCurrency = currencies.firstWhere(
-            (currency) => currency.code == 'USD',
+      final GraphCurrencyModel defaultCurrency = currencies.firstWhere(
+            (GraphCurrencyModel currency) => currency.code == 'USD',
         orElse: () => currencies.first,
       );
 
@@ -81,7 +81,7 @@ class GraphCurrencyBloc extends Bloc<GraphCurrencyEvent, GraphCurrencyState> {
 
   void _onSelectCurrency(SelectCurrency event, Emitter<GraphCurrencyState> emit) async {
     if (state is CurrencyLoaded) {
-      final currentState = state as CurrencyLoaded;
+      final CurrencyLoaded currentState = state as CurrencyLoaded;
 
       // Emit loading state for the selected currency
       emit(CurrencyLoaded(
@@ -92,10 +92,10 @@ class GraphCurrencyBloc extends Bloc<GraphCurrencyEvent, GraphCurrencyState> {
 
       try {
         // Get fresh data for the selected currency
-        final currencyData = await CurrencyApiService.getCurrencyData(event.currency.code);
+        final Map<String, dynamic> currencyData = await CurrencyApiService.getCurrencyData(event.currency.code);
 
         // Update the selected currency with fresh data
-        final updatedCurrency = GraphCurrencyModel(
+        final GraphCurrencyModel updatedCurrency = GraphCurrencyModel(
           code: event.currency.code,
           name: event.currency.name,
           currentPrice: currencyData['currentRate'] as double,
@@ -105,7 +105,7 @@ class GraphCurrencyBloc extends Bloc<GraphCurrencyEvent, GraphCurrencyState> {
         );
 
         // Update the currencies list with the fresh data
-        final updatedCurrencies = currentState.currencies.map((currency) {
+        final List<GraphCurrencyModel> updatedCurrencies = currentState.currencies.map((GraphCurrencyModel currency) {
           if (currency.code == event.currency.code) {
             return updatedCurrency;
           }
@@ -123,17 +123,17 @@ class GraphCurrencyBloc extends Bloc<GraphCurrencyEvent, GraphCurrencyState> {
 
   void _onRefreshCurrencyData(RefreshCurrencyData event, Emitter<GraphCurrencyState> emit) async {
     if (state is CurrencyLoaded) {
-      final currentState = state as CurrencyLoaded;
+      final CurrencyLoaded currentState = state as CurrencyLoaded;
 
       try {
         // Get fresh data for all currencies
-        final supportedCurrencies = currentState.currencies.map((c) => c.code).toList();
-        final currenciesData = await CurrencyApiService.getMultipleCurrenciesData(supportedCurrencies, 'USD');
+        final List<String> supportedCurrencies = currentState.currencies.map((GraphCurrencyModel c) => c.code).toList();
+        final Map<String, Map<String, dynamic>> currenciesData = await CurrencyApiService.getMultipleCurrenciesData(supportedCurrencies, 'USD');
 
         // Update all currencies with fresh data
-        final updatedCurrencies = currentState.currencies.map((currency) {
+        final List<GraphCurrencyModel> updatedCurrencies = currentState.currencies.map((GraphCurrencyModel currency) {
           if (currenciesData.containsKey(currency.code)) {
-            final data = currenciesData[currency.code]!;
+            final Map<String, dynamic> data = currenciesData[currency.code]!;
             return GraphCurrencyModel(
               code: currency.code,
               name: currency.name,
@@ -147,9 +147,9 @@ class GraphCurrencyBloc extends Bloc<GraphCurrencyEvent, GraphCurrencyState> {
         }).toList();
 
         // Maintain the selected currency
-        final selectedCurrency = currentState.selectedCurrency != null
+        final GraphCurrencyModel? selectedCurrency = currentState.selectedCurrency != null
             ? updatedCurrencies.firstWhere(
-              (c) => c.code == currentState.selectedCurrency!.code,
+              (GraphCurrencyModel c) => c.code == currentState.selectedCurrency!.code,
           orElse: () => updatedCurrencies.first,
         )
             : null;

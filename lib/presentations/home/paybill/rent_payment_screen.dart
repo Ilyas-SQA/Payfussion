@@ -4,6 +4,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
+import '../../../core/constants/fonts.dart';
 import '../../../core/constants/routes_name.dart';
 import '../../widgets/background_theme.dart';
 
@@ -24,8 +25,8 @@ class _RentPaymentScreenState extends State<RentPaymentScreen> with TickerProvid
   late Animation<Offset> _headerSlide;
   late Animation<double> _listFade;
 
-  final List<Map<String, dynamic>> rentServices = [
-    {
+  final List<Map<String, dynamic>> rentServices = <Map<String, dynamic>>[
+    <String, dynamic>{
       "name": "Airbnb",
       "description": "Short-term rental marketplace",
       "icon": Icons.apartment,
@@ -34,7 +35,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen> with TickerProvid
       "feeRange": "3% host fee",
       "properties": "6M+ listings",
     },
-    {
+    <String, dynamic>{
       "name": "Vrbo",
       "description": "Vacation rental by owner",
       "icon": Icons.holiday_village,
@@ -43,7 +44,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen> with TickerProvid
       "feeRange": "5-10% host fee",
       "properties": "2M+ properties",
     },
-    {
+    <String, dynamic>{
       "name": "Zillow Rentals",
       "description": "Long-term rental marketplace",
       "icon": Icons.home_work,
@@ -52,7 +53,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen> with TickerProvid
       "feeRange": "No listing fees",
       "properties": "1M+ rentals",
     },
-    {
+    <String, dynamic>{
       "name": "Apartments.com",
       "description": "Apartment search platform",
       "icon": Icons.location_city,
@@ -61,7 +62,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen> with TickerProvid
       "feeRange": "Free for renters",
       "properties": "1M+ apartments",
     },
-    {
+    <String, dynamic>{
       "name": "Realtor.com Rentals",
       "description": "Professional rental listings",
       "icon": Icons.business,
@@ -70,7 +71,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen> with TickerProvid
       "feeRange": "Varies by agent",
       "properties": "800K+ listings",
     },
-    {
+    <String, dynamic>{
       "name": "Trulia Rentals",
       "description": "Neighborhood-focused rentals",
       "icon": Icons.maps_home_work,
@@ -79,7 +80,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen> with TickerProvid
       "feeRange": "Free for renters",
       "properties": "600K+ rentals",
     },
-    {
+    <String, dynamic>{
       "name": "Furnished Finder",
       "description": "Furnished rental specialists",
       "icon": Icons.chair,
@@ -88,7 +89,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen> with TickerProvid
       "feeRange": "Premium listings",
       "properties": "200K+ furnished",
     },
-    {
+    <String, dynamic>{
       "name": "HotPads",
       "description": "Map-based rental search",
       "icon": Icons.map,
@@ -97,7 +98,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen> with TickerProvid
       "feeRange": "Free platform",
       "properties": "1M+ listings",
     },
-    {
+    <String, dynamic>{
       "name": "Rent.com",
       "description": "Full-service rental platform",
       "icon": Icons.key,
@@ -106,7 +107,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen> with TickerProvid
       "feeRange": "Service fees apply",
       "properties": "750K+ rentals",
     },
-    {
+    <String, dynamic>{
       "name": "Cozy",
       "description": "Property management platform",
       "icon": Icons.dashboard,
@@ -195,7 +196,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen> with TickerProvid
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -203,13 +204,13 @@ class _RentPaymentScreenState extends State<RentPaymentScreen> with TickerProvid
             opacity: _listFade,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 // Header Section
                 Padding(
                   padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(
                         "Pay Your",
                         style: theme.textTheme.headlineMedium?.copyWith(
@@ -259,7 +260,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen> with TickerProvid
       child: ListView.builder(
         physics: const BouncingScrollPhysics(),
         itemCount: rentServices.length,
-        itemBuilder: (context, index) {
+        itemBuilder: (BuildContext context, int index) {
           return AnimationConfiguration.staggeredList(
             position: index,
             duration: const Duration(milliseconds: 400),
@@ -286,7 +287,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen> with TickerProvid
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -298,7 +299,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen> with TickerProvid
           onTap: () {
             context.push(
               RouteNames.payBillsDetailView,
-              extra: {
+              extra: <String, dynamic>{
                 'billType': "rent",
                 'companyName': service['name'],
                 'category': service['category'],
@@ -311,7 +312,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen> with TickerProvid
           child: Padding(
             padding: EdgeInsets.all(20.w),
             child: Row(
-              children: [
+              children: <Widget>[
                 // Icon Container
                 Hero(
                   tag: 'rent_icon_${service['name']}',
@@ -328,10 +329,10 @@ class _RentPaymentScreenState extends State<RentPaymentScreen> with TickerProvid
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       // Service name and category
                       Row(
-                        children: [
+                        children: <Widget>[
                           Expanded(
                             child: Text(
                               service['name'] as String,
@@ -376,7 +377,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen> with TickerProvid
 
                       // Properties count and fee info
                       Row(
-                        children: [
+                        children: <Widget>[
                           Icon(
                             Icons.home,
                             size: 14.sp,
@@ -385,7 +386,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen> with TickerProvid
                           Expanded(
                             child: Text(
                               "${service['properties']} • ${service['feeRange']}",
-                              style: const TextStyle(
+                              style: Font.montserratFont(
                                 fontSize: 10,
                               ),
                             ),

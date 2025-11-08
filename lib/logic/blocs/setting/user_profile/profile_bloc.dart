@@ -5,6 +5,7 @@ import 'package:dartz/dartz.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:payfussion/core/exceptions/failure.dart';
 import 'package:payfussion/domain/repository/auth/auth_repository.dart';
 import 'package:payfussion/logic/blocs/setting/user_profile/profile_event.dart';
 import 'package:payfussion/logic/blocs/setting/user_profile/profile_state.dart';
@@ -15,7 +16,7 @@ import '../../../../services/session_manager_service.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final AuthRepository authRepository;
-  final _session = getIt<SessionController>();
+  final SessionController _session = getIt<SessionController>();
 
   ProfileBloc({required this.authRepository}) : super(ProfileInitial()) {
     on<UpdateFirstName>(_handleUpdateFirstName);
@@ -54,8 +55,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       await _markCurrentDeviceInactive();
 
       // THEN: Sign out the user
-      final result = await authRepository.signOut();
-      await result.fold((failure) async => _emitError(emit, failure.message), (
+      final Either<Failure, Unit> result = await authRepository.signOut();
+      await result.fold((Failure failure) async => _emitError(emit, failure.message), (
           _,
           ) async {
         await _session.clearUserPreference();
@@ -69,9 +70,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   Future<void> _markCurrentDeviceInactive() async {
     try {
-      final currentUser = FirebaseAuth.instance.currentUser;
+      final User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null) {
-        final currentDeviceId = await _getDeviceId();
+        final String currentDeviceId = await _getDeviceId();
 
         // Use FirebaseFirestore directly with proper error handling
         await FirebaseFirestore.instance
@@ -79,7 +80,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
             .doc(currentUser.uid)
             .collection('devices')
             .doc(currentDeviceId)
-            .update({
+            .update(<Object, Object?>{
           'isActive': false,
           'lastLogin': DateTime.now().toIso8601String(),
         });
@@ -96,10 +97,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
     if (Platform.isAndroid) {
-      final info = await deviceInfo.androidInfo;
+      final AndroidDeviceInfo info = await deviceInfo.androidInfo;
       return info.id;
     } else {
-      final info = await deviceInfo.iosInfo;
+      final IosDeviceInfo info = await deviceInfo.iosInfo;
       return info.identifierForVendor ?? "unknown";
     }
   }
@@ -111,11 +112,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) async {
     _emitLoading(emit);
     try {
-      final result = await authRepository.updateUserFirstName(event.firstName);
+      final Either<Failure, Unit> result = await authRepository.updateUserFirstName(event.firstName);
       _handleEither(
         result,
         emit,
-        (failure) =>
+        (Failure failure) =>
             _emitError(emit, "Failed to update first name: ${failure.message}"),
         (_) => emit(ProfileSucess()),
       );
@@ -130,11 +131,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) async {
     _emitLoading(emit);
     try {
-      final result = await authRepository.updateUserLastName(event.lastName);
+      final Either<Failure, Unit> result = await authRepository.updateUserLastName(event.lastName);
       _handleEither(
         result,
         emit,
-        (failure) =>
+        (Failure failure) =>
             _emitError(emit, "Failed to update last name: ${failure.message}"),
         (_) => emit(ProfileSucess()),
       );
@@ -149,13 +150,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) async {
     _emitLoading(emit);
     try {
-      final result = await authRepository.updateUserProfileUrl(
+      final Either<Failure, Unit> result = await authRepository.updateUserProfileUrl(
         event.profileImage!.path,
       );
       _handleEither(
         result,
         emit,
-        (failure) => _emitError(
+        (Failure failure) => _emitError(
           emit,
           "Failed to update profile image: ${failure.message}",
         ),

@@ -38,8 +38,8 @@ class AuthDebugUtils {
   /// Test if Firebase Auth is properly initialized
   static Future<bool> testFirebaseAuth() async {
     try {
-      final auth = FirebaseAuth.instance;
-      final currentUser = auth.currentUser;
+      final FirebaseAuth auth = FirebaseAuth.instance;
+      final User? currentUser = auth.currentUser;
 
       if (kDebugMode) {
         print('🔧 Firebase Auth Test:');
@@ -61,12 +61,12 @@ class AuthDebugUtils {
   static Future<void> createTestUser() async {
     if (kDebugMode) {
       try {
-        const testEmail = 'test@payfussion.app';
-        const testPassword = 'Test123456!';
+        const String testEmail = 'test@payfussion.app';
+        const String testPassword = 'Test123456!';
 
         print('🧪 Creating test user...');
 
-        final userCredential = await FirebaseAuth.instance
+        final UserCredential userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
               email: testEmail,
               password: testPassword,

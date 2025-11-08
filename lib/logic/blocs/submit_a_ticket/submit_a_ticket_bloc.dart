@@ -28,7 +28,7 @@ class SubmitATicketBloc extends Bloc<SubmitATicketEvent, SubmitATicketState> {
 
     try {
       // Submit ticket to Firestore
-      final ticketId = await _ticketRepository.submitTicket(
+      final String ticketId = await _ticketRepository.submitTicket(
         title: event.title,
         description: event.description,
       );

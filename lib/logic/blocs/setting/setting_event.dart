@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 abstract class SettingsEvent extends Equatable {
   const SettingsEvent();
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class LinkedAccountToggled extends SettingsEvent {
@@ -16,7 +16,7 @@ class LinkedAccountToggled extends SettingsEvent {
   });
 
   @override
-  List<Object?> get props => [accountId, enabled];
+  List<Object?> get props => <Object?>[accountId, enabled];
 }
 
 class LoadBiometricSettings extends SettingsEvent {
@@ -33,7 +33,7 @@ class SecurityOptionToggled extends SettingsEvent {
   final bool enabled;
 
   @override
-  List<Object?> get props => [optionKey, enabled];
+  List<Object?> get props => <Object?>[optionKey, enabled];
 }
 
 /// dropdown / selector events
@@ -42,7 +42,7 @@ class CurrencyChanged extends SettingsEvent {
   final String currencyCode;
 
   @override
-  List<Object?> get props => [currencyCode];
+  List<Object?> get props => <Object?>[currencyCode];
 }
 
 class TransactionPrivacyModeChanged extends SettingsEvent {
@@ -51,7 +51,7 @@ class TransactionPrivacyModeChanged extends SettingsEvent {
   const TransactionPrivacyModeChanged(this.mode);
 
   @override
-  List<Object?> get props => [mode];
+  List<Object?> get props => <Object?>[mode];
 }
 
 class InitializeSettings extends SettingsEvent {

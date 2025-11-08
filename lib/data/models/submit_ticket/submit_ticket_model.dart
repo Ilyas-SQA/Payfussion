@@ -19,7 +19,7 @@ class TicketModel {
 
   // Convert TicketModel to Map for Firestore
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'userId': userId,
       'title': title,
       'description': description,

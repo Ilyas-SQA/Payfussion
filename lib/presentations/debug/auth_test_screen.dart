@@ -23,7 +23,7 @@ class _AuthTestScreenState extends State<AuthTestScreen> {
   }
 
   Future<void> _testFirebaseAuth() async {
-    final isWorking = await AuthDebugUtils.testFirebaseAuth();
+    final bool isWorking = await AuthDebugUtils.testFirebaseAuth();
     setState(() {
       _status = isWorking
           ? 'Firebase Auth initialized'
@@ -38,8 +38,8 @@ class _AuthTestScreenState extends State<AuthTestScreen> {
     });
 
     try {
-      final email = _emailController.text.trim();
-      final password = _passwordController.text;
+      final String email = _emailController.text.trim();
+      final String password = _passwordController.text;
 
       if (email.isEmpty || password.isEmpty) {
         throw Exception('Please enter email and password');
@@ -47,7 +47,7 @@ class _AuthTestScreenState extends State<AuthTestScreen> {
 
       AuthDebugUtils.logAuthAttempt(email);
 
-      final userCredential = await FirebaseAuth.instance
+      final UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
 
       AuthDebugUtils.logAuthSuccess(userCredential.user);
@@ -110,7 +110,7 @@ class _AuthTestScreenState extends State<AuthTestScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+          children: <Widget>[
             Text(
               'Status: $_status',
               style: Theme.of(context).textTheme.titleMedium,
@@ -141,7 +141,7 @@ class _AuthTestScreenState extends State<AuthTestScreen> {
               const Center(child: CircularProgressIndicator())
             else
               Column(
-                children: [
+                children: <Widget>[
                   ElevatedButton(
                     onPressed: _testSignIn,
                     child: const Text('Test Sign In'),
@@ -168,15 +168,15 @@ class _AuthTestScreenState extends State<AuthTestScreen> {
 
             StreamBuilder<User?>(
               stream: FirebaseAuth.instance.authStateChanges(),
-              builder: (context, snapshot) {
+              builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
                 if (snapshot.hasData) {
-                  final user = snapshot.data!;
+                  final User user = snapshot.data!;
                   return Card(
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                        children: <Widget>[
                           Text(
                             'Current User:',
                             style: Theme.of(context).textTheme.titleSmall,

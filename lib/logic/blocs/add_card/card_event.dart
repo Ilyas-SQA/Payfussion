@@ -4,7 +4,7 @@ abstract class CardEvent extends Equatable {
   const CardEvent();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class AddCardDetailsSubmitted extends CardEvent {
@@ -32,7 +32,7 @@ class AddCardInFirebase extends CardEvent{
 
 class LoadCards extends CardEvent {
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class SetDefaultCard extends CardEvent {
@@ -56,5 +56,5 @@ class AddCardWithDuplicateCheck extends CardEvent {
   });
 
   @override
-  List<Object?> get props => [cardData, customerId];
+  List<Object?> get props => <Object?>[cardData, customerId];
 }

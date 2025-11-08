@@ -10,6 +10,7 @@ import 'package:payfussion/presentations/home/send_money/bank_widget.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/fonts.dart';
 import '../../../core/theme/theme.dart';
 import '../../../data/repositories/recipient/recipient_repository.dart';
 import '../../../logic/blocs/recipient/recipient_bloc.dart';
@@ -81,7 +82,7 @@ class _AddRecipientScreenState extends State<AddRecipientScreen> with TickerProv
           title: const Text(RecipientStrings.addRecipient),
         ),
         body: Stack(
-          children: [
+          children: <Widget>[
             AnimatedBackground(
               animationController: _backgroundAnimationController,
             ),
@@ -101,9 +102,9 @@ class RecipientForm extends StatefulWidget {
 }
 
 class _RecipientFormState extends State<RecipientForm> with TickerProviderStateMixin {
-  final _nameCtrl = TextEditingController();
-  final _accCtrl = TextEditingController();
-  final _accFocus = FocusNode();
+  final TextEditingController _nameCtrl = TextEditingController();
+  final TextEditingController _accCtrl = TextEditingController();
+  final FocusNode _accFocus = FocusNode();
 
   // Animation controllers
   late AnimationController _headerController;
@@ -202,7 +203,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<RecipientBloc, AddRecipientState>(
-      listenWhen: (p, c) => p.submitStatus != c.submitStatus,
+      listenWhen: (AddRecipientState p, AddRecipientState c) => p.submitStatus != c.submitStatus,
       listener: (BuildContext context, AddRecipientState state) {
         if (state.submitStatus == SubmitStatus.success) {
           showDialog(
@@ -223,7 +224,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
 
         return ListView(
           padding: EdgeInsets.all(16.w),
-          children: [
+          children: <Widget>[
             // Animated Header
             SlideTransition(
               position: _headerSlide,
@@ -256,18 +257,18 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                   child: Column(
                     children: AnimationConfiguration.toStaggeredList(
                       duration: const Duration(milliseconds: 200),
-                      childAnimationBuilder: (widget) => SlideAnimation(
+                      childAnimationBuilder: (Widget widget) => SlideAnimation(
                         verticalOffset: 20.0,
                         child: FadeInAnimation(child: widget),
                       ),
-                      children: [
+                      children: <Widget>[
                         // Name Field
                         _input(
                           controller: _nameCtrl,
                           label: RecipientStrings.fullName,
                           hintText: RecipientStrings.enterFullName,
                           prefix: Icons.person_outline,
-                          onChanged: (v) => context.read<RecipientBloc>().add(NameChanged(v)),
+                          onChanged: (String v) => context.read<RecipientBloc>().add(NameChanged(v)),
                         ),
                         SizedBox(height: 16.h),
 
@@ -304,7 +305,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                   end: Offset.zero,
                 ).animate(_buttonsController),
                 child: Row(
-                  children: [
+                  children: <Widget>[
                     Expanded(
                       flex: 3,
                       child: AnimatedContainer(
@@ -319,7 +320,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                           icon: const Icon(Icons.add, color: MyTheme.primaryColor),
                           label: Text(
                             RecipientStrings.saveAndAddAnother,
-                            style: TextStyle(
+                            style: Font.montserratFont(
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w600,
                               color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white
@@ -347,7 +348,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -356,7 +357,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
         ],
       ),
       child: Row(
-        children: [
+        children: <Widget>[
           Container(
             padding: EdgeInsets.all(10.r),
             decoration: BoxDecoration(
@@ -369,10 +370,10 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Text(RecipientStrings.addNewRecipient, style: AppStyles.subtitle),
                 SizedBox(height: 8.h),
-                Text(RecipientStrings.recipientDetails, style: TextStyle(fontSize: 12)),
+                Text(RecipientStrings.recipientDetails, style: Font.montserratFont(fontSize: 12)),
               ],
             ),
           ),
@@ -405,12 +406,12 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
             child: state.imageFile == null ?
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 Icon(Icons.add_a_photo, color: MyTheme.primaryColor, size: 32.sp),
                 SizedBox(height: 6.h),
                 Text(
                   RecipientStrings.addPhoto,
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     color: MyTheme.primaryColor,
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w500,
@@ -426,7 +427,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
   }
 
   Future<void> _showImagePickerOptions(BuildContext context) async {
-    final picker = ImagePicker();
+    final ImagePicker picker = ImagePicker();
     await showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -438,17 +439,17 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
             mainAxisSize: MainAxisSize.min,
             children: AnimationConfiguration.toStaggeredList(
               duration: const Duration(milliseconds: 150),
-              childAnimationBuilder: (widget) => SlideAnimation(
+              childAnimationBuilder: (Widget widget) => SlideAnimation(
                 verticalOffset: 30.0,
                 child: FadeInAnimation(child: widget),
               ),
-              children: [
+              children: <Widget>[
                 ListTile(
                   leading: const Icon(Icons.camera_alt),
                   title: const Text(RecipientStrings.takePhoto),
                   onTap: () async {
                     Navigator.pop(context);
-                    final x = await picker.pickImage(
+                    final XFile? x = await picker.pickImage(
                         source: ImageSource.camera,
                         maxWidth: 800,
                         maxHeight: 800,
@@ -465,7 +466,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                   title: const Text(RecipientStrings.chooseFromGallery),
                   onTap: () async {
                     Navigator.pop(context);
-                    final x = await picker.pickImage(
+                    final XFile? x = await picker.pickImage(
                         source: ImageSource.gallery,
                         maxWidth: 800,
                         maxHeight: 800,
@@ -480,7 +481,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                 if (context.read<RecipientBloc>().state.imageFile != null)
                   ListTile(
                     leading: const Icon(Icons.delete_outline, color: Colors.red),
-                    title: const Text('Remove Photo', style: TextStyle(color: Colors.red)),
+                    title: Text('Remove Photo', style: Font.montserratFont(color: Colors.red)),
                     onTap: () {
                       Navigator.pop(context);
                       context.read<RecipientBloc>().add(RemovePhotoRequested());
@@ -514,12 +515,12 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
       duration: const Duration(milliseconds: 200),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Padding(
             padding: EdgeInsets.only(left: 4.w, bottom: 8.h),
             child: Text(
               label,
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
               ),
@@ -529,7 +530,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
             decoration: BoxDecoration(
               color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(12.r),
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(
                     color: AppColors.secondaryBlue.withOpacity(0.1),
                     blurRadius: 8,
@@ -559,12 +560,12 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
       duration: const Duration(milliseconds: 300),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Padding(
             padding: EdgeInsets.only(left: 4.w, bottom: 8.h),
             child: Text(
               RecipientStrings.accountNumber,
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
               ),
@@ -574,7 +575,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
             decoration: BoxDecoration(
               color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(12.r),
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(
                     color: AppColors.secondaryBlue.withOpacity(0.1),
                     blurRadius: 8,
@@ -586,10 +587,10 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
             child: TextField(
               controller: _accCtrl,
               focusNode: _accFocus,
-              onChanged: (v) => bloc.add(AccountNumberChanged(v)),
+              onChanged: (String v) => bloc.add(AccountNumberChanged(v)),
               keyboardType: TextInputType.number,
               textInputAction: TextInputAction.done,
-              inputFormatters: [
+              inputFormatters: <TextInputFormatter>[
                 FilteringTextInputFormatter.digitsOnly,
                 LengthLimitingTextInputFormatter(16),
               ],
@@ -601,7 +602,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
               },
               decoration: InputDecoration(
                 hintText: RecipientStrings.enterAccountNumber,
-                hintStyle: const TextStyle(
+                hintStyle: Font.montserratFont(
                   fontSize: 14,
                 ),
                 errorText: state.accountError,
@@ -621,12 +622,12 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                 verified ?
                 Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: [
+                    children: <Widget>[
                       Icon(Icons.check_circle, color: Colors.green, size: 18.sp),
                       SizedBox(width: 6.w),
                       Text(
                           'Verified',
-                          style: TextStyle(
+                          style: Font.montserratFont(
                               color: Colors.green,
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w500
@@ -645,7 +646,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                     padding: EdgeInsets.symmetric(horizontal: 8.w),
                     child: Text(
                       'Verify',
-                      style: TextStyle(
+                      style: Font.montserratFont(
                         color: MyTheme.primaryColor,
                         fontSize: 13.sp,
                         fontWeight: FontWeight.w600,
@@ -673,7 +674,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                   ),
                 ),
               ),
-              style: const TextStyle(
+              style: Font.montserratFont(
                   fontSize: 14,
                   letterSpacing: 1.2,
               ),
@@ -694,13 +695,13 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
         border: Border.all(color: AppColors.errorRed.withOpacity(0.3), width: 1),
       ),
       child: Row(
-          children: [
+          children: <Widget>[
             Icon(Icons.error_outline, color: AppColors.errorRed, size: 20.sp),
             SizedBox(width: 12.w),
             Expanded(
                 child: Text(
                     message,
-                    style: TextStyle(color: AppColors.errorRed, fontSize: 14.sp)
+                    style: Font.montserratFont(color: AppColors.errorRed, fontSize: 14.sp)
                 )
             ),
           ]
@@ -740,7 +741,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
         )
             : Text(
             RecipientStrings.addButtonText,
-            style: TextStyle(
+            style: Font.montserratFont(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
                 color: Colors.white
@@ -755,16 +756,16 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       title: const Text(RecipientStrings.successTitle),
       content: const Text(RecipientStrings.successMessage),
-      actions: [
+      actions: <Widget>[
         TextButton(
           onPressed: () {
             HapticFeedback.lightImpact();
             Navigator.pop(context);
-            Navigator.pop(context, {'action': 'back_to_list'});
+            Navigator.pop(context, <String, String>{'action': 'back_to_list'});
           },
-          child: const Text(
+          child: Text(
               RecipientStrings.backToRecipients,
-              style: TextStyle(color: MyTheme.primaryColor)
+              style: Font.montserratFont(color: MyTheme.primaryColor)
           ),
         ),
       ],

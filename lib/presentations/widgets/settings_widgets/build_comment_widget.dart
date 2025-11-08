@@ -57,13 +57,13 @@ class _CommentWidgetState extends State<CommentWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return Padding(
       padding: EdgeInsets.only(left: widget.indent * 20.0, top: 8.0, bottom: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           // Main comment
           Container(
             padding: const EdgeInsets.all(12.0),
@@ -74,10 +74,10 @@ class _CommentWidgetState extends State<CommentWidget> {
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 // User info row
                 Row(
-                  children: [
+                  children: <Widget>[
                     CircleAvatar(
                       radius: 16.r,
                       backgroundImage: NetworkImage(
@@ -90,7 +90,7 @@ class _CommentWidgetState extends State<CommentWidget> {
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                        children: <Widget>[
                           Text(
                             widget.comment['userName'] ?? 'Unknown User',
                             style: TextStyle(
@@ -147,7 +147,7 @@ class _CommentWidgetState extends State<CommentWidget> {
                 border: Border.all(color: Colors.grey.shade300),
               ),
               child: Row(
-                children: [
+                children: <Widget>[
                   Expanded(
                     child: TextField(
                       controller: _replyController,
@@ -204,9 +204,9 @@ class _CommentWidgetState extends State<CommentWidget> {
   String _formatDate(String? dateString) {
     if (dateString == null) return '';
     try {
-      final date = DateTime.parse(dateString);
-      final now = DateTime.now();
-      final difference = now.difference(date);
+      final DateTime date = DateTime.parse(dateString);
+      final DateTime now = DateTime.now();
+      final Duration difference = now.difference(date);
 
       if (difference.inDays > 0) {
         return '${difference.inDays}d ago';

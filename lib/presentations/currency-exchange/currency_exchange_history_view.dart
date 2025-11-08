@@ -49,18 +49,18 @@ class _CurrencyExchangeHistoryViewState extends State<CurrencyExchangeHistoryVie
       ),
       body: SafeArea(
         child: Stack(
-          children: [
+          children: <Widget>[
             AnimatedBackground(
               animationController: _backgroundAnimationController,
             ),
             Column(
-              children: [
+              children: <Widget>[
                 30.verticalSpace,
                 // Payment Card Selector and Icons
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 5.w),
                   child: Row(
-                    children: [
+                    children: <Widget>[
                       Expanded(
                         child: PaymentCardSelector(
                           userId: FirebaseAuth.instance.currentUser?.uid ?? '',
@@ -79,7 +79,7 @@ class _CurrencyExchangeHistoryViewState extends State<CurrencyExchangeHistoryVie
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: <Widget>[
                         // Empty state icon
                         Container(
                           width: 120.w,

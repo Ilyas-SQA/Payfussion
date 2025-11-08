@@ -8,10 +8,10 @@ class FlightFirebaseService {
 
   Future<void> addFlightsToUser(String userId, List<FlightModel> flights) async {
     try {
-      final batch = _firestore.batch();
+      final WriteBatch batch = _firestore.batch();
 
-      for (var flight in flights) {
-        final docRef = _firestore
+      for (FlightModel flight in flights) {
+        final DocumentReference<Map<String, dynamic>> docRef = _firestore
             .collection('flights')
             .doc(flight.id);
 
@@ -28,8 +28,8 @@ class FlightFirebaseService {
     return _firestore
         .collection('flights')
         .snapshots()
-        .map((snapshot) => snapshot.docs
-        .map((doc) => FlightModel.fromMap(doc.data()))
+        .map((QuerySnapshot<Map<String, dynamic>> snapshot) => snapshot.docs
+        .map((QueryDocumentSnapshot<Map<String, dynamic>> doc) => FlightModel.fromMap(doc.data()))
         .toList());
   }
 
@@ -52,8 +52,8 @@ class FlightFirebaseService {
         .doc(userId)
         .collection('flight_bookings')
         .snapshots()
-        .map((snapshot) => snapshot.docs
-        .map((doc) => FlightBookingModel.fromMap(doc.data()))
+        .map((QuerySnapshot<Map<String, dynamic>> snapshot) => snapshot.docs
+        .map((QueryDocumentSnapshot<Map<String, dynamic>> doc) => FlightBookingModel.fromMap(doc.data()))
         .toList());
   }
 }

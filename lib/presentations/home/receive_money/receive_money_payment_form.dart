@@ -14,6 +14,7 @@ import 'package:payfussion/presentations/home/receive_money/widgets/note_input_w
 import 'package:payfussion/presentations/home/receive_money/widgets/success_view_widget.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/fonts.dart';
 import '../../../core/theme/theme.dart';
 import '../../../data/models/payment_request/payment_request_model.dart';
 import '../../../data/repositories/payment_request/payment_request_repository.dart';
@@ -161,12 +162,12 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
     return Consumer<ReceiveMoneyPaymentProvider>(
       builder: (BuildContext context, ReceiveMoneyPaymentProvider provider, _) {
         return BlocConsumer<PaymentRequestBloc, PaymentRequestState>(
-          listener: (context, state) {
+          listener: (BuildContext context, PaymentRequestState state) {
             if (state.status == PaymentRequestStatus.failure) {
               _showErrorSnackBar(state.errorMessage ?? 'Unknown error occurred');
             }
           },
-          builder: (context, blocState) {
+          builder: (BuildContext context, PaymentRequestState blocState) {
             if (provider.isSuccess) {
               return _buildSuccessView(provider);
             }
@@ -191,7 +192,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 1000),
       tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Transform.scale(
           scale: 0.8 + (0.2 * value),
           child: Opacity(
@@ -259,7 +260,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                   scale: _scaleAnimation,
                   child: ContactSelectorWidget(
                     selectedRecipient: selectedRecipient,
-                    onRecipientSelected: (recipient) {
+                    onRecipientSelected: (RecipientModel recipient) {
                       setState(() {
                         selectedRecipient = recipient;
                       });
@@ -328,7 +329,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                   opacity: _fadeAnimation,
                   child: ExpirySelectorWidget(
                     provider: provider,
-                    onExpiryChanged: (days) {
+                    onExpiryChanged: (int days) {
                       setState(() {
                         selectedExpiryDays = days;
                       });
@@ -367,7 +368,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
               SizedBox(height: (blocState.errorMessage != null || provider.errorMessage != null) ? 20.h : 0),
 
               // Animated recent requests section
-              if (blocState.requests.isNotEmpty) ...[
+              if (blocState.requests.isNotEmpty) ...<Widget>[
                 SlideTransition(
                   position: Tween<Offset>(
                     begin: const Offset(0, 0.1),
@@ -411,7 +412,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 800),
       tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Transform.scale(
           scale: 0.5 + (0.5 * value),
           child: Container(
@@ -424,7 +425,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                 color: MyTheme.primaryColor.withOpacity(0.3 * value),
                 width: 2,
               ),
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: MyTheme.primaryColor.withOpacity(0.1 * value),
                   blurRadius: 10 * value,
@@ -435,7 +436,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
             child: TweenAnimationBuilder<double>(
               duration: const Duration(milliseconds: 1000),
               tween: Tween(begin: 0.0, end: 1.0),
-              builder: (context, iconValue, child) {
+              builder: (BuildContext context, double iconValue, Widget? child) {
                 return Transform.rotate(
                   angle: iconValue * 0.1,
                   child: Icon(
@@ -453,12 +454,12 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
   }
 
   Widget _buildRecentRequestsSection(List<PaymentRequestModel> requests) {
-    final recentRequests = requests.take(3).toList();
+    final List<PaymentRequestModel> recentRequests = requests.take(3).toList();
 
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 600),
       tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Transform.scale(
           scale: 0.95 + (0.05 * value),
           child: Opacity(
@@ -473,7 +474,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                   color: MyTheme.primaryColor.withOpacity(0.1),
                   width: 1,
                 ),
-                boxShadow: [
+                boxShadow: <BoxShadow>[
                   BoxShadow(
                     color: MyTheme.primaryColor.withOpacity(0.05 * value),
                     blurRadius: 8 * value,
@@ -483,18 +484,18 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   TweenAnimationBuilder<double>(
                     duration: const Duration(milliseconds: 500),
                     tween: Tween(begin: 0.0, end: 1.0),
-                    builder: (context, titleValue, child) {
+                    builder: (BuildContext context, double titleValue, Widget? child) {
                       return Transform.translate(
                         offset: Offset(20 * (1 - titleValue), 0),
                         child: Opacity(
                           opacity: titleValue,
                           child: Text(
                             'Recent Payment Requests',
-                            style: TextStyle(
+                            style: Font.montserratFont(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w600,
                               color: MyTheme.primaryColor,
@@ -505,13 +506,13 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                     },
                   ),
                   SizedBox(height: 12.h),
-                  ...recentRequests.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final request = entry.value;
+                  ...recentRequests.asMap().entries.map((MapEntry<int, PaymentRequestModel> entry) {
+                    final int index = entry.key;
+                    final PaymentRequestModel request = entry.value;
                     return TweenAnimationBuilder<double>(
                       duration: Duration(milliseconds: 400 + (index * 150)),
                       tween: Tween(begin: 0.0, end: 1.0),
-                      builder: (context, itemValue, child) {
+                      builder: (BuildContext context, double itemValue, Widget? child) {
                         return Transform.translate(
                           offset: Offset(30 * (1 - itemValue), 0),
                           child: Opacity(
@@ -526,14 +527,14 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                     TweenAnimationBuilder<double>(
                       duration: const Duration(milliseconds: 600),
                       tween: Tween(begin: 0.0, end: 1.0),
-                      builder: (context, moreValue, child) {
+                      builder: (BuildContext context, double moreValue, Widget? child) {
                         return Opacity(
                           opacity: moreValue,
                           child: Padding(
                             padding: EdgeInsets.only(top: 8.h),
                             child: Text(
                               'and ${requests.length - 3} more...',
-                              style: TextStyle(
+                              style: Font.montserratFont(
                                 fontSize: 12.sp,
                                 color: MyTheme.primaryColor.withOpacity(0.7),
                                 fontStyle: FontStyle.italic,
@@ -577,7 +578,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 400),
       tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Transform.scale(
           scale: 0.95 + (0.05 * value),
           child: Container(
@@ -590,7 +591,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                 color: statusColor.withOpacity(0.2 * value),
                 width: 1,
               ),
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: statusColor.withOpacity(0.1 * value),
                   blurRadius: 4 * value,
@@ -599,11 +600,11 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
               ],
             ),
             child: Row(
-              children: [
+              children: <Widget>[
                 TweenAnimationBuilder<double>(
                   duration: const Duration(milliseconds: 500),
                   tween: Tween(begin: 0.0, end: 1.0),
-                  builder: (context, iconValue, child) {
+                  builder: (BuildContext context, double iconValue, Widget? child) {
                     return Transform.scale(
                       scale: iconValue,
                       child: Icon(
@@ -618,16 +619,16 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(
                         request.payer.isNotEmpty ? request.payer : 'Unknown',
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           fontSize: 14.sp,
                         ),
                       ),
                       Text(
                         request.formattedAmount,
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           fontSize: 12.sp,
                         ),
                       ),
@@ -637,7 +638,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                 TweenAnimationBuilder<double>(
                   duration: const Duration(milliseconds: 600),
                   tween: Tween(begin: 0.0, end: 1.0),
-                  builder: (context, chipValue, child) {
+                  builder: (BuildContext context, double chipValue, Widget? child) {
                     return Transform.scale(
                       scale: chipValue,
                       child: Container(
@@ -648,7 +649,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                         ),
                         child: Text(
                           request.statusDisplayText,
-                          style: TextStyle(
+                          style: Font.montserratFont(
                             fontSize: 10.sp,
                             fontWeight: FontWeight.w500,
                           ),
@@ -669,7 +670,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 500),
       tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Transform.scale(
           scale: 0.9 + (0.1 * value),
           child: Opacity(
@@ -698,7 +699,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                   TweenAnimationBuilder<double>(
                     duration: const Duration(milliseconds: 400),
                     tween: Tween(begin: 0.0, end: 1.0),
-                    builder: (context, iconValue, child) {
+                    builder: (BuildContext context, double iconValue, Widget? child) {
                       return Transform.scale(
                         scale: iconValue,
                         child: Icon(
@@ -713,7 +714,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                   Expanded(
                     child: Text(
                       message,
-                      style: TextStyle(
+                      style: Font.montserratFont(
                         color: AppColors.errorRed,
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w500,
@@ -743,7 +744,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 600),
       tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Transform.translate(
           offset: Offset(0, 30 * (1 - value)),
           child: Opacity(
@@ -756,14 +757,14 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12.r),
                   boxShadow: isValid && !isLoading
-                      ? [
+                      ? <BoxShadow>[
                     BoxShadow(
                       color: MyTheme.primaryColor.withOpacity(0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
                   ]
-                      : [],
+                      : <BoxShadow>[],
                 ),
                 child: ElevatedButton(
                   onPressed: (!isValid || isLoading)
@@ -800,7 +801,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                         SizedBox(width: 12.w),
                         Text(
                           "Processing...",
-                          style: TextStyle(
+                          style: Font.montserratFont(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
@@ -811,7 +812,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                         : Text(
                       key: const ValueKey('request'),
                       ReceiveMoneyPaymentStrings.requestButton,
-                      style: TextStyle(
+                      style: Font.montserratFont(
                         fontSize: 18.sp,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
@@ -846,7 +847,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
       FocusScope.of(context).unfocus();
 
       /// Create account snapshot from selected card
-      final accountSnapshot = {
+      final Map<String, String> accountSnapshot = <String, String>{
         'card_id': selectedCard!.id,
         'card_number': selectedCard!.last4,
         'card_type': selectedCard!.brand,
@@ -855,7 +856,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
       };
 
       /// Use the repository directly - create a new instance
-      final repository = FirestorePaymentRepository();
+      final FirestorePaymentRepository repository = FirestorePaymentRepository();
 
       await repository.createPaymentRequest(
         amount: provider.amount,
@@ -910,11 +911,11 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
-            children: [
+            children: <Widget>[
               TweenAnimationBuilder<double>(
                 duration: const Duration(milliseconds: 500),
                 tween: Tween(begin: 0.0, end: 1.0),
-                builder: (context, value, child) {
+                builder: (BuildContext context, double value, Widget? child) {
                   return Transform.scale(
                     scale: value,
                     child: const Icon(Icons.check_circle, color: Colors.white),

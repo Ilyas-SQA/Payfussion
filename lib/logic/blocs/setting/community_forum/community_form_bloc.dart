@@ -9,7 +9,7 @@ import 'community_form_state.dart';
 
 class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final auth = FirebaseAuth.instance.currentUser;
+  final User? auth = FirebaseAuth.instance.currentUser;
   StreamSubscription<QuerySnapshot>? _postsSubscription;
 
   CommunityFormBloc() : super(PostInitial()) {
@@ -35,11 +35,11 @@ class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
         userId: auth?.uid ?? "",
         postId: postId,
         createDate: DateTime.now(),
-        comments: [],
+        comments: <Map<String, dynamic>>[],
         question: event.question,
         content: event.content,
-        likes: [],
-        dislikes: [],
+        likes: <String>[],
+        dislikes: <String>[],
       );
 
       await firestore.collection("communityForm").doc(postId).set(post.toMap());
@@ -53,18 +53,18 @@ class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
 
   Future<void> _onLikePost(LikePostEvent event, Emitter<CommunityFormState> emit) async {
     try {
-      final userId = auth?.uid;
+      final String? userId = auth?.uid;
       if (userId == null) return;
 
-      final postRef = firestore.collection("communityForm").doc(event.postId);
+      final DocumentReference<Map<String, dynamic>> postRef = firestore.collection("communityForm").doc(event.postId);
 
-      await firestore.runTransaction((transaction) async {
-        final postSnapshot = await transaction.get(postRef);
+      await firestore.runTransaction((Transaction transaction) async {
+        final DocumentSnapshot<Map<String, dynamic>> postSnapshot = await transaction.get(postRef);
         if (!postSnapshot.exists) return;
 
-        final postData = postSnapshot.data()!;
-        List<String> likes = List<String>.from(postData['likes'] ?? []);
-        List<String> dislikes = List<String>.from(postData['dislikes'] ?? []);
+        final Map<String, dynamic> postData = postSnapshot.data()!;
+        final List<String> likes = List<String>.from(postData['likes'] ?? <dynamic>[]);
+        final List<String> dislikes = List<String>.from(postData['dislikes'] ?? <dynamic>[]);
 
         // Remove from dislikes if present
         dislikes.remove(userId);
@@ -76,7 +76,7 @@ class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
           likes.add(userId);
         }
 
-        transaction.update(postRef, {
+        transaction.update(postRef, <String, dynamic>{
           'likes': likes,
           'dislikes': dislikes,
         });
@@ -90,18 +90,18 @@ class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
 
   Future<void> _onDislikePost(DislikePostEvent event, Emitter<CommunityFormState> emit) async {
     try {
-      final userId = auth?.uid;
+      final String? userId = auth?.uid;
       if (userId == null) return;
 
-      final postRef = firestore.collection("communityForm").doc(event.postId);
+      final DocumentReference<Map<String, dynamic>> postRef = firestore.collection("communityForm").doc(event.postId);
 
-      await firestore.runTransaction((transaction) async {
-        final postSnapshot = await transaction.get(postRef);
+      await firestore.runTransaction((Transaction transaction) async {
+        final DocumentSnapshot<Map<String, dynamic>> postSnapshot = await transaction.get(postRef);
         if (!postSnapshot.exists) return;
 
-        final postData = postSnapshot.data()!;
-        List<String> likes = List<String>.from(postData['likes'] ?? []);
-        List<String> dislikes = List<String>.from(postData['dislikes'] ?? []);
+        final Map<String, dynamic> postData = postSnapshot.data()!;
+        final List<String> likes = List<String>.from(postData['likes'] ?? <dynamic>[]);
+        final List<String> dislikes = List<String>.from(postData['dislikes'] ?? <dynamic>[]);
 
         // Remove from likes if present
         likes.remove(userId);
@@ -113,7 +113,7 @@ class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
           dislikes.add(userId);
         }
 
-        transaction.update(postRef, {
+        transaction.update(postRef, <String, dynamic>{
           'likes': likes,
           'dislikes': dislikes,
         });
@@ -128,23 +128,23 @@ class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
   // UPDATED: Comment Like Function with immediate stream update
   Future<void> _onLikeComment(LikeCommentEvent event, Emitter<CommunityFormState> emit) async {
     try {
-      final userId = auth?.uid;
+      final String? userId = auth?.uid;
       if (userId == null) return;
 
-      final postRef = firestore.collection("communityForm").doc(event.postId);
+      final DocumentReference<Map<String, dynamic>> postRef = firestore.collection("communityForm").doc(event.postId);
 
-      await firestore.runTransaction((transaction) async {
-        final postSnapshot = await transaction.get(postRef);
+      await firestore.runTransaction((Transaction transaction) async {
+        final DocumentSnapshot<Map<String, dynamic>> postSnapshot = await transaction.get(postRef);
         if (!postSnapshot.exists) return;
 
-        final postData = postSnapshot.data()!;
-        List<Map<String, dynamic>> comments = List<Map<String, dynamic>>.from(postData['comments'] ?? []);
+        final Map<String, dynamic> postData = postSnapshot.data()!;
+        final List<Map<String, dynamic>> comments = List<Map<String, dynamic>>.from(postData['comments'] ?? <dynamic>[]);
 
         // Find and update the specific comment
         for (int i = 0; i < comments.length; i++) {
           if (comments[i]['commentId'] == event.commentId) {
-            List<String> likes = List<String>.from(comments[i]['likes'] ?? []);
-            List<String> dislikes = List<String>.from(comments[i]['dislikes'] ?? []);
+            final List<String> likes = List<String>.from(comments[i]['likes'] ?? <dynamic>[]);
+            final List<String> dislikes = List<String>.from(comments[i]['dislikes'] ?? <dynamic>[]);
 
             // Remove from dislikes if present
             dislikes.remove(userId);
@@ -162,7 +162,7 @@ class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
           }
         }
 
-        transaction.update(postRef, {'comments': comments});
+        transaction.update(postRef, <String, dynamic>{'comments': comments});
       });
 
       // Stream will automatically update UI with new like count
@@ -174,23 +174,23 @@ class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
   // UPDATED: Comment Dislike Function
   Future<void> _onDislikeComment(DislikeCommentEvent event, Emitter<CommunityFormState> emit) async {
     try {
-      final userId = auth?.uid;
+      final String? userId = auth?.uid;
       if (userId == null) return;
 
-      final postRef = firestore.collection("communityForm").doc(event.postId);
+      final DocumentReference<Map<String, dynamic>> postRef = firestore.collection("communityForm").doc(event.postId);
 
-      await firestore.runTransaction((transaction) async {
-        final postSnapshot = await transaction.get(postRef);
+      await firestore.runTransaction((Transaction transaction) async {
+        final DocumentSnapshot<Map<String, dynamic>> postSnapshot = await transaction.get(postRef);
         if (!postSnapshot.exists) return;
 
-        final postData = postSnapshot.data()!;
-        List<Map<String, dynamic>> comments = List<Map<String, dynamic>>.from(postData['comments'] ?? []);
+        final Map<String, dynamic> postData = postSnapshot.data()!;
+        final List<Map<String, dynamic>> comments = List<Map<String, dynamic>>.from(postData['comments'] ?? <dynamic>[]);
 
         // Find and update the specific comment
         for (int i = 0; i < comments.length; i++) {
           if (comments[i]['commentId'] == event.commentId) {
-            List<String> likes = List<String>.from(comments[i]['likes'] ?? []);
-            List<String> dislikes = List<String>.from(comments[i]['dislikes'] ?? []);
+            final List<String> likes = List<String>.from(comments[i]['likes'] ?? <dynamic>[]);
+            final List<String> dislikes = List<String>.from(comments[i]['dislikes'] ?? <dynamic>[]);
 
             // Remove from likes if present
             likes.remove(userId);
@@ -208,7 +208,7 @@ class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
           }
         }
 
-        transaction.update(postRef, {'comments': comments});
+        transaction.update(postRef, <String, dynamic>{'comments': comments});
       });
 
       // Stream will automatically update UI
@@ -220,27 +220,27 @@ class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
   // UPDATED: Reply Like Function
   Future<void> _onLikeReply(LikeReplyEvent event, Emitter<CommunityFormState> emit) async {
     try {
-      final userId = auth?.uid;
+      final String? userId = auth?.uid;
       if (userId == null) return;
 
-      final postRef = firestore.collection("communityForm").doc(event.postId);
+      final DocumentReference<Map<String, dynamic>> postRef = firestore.collection("communityForm").doc(event.postId);
 
-      await firestore.runTransaction((transaction) async {
-        final postSnapshot = await transaction.get(postRef);
+      await firestore.runTransaction((Transaction transaction) async {
+        final DocumentSnapshot<Map<String, dynamic>> postSnapshot = await transaction.get(postRef);
         if (!postSnapshot.exists) return;
 
-        final postData = postSnapshot.data()!;
-        List<Map<String, dynamic>> comments = List<Map<String, dynamic>>.from(postData['comments'] ?? []);
+        final Map<String, dynamic> postData = postSnapshot.data()!;
+        final List<Map<String, dynamic>> comments = List<Map<String, dynamic>>.from(postData['comments'] ?? <dynamic>[]);
 
         // Find the comment and then the reply
         for (int i = 0; i < comments.length; i++) {
           if (comments[i]['commentId'] == event.commentId) {
-            List<Map<String, dynamic>> replies = List<Map<String, dynamic>>.from(comments[i]['replies'] ?? []);
+            final List<Map<String, dynamic>> replies = List<Map<String, dynamic>>.from(comments[i]['replies'] ?? <dynamic>[]);
 
             for (int j = 0; j < replies.length; j++) {
               if (replies[j]['replyId'] == event.replyId) {
-                List<String> likes = List<String>.from(replies[j]['likes'] ?? []);
-                List<String> dislikes = List<String>.from(replies[j]['dislikes'] ?? []);
+                final List<String> likes = List<String>.from(replies[j]['likes'] ?? <dynamic>[]);
+                final List<String> dislikes = List<String>.from(replies[j]['dislikes'] ?? <dynamic>[]);
 
                 // Remove from dislikes if present
                 dislikes.remove(userId);
@@ -263,7 +263,7 @@ class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
           }
         }
 
-        transaction.update(postRef, {'comments': comments});
+        transaction.update(postRef, <String, dynamic>{'comments': comments});
       });
 
       // Stream will automatically update UI
@@ -275,27 +275,27 @@ class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
   // UPDATED: Reply Dislike Function
   Future<void> _onDislikeReply(DislikeReplyEvent event, Emitter<CommunityFormState> emit) async {
     try {
-      final userId = auth?.uid;
+      final String? userId = auth?.uid;
       if (userId == null) return;
 
-      final postRef = firestore.collection("communityForm").doc(event.postId);
+      final DocumentReference<Map<String, dynamic>> postRef = firestore.collection("communityForm").doc(event.postId);
 
-      await firestore.runTransaction((transaction) async {
-        final postSnapshot = await transaction.get(postRef);
+      await firestore.runTransaction((Transaction transaction) async {
+        final DocumentSnapshot<Map<String, dynamic>> postSnapshot = await transaction.get(postRef);
         if (!postSnapshot.exists) return;
 
-        final postData = postSnapshot.data()!;
-        List<Map<String, dynamic>> comments = List<Map<String, dynamic>>.from(postData['comments'] ?? []);
+        final Map<String, dynamic> postData = postSnapshot.data()!;
+        final List<Map<String, dynamic>> comments = List<Map<String, dynamic>>.from(postData['comments'] ?? <dynamic>[]);
 
         // Find the comment and then the reply
         for (int i = 0; i < comments.length; i++) {
           if (comments[i]['commentId'] == event.commentId) {
-            List<Map<String, dynamic>> replies = List<Map<String, dynamic>>.from(comments[i]['replies'] ?? []);
+            final List<Map<String, dynamic>> replies = List<Map<String, dynamic>>.from(comments[i]['replies'] ?? <dynamic>[]);
 
             for (int j = 0; j < replies.length; j++) {
               if (replies[j]['replyId'] == event.replyId) {
-                List<String> likes = List<String>.from(replies[j]['likes'] ?? []);
-                List<String> dislikes = List<String>.from(replies[j]['dislikes'] ?? []);
+                final List<String> likes = List<String>.from(replies[j]['likes'] ?? <dynamic>[]);
+                final List<String> dislikes = List<String>.from(replies[j]['dislikes'] ?? <dynamic>[]);
 
                 // Remove from likes if present
                 likes.remove(userId);
@@ -318,7 +318,7 @@ class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
           }
         }
 
-        transaction.update(postRef, {'comments': comments});
+        transaction.update(postRef, <String, dynamic>{'comments': comments});
       });
 
       // Stream will automatically update UI
@@ -358,7 +358,7 @@ class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
         add(PostsUpdatedEvent(snapshot.docs));
       },
       onError: (error) {
-        add(PostsUpdatedEvent([], error: error.toString()));
+        add(PostsUpdatedEvent(<QueryDocumentSnapshot<Map<String, dynamic>>>[], error: error.toString()));
       },
     );
   }
@@ -386,19 +386,19 @@ class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
   }
 
   Future<List<CommunityFormModel>> _processPosts(List<QueryDocumentSnapshot<Map<String, dynamic>>> docs) async {
-    final List<CommunityFormModel> posts = [];
+    final List<CommunityFormModel> posts = <CommunityFormModel>[];
 
-    for (var doc in docs) {
+    for (QueryDocumentSnapshot<Map<String, dynamic>> doc in docs) {
       try {
-        final postData = doc.data();
-        final postModel = CommunityFormModel.fromMap(postData);
+        final Map<String, dynamic> postData = doc.data();
+        final CommunityFormModel postModel = CommunityFormModel.fromMap(postData);
 
         // Fetch user details using userId
         if (postModel.userId.isNotEmpty) {
           try {
-            final userSnapshot = await firestore.collection("users").doc(postModel.userId).get();
+            final DocumentSnapshot<Map<String, dynamic>> userSnapshot = await firestore.collection("users").doc(postModel.userId).get();
             if (userSnapshot.exists) {
-              final userModel = UserModel.fromJson(userSnapshot.data()!);
+              final UserModel userModel = UserModel.fromJson(userSnapshot.data()!);
               postModel.userName = userModel.fullName ?? 'Unknown User';
               postModel.userProfileImage = userModel.profileImageUrl ?? '';
             }
@@ -424,18 +424,18 @@ class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
   Future<void> _onAddComment(AddCommentEvent event, Emitter<CommunityFormState> emit) async {
     try {
       // Get current user details
-      final userSnapshot = await firestore.collection("users").doc(auth?.uid).get();
+      final DocumentSnapshot<Map<String, dynamic>> userSnapshot = await firestore.collection("users").doc(auth?.uid).get();
       String userName = "Unknown User";
       String userProfileImage = "";
 
       if (userSnapshot.exists) {
-        final userModel = UserModel.fromJson(userSnapshot.data()!);
+        final UserModel userModel = UserModel.fromJson(userSnapshot.data()!);
         userName = userModel.fullName ?? "Unknown User";
         userProfileImage = userModel.profileImageUrl ?? "";
       }
 
       // Create comment map with likes/dislikes arrays
-      final commentData = {
+      final Map<String, Object> commentData = <String, Object>{
         'commentId': firestore.collection('temp').doc().id,
         'userId': auth?.uid ?? "",
         'userName': userName,
@@ -448,8 +448,8 @@ class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
       };
 
       // Add comment to post - this will trigger the stream to update automatically
-      await firestore.collection("communityForm").doc(event.postId).update({
-        'comments': FieldValue.arrayUnion([commentData])
+      await firestore.collection("communityForm").doc(event.postId).update(<Object, Object?>{
+        'comments': FieldValue.arrayUnion(<dynamic>[commentData])
       });
 
       // Stream will handle UI update automatically
@@ -462,31 +462,31 @@ class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
   Future<void> _onAddReply(AddReplyEvent event, Emitter<CommunityFormState> emit) async {
     try {
       // Get current user details
-      final userSnapshot = await firestore.collection("users").doc(auth?.uid).get();
+      final DocumentSnapshot<Map<String, dynamic>> userSnapshot = await firestore.collection("users").doc(auth?.uid).get();
       String userName = "Unknown User";
       String userProfileImage = "";
 
       if (userSnapshot.exists) {
-        final userModel = UserModel.fromJson(userSnapshot.data()!);
+        final UserModel userModel = UserModel.fromJson(userSnapshot.data()!);
         userName = userModel.fullName ?? "Unknown User";
         userProfileImage = userModel.profileImageUrl ?? "";
       }
 
       // Use transaction for consistent update
-      await firestore.runTransaction((transaction) async {
-        final postRef = firestore.collection("communityForm").doc(event.postId);
-        final postDoc = await transaction.get(postRef);
+      await firestore.runTransaction((Transaction transaction) async {
+        final DocumentReference<Map<String, dynamic>> postRef = firestore.collection("communityForm").doc(event.postId);
+        final DocumentSnapshot<Map<String, dynamic>> postDoc = await transaction.get(postRef);
 
         if (!postDoc.exists) return;
 
-        final postData = postDoc.data()!;
-        List<Map<String, dynamic>> comments = List<Map<String, dynamic>>.from(postData['comments'] ?? []);
+        final Map<String, dynamic> postData = postDoc.data()!;
+        final List<Map<String, dynamic>> comments = List<Map<String, dynamic>>.from(postData['comments'] ?? <dynamic>[]);
 
         // Find the comment to reply to
         for (int i = 0; i < comments.length; i++) {
           if (comments[i]['commentId'] == event.commentId) {
             // Create reply data with likes/dislikes arrays
-            final replyData = {
+            final Map<String, Object> replyData = <String, Object>{
               'replyId': firestore.collection('temp').doc().id,
               'userId': auth?.uid ?? "",
               'userName': userName,
@@ -498,7 +498,7 @@ class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
             };
 
             // Add reply to the comment's replies array
-            List<Map<String, dynamic>> replies = List<Map<String, dynamic>>.from(comments[i]['replies'] ?? []);
+            final List<Map<String, dynamic>> replies = List<Map<String, dynamic>>.from(comments[i]['replies'] ?? <dynamic>[]);
             replies.add(replyData);
             comments[i]['replies'] = replies;
             break;
@@ -506,7 +506,7 @@ class CommunityFormBloc extends Bloc<CommunityFormEvent, CommunityFormState> {
         }
 
         // Update the post with modified comments
-        transaction.update(postRef, {'comments': comments});
+        transaction.update(postRef, <String, dynamic>{'comments': comments});
       });
 
       // Stream will handle UI update automatically

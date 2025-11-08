@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
+import '../../../../core/constants/fonts.dart';
 import '../../../../data/models/tickets/bus_model.dart';
 import '../../../widgets/background_theme.dart';
 import 'bus_payment_screen.dart';
@@ -120,7 +121,7 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
         iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -128,7 +129,7 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 SlideTransition(
                   position: _slideAnimation,
                   child: FadeTransition(
@@ -141,7 +142,7 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
                         decoration: BoxDecoration(
                           color: Theme.of(context).scaffoldBackgroundColor,
                           borderRadius: BorderRadius.circular(5.r),
-                          boxShadow: [
+                          boxShadow: <BoxShadow>[
                             BoxShadow(
                               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                               blurRadius: 5,
@@ -151,9 +152,9 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                          children: <Widget>[
                             Row(
-                              children: [
+                              children: <Widget>[
                                 ScaleTransition(
                                   scale: _scaleAnimation,
                                   child: const Icon(
@@ -166,18 +167,18 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
+                                    children: <Widget>[
                                       TweenAnimationBuilder<double>(
                                         tween: Tween<double>(begin: 0.0, end: 1.0),
                                         duration: const Duration(milliseconds: 600),
-                                        builder: (context, value, child) {
+                                        builder: (BuildContext context, double value, Widget? child) {
                                           return Transform.translate(
                                             offset: Offset(0, 20 * (1 - value)),
                                             child: Opacity(
                                               opacity: _safeOpacity(value),
                                               child: Text(
                                                 widget.bus.companyName,
-                                                style: const TextStyle(
+                                                style: Font.montserratFont(
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.bold,
                                                 ),
@@ -193,7 +194,7 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
                                         decoration: BoxDecoration(
                                           color: Theme.of(context).scaffoldBackgroundColor,
                                           borderRadius: BorderRadius.circular(5.r),
-                                          boxShadow: [
+                                          boxShadow: <BoxShadow>[
                                             BoxShadow(
                                               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                                               blurRadius: 5,
@@ -203,7 +204,7 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
                                         ),
                                         child: Text(
                                           widget.bus.busType,
-                                          style: const TextStyle(
+                                          style: Font.montserratFont(
                                             fontSize: 12,
                                             fontWeight: FontWeight.w500,
                                           ),
@@ -225,15 +226,15 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
                 const SizedBox(height: 20),
 
                 // Description Card
-                if (widget.bus.description.isNotEmpty) ...[
+                if (widget.bus.description.isNotEmpty) ...<Widget>[
                   _buildAnimatedCard(
                     delay: 400,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
+                      children: <Widget>[
+                        Text(
                           "Description",
-                          style: TextStyle(
+                          style: Font.montserratFont(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -242,12 +243,12 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
                         TweenAnimationBuilder<double>(
                           tween: Tween<double>(begin: 0.0, end: 1.0),
                           duration: const Duration(milliseconds: 800),
-                          builder: (context, value, child) {
+                          builder: (BuildContext context, double value, Widget? child) {
                             return Opacity(
                               opacity: _safeOpacity(value),
                               child: Text(
                                 widget.bus.description,
-                                style: TextStyle(
+                                style: Font.montserratFont(
                                   fontSize: 14,
                                   height: 1.5,
                                 ),
@@ -262,26 +263,26 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
                 ],
 
                 // Amenities Card
-                if (widget.bus.amenities.isNotEmpty) ...[
+                if (widget.bus.amenities.isNotEmpty) ...<Widget>[
                   _buildAnimatedCard(
                     delay: 600,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
+                      children: <Widget>[
+                        Text(
                           "Amenities",
-                          style: TextStyle(
+                          style: Font.montserratFont(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 12),
                         ...widget.bus.amenities.asMap().entries.map(
-                              (entry) => TweenAnimationBuilder<double>(
+                              (MapEntry<int, String> entry) => TweenAnimationBuilder<double>(
                             tween: Tween<double>(begin: 0.0, end: 1.0),
                             duration: Duration(milliseconds: 600 + (entry.key * 100)),
                             curve: Curves.easeOutBack,
-                            builder: (context, value, child) {
+                            builder: (BuildContext context, double value, Widget? child) {
                               return Transform.translate(
                                 offset: Offset(-50 * (1 - value), 0),
                                 child: Opacity(
@@ -289,7 +290,7 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 4),
                                     child: Row(
-                                      children: [
+                                      children: <Widget>[
                                         Container(
                                           padding: const EdgeInsets.all(4),
                                           decoration: BoxDecoration(
@@ -306,7 +307,7 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
                                         Expanded(
                                           child: Text(
                                             entry.value,
-                                            style: const TextStyle(
+                                            style: Font.montserratFont(
                                               fontSize: 14,
                                               height: 1.4,
                                             ),
@@ -331,12 +332,12 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
                   tween: Tween<double>(begin: 0.0, end: 1.0),
                   duration: const Duration(milliseconds: 800),
                   curve: Curves.bounceOut,
-                  builder: (context, value, child) {
+                  builder: (BuildContext context, double value, Widget? child) {
                     return Transform.scale(
                       scale: value.clamp(0.0, 1.0),
                       child: AnimatedBuilder(
                         animation: _buttonScaleAnimation,
-                        builder: (context, child) {
+                        builder: (BuildContext context, Widget? child) {
                           return Transform.scale(
                             scale: _buttonScaleAnimation.value.clamp(0.5, 1.0),
                             child: GestureDetector(
@@ -394,7 +395,7 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
       tween: Tween<double>(begin: 0.0, end: 1.0),
       duration: Duration(milliseconds: 600 + delay),
       curve: Curves.easeOutCubic,
-      builder: (context, value, _) {
+      builder: (BuildContext context, double value, _) {
         return Transform.translate(
           offset: Offset(0, 50 * (1 - value)),
           child: Opacity(
@@ -403,7 +404,7 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(5.r),
-                boxShadow: [
+                boxShadow: <BoxShadow>[
                   BoxShadow(
                     color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                     blurRadius: 5,
@@ -423,7 +424,7 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
   }
 
   List<Widget> _buildAnimatedDetailRows() {
-    final details = [
+    final List<(IconData, String, String)> details = <(IconData, String, String)>[
       (Icons.route, "Route", widget.bus.route),
       if (widget.bus.via.isNotEmpty) (Icons.location_on, "Via", widget.bus.via),
       (Icons.access_time, "Duration", "${widget.bus.duration.inHours}h ${widget.bus.duration.inMinutes % 60}m"),
@@ -431,7 +432,7 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
       (Icons.airline_seat_recline_normal, "Total Seats", "${widget.bus.totalSeats} seats"),
     ];
 
-    return details.asMap().entries.map((entry) {
+    return details.asMap().entries.map((MapEntry<int, (IconData, String, String)> entry) {
       return TweenAnimationBuilder<double>(
         tween: Tween<double>(begin: 0.0, end: 1.0),
         duration: Duration(milliseconds: 800 + (entry.key * 150)),
@@ -458,13 +459,13 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(5.r),
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                   blurRadius: 5,
@@ -482,10 +483,10 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Text(
                   label,
-                  style: const TextStyle(
+                  style: Font.montserratFont(
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
                   ),
@@ -493,7 +494,7 @@ class _BusDetailScreenState extends State<BusDetailScreen> with TickerProviderSt
                 const SizedBox(height: 4),
                 Text(
                   value,
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 10,
                     fontWeight: FontWeight.w500,
                     color: Colors.grey.shade600,

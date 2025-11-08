@@ -6,7 +6,7 @@ abstract class PayBillEvent extends Equatable {
   const PayBillEvent();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 // Load all pay bills
@@ -19,7 +19,7 @@ class AddPayBill extends PayBillEvent {
   const AddPayBill(this.payBill);
 
   @override
-  List<Object?> get props => [payBill];
+  List<Object?> get props => <Object?>[payBill];
 }
 
 // Update pay bill status
@@ -31,7 +31,7 @@ class UpdatePayBillStatus extends PayBillEvent {
   const UpdatePayBillStatus(this.billId, this.status, {this.paidAt});
 
   @override
-  List<Object?> get props => [billId, status, paidAt];
+  List<Object?> get props => <Object?>[billId, status, paidAt];
 }
 
 // Load pay bills by status
@@ -41,7 +41,7 @@ class LoadPayBillsByStatus extends PayBillEvent {
   const LoadPayBillsByStatus(this.status);
 
   @override
-  List<Object?> get props => [status];
+  List<Object?> get props => <Object?>[status];
 }
 
 // Delete pay bill
@@ -51,7 +51,7 @@ class DeletePayBill extends PayBillEvent {
   const DeletePayBill(this.billId);
 
   @override
-  List<Object?> get props => [billId];
+  List<Object?> get props => <Object?>[billId];
 }
 
 // Process payment (complete the bill payment)
@@ -63,5 +63,5 @@ class ProcessPayment extends PayBillEvent {
   const ProcessPayment(this.billId, this.paymentMethod, this.cardId);
 
   @override
-  List<Object?> get props => [billId, paymentMethod, cardId];
+  List<Object?> get props => <Object?>[billId, paymentMethod, cardId];
 }

@@ -32,7 +32,7 @@ class ReceiptView extends StatelessWidget {
     final bool isDark = theme.brightness == Brightness.dark;
 
     // Use provided data or fallback to dummy data
-    final billData = payBillData;
+    final PayBillModel? billData = payBillData;
 
     // Format amount - now properly uses actual data
     final String displayAmount = billData != null
@@ -259,7 +259,7 @@ class ReceiptView extends StatelessWidget {
 
         // Share the PDF file with share text
         await Share.shareXFiles(
-          [XFile(filePath, mimeType: 'application/pdf')],
+          <XFile>[XFile(filePath, mimeType: 'application/pdf')],
           text: 'Payment Receipt for ${billData.companyName}\nAmount: ${billData.amount}\nDate: ${DateFormat('dd MMM yyyy, hh:mm a').format(billData.paidAt ?? billData.createdAt)}',
           subject: 'Payment Receipt - ${billData.companyName}',
         );
@@ -277,7 +277,7 @@ class ReceiptView extends StatelessWidget {
         await file.writeAsBytes(pdfData);
 
         await Share.shareXFiles(
-          [XFile(filePath, mimeType: 'application/pdf')],
+          <XFile>[XFile(filePath, mimeType: 'application/pdf')],
           text: 'Payment Receipt Demo',
           subject: 'Payment Receipt',
         );
@@ -350,7 +350,7 @@ class ReceiptView extends StatelessWidget {
 
   String _getServiceType(PayBillModel billData) {
     // Check if it's a ticket booking based on company name or bill type
-    final companyName = billData.companyName.toLowerCase();
+    final String companyName = billData.companyName.toLowerCase();
 
     if (companyName.contains('cinema') || companyName.contains('movie')) {
       return 'Movie Ticket';

@@ -19,7 +19,7 @@ class Message extends Equatable {
 
   // Convert Message to Map for Firestore
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'text': text,
       'sender': sender,
       'timestamp': Timestamp.fromDate(timestamp),
@@ -40,7 +40,7 @@ class Message extends Equatable {
 
   // Create Message from Firestore DocumentSnapshot
   factory Message.fromSnapshot(DocumentSnapshot snapshot) {
-    final data = snapshot.data() as Map<String, dynamic>;
+    final Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
     return Message.fromMap(data, snapshot.id);
   }
 
@@ -62,7 +62,7 @@ class Message extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, text, sender, timestamp, userId];
+  List<Object?> get props => <Object?>[id, text, sender, timestamp, userId];
 
   @override
   String toString() {

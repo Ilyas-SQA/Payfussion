@@ -26,8 +26,8 @@ class GraphCurrencyModel {
   double get weeklyChangePercent {
     if (weeklyPrices.isEmpty || weeklyPrices.length < 2) return 0.0;
 
-    final firstPrice = weeklyPrices.first;
-    final lastPrice = weeklyPrices.last;
+    final double firstPrice = weeklyPrices.first;
+    final double lastPrice = weeklyPrices.last;
 
     if (firstPrice == 0) return 0.0;
 
@@ -37,26 +37,26 @@ class GraphCurrencyModel {
   /// Get the highest price from weekly data
   double get weeklyHigh {
     if (weeklyPrices.isEmpty) return currentPrice;
-    return weeklyPrices.reduce((a, b) => a > b ? a : b);
+    return weeklyPrices.reduce((double a, double b) => a > b ? a : b);
   }
 
   /// Get the lowest price from weekly data
   double get weeklyLow {
     if (weeklyPrices.isEmpty) return currentPrice;
-    return weeklyPrices.reduce((a, b) => a < b ? a : b);
+    return weeklyPrices.reduce((double a, double b) => a < b ? a : b);
   }
 
   /// Check if the data is fresh (less than 1 hour old)
   bool get isFresh {
-    final now = DateTime.now();
-    final difference = now.difference(lastUpdated);
+    final DateTime now = DateTime.now();
+    final Duration difference = now.difference(lastUpdated);
     return difference.inHours < 1;
   }
 
   /// Get formatted last updated time
   String get lastUpdatedFormatted {
-    final now = DateTime.now();
-    final difference = now.difference(lastUpdated);
+    final DateTime now = DateTime.now();
+    final Duration difference = now.difference(lastUpdated);
 
     if (difference.inMinutes < 1) {
       return 'Just now';

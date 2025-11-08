@@ -49,8 +49,8 @@ class UserModel {
         createdAtString = json['createdAt'];
       } else {
         try {
-          final timestamp = json['createdAt'] as Timestamp;
-          final dateTime = timestamp.toDate();
+          final Timestamp timestamp = json['createdAt'] as Timestamp;
+          final DateTime dateTime = timestamp.toDate();
           createdAtString = dateTime.toIso8601String();
         } catch (e) {
           createdAtString = DateTime.now().toIso8601String();

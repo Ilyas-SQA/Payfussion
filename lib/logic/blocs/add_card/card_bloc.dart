@@ -23,7 +23,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
     try {
       await emit.forEach<List<CardModel>>(
         repository.getUserCards(),
-        onData: (cards) => CardLoaded(cards),
+        onData: (List<CardModel> cards) => CardLoaded(cards),
         onError: (_, __) => const CardError("Failed to load cards"),
       );
     } catch (e) {
@@ -32,10 +32,10 @@ class CardBloc extends Bloc<CardEvent, CardState> {
   }
 
   Future<void> _setDefaultCard(SetDefaultCard event, Emitter<CardState> emit) async {
-    final currentState = state;
+    final CardState currentState = state;
     if (currentState is CardLoaded) {
       // Update local cards list
-      List<CardModel> updatedCards = currentState.cards.map((card) {
+      final List<CardModel> updatedCards = currentState.cards.map((CardModel card) {
         if (card.id == event.cardId) {
           return card.copyWith(isDefault: event.isDefault);
         } else if (event.isDefault) {
@@ -47,8 +47,8 @@ class CardBloc extends Bloc<CardEvent, CardState> {
       emit(CardLoaded(updatedCards));
 
       // Update Firebase
-      final userId = FirebaseAuth.instance.currentUser!.uid;
-      final batch = FirebaseFirestore.instance.batch();
+      final String userId = FirebaseAuth.instance.currentUser!.uid;
+      final WriteBatch batch = FirebaseFirestore.instance.batch();
 
       // Set the selected card as default
       batch.update(
@@ -57,12 +57,12 @@ class CardBloc extends Bloc<CardEvent, CardState> {
             .doc(userId)
             .collection('card')
             .doc(event.cardId),
-        {'is_default': event.isDefault},
+        <String, dynamic>{'is_default': event.isDefault},
       );
 
       // Unset other cards if needed
       if (event.isDefault) {
-        for (var card in updatedCards) {
+        for (CardModel card in updatedCards) {
           if (card.id != event.cardId && card.isDefault == false) continue;
           if (card.id != event.cardId) {
             batch.update(
@@ -71,7 +71,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
                   .doc(userId)
                   .collection('card')
                   .doc(card.id),
-              {'is_default': false},
+              <String, dynamic>{'is_default': false},
             );
           }
         }
@@ -89,25 +89,25 @@ class CardBloc extends Bloc<CardEvent, CardState> {
     try {
       emit(AddCardLoading());
 
-      final userId = FirebaseAuth.instance.currentUser!.uid;
-      final cardsCollection = FirebaseFirestore.instance
+      final String userId = FirebaseAuth.instance.currentUser!.uid;
+      final CollectionReference<Map<String, dynamic>> cardsCollection = FirebaseFirestore.instance
           .collection("users")
           .doc(userId)
           .collection("card");
 
       // Check for existing cards
-      final existingCardsSnapshot = await cardsCollection
+      final QuerySnapshot<Map<String, dynamic>> existingCardsSnapshot = await cardsCollection
           .where('stripe_customer_id', isEqualTo: event.customerId)
           .get();
 
       // Check if card already exists
-      final cardToAdd = event.cardData;
-      final newCardIdentifier = '${cardToAdd['card']['brand']}_${cardToAdd['card']['last4']}';
+      final Map<String, dynamic> cardToAdd = event.cardData;
+      final String newCardIdentifier = '${cardToAdd['card']['brand']}_${cardToAdd['card']['last4']}';
 
       bool isDuplicate = false;
-      for (final doc in existingCardsSnapshot.docs) {
-        final data = doc.data();
-        final existingIdentifier = '${data['brand']}_${data['last4']}';
+      for (final QueryDocumentSnapshot<Map<String, dynamic>> doc in existingCardsSnapshot.docs) {
+        final Map<String, dynamic> data = doc.data();
+        final String existingIdentifier = '${data['brand']}_${data['last4']}';
 
         if (existingIdentifier == newCardIdentifier) {
           isDuplicate = true;
@@ -121,7 +121,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
       }
 
       // Add new card if not duplicate
-      await cardsCollection.add({
+      await cardsCollection.add(<String, dynamic>{
         'stripe_customer_id': event.customerId,
         'payment_method_id': cardToAdd['id'].toString(),
         'brand': cardToAdd['card']['brand'].toString(),

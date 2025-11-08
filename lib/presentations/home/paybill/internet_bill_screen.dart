@@ -4,6 +4,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
+import '../../../core/constants/fonts.dart';
 import '../../../core/constants/routes_name.dart';
 import '../../widgets/background_theme.dart';
 
@@ -25,8 +26,8 @@ class _InternetBillScreenState extends State<InternetBillScreen>
   late Animation<Offset> _headerSlide;
   late Animation<double> _listFade;
 
-  final List<Map<String, dynamic>> internetProviders = [
-    {
+  final List<Map<String, dynamic>> internetProviders = <Map<String, dynamic>>[
+    <String, dynamic>{
       "name": "Xfinity (Comcast)",
       "description": "America's largest cable internet provider",
       "icon": Icons.router,
@@ -35,7 +36,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
       "maxSpeed": "Up to 1200 Mbps",
       "coverage": "40 states",
     },
-    {
+    <String, dynamic>{
       "name": "AT&T Internet",
       "description": "Fiber and DSL internet services",
       "icon": Icons.fiber_smart_record,
@@ -44,7 +45,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
       "maxSpeed": "Up to 5000 Mbps",
       "coverage": "21 states",
     },
-    {
+    <String, dynamic>{
       "name": "Verizon Fios",
       "description": "100% fiber-optic network",
       "icon": Icons.cable,
@@ -53,7 +54,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
       "maxSpeed": "Up to 940 Mbps",
       "coverage": "9 states",
     },
-    {
+    <String, dynamic>{
       "name": "Spectrum (Charter Communications)",
       "description": "Cable internet without contracts",
       "icon": Icons.wifi_tethering,
@@ -62,7 +63,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
       "maxSpeed": "Up to 940 Mbps",
       "coverage": "41 states",
     },
-    {
+    <String, dynamic>{
       "name": "Cox Communications",
       "description": "Cable and fiber internet services",
       "icon": Icons.hub,
@@ -71,7 +72,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
       "maxSpeed": "Up to 940 Mbps",
       "coverage": "18 states",
     },
-    {
+    <String, dynamic>{
       "name": "CenturyLink",
       "description": "DSL and fiber internet provider",
       "icon": Icons.device_hub,
@@ -80,7 +81,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
       "maxSpeed": "Up to 940 Mbps",
       "coverage": "36 states",
     },
-    {
+    <String, dynamic>{
       "name": "Frontier Communications",
       "description": "Rural internet specialist",
       "icon": Icons.landscape,
@@ -89,7 +90,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
       "maxSpeed": "Up to 940 Mbps",
       "coverage": "25 states",
     },
-    {
+    <String, dynamic>{
       "name": "Optimum (Altice USA)",
       "description": "Northeast cable internet provider",
       "icon": Icons.settings_ethernet,
@@ -98,7 +99,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
       "maxSpeed": "Up to 940 Mbps",
       "coverage": "4 states",
     },
-    {
+    <String, dynamic>{
       "name": "Windstream",
       "description": "Rural and business internet",
       "icon": Icons.air,
@@ -107,7 +108,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
       "maxSpeed": "Up to 1000 Mbps",
       "coverage": "18 states",
     },
-    {
+    <String, dynamic>{
       "name": "HughesNet",
       "description": "Satellite internet nationwide",
       "icon": Icons.satellite_alt,
@@ -116,7 +117,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
       "maxSpeed": "Up to 25 Mbps",
       "coverage": "All 50 states",
     },
-    {
+    <String, dynamic>{
       "name": "Viasat",
       "description": "High-speed satellite internet",
       "icon": Icons.satellite,
@@ -125,7 +126,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
       "maxSpeed": "Up to 100 Mbps",
       "coverage": "All 50 states",
     },
-    {
+    <String, dynamic>{
       "name": "Google Fiber",
       "description": "Ultra-fast fiber internet",
       "icon": Icons.flash_on,
@@ -134,7 +135,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
       "maxSpeed": "Up to 2000 Mbps",
       "coverage": "17 cities",
     },
-    {
+    <String, dynamic>{
       "name": "RCN",
       "description": "Regional cable internet provider",
       "icon": Icons.wifi,
@@ -143,7 +144,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
       "maxSpeed": "Up to 940 Mbps",
       "coverage": "6 states",
     },
-    {
+    <String, dynamic>{
       "name": "Mediacom",
       "description": "Midwest cable internet provider",
       "icon": Icons.cast_connected,
@@ -152,7 +153,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
       "maxSpeed": "Up to 1000 Mbps",
       "coverage": "22 states",
     },
-    {
+    <String, dynamic>{
       "name": "Suddenlink",
       "description": "Regional cable internet service",
       "icon": Icons.link,
@@ -241,7 +242,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -249,13 +250,13 @@ class _InternetBillScreenState extends State<InternetBillScreen>
             opacity: _listFade,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 // Header Section
                 Padding(
                   padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(
                         "Pay Your",
                         style: theme.textTheme.headlineMedium?.copyWith(
@@ -305,7 +306,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
       child: ListView.builder(
         physics: const BouncingScrollPhysics(),
         itemCount: internetProviders.length,
-        itemBuilder: (context, index) {
+        itemBuilder: (BuildContext context, int index) {
           return AnimationConfiguration.staggeredList(
             position: index,
             duration: const Duration(milliseconds: 400),
@@ -332,7 +333,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -344,7 +345,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
           onTap: () {
             context.push(
               RouteNames.payBillsDetailView,
-              extra: {
+              extra: <String, dynamic>{
                 'billType': "internetBill",
                 'companyName': provider['name'],
                 'connectionType': provider['connectionType'],
@@ -357,7 +358,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
           child: Padding(
             padding: EdgeInsets.all(20.w),
             child: Row(
-              children: [
+              children: <Widget>[
                 // Icon Container
                 Hero(
                   tag: 'internet_icon_${provider['name']}',
@@ -374,10 +375,10 @@ class _InternetBillScreenState extends State<InternetBillScreen>
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       // Provider name and connection type
                       Row(
-                        children: [
+                        children: <Widget>[
                           Expanded(
                             child: Text(
                               provider['name'] as String,
@@ -422,7 +423,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
 
                       // Speed and coverage info
                       Row(
-                        children: [
+                        children: <Widget>[
                           Icon(
                             Icons.speed,
                             size: 14.sp,
@@ -431,7 +432,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
                           Expanded(
                             child: Text(
                               "${provider['maxSpeed']} • ${provider['coverage']}",
-                              style: const TextStyle(
+                              style: Font.montserratFont(
                                 fontSize: 10,
                               ),
                             ),

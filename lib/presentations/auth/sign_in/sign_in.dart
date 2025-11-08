@@ -5,6 +5,7 @@ import 'package:payfussion/logic/blocs/auth/auth_bloc.dart';
 import 'package:payfussion/logic/blocs/auth/auth_state.dart';
 import 'package:payfussion/presentations/auth/sign_in/sign_in_form.dart';
 import 'package:payfussion/shared/widgets/error_dialog.dart';
+import '../../../core/circular_indicator.dart';
 import '../../../core/constants/routes_name.dart';
 import '../../../services/biometric_service.dart';
 import '../../../services/service_locator.dart';
@@ -42,8 +43,6 @@ class _SignInScreenState extends State<SignInScreen> with TickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: BlocListener<AuthBloc, AuthState>(
@@ -52,7 +51,7 @@ class _SignInScreenState extends State<SignInScreen> with TickerProviderStateMix
             showDialog(
               context: context,
               barrierDismissible: false,
-              builder: (_) => const Center(child: CircularProgressIndicator()),
+              builder: (_) => Center(child: CircularIndicator.circular),
             );
           } else if (state is SignInSuccess || state is BiometricAuthSuccess) {
             Navigator.of(context).pop();
@@ -64,7 +63,7 @@ class _SignInScreenState extends State<SignInScreen> with TickerProviderStateMix
           }
         },
         child: Stack(
-          children: [
+          children: <Widget>[
             // Animated Background
             AnimatedBackground(
               animationController: _backgroundAnimationController,
@@ -72,7 +71,7 @@ class _SignInScreenState extends State<SignInScreen> with TickerProviderStateMix
             // Content
             const Column(
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 SignInHeader(),
                 SignInForm(),
               ],

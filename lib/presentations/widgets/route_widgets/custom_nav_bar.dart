@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:icons_plus/icons_plus.dart';
 import 'package:payfussion/data/models/home_modals/nav_bar_items.dart';
 
 import '../../../core/constants/fonts.dart';
-import '../../../core/constants/image_url.dart';
 import '../../../core/theme/theme.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
@@ -20,7 +18,7 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return Padding(
       padding: EdgeInsets.only(bottom: 2.h),
@@ -38,7 +36,7 @@ class CustomBottomNavBar extends StatelessWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor,
             borderRadius: BorderRadius.circular(5.r),
-            boxShadow: [
+            boxShadow: <BoxShadow>[
               BoxShadow(
                 color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                 blurRadius: 5,
@@ -49,13 +47,13 @@ class CustomBottomNavBar extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 25.w),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: navBarItems.map((item) {
+            children: navBarItems.map((NavBarItems item) {
               final bool isSelected = navBarItems.indexOf(item) == currentIndex;
               return GestureDetector(
                 onTap: () => onTap(navBarItems.indexOf(item)),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+                  children: <Widget>[
                     SvgPicture.asset(
                       item.icon,
                       width: 25,

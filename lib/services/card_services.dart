@@ -25,11 +25,11 @@ class CardServices{
   // Get all cards for current user
   Future<List<CardModel>> getUserCards() async {
     try {
-      final querySnapshot = await _cardsCollection
+      final QuerySnapshot<Object?> querySnapshot = await _cardsCollection
           .orderBy('create_date', descending: true)
           .get();
 
-      return querySnapshot.docs.map((doc) {
+      return querySnapshot.docs.map((QueryDocumentSnapshot<Object?> doc) {
         return CardModel.fromFirestore(
           doc.data() as Map<String, dynamic>,
           doc.id,
@@ -46,8 +46,8 @@ class CardServices{
       return _cardsCollection
           .orderBy('create_date', descending: true)
           .snapshots()
-          .map((querySnapshot) {
-        return querySnapshot.docs.map((doc) {
+          .map((QuerySnapshot<Object?> querySnapshot) {
+        return querySnapshot.docs.map((QueryDocumentSnapshot<Object?> doc) {
           return CardModel.fromFirestore(
             doc.data() as Map<String, dynamic>,
             doc.id,
@@ -62,13 +62,13 @@ class CardServices{
   // Get default card
   Future<CardModel?> getDefaultCard() async {
     try {
-      final querySnapshot = await _cardsCollection
+      final QuerySnapshot<Object?> querySnapshot = await _cardsCollection
           .where('is_default', isEqualTo: true)
           .limit(1)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
-        final doc = querySnapshot.docs.first;
+        final QueryDocumentSnapshot<Object?> doc = querySnapshot.docs.first;
         return CardModel.fromFirestore(
           doc.data() as Map<String, dynamic>,
           doc.id,
@@ -83,7 +83,7 @@ class CardServices{
   // Add new card
   Future<String> addCard(CardModel card) async {
     try {
-      final docRef = await _cardsCollection.add(card.toFirestore());
+      final DocumentReference<Object?> docRef = await _cardsCollection.add(card.toFirestore());
       return docRef.id;
     } catch (e) {
       throw Exception('Failed to add card: $e');
@@ -111,16 +111,16 @@ class CardServices{
   // Set default card
   Future<void> setDefaultCard(String cardId) async {
     try {
-      final batch = _firestore.batch();
+      final WriteBatch batch = _firestore.batch();
 
       // First, remove default from all cards
-      final allCards = await _cardsCollection.get();
-      for (final doc in allCards.docs) {
-        batch.update(doc.reference, {'is_default': false});
+      final QuerySnapshot<Object?> allCards = await _cardsCollection.get();
+      for (final QueryDocumentSnapshot<Object?> doc in allCards.docs) {
+        batch.update(doc.reference, <String, dynamic>{'is_default': false});
       }
 
       // Then set the selected card as default
-      batch.update(_cardsCollection.doc(cardId), {'is_default': true});
+      batch.update(_cardsCollection.doc(cardId), <String, dynamic>{'is_default': true});
 
       await batch.commit();
     } catch (e) {
@@ -131,7 +131,7 @@ class CardServices{
   // Get card by ID
   Future<CardModel?> getCardById(String cardId) async {
     try {
-      final doc = await _cardsCollection.doc(cardId).get();
+      final DocumentSnapshot<Object?> doc = await _cardsCollection.doc(cardId).get();
       if (doc.exists) {
         return CardModel.fromFirestore(
           doc.data() as Map<String, dynamic>,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:payfussion/core/utils/setting_utils/data_and_permission_utils/app_styles.dart';
 import 'package:payfussion/core/utils/setting_utils/data_and_permission_utils/app_colors_utils.dart';
 
 import '../../../../core/constants/fonts.dart';
@@ -28,7 +27,7 @@ class FeatureCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -38,10 +37,10 @@ class FeatureCard extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               Icon(icon, size: 28, color: iconColor),
               const SizedBox(width: 12),
               Expanded(

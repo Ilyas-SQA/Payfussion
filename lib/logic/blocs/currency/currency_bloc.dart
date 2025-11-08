@@ -18,7 +18,7 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
     Emitter<CurrencyState> emit,
   ) async {
     try {
-      final currency = await localStorage.readValue(_currencyKey) ?? 'USD';
+      final String currency = await localStorage.readValue(_currencyKey) ?? 'USD';
       emit(CurrencyInitialState(currency));
     } catch (e) {
       emit(CurrencyErrorState("Failed to load currency"));

@@ -68,7 +68,7 @@ class BankTransactionBloc extends Bloc<BankTransactionEvent, BankTransactionStat
           .get();
 
       final List<Bank> banks = snapshot.docs
-          .map((doc) => Bank.fromFirestore(doc))
+          .map((QueryDocumentSnapshot<Object?> doc) => Bank.fromFirestore(doc))
           .toList();
 
       emit(state.copyWith(
@@ -174,7 +174,7 @@ class BankTransactionBloc extends Bloc<BankTransactionEvent, BankTransactionStat
   }
 
   void _onBankTransferAmountSet(BankTransferAmountSet event, Emitter<BankTransactionState> emit) {
-    final error = _validateAmount(event.amount);
+    final String? error = _validateAmount(event.amount);
 
     emit(state.copyWith(
       amount: event.amount,
@@ -205,7 +205,7 @@ class BankTransactionBloc extends Bloc<BankTransactionEvent, BankTransactionStat
       ));
 
       // Check authentication
-      final currentUser = FirebaseAuth.instance.currentUser;
+      final User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) {
         throw Exception('User not authenticated. Please log in again.');
       }
@@ -272,7 +272,7 @@ class BankTransactionBloc extends Bloc<BankTransactionEvent, BankTransactionStat
 
   Future<void> _onFetchBankTransactions(FetchBankTransactions event, Emitter<BankTransactionState> emit) async {
     try {
-      final currentUser = FirebaseAuth.instance.currentUser;
+      final User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) return;
 
       final QuerySnapshot snapshot = await _firestore
@@ -284,7 +284,7 @@ class BankTransactionBloc extends Bloc<BankTransactionEvent, BankTransactionStat
           .get();
 
       final List<TransactionModel> transactions = snapshot.docs
-          .map((doc) => TransactionModel.fromDoc(doc))
+          .map((QueryDocumentSnapshot<Object?> doc) => TransactionModel.fromDoc(doc))
           .toList();
 
       emit(state.copyWith(transactions: transactions));
@@ -299,7 +299,7 @@ class BankTransactionBloc extends Bloc<BankTransactionEvent, BankTransactionStat
 
   Future<void> _onFetchBankTransactionsByDate(FetchBankTransactionsByDate event, Emitter<BankTransactionState> emit) async {
     try {
-      final currentUser = FirebaseAuth.instance.currentUser;
+      final User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) return;
 
       final QuerySnapshot snapshot = await _firestore
@@ -313,7 +313,7 @@ class BankTransactionBloc extends Bloc<BankTransactionEvent, BankTransactionStat
           .get();
 
       final List<TransactionModel> transactions = snapshot.docs
-          .map((doc) => TransactionModel.fromDoc(doc))
+          .map((QueryDocumentSnapshot<Object?> doc) => TransactionModel.fromDoc(doc))
           .toList();
 
       emit(state.copyWith(transactions: transactions));
@@ -344,10 +344,10 @@ class BankTransactionBloc extends Bloc<BankTransactionEvent, BankTransactionStat
   
   Future<void> _onAddBankToFavorites(AddBankToFavorites event, Emitter<BankTransactionState> emit) async {
     try {
-      final currentUser = FirebaseAuth.instance.currentUser;
+      final User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) return;
 
-      final favoriteBank = FavoriteBank(
+      final FavoriteBank favoriteBank = FavoriteBank(
         id: _uuid.v4(),
         bank: event.bank,
         accountNumber: event.accountNumber,
@@ -363,7 +363,7 @@ class BankTransactionBloc extends Bloc<BankTransactionEvent, BankTransactionStat
           .set(favoriteBank.toJson());
 
       // Update local state
-      final updatedFavorites = List<FavoriteBank>.from(state.favoriteBanks)
+      final List<FavoriteBank> updatedFavorites = List<FavoriteBank>.from(state.favoriteBanks)
         ..add(favoriteBank);
 
       emit(state.copyWith(favoriteBanks: updatedFavorites));
@@ -378,7 +378,7 @@ class BankTransactionBloc extends Bloc<BankTransactionEvent, BankTransactionStat
 
   Future<void> _onRemoveBankFromFavorites(RemoveBankFromFavorites event, Emitter<BankTransactionState> emit) async {
     try {
-      final currentUser = FirebaseAuth.instance.currentUser;
+      final User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) return;
 
       await _firestore
@@ -389,8 +389,8 @@ class BankTransactionBloc extends Bloc<BankTransactionEvent, BankTransactionStat
           .delete();
 
       // Update local state
-      final updatedFavorites = state.favoriteBanks
-          .where((favorite) => favorite.id != event.favoriteId)
+      final List<FavoriteBank> updatedFavorites = state.favoriteBanks
+          .where((FavoriteBank favorite) => favorite.id != event.favoriteId)
           .toList();
 
       emit(state.copyWith(favoriteBanks: updatedFavorites));
@@ -405,7 +405,7 @@ class BankTransactionBloc extends Bloc<BankTransactionEvent, BankTransactionStat
 
   Future<void> _onFetchFavoriteBanks(FetchFavoriteBanks event, Emitter<BankTransactionState> emit) async {
     try {
-      final currentUser = FirebaseAuth.instance.currentUser;
+      final User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) return;
 
       final QuerySnapshot snapshot = await _firestore
@@ -416,7 +416,7 @@ class BankTransactionBloc extends Bloc<BankTransactionEvent, BankTransactionStat
           .get();
 
       final List<FavoriteBank> favoriteBanks = snapshot.docs
-          .map((doc) => FavoriteBank.fromJson({...doc.data() as Map<String, dynamic>, 'id': doc.id}))
+          .map((QueryDocumentSnapshot<Object?> doc) => FavoriteBank.fromJson(<String, dynamic>{...doc.data() as Map<String, dynamic>, 'id': doc.id}))
           .toList();
 
       emit(state.copyWith(favoriteBanks: favoriteBanks));
@@ -455,11 +455,11 @@ class BankTransactionBloc extends Bloc<BankTransactionEvent, BankTransactionStat
   Future<void> _performBiometricAuthentication(double amount, String bankName) async {
     print('Starting biometric authentication...');
 
-    final isBioAvailable = await _biometricService.isBiometricAvailable();
-    final hasBiometrics = await _biometricService.hasBiometricsEnrolled();
+    final bool isBioAvailable = await _biometricService.isBiometricAvailable();
+    final bool hasBiometrics = await _biometricService.hasBiometricsEnrolled();
 
     if (isBioAvailable && hasBiometrics) {
-      final auth = await _biometricService.authenticate(
+      final Map<String, dynamic> auth = await _biometricService.authenticate(
         reason: 'Authenticate to transfer \$${amount.toStringAsFixed(2)} to $bankName',
       );
 
@@ -473,22 +473,22 @@ class BankTransactionBloc extends Bloc<BankTransactionEvent, BankTransactionStat
   }
 
   String _generateTransactionReference() {
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final int timestamp = DateTime.now().millisecondsSinceEpoch;
     return 'BT${timestamp.toString().substring(8)}';
   }
 
   Future<String> _saveBankTransferToFirestore(TransactionModel transaction) async {
     print('Saving bank transfer to existing transactions collection...');
 
-    final currentUser = FirebaseAuth.instance.currentUser!;
+    final User currentUser = FirebaseAuth.instance.currentUser!;
 
     // Create transaction data using the model's toMap method
     final Map<String, dynamic> transactionData = transaction.toMap();
 
     // Add bank transfer metadata using snake_case to match your existing structure
-    transactionData.addAll({
+    transactionData.addAll(<String, dynamic>{
       'transaction_type': 'bank_transfer',
-      'bank_transfer_details': {
+      'bank_transfer_details': <String, String?>{
         'bank_id': state.selectedBank!.id,
         'bank_name': state.selectedBank!.name,
         'bank_code': state.selectedBank!.code,
@@ -513,13 +513,13 @@ class BankTransactionBloc extends Bloc<BankTransactionEvent, BankTransactionStat
 
   Future<void> _createSuccessNotification(String transactionId) async {
     try {
-      final notification = NotificationModel(
+      final NotificationModel notification = NotificationModel(
         title: 'Bank Transfer Successful',
         message: 'Successfully transferred \$${state.amount.toStringAsFixed(2)} to ${state.selectedBank!.name}',
         type: 'bank_transfer',
         isRead: false,
         createdAt: DateTime.now(),
-        data: {
+        data: <String, dynamic>{
           'transactionId': transactionId,
           'bankName': state.selectedBank!.name,
           'accountNumber': state.accountNumber,
@@ -541,13 +541,13 @@ class BankTransactionBloc extends Bloc<BankTransactionEvent, BankTransactionStat
 
   Future<void> _createFailureNotification(String errorMessage) async {
     try {
-      final notification = NotificationModel(
+      final NotificationModel notification = NotificationModel(
         title: 'Bank Transfer Failed',
         message: 'Your bank transfer could not be processed',
         type: 'bank_transfer',
         isRead: false,
         createdAt: DateTime.now(),
-        data: {
+        data: <String, dynamic>{
           'transactionType': 'bank_transfer',
           'status': 'failed',
           'errorMessage': errorMessage,

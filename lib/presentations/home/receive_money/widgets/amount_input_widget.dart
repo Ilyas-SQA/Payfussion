@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/fonts.dart';
 import '../../../payment_strings.dart';
 import '../receive_money_payment_screen.dart';
 
@@ -29,7 +30,7 @@ class AmountInputWidget extends StatelessWidget {
           focusNode: focusNode,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: Font.montserratFont(
             fontSize: 42.sp,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
@@ -37,7 +38,7 @@ class AmountInputWidget extends StatelessWidget {
           ),
           decoration: InputDecoration(
             hintText: ReceiveMoneyPaymentStrings.enterAmount,
-            hintStyle: TextStyle(
+            hintStyle: Font.montserratFont(
               fontSize: 30.sp,
               fontWeight: FontWeight.w400,
               color: Colors.grey.withOpacity(0.6),
@@ -48,7 +49,7 @@ class AmountInputWidget extends StatelessWidget {
             focusedBorder: InputBorder.none,
             prefixIcon: Text(
               '\$',
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 42.sp,
                 fontWeight: FontWeight.bold,
                 color: provider.amount > 0
@@ -60,7 +61,7 @@ class AmountInputWidget extends StatelessWidget {
           ),
           onChanged: (String value) {
             // Remove any currency symbol and then set the amount
-            String plainValue = value.replaceAll('\$', '');
+            final String plainValue = value.replaceAll('\$', '');
             provider.setAmount(plainValue);
           },
         ),
@@ -70,7 +71,7 @@ class AmountInputWidget extends StatelessWidget {
             padding: EdgeInsets.only(top: 8.h),
             child: Text(
               provider.amountError!,
-              style: TextStyle(color: AppColors.errorRed, fontSize: 14.sp),
+              style: Font.montserratFont(color: AppColors.errorRed, fontSize: 14.sp),
             ),
           ),
       ],

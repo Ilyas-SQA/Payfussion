@@ -26,7 +26,7 @@ class TransactionState extends Equatable {
   });
 
   factory TransactionState.initial() => const TransactionState(
-    todaysTransactions: [],
+    todaysTransactions: <TransactionModel>[],
     recipient: null,
     amount: 0.0,
     amountError: null,
@@ -59,7 +59,7 @@ class TransactionState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
     todaysTransactions,
     recipient,
     amount,

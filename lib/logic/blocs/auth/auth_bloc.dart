@@ -1,8 +1,12 @@
 // auth_bloc.dart
 import 'dart:async';
 
+import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:local_auth_platform_interface/types/biometric_type.dart';
+import 'package:payfussion/core/exceptions/failure.dart';
+import 'package:payfussion/data/models/user/user_model.dart';
 import 'package:payfussion/domain/repository/auth/auth_repository.dart';
 
 import '../../../data/models/device_manager/deevice_manager_model.dart';
@@ -52,7 +56,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     _emitLoading(emit);
 
     try {
-      final result = await authRepository.signUp(
+      final Either<Failure, Unit> result = await authRepository.signUp(
         email: event.email,
         password: event.password,
         firstName: event.firstName,
@@ -61,7 +65,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
 
       result.fold(
-            (failure) => _emitError(emit, failure.message),
+            (Failure failure) => _emitError(emit, failure.message),
             (_) => emit(const SignUpSuccess()),
       );
     } catch (e) {
@@ -72,14 +76,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _handleSignIn(SignInRequested event, Emitter<AuthState> emit) async {
     _emitLoading(emit);
     try {
-      final result = await authRepository.signInWithEmail(
+      final Either<Failure, UserModel> result = await authRepository.signInWithEmail(
         event.email,
         event.password,
       );
 
       await result.fold(
-            (failure) async => _emitError(emit, failure.message),
-            (user) async {
+            (Failure failure) async => _emitError(emit, failure.message),
+            (UserModel user) async {
           try {
             // Save user data locally
             await sessionController.saveUserInPreference(user);
@@ -106,13 +110,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
             /// Handle biometric setup if requested
             if (event.enableBiometric) {
-              final isAvailable = await biometricService.isBiometricAvailable();
-              final isEnrolled = await biometricService.hasBiometricsEnrolled();
+              final bool isAvailable = await biometricService.isBiometricAvailable();
+              final bool isEnrolled = await biometricService.hasBiometricsEnrolled();
 
               if (isAvailable && isEnrolled) {
                 emit(const BiometricSetupInProgress());
 
-                final biometricResult = await biometricService.authenticate(
+                final Map<String, dynamic> biometricResult = await biometricService.authenticate(
                   reason: 'Scan your fingerprint to enable biometric login',
                 );
 
@@ -149,9 +153,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _handleForgotPasswordWithEmail(ForgotPasswordWithEmail event, Emitter<AuthState> emit) async {
     _emitLoading(emit);
     try {
-      final result = await authRepository.forgotPassworWithEmail(event.email);
+      final Either<Failure, Unit> result = await authRepository.forgotPassworWithEmail(event.email);
       await result.fold(
-            (failure) async => _emitError(emit, failure.message),
+            (Failure failure) async => _emitError(emit, failure.message),
             (_) async => emit(ForgotSuccess()),
       );
     } catch (e) {
@@ -166,9 +170,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _handleCheckBiometricAvailability(CheckBiometricAvailability event, Emitter<AuthState> emit) async {
     _emitLoading(emit);
     try {
-      final isAvailable = await biometricService.isBiometricAvailable();
+      final bool isAvailable = await biometricService.isBiometricAvailable();
       if (isAvailable) {
-        final biometrics = await biometricService.getAvailableBiometrics();
+        final List<BiometricType> biometrics = await biometricService.getAvailableBiometrics();
         emit(BiometricAvailable(biometrics));
       } else {
         emit(BiometricNotAvailable());
@@ -182,8 +186,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     _emitLoading(emit);
     try {
       // First check if biometric is available and enrolled
-      final isAvailable = await biometricService.isBiometricAvailable();
-      final isEnrolled = await biometricService.hasBiometricsEnrolled();
+      final bool isAvailable = await biometricService.isBiometricAvailable();
+      final bool isEnrolled = await biometricService.hasBiometricsEnrolled();
 
       if (!isAvailable || !isEnrolled) {
         _emitError(emit, "Biometric authentication is not available on this device.");
@@ -191,21 +195,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
 
       // Check if biometric is enabled in app (from local storage)
-      final isBiometricEnabled = await biometricService.isBiometricEnabled();
+      final bool isBiometricEnabled = await biometricService.isBiometricEnabled();
       if (!isBiometricEnabled) {
         _emitError(emit, "Biometric login not enabled. Please sign in with email and password first.");
         return;
       }
 
       // Retrieve the user data from local storage
-      final user = await sessionController.getUserFromPreference();
+      final UserModel? user = await sessionController.getUserFromPreference();
       if (user == null) {
         _emitError(emit, "No user data found. Please sign in first.");
         return;
       }
 
       // Proceed with biometric authentication
-      final biometricResult = await biometricService.authenticate(
+      final Map<String, dynamic> biometricResult = await biometricService.authenticate(
         reason: "Please authenticate to sign in",
       );
 
@@ -312,12 +316,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       emit(OtpLoading());
 
-      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+      final PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: event.verificationId,
         smsCode: event.otp,
       );
 
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
 
       /// Check if emitter is still active before emitting
       if (!emit.isDone) {

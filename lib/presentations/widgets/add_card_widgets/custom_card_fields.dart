@@ -21,13 +21,13 @@ class CustomCardField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Theme.of(context);
+    final ThemeData themeProvider = Theme.of(context);
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
       inputFormatters: inputFormatters,
       onChanged: onChanged,
-      style: TextStyle(
+      style: const TextStyle(
         color: Colors.black
       ),
       decoration: InputDecoration(

@@ -15,9 +15,9 @@ class AnimatedBackground extends StatelessWidget {
     print("rebuild");
     return AnimatedBuilder(
       animation: animationController,
-      builder: (context, child) {
+      builder: (BuildContext context, Widget? child) {
         return Stack(
-          children: List.generate(8, (index) {
+          children: List.generate(8, (int index) {
             /// Calculate movement path for each circle with slower rotation
             /// Changed from * 2 * pi to * 0.5 * pi for 4x slower motion
             final double angle = (animationController.value * 0.5 * pi) + (index * pi / 4);
@@ -47,7 +47,7 @@ class AnimatedBackground extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: circleColor,
                   shape: BoxShape.circle,
-                  boxShadow: [
+                  boxShadow: <BoxShadow>[
                     BoxShadow(
                       color: circleColor.withOpacity(0.3),
                       blurRadius: 40,

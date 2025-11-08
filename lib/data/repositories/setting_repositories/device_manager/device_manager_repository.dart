@@ -7,11 +7,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../../models/device_manager/deevice_manager_model.dart';
 
 class DeviceRepository {
-  final _firestore = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> saveDevice(DeviceModel device) async {
-    final user = _auth.currentUser;
+    final User? user = _auth.currentUser;
     await _firestore.collection('users').
     doc(user!.uid).collection('devices').
     doc(device.deviceId).
@@ -19,23 +19,23 @@ class DeviceRepository {
   }
 
   Future<List<DeviceModel>> getDevices() async {
-    final user = _auth.currentUser;
-    final snapshot = await _firestore.collection('users').doc(user!.uid).
+    final User? user = _auth.currentUser;
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore.collection('users').doc(user!.uid).
     collection('devices').get();
 
     return snapshot.docs
-        .map((doc) => DeviceModel.fromMap(doc.data()))
+        .map((QueryDocumentSnapshot<Map<String, dynamic>> doc) => DeviceModel.fromMap(doc.data()))
         .toList();
   }
 
   Future<void> markDeviceInactive(String deviceId) async {
-    final user = _auth.currentUser;
+    final User? user = _auth.currentUser;
     if (user != null) {
       await _firestore.collection('users')
           .doc(user.uid)
           .collection('devices')
           .doc(deviceId)
-          .update({
+          .update(<Object, Object?>{
         'isActive': false,
         'lastLogin': DateTime.now().toIso8601String(),
       });
@@ -46,10 +46,10 @@ class DeviceRepository {
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
     if (Platform.isAndroid) {
-      final info = await deviceInfo.androidInfo;
+      final AndroidDeviceInfo info = await deviceInfo.androidInfo;
       return info.id;
     } else {
-      final info = await deviceInfo.iosInfo;
+      final IosDeviceInfo info = await deviceInfo.iosInfo;
       return info.identifierForVendor ?? "unknown";
     }
   }

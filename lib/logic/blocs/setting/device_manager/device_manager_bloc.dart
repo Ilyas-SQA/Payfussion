@@ -28,7 +28,7 @@ class DeviceBloc extends Bloc<DeviceEvent, DeviceState> {
   Future<void> _onFetchDevices(FetchDevices event, Emitter<DeviceState> emit) async {
     try {
       emit(DeviceLoading());
-      final devices = await repository.getDevices();
+      final List<DeviceModel> devices = await repository.getDevices();
       emit(DeviceLoaded(devices));
     } catch (e) {
       emit(DeviceError(e.toString()));
@@ -40,16 +40,16 @@ class DeviceBloc extends Bloc<DeviceEvent, DeviceState> {
       emit(DeviceLoading());
 
       /// Auto collect device info
-      final deviceId = await _getDeviceId();
-      final model = await _getModel();
-      final os = await _getOS();
-      final osVersion = await _getOSVersion();
-      final manufacturer = await _getManufacturer();
-      final appVersion = await _getAppVersion();
-      final ipAddress = await _getIpAddress();
-      final location = await _getLocation();
+      final String deviceId = await _getDeviceId();
+      final String model = await _getModel();
+      final String os = await _getOS();
+      final String osVersion = await _getOSVersion();
+      final String manufacturer = await _getManufacturer();
+      final String appVersion = await _getAppVersion();
+      final String ipAddress = await _getIpAddress();
+      final String location = await _getLocation();
 
-      final device = DeviceModel(
+      final DeviceModel device = DeviceModel(
         deviceId: deviceId,
         model: model,
         os: os,
@@ -63,7 +63,7 @@ class DeviceBloc extends Bloc<DeviceEvent, DeviceState> {
       );
 
       await repository.saveDevice(device);
-      final devices = await repository.getDevices();
+      final List<DeviceModel> devices = await repository.getDevices();
       emit(DeviceLoaded(devices));
     } catch (e) {
       emit(DeviceError(e.toString()));
@@ -76,7 +76,7 @@ class DeviceBloc extends Bloc<DeviceEvent, DeviceState> {
       emit(DeviceLoading());
 
       // Get current device ID
-      final currentDeviceId = await _getDeviceId();
+      final String currentDeviceId = await _getDeviceId();
       print('Marking device inactive: $currentDeviceId');
 
       await FirebaseFirestore.instance
@@ -84,7 +84,7 @@ class DeviceBloc extends Bloc<DeviceEvent, DeviceState> {
           .doc(FirebaseAuth.instance.currentUser?.uid)
           .collection('devices')
           .doc(currentDeviceId)
-          .update({
+          .update(<Object, Object?>{
         'isActive': false,
         'lastLogin': DateTime.now().toIso8601String(),
       });
@@ -92,7 +92,7 @@ class DeviceBloc extends Bloc<DeviceEvent, DeviceState> {
       print('✅ Device marked inactive directly in Firebase');
 
       // Refresh and emit updated devices list
-      final refreshedDevices = await repository.getDevices();
+      final List<DeviceModel> refreshedDevices = await repository.getDevices();
       emit(DeviceLoaded(refreshedDevices));
     } catch (e) {
       print('❌ Error marking device inactive: $e');
@@ -102,20 +102,20 @@ class DeviceBloc extends Bloc<DeviceEvent, DeviceState> {
   /// Helpers for device info
   Future<String> _getDeviceId() async {
     if (Platform.isAndroid) {
-      final info = await deviceInfo.androidInfo;
+      final AndroidDeviceInfo info = await deviceInfo.androidInfo;
       return info.id;
     } else {
-      final info = await deviceInfo.iosInfo;
+      final IosDeviceInfo info = await deviceInfo.iosInfo;
       return info.identifierForVendor ?? "unknown";
     }
   }
 
   Future<String> _getModel() async {
     if (Platform.isAndroid) {
-      final info = await deviceInfo.androidInfo;
+      final AndroidDeviceInfo info = await deviceInfo.androidInfo;
       return info.model ?? "unknown";
     } else {
-      final info = await deviceInfo.iosInfo;
+      final IosDeviceInfo info = await deviceInfo.iosInfo;
       return info.utsname.machine ?? "unknown";
     }
   }
@@ -126,17 +126,17 @@ class DeviceBloc extends Bloc<DeviceEvent, DeviceState> {
 
   Future<String> _getOSVersion() async {
     if (Platform.isAndroid) {
-      final info = await deviceInfo.androidInfo;
+      final AndroidDeviceInfo info = await deviceInfo.androidInfo;
       return info.version.release ?? "unknown";
     } else {
-      final info = await deviceInfo.iosInfo;
+      final IosDeviceInfo info = await deviceInfo.iosInfo;
       return info.systemVersion ?? "unknown";
     }
   }
 
   Future<String> _getManufacturer() async {
     if (Platform.isAndroid) {
-      final info = await deviceInfo.androidInfo;
+      final AndroidDeviceInfo info = await deviceInfo.androidInfo;
       return info.manufacturer ?? "unknown";
     } else {
       return "Apple";
@@ -144,14 +144,14 @@ class DeviceBloc extends Bloc<DeviceEvent, DeviceState> {
   }
 
   Future<String> _getAppVersion() async {
-    final packageInfo = await PackageInfo.fromPlatform();
+    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
     return packageInfo.version;
   }
 
   /// Get Public IP Address
   Future<String> _getIpAddress() async {
     try {
-      final response = await http.get(Uri.parse('https://api.ipify.org?format=json'));
+      final http.Response response = await http.get(Uri.parse('https://api.ipify.org?format=json'));
       if (response.statusCode == 200) {
         return json.decode(response.body)['ip'] ?? "unknown";
       }
@@ -165,7 +165,7 @@ class DeviceBloc extends Bloc<DeviceEvent, DeviceState> {
   /// Get Human-readable Location (City, Country) from latitude & longitude
   Future<String> _getLocation() async {
     try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      final bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         return "Location disabled";
       }
@@ -182,18 +182,18 @@ class DeviceBloc extends Bloc<DeviceEvent, DeviceState> {
         return "Permission permanently denied";
       }
 
-      Position position = await Geolocator.getCurrentPosition();
+      final Position position = await Geolocator.getCurrentPosition();
 
       // Reverse geocoding
-      List<Placemark> placemarks = await placemarkFromCoordinates(
+      final List<Placemark> placemarks = await placemarkFromCoordinates(
         position.latitude,
         position.longitude,
       );
 
       if (placemarks.isNotEmpty) {
-        final place = placemarks.first;
-        final city = place.locality ?? "Unknown city";
-        final country = place.country ?? "Unknown country";
+        final Placemark place = placemarks.first;
+        final String city = place.locality ?? "Unknown city";
+        final String country = place.country ?? "Unknown country";
         return "$city, $country";
       } else {
         return "Unknown location";

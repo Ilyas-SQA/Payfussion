@@ -7,7 +7,7 @@ class CurrencyRepository {
 
   Future<Map<String, double>> getExchangeRates({String baseCurrency = 'USD'}) async {
     try {
-      final response = await http.get(
+      final http.Response response = await http.get(
         Uri.parse('$_baseUrl/latest/$baseCurrency'),
       );
 
@@ -29,8 +29,8 @@ class CurrencyRepository {
     required String to,
     required double amount,
   }) async {
-    final rates = await getExchangeRates(baseCurrency: from);
-    final rate = rates[to];
+    final Map<String, double> rates = await getExchangeRates(baseCurrency: from);
+    final double? rate = rates[to];
     if (rate == null) {
       throw Exception('Exchange rate not found for $from to $to');
     }

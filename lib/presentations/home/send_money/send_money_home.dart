@@ -13,6 +13,7 @@ import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_fi
 import 'package:shimmer/shimmer.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/fonts.dart';
 import '../../../core/theme/theme.dart';
 import '../../../data/repositories/recipient/recipient_repository.dart';
 import '../../../logic/blocs/recipient/recipient_bloc.dart';
@@ -63,14 +64,14 @@ class _SendMoneyHomeState extends State<SendMoneyHome> with TickerProviderStateM
             AppStrings.sendMoney,
             semanticsLabel: 'Send Money Screen',
           ),
-          actions: [
+          actions: <Widget>[
             _AddRecipientButton(
               onPressed: () => _navigateToAddRecipient(context),
             ),
           ],
         ),
         body: Stack(
-          children: [
+          children: <Widget>[
             AnimatedBackground(
               animationController: _backgroundAnimationController,
             ),
@@ -84,9 +85,8 @@ class _SendMoneyHomeState extends State<SendMoneyHome> with TickerProviderStateM
   Future<void> _navigateToAddRecipient(BuildContext context) async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const AddRecipientScreen()),
+      MaterialPageRoute(builder: (BuildContext context) => const AddRecipientScreen()),
     );
-    // 🔁 Stream auto-updates via Firestore; no manual refresh needed.
   }
 }
 
@@ -107,9 +107,9 @@ class _AddRecipientButton extends StatelessWidget {
         size: 18.sp,
         color: MyTheme.primaryColor,
       ),
-      label: const Text(
+      label: Text(
         AppStrings.addNew,
-        style: TextStyle(
+        style: Font.montserratFont(
           fontWeight: FontWeight.w600,
           color: MyTheme.primaryColor,
         ),
@@ -140,7 +140,7 @@ class _RecipientsListState extends State<RecipientsList> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [
+      children: <Widget>[
         _buildSearchBar(context),
         Expanded(child: _buildContent()),
       ],
@@ -155,7 +155,7 @@ class _RecipientsListState extends State<RecipientsList> {
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(12.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: AppColors.secondaryBlue.withOpacity(0.15),
               blurRadius: 10,
@@ -166,7 +166,7 @@ class _RecipientsListState extends State<RecipientsList> {
         ),
         child: AppTextFormField(
           controller: _searchController,
-          onChanged: (q) {
+          onChanged: (String q) {
             if (_debounce?.isActive ?? false) _debounce!.cancel();
             _debounce = Timer(AppDurations.searchDebounce, () {
               context.read<RecipientBloc>().add(RecipientsSearchChanged(q));
@@ -186,37 +186,11 @@ class _RecipientsListState extends State<RecipientsList> {
     );
   }
 
-  Widget _buildClearButton() {
-    return GestureDetector(
-      onTap: () {
-        _searchController.clear();
-        context.read<RecipientBloc>().add(const RecipientsSearchChanged(''));
-        HapticFeedback.lightImpact();
-        setState(() {});
-      },
-      behavior: HitTestBehavior.opaque,
-      child: Padding(
-        padding: EdgeInsets.all(8.r),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            Icons.close_rounded,
-            color: Colors.grey[600],
-            size: 18.sp,
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildContent() {
     return BlocBuilder<RecipientBloc, AddRecipientState>(
-      builder: (context, state) {
+      builder: (BuildContext context, AddRecipientState state) {
         if (state.recipientsStatus == RecipientsStatus.loading) {
-          return _buildLoadingState();
+          return _buildLoadingState(context);
         }
         if (state.recipientsStatus == RecipientsStatus.failure) {
           return _buildErrorState(context, 'Failed to load recipients');
@@ -232,7 +206,21 @@ class _RecipientsListState extends State<RecipientsList> {
     );
   }
 
-  Widget _buildLoadingState() {
+  Widget _buildLoadingState(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    final baseColor = isDarkMode
+        ? Colors.grey[800]! // darker shimmer base for dark mode
+        : Colors.grey[300]!; // lighter shimmer base for light mode
+
+    final highlightColor = isDarkMode
+        ? Colors.grey[700]! // darker highlight for dark mode
+        : Colors.grey[100]!; // lighter highlight for light mode
+
+    final containerColor = isDarkMode
+        ? Colors.grey[850]! // container color for dark mode
+        : Colors.white; // container color for light mode
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       child: ListView.builder(
@@ -240,12 +228,12 @@ class _RecipientsListState extends State<RecipientsList> {
         itemBuilder: (_, __) => Padding(
           padding: EdgeInsets.only(bottom: 12.h),
           child: Shimmer.fromColors(
-            baseColor: AppColors.shimmerBase,
-            highlightColor: AppColors.shimmerHighlight,
+            baseColor: baseColor,
+            highlightColor: highlightColor,
             child: Container(
               height: 70.h,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: containerColor,
                 borderRadius: BorderRadius.circular(12.r),
               ),
             ),
@@ -267,8 +255,8 @@ class _RecipientsListState extends State<RecipientsList> {
         child: ListView.builder(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
           itemCount: recipients.length,
-          itemBuilder: (context, index) {
-            final r = recipients[index];
+          itemBuilder: (BuildContext context, int index) {
+            final RecipientModel r = recipients[index];
             return AnimationConfiguration.staggeredList(
               position: index,
               duration: const Duration(milliseconds: 375),
@@ -295,7 +283,7 @@ class _RecipientsListState extends State<RecipientsList> {
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -306,7 +294,7 @@ class _RecipientsListState extends State<RecipientsList> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             Container(
               padding: EdgeInsets.all(16.r),
               decoration: BoxDecoration(
@@ -346,7 +334,7 @@ class _RecipientsListState extends State<RecipientsList> {
               },
               child: Text(
                 AppStrings.addRecipient,
-                style: TextStyle(fontSize: 16.sp),
+                style: Font.montserratFont(fontSize: 16.sp),
               ),
             ),
           ],
@@ -366,7 +354,7 @@ class _RecipientsListState extends State<RecipientsList> {
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             Container(
               padding: EdgeInsets.all(16.r),
               decoration: BoxDecoration(
@@ -401,7 +389,7 @@ class _RecipientsListState extends State<RecipientsList> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
               blurRadius: 12,
@@ -411,7 +399,7 @@ class _RecipientsListState extends State<RecipientsList> {
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             Container(
               padding: EdgeInsets.all(16.r),
               decoration: BoxDecoration(
@@ -446,7 +434,7 @@ class _RecipientsListState extends State<RecipientsList> {
               },
               label: Text(
                 AppStrings.tryAgain,
-                style: TextStyle(fontSize: 16.sp),
+                style: Font.montserratFont(fontSize: 16.sp),
               ),
             ),
           ],
@@ -460,7 +448,7 @@ class _RecipientsListState extends State<RecipientsList> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PaymentScreen(recipient: recipient),
+        builder: (BuildContext context) => PaymentScreen(recipient: recipient),
       ),
     );
   }
@@ -484,7 +472,7 @@ class RecipientTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -503,7 +491,7 @@ class RecipientTile extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
               child: Row(
-                children: [
+                children: <Widget>[
                   Hero(
                     tag: 'recipient_image_${recipient.id}',
                     child: _buildAvatar(),
@@ -512,7 +500,7 @@ class RecipientTile extends StatelessWidget {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         Text(recipient.name),
                         SizedBox(height: 4.h),
                         Text(
@@ -571,7 +559,7 @@ class RecipientTile extends StatelessWidget {
     return Center(
       child: Text(
         recipient.name.isNotEmpty ? recipient.name[0].toUpperCase() : '?',
-        style: TextStyle(
+        style: Font.montserratFont(
           color: MyTheme.primaryColor,
           fontSize: 20.sp,
           fontWeight: FontWeight.bold,

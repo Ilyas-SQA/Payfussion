@@ -32,8 +32,8 @@ class TrainBloc extends Bloc<TrainEvent, TrainState> {
     try {
       await emit.forEach<List<TrainModel>>(
         _firebaseService.getUserTrains(FirebaseAuth.instance.currentUser!.uid),
-        onData: (trains) => TrainLoaded(trains),
-        onError: (error, _) => TrainError('Failed to load trains: $error'),
+        onData: (List<TrainModel> trains) => TrainLoaded(trains),
+        onError: (Object error, _) => TrainError('Failed to load trains: $error'),
       );
     } catch (e) {
       emit(TrainError('Failed to load trains: $e'));
@@ -74,7 +74,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
       try {
         print('Adding train booking notification to Firestore...');
 
-        final notificationData = {
+        final Map<String, Object> notificationData = <String, Object>{
           'bookingId': event.booking.id,
           'trainId': event.booking.trainId,
           'trainName': event.booking.trainName,
@@ -107,7 +107,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
         print('Error adding train booking notification: $notificationError');
       }
 
-      emit(BookingSuccess('Train booking created successfully!'));
+      emit(const BookingSuccess('Train booking created successfully!'));
 
     } catch (e) {
       print('Train booking error: $e');
@@ -124,7 +124,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
         title: 'Train Booking Failed',
         message: 'Failed to book train ticket: ${e.toString()}',
         type: 'train_booking_failed',
-        data: {
+        data: <String, dynamic>{
           'bookingId': event.booking.id,
           'trainName': event.booking.trainName,
           'error': e.toString(),
@@ -140,8 +140,8 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     try {
       await emit.forEach<List<BookingModel>>(
         _firebaseService.getUserBookings(event.email),
-        onData: (bookings) => UserBookingsLoaded(bookings),
-        onError: (error, _) => BookingError('Failed to load bookings: $error'),
+        onData: (List<BookingModel> bookings) => UserBookingsLoaded(bookings),
+        onError: (Object error, _) => BookingError('Failed to load bookings: $error'),
       );
     } catch (e) {
       emit(BookingError('Failed to load bookings: $e'));
@@ -181,7 +181,7 @@ Have a safe journey! ''';
 }
 
 // US Train Services Data
-List<TrainModel> usTrainDetails = [
+List<TrainModel> usTrainDetails = <TrainModel>[
   TrainModel(
     id: 'acela_001',
     name: 'Acela',
@@ -190,7 +190,7 @@ List<TrainModel> usTrainDetails = [
     duration: const Duration(hours: 6, minutes: 30),
     approxCostUSD: 150.0,
     description: 'Amtrak\'s flagship high-speed rail service connecting major Northeast cities. Experience premium comfort and faster travel times.',
-    amenities: ['Free WiFi', 'Power Outlets', 'Café Car', 'Business Class Seating', 'At-seat Food Service'],
+    amenities: <String>['Free WiFi', 'Power Outlets', 'Café Car', 'Business Class Seating', 'At-seat Food Service'],
   ),
   TrainModel(
     id: 'northeast_regional_001',
@@ -200,7 +200,7 @@ List<TrainModel> usTrainDetails = [
     duration: const Duration(hours: 7, minutes: 30),
     approxCostUSD: 65.0,
     description: 'Comfortable and affordable train service along the Northeast Corridor, serving major cities and smaller communities.',
-    amenities: ['Free WiFi', 'Café Car', 'Large Windows', 'Comfortable Seating'],
+    amenities: <String>['Free WiFi', 'Café Car', 'Large Windows', 'Comfortable Seating'],
   ),
   TrainModel(
     id: 'empire_builder_001',
@@ -210,7 +210,7 @@ List<TrainModel> usTrainDetails = [
     duration: const Duration(hours: 46, minutes: 0),
     approxCostUSD: 200.0,
     description: 'A scenic cross-country journey through the northern United States, featuring stunning views of Glacier National Park and the Rocky Mountains.',
-    amenities: ['Observation Car', 'Dining Car', 'Sleeping Cars', 'Baggage Service', 'Spectacular Mountain Views'],
+    amenities: <String>['Observation Car', 'Dining Car', 'Sleeping Cars', 'Baggage Service', 'Spectacular Mountain Views'],
   ),
   TrainModel(
     id: 'southwest_chief_001',
@@ -220,7 +220,7 @@ List<TrainModel> usTrainDetails = [
     duration: const Duration(hours: 43, minutes: 0),
     approxCostUSD: 180.0,
     description: 'Travel the historic Santa Fe Railway route through the American Southwest, passing near the Grand Canyon and through stunning desert landscapes.',
-    amenities: ['Sightseer Lounge', 'Dining Car', 'Sleeping Cars', 'Desert Views', 'Native American Cultural Sites'],
+    amenities: <String>['Sightseer Lounge', 'Dining Car', 'Sleeping Cars', 'Desert Views', 'Native American Cultural Sites'],
   ),
   TrainModel(
     id: 'sunset_limited_001',
@@ -230,7 +230,7 @@ List<TrainModel> usTrainDetails = [
     duration: const Duration(hours: 48, minutes: 0),
     approxCostUSD: 190.0,
     description: 'The southernmost transcontinental route, offering views of bayous, deserts, and mountains across the Deep South and Southwest.',
-    amenities: ['Observation Car', 'Dining Car', 'Sleeping Cars', 'Southern Cuisine', 'Desert and Bayou Views'],
+    amenities: <String>['Observation Car', 'Dining Car', 'Sleeping Cars', 'Southern Cuisine', 'Desert and Bayou Views'],
   ),
   TrainModel(
     id: 'wolverine_001',
@@ -240,7 +240,7 @@ List<TrainModel> usTrainDetails = [
     duration: const Duration(hours: 5, minutes: 45),
     approxCostUSD: 35.0,
     description: 'Daily service connecting Chicago with Michigan\'s largest cities, perfect for business travel or exploring the Great Lakes region.',
-    amenities: ['Free WiFi', 'Café Car', 'Business Class', 'Great Lakes Views'],
+    amenities: <String>['Free WiFi', 'Café Car', 'Business Class', 'Great Lakes Views'],
   ),
   TrainModel(
     id: 'california_zephyr_001',
@@ -250,7 +250,7 @@ List<TrainModel> usTrainDetails = [
     duration: const Duration(hours: 51, minutes: 20),
     approxCostUSD: 220.0,
     description: 'Often called the most beautiful train ride in North America, crossing the Rocky Mountains, Sierra Nevada, and offering spectacular scenery.',
-    amenities: ['Sightseer Lounge', 'Dining Car', 'Sleeping Cars', 'Rocky Mountain Views', 'Sierra Nevada Crossing'],
+    amenities: <String>['Sightseer Lounge', 'Dining Car', 'Sleeping Cars', 'Rocky Mountain Views', 'Sierra Nevada Crossing'],
   ),
   TrainModel(
     id: 'silver_star_001',
@@ -260,7 +260,7 @@ List<TrainModel> usTrainDetails = [
     duration: const Duration(hours: 28, minutes: 0),
     approxCostUSD: 120.0,
     description: 'Travel the East Coast from New York to Florida, passing through historic cities and beautiful coastal regions.',
-    amenities: ['Café Car', 'Business Class', 'Sleeping Cars', 'Coastal Views', 'Historic Cities'],
+    amenities: <String>['Café Car', 'Business Class', 'Sleeping Cars', 'Coastal Views', 'Historic Cities'],
   ),
   TrainModel(
     id: 'coast_starlight_001',
@@ -270,7 +270,7 @@ List<TrainModel> usTrainDetails = [
     duration: const Duration(hours: 35, minutes: 0),
     approxCostUSD: 160.0,
     description: 'Spectacular Pacific Coast journey featuring ocean views, mountain forests, and California wine country.',
-    amenities: ['Pacific Parlour Car', 'Dining Car', 'Sightseer Lounge', 'Ocean Views', 'Wine Tasting'],
+    amenities: <String>['Pacific Parlour Car', 'Dining Car', 'Sightseer Lounge', 'Ocean Views', 'Wine Tasting'],
   ),
   TrainModel(
     id: 'crescent_001',
@@ -280,7 +280,7 @@ List<TrainModel> usTrainDetails = [
     duration: const Duration(hours: 30, minutes: 0),
     approxCostUSD: 140.0,
     description: 'Journey through the heart of the American South, from the bustling Northeast to the cultural richness of New Orleans.',
-    amenities: ['Dining Car', 'Sleeping Cars', 'Lounge Car', 'Southern Scenery', 'Historic Cities'],
+    amenities: <String>['Dining Car', 'Sleeping Cars', 'Lounge Car', 'Southern Scenery', 'Historic Cities'],
   ),
   TrainModel(
     id: 'cardinal_001',
@@ -290,7 +290,7 @@ List<TrainModel> usTrainDetails = [
     duration: const Duration(hours: 26, minutes: 45),
     approxCostUSD: 110.0,
     description: 'Scenic route through Virginia\'s Blue Ridge Mountains and West Virginia\'s New River Gorge, operating three times per week.',
-    amenities: ['Café Car', 'Sleeping Cars', 'Mountain Views', 'New River Gorge', 'Blue Ridge Mountains'],
+    amenities: <String>['Café Car', 'Sleeping Cars', 'Mountain Views', 'New River Gorge', 'Blue Ridge Mountains'],
   ),
   TrainModel(
     id: 'texas_eagle_001',
@@ -300,6 +300,6 @@ List<TrainModel> usTrainDetails = [
     duration: const Duration(hours: 32, minutes: 0),
     approxCostUSD: 150.0,
     description: 'Daily service through the heart of Texas, with through cars continuing to Los Angeles three times per week.',
-    amenities: ['Sightseer Lounge', 'Dining Car', 'Sleeping Cars', 'Texas Hill Country', 'Big Sky Country'],
+    amenities: <String>['Sightseer Lounge', 'Dining Car', 'Sleeping Cars', 'Texas Hill Country', 'Big Sky Country'],
   ),
 ];

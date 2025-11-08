@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/data/models/tickets/car_model.dart';
 
 import '../../../../logic/blocs/tickets/car/car_bloc.dart';
 import '../../../../logic/blocs/tickets/car/car_event.dart';
@@ -68,7 +69,7 @@ class _RideServiceListScreenState extends State<RideServiceListScreen> with Tick
           )),
           child: const Text("US Ride Services"),
         ),
-        actions: [
+        actions: <Widget>[
           RotationTransition(
             turns: _refreshController,
             child: IconButton(
@@ -80,7 +81,7 @@ class _RideServiceListScreenState extends State<RideServiceListScreen> with Tick
         iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -90,11 +91,11 @@ class _RideServiceListScreenState extends State<RideServiceListScreen> with Tick
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                    children: <Widget>[
                       TweenAnimationBuilder<double>(
                         tween: Tween(begin: 0.8, end: 1.2),
                         duration: const Duration(milliseconds: 1000),
-                        builder: (context, scale, child) {
+                        builder: (BuildContext context, double scale, Widget? child) {
                           return Transform.scale(
                             scale: scale,
                             child: const CircularProgressIndicator(),
@@ -117,11 +118,11 @@ class _RideServiceListScreenState extends State<RideServiceListScreen> with Tick
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: <Widget>[
                         TweenAnimationBuilder<double>(
                           tween: Tween(begin: 0, end: 1),
                           duration: const Duration(milliseconds: 600),
-                          builder: (context, scale, child) {
+                          builder: (BuildContext context, double scale, Widget? child) {
                             return Transform.scale(
                               scale: scale,
                               child: Icon(Icons.error, size: 64, color: Colors.red.shade400),
@@ -147,14 +148,14 @@ class _RideServiceListScreenState extends State<RideServiceListScreen> with Tick
                   child: ListView.builder(
                     padding: const EdgeInsets.all(8),
                     itemCount: state.rides.length,
-                    itemBuilder: (context, index) {
-                      final ride = state.rides[index];
+                    itemBuilder: (BuildContext context, int index) {
+                      final RideModel ride = state.rides[index];
                       return TweenAnimationBuilder<double>(
                         tween: Tween(begin: 0, end: 1),
                         duration: Duration(milliseconds: 300 + (index * 80)),
                         curve: Curves.easeOutBack,
-                        builder: (context, value, child) {
-                          final clampedValue = value.clamp(0.0, 1.0);
+                        builder: (BuildContext context, double value, Widget? child) {
+                          final double clampedValue = value.clamp(0.0, 1.0);
                           return Transform.translate(
                             offset: Offset(0, 30 * (1 - clampedValue)),
                             child: Opacity(
@@ -165,8 +166,8 @@ class _RideServiceListScreenState extends State<RideServiceListScreen> with Tick
                                 onTap: () => Navigator.push(
                                   context,
                                   PageRouteBuilder(
-                                    pageBuilder: (context, animation, _) => RideDetailScreen(ride: ride),
-                                    transitionsBuilder: (context, animation, _, child) {
+                                    pageBuilder: (BuildContext context, Animation<double> animation, _) => RideDetailScreen(ride: ride),
+                                    transitionsBuilder: (BuildContext context, Animation<double> animation, _, Widget child) {
                                       return SlideTransition(
                                         position: Tween<Offset>(
                                           begin: const Offset(1.0, 0.0),
@@ -252,7 +253,7 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
       },
       child: AnimatedBuilder(
         animation: _hoverController,
-        builder: (context, child) {
+        builder: (BuildContext context, Widget? child) {
           final double scale = 1.0 + (_hoverController.value * 0.02);
           final double elevation = 4.0 + (_hoverController.value * 4.0);
 
@@ -270,7 +271,7 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                   decoration: BoxDecoration(
                     color: Theme.of(context).scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(5.r),
-                    boxShadow: [
+                    boxShadow: <BoxShadow>[
                       BoxShadow(
                         color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                         blurRadius: 5,
@@ -281,13 +282,13 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Row(
-                      children: [
+                      children: <Widget>[
                         Hero(
                           tag: 'service_icon_${widget.index}',
                           child: TweenAnimationBuilder<double>(
                             tween: Tween(begin: 0, end: 1),
                             duration: const Duration(milliseconds: 500),
-                            builder: (context, value, child) {
+                            builder: (BuildContext context, double value, Widget? child) {
                               return Transform.rotate(
                                 angle: value * 2 * 3.14159,
                                 child: Icon(
@@ -303,7 +304,7 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                            children: <Widget>[
                               Hero(
                                 tag: 'driver_name_${widget.index}',
                                 child: Material(
@@ -327,13 +328,13 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                               ),
                               const SizedBox(height: 2),
                               Row(
-                                children: [
+                                children: <Widget>[
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                     decoration: BoxDecoration(
                                       color: Theme.of(context).scaffoldBackgroundColor,
                                       borderRadius: BorderRadius.circular(5.r),
-                                      boxShadow: [
+                                      boxShadow: <BoxShadow>[
                                         BoxShadow(
                                           color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                                           blurRadius: 5,
@@ -353,7 +354,7 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                                   TweenAnimationBuilder<double>(
                                     tween: Tween(begin: 0, end: 1),
                                     duration: const Duration(milliseconds: 600),
-                                    builder: (context, scale, child) {
+                                    builder: (BuildContext context, double scale, Widget? child) {
                                       return Transform.scale(
                                         scale: scale,
                                         child: const Icon(Icons.star, size: 16, color: Colors.amber),
@@ -382,7 +383,7 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
+                          children: <Widget>[
                             Hero(
                               tag: 'price_${widget.index}',
                               child: Text(

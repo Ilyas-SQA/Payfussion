@@ -26,7 +26,7 @@ class BankDropdownWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         _buildHeader(context),
         SizedBox(height: 8.h),
         _buildBankSelector(context),
@@ -49,7 +49,7 @@ class BankDropdownWidget extends StatelessWidget {
 
   Widget _buildBankSelector(BuildContext context) {
     return Column(
-      children: [
+      children: <Widget>[
         // Main Bank Selection Container
         GestureDetector(
           onTap: () => _showBankSelectionModal(context),
@@ -60,7 +60,7 @@ class BankDropdownWidget extends StatelessWidget {
               color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(12.r),
               border: state.bankError != null ? Border.all(color: Colors.red, width: 1) : Border.all(color: Colors.grey.shade300, width: 1),
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: AppColors.secondaryBlue.withOpacity(0.1),
                   blurRadius: 8,
@@ -69,7 +69,7 @@ class BankDropdownWidget extends StatelessWidget {
               ],
             ),
             child: Row(
-              children: [
+              children: <Widget>[
                 Icon(
                   Icons.account_balance_outlined,
                   color: MyTheme.primaryColor,
@@ -102,13 +102,13 @@ class BankDropdownWidget extends StatelessWidget {
         ),
 
         // Bank Details Section (shown when bank is selected)
-        if (state.selectedBank != null) ...[
+        if (state.selectedBank != null) ...<Widget>[
           SizedBox(height: 12.h),
           _buildBankDetailsCard(context,state.selectedBank!),
         ],
 
         // Error message for bank selection
-        if (state.bankError != null) ...[
+        if (state.bankError != null) ...<Widget>[
           SizedBox(height: 8.h),
           Padding(
             padding: EdgeInsets.only(left: 4.w),
@@ -142,10 +142,10 @@ class BankDropdownWidget extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           // Header with bank name and change button
           Row(
-            children: [
+            children: <Widget>[
               Icon(
                 Icons.info_outline,
                 color: MyTheme.primaryColor,
@@ -187,27 +187,27 @@ class BankDropdownWidget extends StatelessWidget {
           // Bank details grid
           _buildDetailRow('Bank Name', bank.name),
 
-          if (bank.code.isNotEmpty) ...[
+          if (bank.code.isNotEmpty) ...<Widget>[
             SizedBox(height: 8.h),
             _buildDetailRow('Bank Code', bank.code),
           ],
 
-          if (bank.branchName.isNotEmpty) ...[
+          if (bank.branchName.isNotEmpty) ...<Widget>[
             SizedBox(height: 8.h),
             _buildDetailRow('Branch Name', bank.branchName),
           ],
 
-          if (bank.branchCode.isNotEmpty) ...[
+          if (bank.branchCode.isNotEmpty) ...<Widget>[
             SizedBox(height: 8.h),
             _buildDetailRow('Branch Code', bank.branchCode),
           ],
 
-          if (bank.address.isNotEmpty) ...[
+          if (bank.address.isNotEmpty) ...<Widget>[
             SizedBox(height: 8.h),
             _buildDetailRow('Address', bank.address),
           ],
 
-          if (bank.city.isNotEmpty) ...[
+          if (bank.city.isNotEmpty) ...<Widget>[
             SizedBox(height: 8.h),
             _buildDetailRow('City', bank.city),
           ],
@@ -219,7 +219,7 @@ class BankDropdownWidget extends StatelessWidget {
   Widget _buildDetailRow(String label, String value) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         SizedBox(
           width: 80.w,
           child: Text(
@@ -257,7 +257,7 @@ class BankDropdownWidget extends StatelessWidget {
           selectedBank: state.selectedBank,
           banks: state.filteredBanks,
           isLoading: state.banksLoading,
-          onBankSelected: (bank) {
+          onBankSelected: (Bank bank) {
             bloc.add(BankChanged(bank));
             if (accountFocusNode != null) {
               FocusScope.of(context).requestFocus(accountFocusNode);
@@ -313,7 +313,7 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
             borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
           ),
           child: Column(
-            children: [
+            children: <Widget>[
               _buildModalHeader(),
               _buildSearchField(),
               _buildBankList(scrollController),
@@ -328,7 +328,7 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
     return Container(
       padding: EdgeInsets.all(16.w),
       child: Row(
-        children: [
+        children: <Widget>[
           Icon(
             Icons.account_balance,
             color: MyTheme.primaryColor,
@@ -363,7 +363,7 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       child: AppTextFormField(
         controller: _searchController,
-        onChanged: (query) {
+        onChanged: (String query) {
           context.read<RecipientBloc>().add(BankSearchChanged(query));
         },
 
@@ -381,7 +381,7 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
   Widget _buildBankList(ScrollController scrollController) {
     return Expanded(
       child: BlocBuilder<RecipientBloc, AddRecipientState>(
-        builder: (context, state) {
+        builder: (BuildContext context, AddRecipientState state) {
           if (state.banksLoading) {
             return const Center(
               child: CircularProgressIndicator(color: MyTheme.primaryColor),
@@ -392,7 +392,7 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: <Widget>[
                   Icon(
                     Icons.search_off,
                     size: 48.sp,
@@ -421,9 +421,9 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
           return ListView.builder(
             controller: scrollController,
             itemCount: state.filteredBanks.length,
-            itemBuilder: (context, index) {
-              final bank = state.filteredBanks[index];
-              final isSelected = widget.selectedBank?.id == bank.id;
+            itemBuilder: (BuildContext context, int index) {
+              final Bank bank = state.filteredBanks[index];
+              final bool isSelected = widget.selectedBank?.id == bank.id;
 
               return ListTile(
                 onTap: () => widget.onBankSelected(bank),
@@ -475,7 +475,7 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
       context: context,
       isScrollControlled: true,
       // backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      builder: (context) => BlocProvider.value(
+      builder: (BuildContext context) => BlocProvider.value(
         value: context.read<RecipientBloc>(),
         child: const AddBankModal(),
       ),
@@ -491,13 +491,13 @@ class AddBankModal extends StatefulWidget {
 }
 
 class _AddBankModalState extends State<AddBankModal> {
-  final _formKey = GlobalKey<FormState>();
-  final _bankNameController = TextEditingController();
-  final _bankCodeController = TextEditingController();
-  final _branchNameController = TextEditingController();
-  final _branchCodeController = TextEditingController();
-  final _addressController = TextEditingController();
-  final _cityController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _bankNameController = TextEditingController();
+  final TextEditingController _bankCodeController = TextEditingController();
+  final TextEditingController _branchNameController = TextEditingController();
+  final TextEditingController _branchCodeController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController();
 
   @override
   void dispose() {
@@ -516,13 +516,13 @@ class _AddBankModalState extends State<AddBankModal> {
       initialChildSize: 0.95,
       minChildSize: 0.6,
       maxChildSize: 0.95,
-      builder: (context, scrollController) {
+      builder: (BuildContext context, ScrollController scrollController) {
         return Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
           ),
           child: Column(
-            children: [
+            children: <Widget>[
               _buildAddBankHeader(),
               Expanded(
                 child: Form(
@@ -530,7 +530,7 @@ class _AddBankModalState extends State<AddBankModal> {
                   child: ListView(
                     controller: scrollController,
                     padding: EdgeInsets.all(16.w),
-                    children: [
+                    children: <Widget>[
                       _buildTextField(
                         controller: _bankNameController,
                         label: 'Bank Name *',
@@ -594,7 +594,7 @@ class _AddBankModalState extends State<AddBankModal> {
         border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
       ),
       child: Row(
-        children: [
+        children: <Widget>[
           Container(
             padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
@@ -611,7 +611,7 @@ class _AddBankModalState extends State<AddBankModal> {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Text(
                   'Add New Bank',
                   style: Font.montserratFont(
@@ -662,11 +662,11 @@ class _AddBankModalState extends State<AddBankModal> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
-          borderSide: BorderSide(color: MyTheme.primaryColor, width: 2),
+          borderSide: const BorderSide(color: MyTheme.primaryColor, width: 2),
         ),
       ),
       validator: isRequired
-          ? (value) {
+          ? (String? value) {
         if (value == null || value.trim().isEmpty) {
           return '$label is required';
         }
@@ -681,14 +681,14 @@ class _AddBankModalState extends State<AddBankModal> {
 
   Widget _buildSubmitButton() {
     return BlocConsumer<RecipientBloc, AddRecipientState>(
-      listener: (context, state) {
+      listener: (BuildContext context, AddRecipientState state) {
         if (state.errorMessage != null) {
           if (state.errorMessage!.contains('successfully')) {
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Row(
-                  children: [
+                  children: <Widget>[
                     const Icon(Icons.check_circle, color: Colors.white),
                     SizedBox(width: 8.w),
                     Expanded(child: Text(state.errorMessage!)),
@@ -709,7 +709,7 @@ class _AddBankModalState extends State<AddBankModal> {
           }
         }
       },
-      builder: (context, state) {
+      builder: (BuildContext context, AddRecipientState state) {
         return SizedBox(
           width: double.infinity,
           height: 56.h,
@@ -726,7 +726,7 @@ class _AddBankModalState extends State<AddBankModal> {
             child: state.isAddingBank
                 ? Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 SizedBox(
                   width: 20.w,
                   height: 20.h,
@@ -763,7 +763,7 @@ class _AddBankModalState extends State<AddBankModal> {
   void _handleSubmit() {
     if (!_formKey.currentState!.validate()) return;
 
-    final bankData = {
+    final Map<String, String> bankData = <String, String>{
       'name': _bankNameController.text.trim(),
       'code': _bankCodeController.text.trim(),
       'branchName': _branchNameController.text.trim(),

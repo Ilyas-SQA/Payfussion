@@ -7,6 +7,8 @@ import 'package:payfussion/core/constants/routes_name.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/data/models/community_form/community_form_model.dart';
 import 'package:payfussion/data/models/user/user_model.dart';
+import '../../../core/circular_indicator.dart';
+import '../../../core/constants/fonts.dart';
 import '../../../core/utils/dates_utils.dart';
 import 'create_forum_post.dart';
 
@@ -20,8 +22,8 @@ class CommunityForumScreen extends StatefulWidget {
 class _CommunityForumScreenState extends State<CommunityForumScreen>
     with TickerProviderStateMixin {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final Map<String, TextEditingController> _commentControllers = {};
-  final Map<String, AnimationController> _likeAnimations = {};
+  final Map<String, TextEditingController> _commentControllers = <String, TextEditingController>{};
+  final Map<String, AnimationController> _likeAnimations = <String, AnimationController>{};
   final String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
   @override
@@ -31,10 +33,10 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
 
   @override
   void dispose() {
-    for (var controller in _commentControllers.values) {
+    for (TextEditingController controller in _commentControllers.values) {
       controller.dispose();
     }
-    for (var controller in _likeAnimations.values) {
+    for (AnimationController controller in _likeAnimations.values) {
       controller.dispose();
     }
     super.dispose();
@@ -48,7 +50,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
   }
 
   AnimationController _getOrCreateAnimationController(String postId, String type) {
-    final key = '${postId}_$type';
+    final String key = '${postId}_$type';
     if (!_likeAnimations.containsKey(key)) {
       _likeAnimations[key] = AnimationController(
         duration: const Duration(milliseconds: 300),
@@ -60,20 +62,20 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
 
   // Stream for real-time posts data
   Stream<List<CommunityFormModel>> get postsStream {
-    return firestore.collection("communityForm").orderBy('createDate', descending: true).snapshots().asyncMap((snapshot) async {
-      final List<CommunityFormModel> posts = [];
+    return firestore.collection("communityForm").orderBy('createDate', descending: true).snapshots().asyncMap((QuerySnapshot<Map<String, dynamic>> snapshot) async {
+      final List<CommunityFormModel> posts = <CommunityFormModel>[];
 
-      for (var doc in snapshot.docs) {
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc in snapshot.docs) {
         try {
-          final postData = doc.data();
-          final postModel = CommunityFormModel.fromMap(postData);
+          final Map<String, dynamic> postData = doc.data();
+          final CommunityFormModel postModel = CommunityFormModel.fromMap(postData);
 
           // Fetch user details using userId
           if (postModel.userId.isNotEmpty) {
             try {
-              final userSnapshot = await firestore.collection("users").doc(postModel.userId).get();
+              final DocumentSnapshot<Map<String, dynamic>> userSnapshot = await firestore.collection("users").doc(postModel.userId).get();
               if (userSnapshot.exists) {
-                final userModel = UserModel.fromJson(userSnapshot.data()!);
+                final UserModel userModel = UserModel.fromJson(userSnapshot.data()!);
                 postModel.userName = userModel.fullName ?? 'Unknown User';
                 postModel.userProfileImage = userModel.profileImageUrl ?? '';
               }
@@ -99,7 +101,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text("Community Forum",),
-        actions: [
+        actions: <Widget>[
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
             child: Container(
@@ -126,7 +128,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
       ),
       body: StreamBuilder<List<CommunityFormModel>>(
         stream: postsStream,
-        builder: (context, snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<List<CommunityFormModel>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return _buildLoadingState();
           }
@@ -139,7 +141,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
             return _buildEmptyState();
           }
 
-          final posts = snapshot.data!;
+          final List<CommunityFormModel> posts = snapshot.data!;
           return _buildPostsList(posts);
         },
       ),
@@ -147,10 +149,8 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
   }
 
   Widget _buildLoadingState() {
-    return const Center(
-      child: CircularProgressIndicator(
-        color: MyTheme.primaryColor,
-      ),
+    return Center(
+      child: CircularIndicator.circular,
     );
   }
 
@@ -158,17 +158,17 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+        children: <Widget>[
           Icon(Icons.error_outline, size: 60.sp, color: Colors.red),
           SizedBox(height: 20.h),
           Text(
             'Failed to load posts',
-            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+            style: Font.montserratFont(fontSize: 16.sp, fontWeight: FontWeight.w600),
           ),
           SizedBox(height: 10.h),
           Text(
             error,
-            style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade600),
+            style: Font.montserratFont(fontSize: 14.sp, color: Colors.grey.shade600),
             textAlign: TextAlign.center,
           ),
         ],
@@ -182,7 +182,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
         padding: EdgeInsets.all(32.w),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             Icon(
               Icons.forum_outlined,
               size: 80.sp,
@@ -191,7 +191,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
             SizedBox(height: 20.h),
             Text(
               'No posts yet',
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 20.sp,
                 color: Colors.grey,
                 fontWeight: FontWeight.w600,
@@ -200,7 +200,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
             SizedBox(height: 10.h),
             Text(
               'Be the first to share something!',
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 14.sp,
                 color: Colors.grey,
               ),
@@ -223,8 +223,8 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
         physics: const AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
         itemCount: posts.length,
-        itemBuilder: (context, index) {
-          final post = posts[index];
+        itemBuilder: (BuildContext context, int index) {
+          final CommunityFormModel post = posts[index];
           return _buildPostCard(post);
         },
       ),
@@ -241,7 +241,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -251,7 +251,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           // Post Header
           _buildPostHeader(post),
 
@@ -273,7 +273,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
     return Padding(
       padding: EdgeInsets.all(12.w),
       child: Row(
-        children: [
+        children: <Widget>[
           CircleAvatar(
             radius: 20.r,
             backgroundColor: Colors.grey.shade300,
@@ -287,17 +287,17 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Text(
                   post.userName ?? 'Unknown User',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontWeight: FontWeight.w600,
                     fontSize: 15.sp,
                   ),
                 ),
                 Text(
                   DatesUtils.formatDate(post.createDate),
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 13.sp,
                     color: Colors.grey.shade600,
                   ),
@@ -315,7 +315,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
       padding: EdgeInsets.symmetric(horizontal: 12.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           if (post.question.isNotEmpty)
             Container(
               width: double.infinity,
@@ -327,10 +327,10 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: <Widget>[
                   Text(
                     post.question,
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontSize: 18.sp,
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
@@ -344,7 +344,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                       padding: EdgeInsets.only(bottom: 12.h),
                       child: Text(
                         post.content,
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           fontSize: 15.sp,
                           height: 1.3,
                           fontWeight: FontWeight.bold,
@@ -365,10 +365,10 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
       child: Row(
-        children: [
-          if (likesCount > 0) ...[
+        children: <Widget>[
+          if (likesCount > 0) ...<Widget>[
             Row(
-              children: [
+              children: <Widget>[
                 Container(
                   width: 20.w,
                   height: 20.h,
@@ -385,7 +385,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                 SizedBox(width: 6.w),
                 Text(
                   '$likesCount',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     color: Colors.grey.shade600,
                     fontSize: 13.sp,
                   ),
@@ -397,7 +397,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
           if (commentsCount > 0)
             Text(
               '$commentsCount ${commentsCount == 1 ? 'comment' : 'comments'}',
-              style: TextStyle(
+              style: Font.montserratFont(
                 color: Colors.grey.shade600,
                 fontSize: 13.sp,
               ),
@@ -417,7 +417,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
         ),
       ),
       child: Row(
-        children: [
+        children: <Widget>[
           Expanded(
             child: _buildActionButton(
               icon: isLiked ? Icons.thumb_up : Icons.thumb_up_outlined,
@@ -459,12 +459,12 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
         padding: EdgeInsets.symmetric(vertical: 12.h),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             Icon(icon, color: color, size: 20.sp),
             SizedBox(width: 8.w),
             Text(
               label,
-              style: TextStyle(
+              style: Font.montserratFont(
                 color: color,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
@@ -478,15 +478,15 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
 
   // Comments bottom sheet with StreamBuilder for real-time updates
   void _showCommentsBottomSheet(BuildContext context, CommunityFormModel post) {
-    final controller = _getCommentController(post.postId);
+    final TextEditingController controller = _getCommentController(post.postId);
 
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (modalContext) => StreamBuilder<DocumentSnapshot>(
+      builder: (BuildContext modalContext) => StreamBuilder<DocumentSnapshot>(
         stream: firestore.collection("communityForm").doc(post.postId).snapshots(),
-        builder: (context, snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot<Object?>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Container(
               height: MediaQuery.of(context).size.height * 0.7,
@@ -515,14 +515,14 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
             );
           }
 
-          final postData = snapshot.data!.data() as Map<String, dynamic>;
-          final comments = List<Map<String, dynamic>>.from(postData['comments'] ?? []);
+          final Map<String, dynamic> postData = snapshot.data!.data() as Map<String, dynamic>;
+          final List<Map<String, dynamic>> comments = List<Map<String, dynamic>>.from(postData['comments'] ?? <dynamic>[]);
 
           return DraggableScrollableSheet(
             initialChildSize: 0.7,
             minChildSize: 0.5,
             maxChildSize: 0.9,
-            builder: (context, scrollController) => Container(
+            builder: (BuildContext context, ScrollController scrollController) => Container(
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
@@ -531,7 +531,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                 ),
               ),
               child: Column(
-                children: [
+                children: <Widget>[
                   // Handle bar
                   Container(
                     margin: EdgeInsets.only(top: 8.h),
@@ -548,10 +548,10 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                     padding: EdgeInsets.all(16.w),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
+                      children: <Widget>[
                         Text(
                           'Comments (${comments.length})',
-                          style: TextStyle(
+                          style: Font.montserratFont(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
@@ -571,7 +571,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                         ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                        children: <Widget>[
                           Icon(
                             Icons.comment_outlined,
                             size: 50.sp,
@@ -580,7 +580,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                           SizedBox(height: 16.h),
                           Text(
                             'No comments yet',
-                            style: TextStyle(
+                            style: Font.montserratFont(
                               fontSize: 16.sp,
                               color: Colors.grey,
                               fontWeight: FontWeight.w500,
@@ -588,7 +588,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                           ),
                           Text(
                             'Be the first to comment!',
-                            style: TextStyle(
+                            style: Font.montserratFont(
                               fontSize: 14.sp,
                               color: Colors.grey,
                             ),
@@ -600,8 +600,8 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                       controller: scrollController,
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       itemCount: comments.length,
-                      itemBuilder: (context, index) {
-                        final comment = comments[index];
+                      itemBuilder: (BuildContext context, int index) {
+                        final Map<String, dynamic> comment = comments[index];
                         return _buildCommentItem(comment, post.postId);
                       },
                     ),
@@ -616,7 +616,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                       ),
                     ),
                     child: Row(
-                      children: [
+                      children: <Widget>[
                         CircleAvatar(
                           radius: 20.r,
                           backgroundColor: Colors.grey.shade300,
@@ -636,7 +636,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                             ),
                             child: TextField(
                               controller: controller,
-                              style: TextStyle(fontSize: 14.sp),
+                              style: Font.montserratFont(fontSize: 14.sp),
                               maxLines: null,
                               decoration: InputDecoration(
                                 contentPadding: EdgeInsets.symmetric(
@@ -644,7 +644,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                                   vertical: 12.h,
                                 ),
                                 hintText: 'Write a comment...',
-                                hintStyle: TextStyle(
+                                hintStyle: Font.montserratFont(
                                   color: Colors.grey.shade600,
                                   fontSize: 14.sp,
                                 ),
@@ -683,7 +683,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
       padding: EdgeInsets.symmetric(vertical: 8.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           CircleAvatar(
             radius: 18.r,
             backgroundColor: Colors.grey.shade300,
@@ -703,10 +703,10 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Text(
                     comment['userName'] ?? 'Unknown User',
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontWeight: FontWeight.w600,
                       fontSize: 14.sp,
                       color: Colors.black,
@@ -715,7 +715,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                   SizedBox(height: 4.h),
                   Text(
                     comment['content'] ?? '',
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontSize: 14.sp,
                       color: Colors.black87,
                       height: 1.3,
@@ -723,10 +723,10 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                   ),
                   SizedBox(height: 8.h),
                   Row(
-                    children: [
+                    children: <Widget>[
                       Text(
                         _formatCommentDate(comment['createDate']),
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           fontSize: 12.sp,
                           color: Colors.grey.shade600,
                         ),
@@ -736,17 +736,17 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                       InkWell(
                         onTap: () => _handleCommentLike(postId, commentId, isCommentLiked),
                         child: Row(
-                          children: [
+                          children: <Widget>[
                             Icon(
                               isCommentLiked ? Icons.thumb_up : Icons.thumb_up_outlined,
                               size: 16.sp,
                               color: isCommentLiked ? MyTheme.primaryColor : Colors.grey.shade600,
                             ),
-                            if (commentLikesCount > 0) ...[
+                            if (commentLikesCount > 0) ...<Widget>[
                               SizedBox(width: 4.w),
                               Text(
                                 '$commentLikesCount',
-                                style: TextStyle(
+                                style: Font.montserratFont(
                                   fontSize: 12.sp,
                                   color: Colors.grey.shade600,
                                 ),
@@ -761,7 +761,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                         onTap: () => _showReplyDialog(context, postId, commentId),
                         child: Text(
                           'Reply',
-                          style: TextStyle(
+                          style: Font.montserratFont(
                             fontSize: 12.sp,
                             color: Colors.grey.shade600,
                             fontWeight: FontWeight.w600,
@@ -776,7 +776,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                     Padding(
                       padding: EdgeInsets.only(top: 12.h, left: 16.w),
                       child: Column(
-                        children: [
+                        children: <Widget>[
                           for (var reply in (comment['replies'] as List))
                             _buildReplyItem(reply, postId, commentId),
                         ],
@@ -800,7 +800,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
       padding: EdgeInsets.symmetric(vertical: 6.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           CircleAvatar(
             radius: 14.r,
             backgroundColor: Colors.grey.shade300,
@@ -821,10 +821,10 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Text(
                     reply['userName'] ?? 'Unknown User',
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontWeight: FontWeight.w600,
                       fontSize: 13.sp,
                       color: Colors.black,
@@ -833,7 +833,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                   SizedBox(height: 3.h),
                   Text(
                     reply['content'] ?? '',
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontSize: 13.sp,
                       color: Colors.black87,
                       height: 1.3,
@@ -841,10 +841,10 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                   ),
                   SizedBox(height: 6.h),
                   Row(
-                    children: [
+                    children: <Widget>[
                       Text(
                         _formatCommentDate(reply['createDate']),
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           fontSize: 11.sp,
                           color: Colors.grey.shade600,
                         ),
@@ -854,17 +854,17 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
                       InkWell(
                         onTap: () => _handleReplyLike(postId, commentId, replyId, isReplyLiked),
                         child: Row(
-                          children: [
+                          children: <Widget>[
                             Icon(
                               isReplyLiked ? Icons.thumb_up : Icons.thumb_up_outlined,
                               size: 14.sp,
                               color: isReplyLiked ? MyTheme.primaryColor : Colors.grey.shade600,
                             ),
-                            if (replyLikesCount > 0) ...[
+                            if (replyLikesCount > 0) ...<Widget>[
                               SizedBox(width: 3.w),
                               Text(
                                 '$replyLikesCount',
-                                style: TextStyle(
+                                style: Font.montserratFont(
                                   fontSize: 11.sp,
                                   color: Colors.grey.shade600,
                                 ),
@@ -887,9 +887,9 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
   String _formatCommentDate(String? dateString) {
     if (dateString == null) return 'Now';
     try {
-      final date = DateTime.parse(dateString);
-      final now = DateTime.now();
-      final difference = now.difference(date);
+      final DateTime date = DateTime.parse(dateString);
+      final DateTime now = DateTime.now();
+      final Duration difference = now.difference(date);
 
       if (difference.inMinutes < 1) return 'Now';
       if (difference.inMinutes < 60) return '${difference.inMinutes}m';
@@ -905,18 +905,18 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
   // Like handler for posts
   Future<void> _handleLike(String postId, bool isCurrentlyLiked) async {
     try {
-      final userId = FirebaseAuth.instance.currentUser?.uid;
+      final String? userId = FirebaseAuth.instance.currentUser?.uid;
       if (userId == null) return;
 
-      final postRef = firestore.collection("communityForm").doc(postId);
+      final DocumentReference<Map<String, dynamic>> postRef = firestore.collection("communityForm").doc(postId);
 
-      await firestore.runTransaction((transaction) async {
-        final postSnapshot = await transaction.get(postRef);
+      await firestore.runTransaction((Transaction transaction) async {
+        final DocumentSnapshot<Map<String, dynamic>> postSnapshot = await transaction.get(postRef);
         if (!postSnapshot.exists) return;
 
-        final postData = postSnapshot.data()!;
-        List<String> likes = List<String>.from(postData['likes'] ?? []);
-        List<String> dislikes = List<String>.from(postData['dislikes'] ?? []);
+        final Map<String, dynamic> postData = postSnapshot.data()!;
+        final List<String> likes = List<String>.from(postData['likes'] ?? <dynamic>[]);
+        final List<String> dislikes = List<String>.from(postData['dislikes'] ?? <dynamic>[]);
 
         // Remove from dislikes if present
         dislikes.remove(userId);
@@ -928,7 +928,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
           likes.add(userId);
         }
 
-        transaction.update(postRef, {
+        transaction.update(postRef, <String, dynamic>{
           'likes': likes,
           'dislikes': dislikes,
         });
@@ -962,23 +962,23 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
   // Comment like handler
   Future<void> _handleCommentLike(String postId, String commentId, bool isCurrentlyLiked) async {
     try {
-      final userId = FirebaseAuth.instance.currentUser?.uid;
+      final String? userId = FirebaseAuth.instance.currentUser?.uid;
       if (userId == null) return;
 
-      final postRef = firestore.collection("communityForm").doc(postId);
+      final DocumentReference<Map<String, dynamic>> postRef = firestore.collection("communityForm").doc(postId);
 
-      await firestore.runTransaction((transaction) async {
-        final postSnapshot = await transaction.get(postRef);
+      await firestore.runTransaction((Transaction transaction) async {
+        final DocumentSnapshot<Map<String, dynamic>> postSnapshot = await transaction.get(postRef);
         if (!postSnapshot.exists) return;
 
-        final postData = postSnapshot.data()!;
-        List<Map<String, dynamic>> comments = List<Map<String, dynamic>>.from(postData['comments'] ?? []);
+        final Map<String, dynamic> postData = postSnapshot.data()!;
+        final List<Map<String, dynamic>> comments = List<Map<String, dynamic>>.from(postData['comments'] ?? <dynamic>[]);
 
         // Find and update the specific comment
         for (int i = 0; i < comments.length; i++) {
           if (comments[i]['commentId'] == commentId) {
-            List<String> likes = List<String>.from(comments[i]['likes'] ?? []);
-            List<String> dislikes = List<String>.from(comments[i]['dislikes'] ?? []);
+            final List<String> likes = List<String>.from(comments[i]['likes'] ?? <dynamic>[]);
+            final List<String> dislikes = List<String>.from(comments[i]['dislikes'] ?? <dynamic>[]);
 
             // Remove from dislikes if present
             dislikes.remove(userId);
@@ -996,7 +996,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
           }
         }
 
-        transaction.update(postRef, {'comments': comments});
+        transaction.update(postRef, <String, dynamic>{'comments': comments});
       });
 
       // Show feedback
@@ -1026,27 +1026,27 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
   // Reply like handler
   Future<void> _handleReplyLike(String postId, String commentId, String replyId, bool isCurrentlyLiked) async {
     try {
-      final userId = FirebaseAuth.instance.currentUser?.uid;
+      final String? userId = FirebaseAuth.instance.currentUser?.uid;
       if (userId == null) return;
 
-      final postRef = firestore.collection("communityForm").doc(postId);
+      final DocumentReference<Map<String, dynamic>> postRef = firestore.collection("communityForm").doc(postId);
 
-      await firestore.runTransaction((transaction) async {
-        final postSnapshot = await transaction.get(postRef);
+      await firestore.runTransaction((Transaction transaction) async {
+        final DocumentSnapshot<Map<String, dynamic>> postSnapshot = await transaction.get(postRef);
         if (!postSnapshot.exists) return;
 
-        final postData = postSnapshot.data()!;
-        List<Map<String, dynamic>> comments = List<Map<String, dynamic>>.from(postData['comments'] ?? []);
+        final Map<String, dynamic> postData = postSnapshot.data()!;
+        final List<Map<String, dynamic>> comments = List<Map<String, dynamic>>.from(postData['comments'] ?? <dynamic>[]);
 
         // Find the comment and then the reply
         for (int i = 0; i < comments.length; i++) {
           if (comments[i]['commentId'] == commentId) {
-            List<Map<String, dynamic>> replies = List<Map<String, dynamic>>.from(comments[i]['replies'] ?? []);
+            final List<Map<String, dynamic>> replies = List<Map<String, dynamic>>.from(comments[i]['replies'] ?? <dynamic>[]);
 
             for (int j = 0; j < replies.length; j++) {
               if (replies[j]['replyId'] == replyId) {
-                List<String> likes = List<String>.from(replies[j]['likes'] ?? []);
-                List<String> dislikes = List<String>.from(replies[j]['dislikes'] ?? []);
+                final List<String> likes = List<String>.from(replies[j]['likes'] ?? <dynamic>[]);
+                final List<String> dislikes = List<String>.from(replies[j]['dislikes'] ?? <dynamic>[]);
 
                 // Remove from dislikes if present
                 dislikes.remove(userId);
@@ -1069,7 +1069,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
           }
         }
 
-        transaction.update(postRef, {'comments': comments});
+        transaction.update(postRef, <String, dynamic>{'comments': comments});
       });
 
       // Show feedback
@@ -1107,22 +1107,22 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
     if (controller.text.trim().isEmpty) return;
 
     try {
-      final userId = FirebaseAuth.instance.currentUser?.uid;
+      final String? userId = FirebaseAuth.instance.currentUser?.uid;
       if (userId == null) return;
 
       // Get current user details
-      final userSnapshot = await firestore.collection("users").doc(userId).get();
+      final DocumentSnapshot<Map<String, dynamic>> userSnapshot = await firestore.collection("users").doc(userId).get();
       String userName = "Unknown User";
       String userProfileImage = "";
 
       if (userSnapshot.exists) {
-        final userModel = UserModel.fromJson(userSnapshot.data()!);
+        final UserModel userModel = UserModel.fromJson(userSnapshot.data()!);
         userName = userModel.fullName ?? "Unknown User";
         userProfileImage = userModel.profileImageUrl ?? "";
       }
 
       // Create comment data
-      final commentData = {
+      final Map<String, Object> commentData = <String, Object>{
         'commentId': firestore.collection('temp').doc().id,
         'userId': userId,
         'userName': userName,
@@ -1135,8 +1135,8 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
       };
 
       // Add comment to post
-      await firestore.collection("communityForm").doc(postId).update({
-        'comments': FieldValue.arrayUnion([commentData])
+      await firestore.collection("communityForm").doc(postId).update(<Object, Object?>{
+        'comments': FieldValue.arrayUnion(<dynamic>[commentData])
       });
 
       controller.clear();
@@ -1144,9 +1144,9 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
       // Show success feedback
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Comment added successfully!'),
-            duration: const Duration(seconds: 1),
+          const SnackBar(
+            content: Text('Comment added successfully!'),
+            duration: Duration(seconds: 1),
             backgroundColor: Colors.green,
             behavior: SnackBarBehavior.floating,
           ),
@@ -1171,7 +1171,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
+      builder: (BuildContext dialogContext) => AlertDialog(
         title: const Text('Reply to Comment'),
         content: TextField(
           controller: replyController,
@@ -1182,7 +1182,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
           maxLines: 3,
           autofocus: true,
         ),
-        actions: [
+        actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Cancel'),
@@ -1204,34 +1204,34 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
   // Add reply
   Future<void> _addReply(String postId, String commentId, String content) async {
     try {
-      final userId = FirebaseAuth.instance.currentUser?.uid;
+      final String? userId = FirebaseAuth.instance.currentUser?.uid;
       if (userId == null) return;
 
       // Get current user details
-      final userSnapshot = await firestore.collection("users").doc(userId).get();
+      final DocumentSnapshot<Map<String, dynamic>> userSnapshot = await firestore.collection("users").doc(userId).get();
       String userName = "Unknown User";
       String userProfileImage = "";
 
       if (userSnapshot.exists) {
-        final userModel = UserModel.fromJson(userSnapshot.data()!);
+        final UserModel userModel = UserModel.fromJson(userSnapshot.data()!);
         userName = userModel.fullName ?? "Unknown User";
         userProfileImage = userModel.profileImageUrl ?? "";
       }
 
-      await firestore.runTransaction((transaction) async {
-        final postRef = firestore.collection("communityForm").doc(postId);
-        final postDoc = await transaction.get(postRef);
+      await firestore.runTransaction((Transaction transaction) async {
+        final DocumentReference<Map<String, dynamic>> postRef = firestore.collection("communityForm").doc(postId);
+        final DocumentSnapshot<Map<String, dynamic>> postDoc = await transaction.get(postRef);
 
         if (!postDoc.exists) return;
 
-        final postData = postDoc.data()!;
-        List<Map<String, dynamic>> comments = List<Map<String, dynamic>>.from(postData['comments'] ?? []);
+        final Map<String, dynamic> postData = postDoc.data()!;
+        final List<Map<String, dynamic>> comments = List<Map<String, dynamic>>.from(postData['comments'] ?? <dynamic>[]);
 
         // Find the comment to reply to
         for (int i = 0; i < comments.length; i++) {
           if (comments[i]['commentId'] == commentId) {
             // Create reply data
-            final replyData = {
+            final Map<String, Object> replyData = <String, Object>{
               'replyId': firestore.collection('temp').doc().id,
               'userId': userId,
               'userName': userName,
@@ -1243,7 +1243,7 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
             };
 
             // Add reply to the comment's replies array
-            List<Map<String, dynamic>> replies = List<Map<String, dynamic>>.from(comments[i]['replies'] ?? []);
+            final List<Map<String, dynamic>> replies = List<Map<String, dynamic>>.from(comments[i]['replies'] ?? <dynamic>[]);
             replies.add(replyData);
             comments[i]['replies'] = replies;
             break;
@@ -1251,15 +1251,15 @@ class _CommunityForumScreenState extends State<CommunityForumScreen>
         }
 
         // Update the post with modified comments
-        transaction.update(postRef, {'comments': comments});
+        transaction.update(postRef, <String, dynamic>{'comments': comments});
       });
 
       // Show success feedback
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Reply added successfully!'),
-            duration: const Duration(seconds: 1),
+          const SnackBar(
+            content: Text('Reply added successfully!'),
+            duration: Duration(seconds: 1),
             backgroundColor: Colors.green,
             behavior: SnackBarBehavior.floating,
           ),

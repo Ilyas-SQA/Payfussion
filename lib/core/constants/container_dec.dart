@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 BoxDecoration kcDeco = BoxDecoration(
   color: Colors.white,
   borderRadius: BorderRadius.circular(12.r),
-  boxShadow: [
+  boxShadow: <BoxShadow>[
     BoxShadow(
       color: const Color(0xff868699).withOpacity(0.1),
       spreadRadius: 1,
@@ -28,12 +28,12 @@ BoxDecoration kcDecoRadius = BoxDecoration(
 BoxDecoration sampleDoc = BoxDecoration(
   color: Colors.white,
   borderRadius: BorderRadius.circular(12.r),
-  boxShadow: [
+  boxShadow: <BoxShadow>[
     BoxShadow(
       color: Colors.grey.withOpacity(0.1),
       spreadRadius: 1,
       blurRadius: 2,
-      offset: Offset(0, 1), // changes position of shadow
+      offset: const Offset(0, 1), // changes position of shadow
     ),
   ],
 );

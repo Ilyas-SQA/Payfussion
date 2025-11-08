@@ -27,20 +27,20 @@ class _StockChartState extends State<GraphWidget> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           // Time period selector with flexible layout
           Wrap(
             spacing: 5,
             runSpacing: 1,
             alignment: WrapAlignment.center,
-            children: [
+            children: <String>[
               '1D',
               '5D',
               '1M',
               '1Y',
               '5Y',
               'Max',
-            ].map((period) => _buildPeriodButton(period)).toList(),
+            ].map((String period) => _buildPeriodButton(period)).toList(),
           ),
           16.verticalSpace,
           // Chart with flexible height
@@ -54,7 +54,7 @@ class _StockChartState extends State<GraphWidget> {
                     show: true,
                     drawVerticalLine: false,
                     horizontalInterval: 0.05,
-                    getDrawingHorizontalLine: (value) {
+                    getDrawingHorizontalLine: (double value) {
                       return FlLine(
                         color: Colors.grey.withOpacity(0.3),
                         strokeWidth: 1,
@@ -74,7 +74,7 @@ class _StockChartState extends State<GraphWidget> {
                         showTitles: true,
                         reservedSize: 25, // Reduced reserved size
                         interval: 5,
-                        getTitlesWidget: (value, meta) {
+                        getTitlesWidget: (double value, TitleMeta meta) {
                           return _buildBottomTitle(value);
                         },
                       ),
@@ -84,7 +84,7 @@ class _StockChartState extends State<GraphWidget> {
                         showTitles: true,
                         interval: 0.05,
                         reservedSize: 35, // Reduced reserved size
-                        getTitlesWidget: (value, meta) {
+                        getTitlesWidget: (double value, TitleMeta meta) {
                           return Text(
                             value.toStringAsFixed(2),
                             style: const TextStyle(
@@ -102,7 +102,7 @@ class _StockChartState extends State<GraphWidget> {
                   maxX: widget.dataPoints.length.toDouble() - 1,
                   minY: 3.65,
                   maxY: 3.85,
-                  lineBarsData: [
+                  lineBarsData: <LineChartBarData>[
                     LineChartBarData(
                       spots: widget.dataPoints,
                       isCurved: false,
@@ -111,7 +111,7 @@ class _StockChartState extends State<GraphWidget> {
                       isStrokeCapRound: true,
                       dotData: FlDotData(
                         show: true,
-                        getDotPainter: (spot, percent, barData, index) {
+                        getDotPainter: (FlSpot spot, double percent, LineChartBarData barData, int index) {
                           if (index == touchedIndex) {
                             return FlDotCirclePainter(
                               radius: 6,
@@ -131,7 +131,7 @@ class _StockChartState extends State<GraphWidget> {
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [
+                          colors: <Color>[
                             Colors.green.withOpacity(0.3),
                             Colors.green.withOpacity(0.1),
                             Colors.transparent,
@@ -153,7 +153,7 @@ class _StockChartState extends State<GraphWidget> {
                           }
                         },
                     touchTooltipData: LineTouchTooltipData(
-                      getTooltipColor: (touchedSpot) => Colors.white,
+                      getTooltipColor: (LineBarSpot touchedSpot) => Colors.white,
                       tooltipBorderRadius: BorderRadius.circular(8),
                       tooltipPadding: const EdgeInsets.all(8),
                       getTooltipItems: (List<LineBarSpot> touchedSpots) {
@@ -171,15 +171,15 @@ class _StockChartState extends State<GraphWidget> {
                     ),
                     getTouchedSpotIndicator:
                         (LineChartBarData barData, List<int> spotIndexes) {
-                          return spotIndexes.map((spotIndex) {
+                          return spotIndexes.map((int spotIndex) {
                             return TouchedSpotIndicatorData(
                               FlLine(
                                 color: Colors.grey.withOpacity(0.8),
                                 strokeWidth: 1,
-                                dashArray: [3, 3],
+                                dashArray: <int>[3, 3],
                               ),
                               FlDotData(
-                                getDotPainter: (spot, percent, barData, index) {
+                                getDotPainter: (FlSpot spot, double percent, LineChartBarData barData, int index) {
                                   return FlDotCirclePainter(
                                     radius: 6,
                                     color: Colors.green,

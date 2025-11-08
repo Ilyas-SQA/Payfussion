@@ -35,7 +35,7 @@ class PayBillRepository {
         throw Exception('User not authenticated');
       }
 
-      Map<String, dynamic> updateData = {
+      final Map<String, dynamic> updateData = <String, dynamic>{
         'status': status,
         'updatedAt': DateTime.now().toIso8601String(),
       };
@@ -62,7 +62,7 @@ class PayBillRepository {
         throw Exception('User not authenticated');
       }
 
-      QuerySnapshot querySnapshot = await _firestore
+      final QuerySnapshot querySnapshot = await _firestore
           .collection('users')
           .doc(currentUserId)
           .collection('payBills')
@@ -70,7 +70,7 @@ class PayBillRepository {
           .get();
 
       return querySnapshot.docs
-          .map((doc) => PayBillModel.fromFirestore(doc))
+          .map((QueryDocumentSnapshot<Object?> doc) => PayBillModel.fromFirestore(doc))
           .toList();
     } catch (e) {
       throw Exception('Failed to get pay bills: $e');
@@ -84,7 +84,7 @@ class PayBillRepository {
         throw Exception('User not authenticated');
       }
 
-      QuerySnapshot querySnapshot = await _firestore
+      final QuerySnapshot querySnapshot = await _firestore
           .collection('users')
           .doc(currentUserId)
           .collection('payBills')
@@ -93,7 +93,7 @@ class PayBillRepository {
           .get();
 
       return querySnapshot.docs
-          .map((doc) => PayBillModel.fromFirestore(doc))
+          .map((QueryDocumentSnapshot<Object?> doc) => PayBillModel.fromFirestore(doc))
           .toList();
     } catch (e) {
       throw Exception('Failed to get pay bills by status: $e');
@@ -107,7 +107,7 @@ class PayBillRepository {
         throw Exception('User not authenticated');
       }
 
-      DocumentSnapshot doc = await _firestore
+      final DocumentSnapshot doc = await _firestore
           .collection('users')
           .doc(currentUserId)
           .collection('payBills')
@@ -153,8 +153,8 @@ class PayBillRepository {
         .collection('payBills')
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-        .map((doc) => PayBillModel.fromFirestore(doc))
+        .map((QuerySnapshot<Map<String, dynamic>> snapshot) => snapshot.docs
+        .map((QueryDocumentSnapshot<Map<String, dynamic>> doc) => PayBillModel.fromFirestore(doc))
         .toList());
   }
 }

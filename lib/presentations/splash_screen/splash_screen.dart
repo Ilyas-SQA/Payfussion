@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/presentations/splash_screen/splash_service.dart';
 import 'package:payfussion/presentations/widgets/background_theme.dart';
+import '../../core/circular_indicator.dart';
 import '../../core/constants/fonts.dart';
 import '../../core/constants/image_url.dart';
 
@@ -131,14 +130,14 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: AnimatedBuilder(
-        animation: Listenable.merge([
+        animation: Listenable.merge(<Listenable?>[
           _logoController,
           _textController,
           _fadeController,
         ]),
         builder: (BuildContext context, Widget? child) {
           return Stack(
-            children: [
+            children: <Widget>[
               AnimatedBackground(
                 animationController: _backgroundAnimationController,
               ),
@@ -188,14 +187,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                     const SizedBox(height: 40),
                     Opacity(
                       opacity: _textOpacityAnimation.value,
-                      child: const SizedBox(
-                        width: 40,
-                        height: 40,
-                        child: SpinKitFadingCircle(
-                          color:  MyTheme.primaryColor,
-                          size: 50.0,
-                        ),
-                      ),
+                      child: CircularIndicator.circular,
                     ),
                   ],
                 ),

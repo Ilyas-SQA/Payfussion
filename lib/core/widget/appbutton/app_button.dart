@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:payfussion/core/constants/fonts.dart';
+import '../../circular_indicator.dart';
 import '../../theme/theme.dart';
 
 class AppButton extends StatelessWidget {
@@ -44,11 +45,11 @@ class AppButton extends StatelessWidget {
           ),
         ),
         child: loading ?
-        const Center(child: SizedBox(height: 20,width: 20,child: CircularProgressIndicator(color: Colors.white,))) :
+        Center(child: SizedBox(height: 50,width:50,child: CircularIndicator.circularWhite)) :
         isIcon ? Row(
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 10,
-          children: [
+          children: <Widget>[
             Icon(icon,color: Colors.white,),
             Center(
               child: Text(

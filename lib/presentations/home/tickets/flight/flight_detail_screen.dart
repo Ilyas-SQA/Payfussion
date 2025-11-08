@@ -135,7 +135,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
         iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -150,7 +150,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                     position: _slideAnimation,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         // Main flight info card with hero animation
                         Hero(
                           tag: "flight_${widget.flight.flightNumber}",
@@ -160,7 +160,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                               decoration: BoxDecoration(
                                 color: Theme.of(context).scaffoldBackgroundColor,
                                 borderRadius: BorderRadius.circular(5.r),
-                                boxShadow: [
+                                boxShadow: <BoxShadow>[
                                   BoxShadow(
                                     color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                                     blurRadius: 5,
@@ -172,13 +172,13 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                                 padding: const EdgeInsets.all(20),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
+                                  children: <Widget>[
                                     Row(
-                                      children: [
+                                      children: <Widget>[
                                         TweenAnimationBuilder<double>(
                                           duration: const Duration(milliseconds: 800),
                                           tween: Tween(begin: 0.0, end: 1.0),
-                                          builder: (context, value, child) {
+                                          builder: (BuildContext context, double value, Widget? child) {
                                             return Transform.rotate(
                                               angle: value * 2 * 3.14159,
                                               child: Transform.scale(
@@ -196,7 +196,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                                         Expanded(
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
+                                            children: <Widget>[
                                               AnimatedTextReveal(
                                                 text: widget.flight.airline,
                                                 style: const TextStyle(
@@ -221,7 +221,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                                                   decoration: BoxDecoration(
                                                     color: Theme.of(context).scaffoldBackgroundColor,
                                                     borderRadius: BorderRadius.circular(5.r),
-                                                    boxShadow: [
+                                                    boxShadow: <BoxShadow>[
                                                       BoxShadow(
                                                         color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                                                         blurRadius: 5,
@@ -256,14 +256,14 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                         const SizedBox(height: 20),
 
                         // Amenities section
-                        if (widget.flight.amenities.isNotEmpty) ...[
+                        if (widget.flight.amenities.isNotEmpty) ...<Widget>[
                           StaggeredAnimationCard(
                             delay: const Duration(milliseconds: 600),
                             child: Container(
                               decoration: BoxDecoration(
                                 color: Theme.of(context).scaffoldBackgroundColor,
                                 borderRadius: BorderRadius.circular(5.r),
-                                boxShadow: [
+                                boxShadow: <BoxShadow>[
                                   BoxShadow(
                                     color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                                     blurRadius: 5,
@@ -275,7 +275,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                                 padding: const EdgeInsets.all(20),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
+                                  children: <Widget>[
                                     const AnimatedTextReveal(
                                       text: "Amenities",
                                       style: TextStyle(
@@ -286,14 +286,14 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                                     ),
                                     const SizedBox(height: 8),
                                     ...widget.flight.amenities.asMap().entries.map(
-                                          (entry) => DelayedAnimation(
+                                          (MapEntry<int, String> entry) => DelayedAnimation(
                                         delay: Duration(milliseconds: 800 + (entry.key * 100)),
                                         child: SlideInAnimation(
                                           direction: SlideDirection.left,
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(vertical: 2),
                                             child: Row(
-                                              children: [
+                                              children: <Widget>[
                                                 TweenAnimationBuilder<double>(
                                                   duration: Duration(milliseconds: 300 + (entry.key * 50)),
                                                   tween: Tween(begin: 0.0, end: 1.0),
@@ -329,7 +329,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                           delay: const Duration(milliseconds: 1000),
                           child: AnimatedBuilder(
                             animation: _scaleAnimation,
-                            builder: (context, child) {
+                            builder: (BuildContext context, Widget? child) {
                               return Transform.scale(
                                 scale: _scaleAnimation.value,
                                 child: SizedBox(
@@ -345,9 +345,9 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                                         Navigator.push(
                                           context,
                                           PageRouteBuilder(
-                                            pageBuilder: (context, animation, secondaryAnimation) =>
+                                            pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) =>
                                                 FlightPaymentScreen(flight: widget.flight),
-                                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                            transitionsBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
                                               return FadeTransition(
                                                 opacity: animation,
                                                 child: SlideTransition(
@@ -386,7 +386,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
   Widget _buildAnimatedFlightRoute() {
     return AnimatedBuilder(
       animation: _routeAnimation,
-      builder: (context, child) {
+      builder: (BuildContext context, Widget? child) {
         return AnimatedContainer(
           duration: const Duration(milliseconds: 500),
           padding: const EdgeInsets.all(16),
@@ -394,7 +394,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
             borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
-            children: [
+            children: <Widget>[
               Expanded(
                 child: SlideTransition(
                   position: Tween<Offset>(
@@ -403,7 +403,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                   ).animate(_routeAnimation),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(
                         widget.flight.departureTime,
                         style: const TextStyle(
@@ -424,7 +424,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
               ScaleTransition(
                 scale: _routeAnimation,
                 child: Column(
-                  children: [
+                  children: <Widget>[
                     RotationTransition(
                       turns: Tween<double>(begin: 0, end: 0.1).animate(_routeAnimation),
                       child: const Icon(
@@ -450,7 +450,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                   ).animate(_routeAnimation),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
+                    children: <Widget>[
                       Text(
                         widget.flight.arrivalTime,
                         style: const TextStyle(
@@ -476,7 +476,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
   }
 
   List<Widget> _buildAnimatedDetailRows() {
-    final details = [
+    final List<(IconData, String, String)> details = <(IconData, String, String)>[
       (Icons.flight_takeoff, "Aircraft", widget.flight.aircraft),
       (Icons.access_time, "Duration", widget.flight.duration),
       (Icons.airline_seat_recline_normal, "Total Seats", "${widget.flight.totalSeats} seats"),
@@ -487,7 +487,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
       details.add((Icons.connecting_airports, "Stops", "${widget.flight.stops} stop${widget.flight.stops > 1 ? 's' : ''}"));
     }
 
-    return details.asMap().entries.map((entry) {
+    return details.asMap().entries.map((MapEntry<int, (IconData, String, String)> entry) {
       final int index = entry.key;
       final (IconData, String, String) detail = entry.value;
 
@@ -528,11 +528,11 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             TweenAnimationBuilder<double>(
               duration: const Duration(milliseconds: 300),
               tween: Tween(begin: 0.0, end: 1.0),
-              builder: (context, value, child) {
+              builder: (BuildContext context, double value, Widget? child) {
                 return Transform.scale(
                   scale: value,
                   child: Icon(icon, size: 20, color: MyTheme.secondaryColor),
@@ -543,7 +543,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Text(
                     label,
                     style: const TextStyle(
@@ -616,7 +616,7 @@ class _StaggeredAnimationCardState extends State<StaggeredAnimationCard> with Si
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _controller,
-      builder: (context, child) {
+      builder: (BuildContext context, Widget? child) {
         return Card(
           elevation: 4 * _fadeAnimation.value,
           child: SlideTransition(

@@ -16,7 +16,7 @@ class QuickAccessAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return GestureDetector(
       onTap: onTap,
@@ -24,13 +24,13 @@ class QuickAccessAvatar extends StatelessWidget {
         padding: EdgeInsets.only(right: 16.w),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             Container(
               height: 56.h,
               width: 56.w,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                boxShadow: [
+                boxShadow: <BoxShadow>[
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
                     blurRadius: 8,

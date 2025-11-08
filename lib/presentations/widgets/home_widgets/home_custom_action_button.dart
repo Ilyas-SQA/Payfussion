@@ -28,7 +28,7 @@ class CustomActionButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(16.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             const BoxShadow(
               color: Colors.black26,
               blurRadius: 5,
@@ -37,7 +37,7 @@ class CustomActionButton extends StatelessWidget {
           ],
         ),
         child: Row(
-          children: [
+          children: <Widget>[
             Container(
               width: 47.w,
               height: 52.h,

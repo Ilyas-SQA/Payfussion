@@ -33,7 +33,7 @@ class PaymentRequestBloc extends Bloc<PaymentRequestEvent, PaymentRequestState> 
             errorMessage: null,
           );
         },
-        onError: (error, stackTrace) {
+        onError: (Object error, StackTrace stackTrace) {
           return state.copyWith(
             status: PaymentRequestStatus.failure,
             errorMessage: error.toString(),

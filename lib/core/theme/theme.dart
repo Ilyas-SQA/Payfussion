@@ -109,7 +109,7 @@ class MyTheme {
           ),
         ),
         appBarTheme: AppBarTheme(
-          color: Colors.white,
+          backgroundColor: Colors.white,
           titleTextStyle: Font.montserratFont(
               color: Colors.black,
               fontSize: 20.sp,
@@ -118,7 +118,7 @@ class MyTheme {
           iconTheme: const IconThemeData(color: MyTheme.primaryColor),
         ),
         dialogTheme: const DialogThemeData(backgroundColor: Colors.white),
-        fontFamilyFallback: const ['Montserrat'],
+        fontFamilyFallback: const <String>['Montserrat'],
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
             textStyle: WidgetStateProperty.all(
@@ -254,7 +254,7 @@ class MyTheme {
             ),
           ),
         ),
-        fontFamilyFallback: const ['Montserrat'],
+        fontFamilyFallback: const <String>['Montserrat'],
         //to be implemented
         primaryColor: const Color(0xff666666),
         canvasColor: backgroundColor,
@@ -282,7 +282,7 @@ class MyTheme {
   static const Color secondaryColor = Color(0xFF27ad60);
   static const Color _warningColor = Color(0xFFF2C94C); // For specific warnings or info
   static const Color _errorColor = Color(0xFFEB5757);
-  static const List<Color> listColor = [
+  static const List<Color> listColor = <Color>[
   Color(0xFF55d2df),
   Color(0xFF80e160),
   ];

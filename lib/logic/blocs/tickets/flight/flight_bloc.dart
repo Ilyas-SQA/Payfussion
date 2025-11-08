@@ -32,8 +32,8 @@ class FlightBloc extends Bloc<FlightEvent, FlightState> {
     try {
       await emit.forEach<List<FlightModel>>(
         _firebaseService.getUserFlights(FirebaseAuth.instance.currentUser!.uid),
-        onData: (flights) => FlightLoaded(flights),
-        onError: (error, _) => FlightError('Failed to load flights: $error'),
+        onData: (List<FlightModel> flights) => FlightLoaded(flights),
+        onError: (Object error, _) => FlightError('Failed to load flights: $error'),
       );
     } catch (e) {
       emit(FlightError('Failed to load flights: $e'));
@@ -76,7 +76,7 @@ class FlightBookingBloc extends Bloc<FlightBookingEvent, FlightBookingState> {
       try {
         print('Adding flight booking notification to Firestore...');
 
-        final notificationData = {
+        final Map<String, Object> notificationData = <String, Object>{
           'bookingId': event.booking.id,
           'flightId': event.booking.flightId,
           'airline': event.booking.airline,
@@ -114,7 +114,7 @@ class FlightBookingBloc extends Bloc<FlightBookingEvent, FlightBookingState> {
         print('❌ Error adding flight booking notification: $notificationError');
       }
 
-      emit(FlightBookingSuccess('Flight booking created successfully!'));
+      emit(const FlightBookingSuccess('Flight booking created successfully!'));
 
     } catch (e) {
       print('❌ Flight booking error: $e');
@@ -131,7 +131,7 @@ class FlightBookingBloc extends Bloc<FlightBookingEvent, FlightBookingState> {
         title: 'Flight Booking Failed',
         message: 'Failed to book flight ticket: ${e.toString()}',
         type: 'flight_booking_failed',
-        data: {
+        data: <String, dynamic>{
           'bookingId': event.booking.id,
           'flightNumber': event.booking.flightNumber,
           'airline': event.booking.airline,
@@ -148,8 +148,8 @@ class FlightBookingBloc extends Bloc<FlightBookingEvent, FlightBookingState> {
     try {
       await emit.forEach<List<FlightBookingModel>>(
         _firebaseService.getUserBookings(event.userId),
-        onData: (bookings) => UserFlightBookingsLoaded(bookings),
-        onError: (error, _) => FlightBookingError('Failed to load bookings: $error'),
+        onData: (List<FlightBookingModel> bookings) => UserFlightBookingsLoaded(bookings),
+        onError: (Object error, _) => FlightBookingError('Failed to load bookings: $error'),
       );
     } catch (e) {
       emit(FlightBookingError('Failed to load bookings: $e'));

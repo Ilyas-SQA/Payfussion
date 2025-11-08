@@ -6,7 +6,7 @@ abstract class CardState extends Equatable {
   const CardState();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class AddCardInitial extends CardState {}
@@ -19,7 +19,7 @@ class AddCardSuccess extends CardState {
   AddCardSuccess({required this.paymentMethodId});
 
   @override
-  List<Object?> get props => [paymentMethodId];
+  List<Object?> get props => <Object?>[paymentMethodId];
 }
 
 class AddCardFailure extends CardState {
@@ -28,7 +28,7 @@ class AddCardFailure extends CardState {
   AddCardFailure(this.errorMessage);
 
   @override
-  List<Object?> get props => [errorMessage];
+  List<Object?> get props => <Object?>[errorMessage];
 }
 
 class CardInitial extends CardState {}
@@ -40,7 +40,7 @@ class CardLoaded extends CardState {
   const CardLoaded(this.cards);
 
   @override
-  List<Object?> get props => [cards];
+  List<Object?> get props => <Object?>[cards];
 }
 
 class CardError extends CardState {
@@ -48,7 +48,7 @@ class CardError extends CardState {
   const CardError(this.message);
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => <Object?>[message];
 }
 
 // NEW STATE - Add this for duplicate detection
@@ -57,5 +57,5 @@ class CardDuplicateDetected extends CardState {
   const CardDuplicateDetected(this.message);
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => <Object?>[message];
 }

@@ -4,7 +4,7 @@ abstract class ChatEvent extends Equatable {
   const ChatEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class SendMessage extends ChatEvent {
@@ -13,7 +13,7 @@ class SendMessage extends ChatEvent {
   const SendMessage(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class LoadInitialMessages extends ChatEvent {

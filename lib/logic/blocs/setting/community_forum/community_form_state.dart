@@ -4,7 +4,7 @@ import 'package:payfussion/data/models/community_form/community_form_model.dart'
 
 abstract class CommunityFormState extends Equatable {
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class PostInitial extends CommunityFormState {}
@@ -18,7 +18,7 @@ class PostLoaded extends CommunityFormState {
   PostLoaded(this.posts);
 
   @override
-  List<Object?> get props => [posts];
+  List<Object?> get props => <Object?>[posts];
 }
 
 class PostError extends CommunityFormState {
@@ -26,5 +26,5 @@ class PostError extends CommunityFormState {
   PostError(this.message);
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => <Object?>[message];
 }

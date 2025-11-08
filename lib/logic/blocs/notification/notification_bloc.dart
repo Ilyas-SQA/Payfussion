@@ -32,8 +32,8 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       _notificationsSubscription?.cancel();
 
       _notificationsSubscription = _notificationRepository.notificationsStream().listen(
-            (notifications) async {
-          final unreadCount = await _notificationRepository.getUnreadNotificationsCount();
+            (List<NotificationModel> notifications) async {
+          final int unreadCount = await _notificationRepository.getUnreadNotificationsCount();
           emit(NotificationsLoaded(notifications, unreadCount));
         },
         onError: (error) {
@@ -53,17 +53,17 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     emit(NotificationLoading());
     try {
       // Load notifications first
-      final notifications = await _notificationRepository.getUserNotifications();
+      final List<NotificationModel> notifications = await _notificationRepository.getUserNotifications();
 
       // Check if there are any unread notifications
-      final unreadCount = await _notificationRepository.getUnreadNotificationsCount();
+      final int unreadCount = await _notificationRepository.getUnreadNotificationsCount();
 
       if (unreadCount > 0) {
         // Mark all notifications as read
         await _notificationRepository.markAllNotificationsAsRead();
 
         // Get updated notifications with read status
-        final updatedNotifications = await _notificationRepository.getUserNotifications();
+        final List<NotificationModel> updatedNotifications = await _notificationRepository.getUserNotifications();
         emit(NotificationsLoaded(updatedNotifications, 0));
       } else {
         // No unread notifications, just emit loaded state
@@ -80,7 +80,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       Emitter<NotificationState> emit,
       ) async {
     try {
-      final notification = NotificationModel(
+      final NotificationModel notification = NotificationModel(
         title: event.title,
         message: event.message,
         type: event.type,
@@ -88,9 +88,9 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
         createdAt: DateTime.now(),
       );
 
-      final notificationId = await _notificationRepository.addNotification(notification);
+      final String notificationId = await _notificationRepository.addNotification(notification);
 
-      final addedNotification = notification.copyWith(id: notificationId);
+      final NotificationModel addedNotification = notification.copyWith(id: notificationId);
       emit(NotificationAdded(addedNotification));
 
       // The real-time listener will automatically update the state
@@ -106,8 +106,8 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       ) async {
     emit(NotificationLoading());
     try {
-      final notifications = await _notificationRepository.getUserNotifications();
-      final unreadCount = await _notificationRepository.getUnreadNotificationsCount();
+      final List<NotificationModel> notifications = await _notificationRepository.getUserNotifications();
+      final int unreadCount = await _notificationRepository.getUnreadNotificationsCount();
       emit(NotificationsLoaded(notifications, unreadCount));
     } catch (e) {
       emit(NotificationError('Failed to load notifications: $e'));
@@ -121,8 +121,8 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       ) async {
     emit(NotificationLoading());
     try {
-      final notifications = await _notificationRepository.getNotificationsByType(event.type);
-      final unreadCount = await _notificationRepository.getUnreadNotificationsCount();
+      final List<NotificationModel> notifications = await _notificationRepository.getNotificationsByType(event.type);
+      final int unreadCount = await _notificationRepository.getUnreadNotificationsCount();
       emit(NotificationsLoaded(notifications, unreadCount));
     } catch (e) {
       emit(NotificationError('Failed to load notifications by type: $e'));

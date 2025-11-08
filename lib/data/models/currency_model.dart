@@ -29,7 +29,7 @@ class Currency {
 
   // Method to convert Currency instance to JSON
   Map<String, dynamic> toJson() {
-    return {
+    return <String, dynamic>{
       'code': code,
       'name': name,
       'country': country,
@@ -48,7 +48,7 @@ class Currency {
     // Each character is converted to its corresponding regional indicator symbol
     String flag = '';
     for (int i = 0; i < countryCode.length; i++) {
-      int codeUnit = countryCode.codeUnitAt(i);
+      final int codeUnit = countryCode.codeUnitAt(i);
       if (codeUnit >= 65 && codeUnit <= 90) {
         // Convert A-Z to regional indicator symbols
         flag += String.fromCharCode(0x1F1E6 + (codeUnit - 65));

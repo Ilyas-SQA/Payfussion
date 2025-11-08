@@ -18,7 +18,6 @@ import 'package:payfussion/presentations/home/send_money/select_bank_screen.dart
 import 'package:payfussion/presentations/home/send_money/select_local_bank_screen.dart';
 import 'package:payfussion/presentations/home/tickets/ticket_booking_screen.dart';
 import 'package:payfussion/presentations/scan_to_pay/scan_to_pay_home.dart';
-import 'package:payfussion/presentations/widgets/profile_app_bar.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../core/constants/fonts.dart';
 import '../../core/constants/routes_name.dart';
@@ -118,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     await _transactionController.forward();
   }
 
-  static final List<String> imageUrl = [
+  static final List<String> imageUrl = <String>[
     "assets/images/cards/card_1.svg",
     "assets/images/cards/card_2.svg",
   ];
@@ -142,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor,
-            boxShadow: [
+            boxShadow: <BoxShadow>[
                BoxShadow(
                 color: Colors.grey.withOpacity(0.15),
                 blurRadius: 8,
@@ -153,13 +152,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            children: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: <Widget>[
                   Row(
                     spacing: 10,
-                    children: [
+                    children: <Widget>[
                       GestureDetector(
                         onTap: () => context.push(RouteNames.profile),
                         child: Hero(
@@ -203,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                        children: <Widget>[
                           Text(
                             "Hi ${SessionController.user.fullName ?? 'User'}",
                             style: Font.montserratFont(
@@ -223,7 +222,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ],
                   ),
                   Row(
-                    children: [
+                    children: <Widget>[
                       BlocBuilder<NotificationBloc, NotificationState>(
                         builder: (BuildContext context, NotificationState state) {
                           int unreadCount = 0;
@@ -237,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const NotificationScreen(),
+                                  builder: (BuildContext context) => const NotificationScreen(),
                                 ),
                               );
                             },
@@ -278,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -299,15 +298,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             final List<CardModel> cards = state.cards;
                             if (cards.isEmpty) {
                               return Column(
-                                children: [
+                                children: <Widget>[
                                   SizedBox(height: 15.h),
                                   const CustomEmptyCard(),
                                 ],
                               );
                             }
-                            final List<CardModel> activeCards = cards.where((card) => card.isDefault).toList();
+                            final List<CardModel> activeCards = cards.where((CardModel card) => card.isDefault).toList();
                             return Column(
-                              children: [
+                              children: <Widget>[
                                 SizedBox(height: 15.h),
                                 SizedBox(
                                   height: 200,
@@ -320,7 +319,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         // Optional: Do something when card changes
                                         print('Current card index: $newIndex');
                                       },
-                                      onCardCollectionAnimationComplete: (value) {
+                                      onCardCollectionAnimationComplete: (bool value) {
                                         // Optional: Triggered when animation finishes
                                         print('Animation complete');
                                       },
@@ -335,7 +334,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                           cardHolder: 'Ilyas Khan',
                                           expiryDate: "${card.expMonth}/${card.expYear}",
                                           balance: '\$ 10000',
-                                          imageUrl: imageUrl[index % cards.length],
+                                          imageUrl: imageUrl[index % imageUrl.length],
                                         );
                                       },
                                     ),
@@ -345,7 +344,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             );
                           } else if (state is CardError) {
                             return Column(
-                              children: [
+                              children: <Widget>[
                                 SizedBox(height: 35.h),
                                 Center(
                                   child: Text(
@@ -357,7 +356,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             );
                           } else {
                             return Column(
-                              children: [
+                              children: <Widget>[
                                 SizedBox(height: 15.h),
                                 SizedBox(
                                   height: 200,
@@ -365,7 +364,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     child: ListView.builder(
                                       itemCount: 3,
                                       scrollDirection: Axis.horizontal,
-                                      itemBuilder: (context, index) {
+                                      itemBuilder: (BuildContext context, int index) {
                                         return AnimationConfiguration.staggeredList(
                                           position: index,
                                           duration: const Duration(milliseconds: 375),
@@ -409,28 +408,28 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       padding: const EdgeInsets.symmetric(horizontal: 30),
                       child: Column(
                         spacing: 10,
-                        children: [
+                        children: <Widget>[
                           const SizedBox(
                             height: 10,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
+                            children: <Widget>[
                               BoxWidget(
                                 title: "Send Money",
                                 backgroundColor: MyTheme.primaryColor,
                                 imageURL: TImageUrl.sendMoney,
-                                onTap: () => {
+                                onTap: () => <Future>{
                                   showDialog(
                                     context: context,
-                                    builder: (context){
+                                    builder: (BuildContext context){
                                       return AlertDialog(
                                         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                                         content: Text('Send Money To',style: Font.montserratFont(fontSize: 14,fontWeight: FontWeight.bold),),
-                                        actions: [
+                                        actions: <Widget>[
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                            children: [
+                                            children: <Widget>[
                                               BoxWidget(
                                                 title: "PayFussion Transfer",
                                                 imageURL: TImageUrl.bankTransfer,
@@ -442,27 +441,27 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                 title: "Bank Transfer",
                                                 imageURL: TImageUrl.bankTransfer,
                                                 onTap: (){
-                                                  Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => SelectBankScreen()));
+                                                  Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const SelectBankScreen()));
                                                 },
                                               ),
                                             ],
                                           ),
-                                          SizedBox(height: 10,),
+                                          const SizedBox(height: 10,),
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                            children: [
+                                            children: <Widget>[
                                               BoxWidget(
                                                 title: "Other Wallet",
                                                 imageURL: TImageUrl.otherWallet,
                                                 onTap: (){
-                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => SelectLocalBankScreen()));
+                                                  Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const SelectLocalBankScreen()));
                                                 },
                                               ),
                                               BoxWidget(
                                                 title: "Scanner QR",
                                                 imageURL: TImageUrl.scanner,
                                                 onTap: (){
-                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => ScanToPayHomeScreen()));
+                                                  Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const ScanToPayHomeScreen()));
                                                 },
                                               ),
                                             ],
@@ -486,14 +485,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 imageURL: TImageUrl.payBill,
                                 backgroundColor: MyTheme.primaryColor,
                                 onTap: (){
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const PayBillScreen()));
+                                  Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const PayBillScreen()));
                                 },
                               ),
                             ],
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
+                            children: <Widget>[
                               BoxWidget(
                                 title: "Convert Currency",
                                 imageURL: TImageUrl.convertCurrency,
@@ -507,7 +506,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 imageURL: TImageUrl.ticketBooking,
                                 backgroundColor: MyTheme.secondaryColor,
                                 onTap: (){
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => TicketBookingScreen()));
+                                  Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const TicketBookingScreen()));
                                 },
                               ),
                               BoxWidget(
@@ -515,20 +514,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 backgroundColor: MyTheme.secondaryColor,
                                 imageURL: TImageUrl.insurance,
                                 onTap: (){
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => InsuranceScreen()));                            },
+                                  Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const InsuranceScreen()));                            },
                               ),
                             ],
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             spacing: 25,
-                            children: [
+                            children: <Widget>[
                               BoxWidget(
                                 title: "Apply Card",
                                 backgroundColor: MyTheme.secondaryColor,
                                 imageURL: TImageUrl.applyCard,
                                 onTap: (){
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ApplyCardScreen()));
+                                  Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const ApplyCardScreen()));
                                 },
                               ),
                               BoxWidget(
@@ -536,7 +535,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 backgroundColor: MyTheme.secondaryColor,
                                 imageURL: TImageUrl.governmentFee,
                                 onTap: (){
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => GovernmentFeesScreen()));
+                                  Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const GovernmentFeesScreen()));
                                 },
                               ),
                             ],
@@ -570,7 +569,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               Container(
                 width: 50,
                 height: 30,
@@ -645,23 +644,23 @@ class _ShimmerAnimationState extends State<_ShimmerAnimation> with SingleTickerP
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _animation,
-      builder: (context, child) {
+      builder: (BuildContext context, Widget? child) {
         return ShaderMask(
-          shaderCallback: (bounds) {
+          shaderCallback: (Rect bounds) {
             return LinearGradient(
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
-              colors: const [
+              colors: const <Color>[
                 Colors.transparent,
                 Colors.white54,
                 Colors.transparent,
               ],
-              stops: [
+              stops: <double>[
                 _animation.value - 0.3,
                 _animation.value,
                 _animation.value + 0.3,
               ],
-              transform: GradientRotation(0),
+              transform: const GradientRotation(0),
             ).createShader(bounds);
           },
           child: widget.child,
@@ -690,7 +689,7 @@ class SendMoneyWidget extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Colors.grey.withOpacity(0.3),
               blurRadius: 5,
@@ -700,7 +699,7 @@ class SendMoneyWidget extends StatelessWidget {
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
+          children: <Widget>[
             SvgPicture.asset(imageUrl,color: MyTheme.primaryColor,height: 30,width: 30,),
             // SizedBox(height: 5.h),
             Text(
@@ -734,7 +733,7 @@ class BoxWidget extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -745,7 +744,7 @@ class BoxWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           // spacing: 10,
-          children: [
+          children: <Widget>[
             SvgPicture.asset(imageURL, height: 27.h, width: 30.w,color: backgroundColor,),
             Text(title,style: Font.montserratFont(fontSize: 10,fontWeight: FontWeight.w500),textAlign: TextAlign.center,),
           ],

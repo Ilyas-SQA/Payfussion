@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:nested/nested.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
@@ -33,10 +34,10 @@ class FlightPaymentScreen extends StatefulWidget {
 }
 
 class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerProviderStateMixin{
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   late AnimationController _backgroundAnimationController;
 
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
@@ -69,8 +70,8 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
 
   double get _classUpgradeAmount {
     if (_selectedClass == 'Economy') return 0.0;
-    double basePrice = widget.flight.basePrice;
-    double classMultiplier = _getClassMultiplier(_selectedClass) - 1;
+    final double basePrice = widget.flight.basePrice;
+    final double classMultiplier = _getClassMultiplier(_selectedClass) - 1;
     return basePrice * classMultiplier * _numberOfPassengers;
   }
 
@@ -107,12 +108,12 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
         iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
           MultiBlocListener(
-            listeners: [
+            listeners: <SingleChildWidget>[
               BlocListener<FlightBookingBloc, FlightBookingState>(
                 listener: (BuildContext context, FlightBookingState state) {
                   if (state is FlightBookingSuccess) {
@@ -126,7 +127,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
                         backgroundColor: Colors.green,
                       ),
                     );
-                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    Navigator.of(context).popUntil((Route route) => route.isFirst);
                   } else if (state is FlightBookingError) {
                     _addFlightNotification(
                       success: false,
@@ -143,7 +144,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
                 },
               ),
               BlocListener<NotificationBloc, NotificationState>(
-                listener: (context, state) {
+                listener: (BuildContext context, NotificationState state) {
                   if (state is NotificationError) {
                     print('Notification error: ${state.message}');
                   }
@@ -156,7 +157,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     _buildFlightSummary(),
                     const SizedBox(height: 16),
                     _buildPassengerDetails(),
@@ -184,7 +185,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
     String? bookingId,
     String? errorMessage,
   }) {
-    final notification = NotificationModel.createFlightNotification(
+    final NotificationModel notification = NotificationModel.createFlightNotification(
       airline: widget.flight.airline,
       flightNumber: widget.flight.flightNumber,
       passengerName: _nameController.text,
@@ -214,7 +215,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -226,7 +227,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             const Text(
               "Flight Summary",
               style: TextStyle(
@@ -242,11 +243,11 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
             Text("Duration: ${widget.flight.duration}"),
             const SizedBox(height: 8),
             Row(
-              children: [
+              children: <Widget>[
                 const Text("Travel Date: "),
                 TextButton(
                   onPressed: () async {
-                    final date = await showDatePicker(
+                    final DateTime? date = await showDatePicker(
                       context: context,
                       initialDate: _selectedDate,
                       firstDate: DateTime.now(),
@@ -276,7 +277,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -288,7 +289,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             const Text(
               "Passenger Details",
               style: TextStyle(
@@ -350,7 +351,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -362,7 +363,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             const Text(
               "Flight Options",
               style: TextStyle(
@@ -372,15 +373,15 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
             ),
             const SizedBox(height: 16),
             Row(
-              children: [
+              children: <Widget>[
                 Flexible(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       const Text("Number of Passengers"),
                       const SizedBox(height: 8),
                       Row(
-                        children: [
+                        children: <Widget>[
                           IconButton(
                             onPressed: _numberOfPassengers > 1 ? () {
                               setState(() {
@@ -409,11 +410,11 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       const Text("Travel Class"),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
-                        value: _selectedClass,
+                        initialValue: _selectedClass,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(
                             borderSide: BorderSide(
@@ -432,11 +433,11 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
                           ),
                           focusColor: MyTheme.secondaryColor,
                         ),
-                        items: ['Economy', 'Premium Economy', 'Business', 'First Class'].map((cls) => DropdownMenuItem(
+                        items: <String>['Economy', 'Premium Economy', 'Business', 'First Class'].map((String cls) => DropdownMenuItem(
                           value: cls,
-                          child: Text(cls,style: TextStyle(fontSize: 12),),
+                          child: Text(cls,style: const TextStyle(fontSize: 12),),
                         )).toList(),
-                        onChanged: (value) {
+                        onChanged: (String? value) {
                           setState(() {
                             _selectedClass = value!;
                           });
@@ -458,7 +459,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -470,11 +471,11 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               spacing: 10,
-              children: [
+              children: <Widget>[
                 const Text(
                   "Payment Method",
                   style: TextStyle(
@@ -508,7 +509,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -520,7 +521,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             const Text(
               "Fare Breakdown",
               style: TextStyle(
@@ -531,16 +532,16 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+              children: <Widget>[
                 Text("Base Fare ($_numberOfPassengers passenger${_numberOfPassengers > 1 ? 's' : ''})"),
                 Text("\$${_baseFare.toStringAsFixed(2)}"),
               ],
             ),
-            if (_selectedClass != 'Economy') ...[
+            if (_selectedClass != 'Economy') ...<Widget>[
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: <Widget>[
                   Text("$_selectedClass Upgrade"),
                   Text("\$${_classUpgradeAmount.toStringAsFixed(2)}"),
                 ],
@@ -549,7 +550,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+              children: <Widget>[
                 const Text("Subtotal"),
                 Text("\$${_subtotal.toStringAsFixed(2)}"),
               ],
@@ -557,15 +558,15 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Ticket Tax (${Taxes.ticketFeeTax}%)"),
+              children: <Widget>[
+                const Text("Ticket Tax (${Taxes.ticketFeeTax}%)"),
                 Text("\$${_ticketTax.toStringAsFixed(2)}"),
               ],
             ),
             const Divider(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+              children: <Widget>[
                 const Text(
                   "Total Amount",
                   style: TextStyle(
@@ -593,7 +594,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
     return SizedBox(
       width: double.infinity,
       child: BlocBuilder<FlightBookingBloc, FlightBookingState>(
-        builder: (context, state) {
+        builder: (BuildContext context, FlightBookingState state) {
           return AppButton(
             onTap: state is FlightBookingLoading ? null : _processBooking,
             color: MyTheme.secondaryColor,
@@ -617,7 +618,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
         return;
       }
 
-      final booking = FlightBookingModel(
+      final FlightBookingModel booking = FlightBookingModel(
         id: const Uuid().v4(),
         flightId: widget.flight.id,
         airline: widget.flight.airline,
@@ -646,7 +647,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
 
   Widget _buildCardsSection() {
     return BlocBuilder<CardBloc, CardState>(
-      builder: (context, state) {
+      builder: (BuildContext context, CardState state) {
         if (state is CardLoading) {
           return Container(
             height: 60,
@@ -675,13 +676,13 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
 
           if (_selectedCard == null) {
             _selectedCard = state.cards.firstWhere(
-                  (card) => card.isDefault,
+                  (CardModel card) => card.isDefault,
               orElse: () => state.cards.first,
             );
           }
 
           return Column(
-            children: [
+            children: <Widget>[
               _buildAccountItem(
                 context: context,
                 card: _selectedCard!,
@@ -690,7 +691,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
                   _showCardSelectionBottomSheet(context, state.cards);
                 },
               ),
-              if (_selectedCard != null) ...[
+              if (_selectedCard != null) ...<Widget>[
                 const SizedBox(height: 8),
                 const Text(
                   'Tap to change card',
@@ -714,7 +715,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: <Widget>[
                   const Text(
                     'Error loading cards',
                     style: TextStyle(color: Colors.red, fontSize: 12),
@@ -754,7 +755,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -769,7 +770,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
             height: 24,
             width: 40,
             color: isDark ? Colors.white : Colors.black,
-            errorBuilder: (context, error, stackTrace) {
+            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
               return Image.asset(
                 'assets/icons/mastercard.png',
                 height: 24,
@@ -797,7 +798,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
           ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
-            children: [
+            children: <Widget>[
               if (isSelected)
                 const Icon(
                   Icons.check_circle,
@@ -821,7 +822,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) {
+      builder: (BuildContext context) {
         final ThemeData theme = Theme.of(context);
         final bool isDark = theme.brightness == Brightness.dark;
 
@@ -829,7 +830,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
           decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor,
             borderRadius: BorderRadius.circular(5.r),
-            boxShadow: [
+            boxShadow: <BoxShadow>[
               BoxShadow(
                 color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                 blurRadius: 5,
@@ -842,7 +843,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Text(
                   'Select Card',
                   style: theme.textTheme.titleLarge?.copyWith(
@@ -851,7 +852,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
                   ),
                 ),
                 const SizedBox(height: 16),
-                ...cards.map((card) => Padding(
+                ...cards.map((CardModel card) => Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: _buildAccountItem(
                     context: context,

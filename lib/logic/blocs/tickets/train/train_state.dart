@@ -6,7 +6,7 @@ abstract class TrainState extends Equatable {
   const TrainState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class TrainInitial extends TrainState {}
@@ -19,7 +19,7 @@ class TrainLoaded extends TrainState {
   const TrainLoaded(this.trains);
 
   @override
-  List<Object> get props => [trains];
+  List<Object> get props => <Object>[trains];
 }
 
 class TrainError extends TrainState {
@@ -28,14 +28,14 @@ class TrainError extends TrainState {
   const TrainError(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 abstract class BookingState extends Equatable {
   const BookingState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class BookingInitial extends BookingState {}
@@ -48,7 +48,7 @@ class BookingSuccess extends BookingState {
   const BookingSuccess(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class BookingError extends BookingState {
@@ -57,7 +57,7 @@ class BookingError extends BookingState {
   const BookingError(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class UserBookingsLoaded extends BookingState {
@@ -66,5 +66,5 @@ class UserBookingsLoaded extends BookingState {
   const UserBookingsLoaded(this.bookings);
 
   @override
-  List<Object> get props => [bookings];
+  List<Object> get props => <Object>[bookings];
 }

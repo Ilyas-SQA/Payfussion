@@ -24,9 +24,9 @@ class AppColors {
   static const Color warningOrange = Color(0xFFFF9800);
   static const Color linkBlue = Color(0xFF2196F3);
 
-  static final List<List<Color>> cardColor = [
-    [MyTheme.primaryColor, MyTheme.primaryColor],
-    [MyTheme.secondaryColor, MyTheme.secondaryColor],
+  static final List<List<Color>> cardColor = <List<Color>>[
+    <Color>[MyTheme.primaryColor, MyTheme.primaryColor],
+    <Color>[MyTheme.secondaryColor, MyTheme.secondaryColor],
   ];
 }
 

@@ -63,7 +63,7 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: RouteNames.transactionHistory,
-      builder: (BuildContext context, GoRouterState state) => TransactionHomeScreen(),
+      builder: (BuildContext context, GoRouterState state) => const TransactionHomeScreen(),
     ),
     GoRoute(
       path: RouteNames.forgetPassword,
@@ -86,7 +86,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: RouteNames.addCard,
       builder: (BuildContext context, GoRouterState state) {
-        return AddCardHomescreen();
+        return const AddCardHomeScreen();
       },
     ),
     //setting screens
@@ -284,7 +284,7 @@ final GoRouter appRouter = GoRouter(
       pageBuilder: (BuildContext context, GoRouterState state) {
         return CustomFadeTransitionPage(
           key: state.pageKey,
-          child: MobileRechargeScreen(),
+          child: const MobileRechargeScreen(),
         );
       }
     ),
@@ -294,7 +294,7 @@ final GoRouter appRouter = GoRouter(
       pageBuilder: (BuildContext context, GoRouterState state) {
         return CustomFadeTransitionPage(
           key: state.pageKey,
-          child: ElectricCityBillScreen(),
+          child: const ElectricCityBillScreen(),
         );
       }
     ),
@@ -304,7 +304,7 @@ final GoRouter appRouter = GoRouter(
         pageBuilder: (BuildContext context, GoRouterState state) {
           return CustomFadeTransitionPage(
             key: state.pageKey,
-            child: InternetBillScreen(),
+            child: const InternetBillScreen(),
           );
         }
     ),
@@ -314,7 +314,7 @@ final GoRouter appRouter = GoRouter(
         pageBuilder: (BuildContext context, GoRouterState state) {
           return CustomFadeTransitionPage(
             key: state.pageKey,
-            child: DTHRechargeScreen(),
+            child: const DTHRechargeScreen(),
           );
         }
     ),
@@ -324,7 +324,7 @@ final GoRouter appRouter = GoRouter(
         pageBuilder: (BuildContext context, GoRouterState state) {
           return CustomFadeTransitionPage(
             key: state.pageKey,
-            child: PostpaidBillScreen(),
+            child: const PostpaidBillScreen(),
           );
         }
     ),
@@ -334,7 +334,7 @@ final GoRouter appRouter = GoRouter(
         pageBuilder: (BuildContext context, GoRouterState state) {
           return CustomFadeTransitionPage(
             key: state.pageKey,
-            child: RentPaymentScreen(),
+            child: const RentPaymentScreen(),
           );
         }
     ),
@@ -344,7 +344,7 @@ final GoRouter appRouter = GoRouter(
         pageBuilder: (BuildContext context, GoRouterState state) {
           return CustomFadeTransitionPage(
             key: state.pageKey,
-            child: MoviesScreen(),
+            child: const MoviesScreen(),
           );
         }
     ),
@@ -354,7 +354,7 @@ final GoRouter appRouter = GoRouter(
         pageBuilder: (BuildContext context, GoRouterState state) {
           return CustomFadeTransitionPage(
             key: state.pageKey,
-            child: GasBillScreen(),
+            child: const GasBillScreen(),
           );
         }
     ),
@@ -364,7 +364,7 @@ final GoRouter appRouter = GoRouter(
         pageBuilder: (BuildContext context, GoRouterState state) {
           return CustomFadeTransitionPage(
             key: state.pageKey,
-            child: CreditCardLoanScreen(),
+            child: const CreditCardLoanScreen(),
           );
         }
     ),
@@ -374,7 +374,7 @@ final GoRouter appRouter = GoRouter(
         pageBuilder: (BuildContext context, GoRouterState state) {
           return CustomFadeTransitionPage(
             key: state.pageKey,
-            child: TrainListScreen(),
+            child: const TrainListScreen(),
           );
         }
     ),

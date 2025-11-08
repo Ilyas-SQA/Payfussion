@@ -11,7 +11,7 @@ class PaymentRequestState extends Equatable {
 
   const PaymentRequestState({
     this.status = PaymentRequestStatus.initial,
-    this.requests = const [],
+    this.requests = const <PaymentRequestModel>[],
     this.errorMessage,
   });
 
@@ -28,5 +28,5 @@ class PaymentRequestState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [status, requests, errorMessage];
+  List<Object?> get props => <Object?>[status, requests, errorMessage];
 }

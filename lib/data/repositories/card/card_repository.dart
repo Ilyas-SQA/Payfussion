@@ -11,7 +11,7 @@ class CardRepository {
       .doc(FirebaseAuth.instance.currentUser?.uid)
       .collection("card")
       .snapshots()
-      .map((snapshot) => snapshot.docs
-      .map((doc) => CardModel.fromFirestore(doc.data(), doc.id))
+      .map((QuerySnapshot<Map<String, dynamic>> snapshot) => snapshot.docs
+      .map((QueryDocumentSnapshot<Map<String, dynamic>> doc) => CardModel.fromFirestore(doc.data(), doc.id))
       .toList());
 }

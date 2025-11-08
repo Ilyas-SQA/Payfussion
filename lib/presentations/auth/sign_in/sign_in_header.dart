@@ -70,7 +70,7 @@ class _SignInHeaderState extends State<SignInHeader> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [
+      children: <Widget>[
         SizedBox(height: 60.h),
 
         // Animated Logo

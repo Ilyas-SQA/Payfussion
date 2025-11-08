@@ -35,7 +35,7 @@ class BankTransactionState extends Equatable {
 
   const BankTransactionState({
     this.status = BankTransactionStatus.initial,
-    this.availableBanks = const [],
+    this.availableBanks = const <Bank>[],
     this.selectedBank,
     this.accountNumber,
     this.paymentPurpose,
@@ -47,8 +47,8 @@ class BankTransactionState extends Equatable {
     this.isSuccess = false,
     this.errorMessage,
     this.transactionId,
-    this.transactions = const [],
-    this.favoriteBanks = const [],
+    this.transactions = const <TransactionModel>[],
+    this.favoriteBanks = const <FavoriteBank>[],
     this.isValidatingAccount = false,
     this.isAccountValid = false,
   });
@@ -131,10 +131,10 @@ class BankTransactionState extends Equatable {
 
   // Helper to get only bank transfer transactions
   List<TransactionModel> get bankTransferTransactions =>
-      transactions.where((tx) => tx.recipientId == 'bank_transfer').toList();
+      transactions.where((TransactionModel tx) => tx.recipientId == 'bank_transfer').toList();
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
     status,
     availableBanks,
     selectedBank,
@@ -182,7 +182,7 @@ class FavoriteBank extends Equatable {
   }
 
   Map<String, dynamic> toJson() {
-    return {
+    return <String, dynamic>{
       'id': id,
       'bank': bank.toJson(),
       'accountNumber': accountNumber,
@@ -192,5 +192,5 @@ class FavoriteBank extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, bank, accountNumber, recipientName, addedAt];
+  List<Object?> get props => <Object?>[id, bank, accountNumber, recipientName, addedAt];
 }

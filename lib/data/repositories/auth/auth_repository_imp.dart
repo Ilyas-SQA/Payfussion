@@ -38,9 +38,9 @@ class AuthRepositoryImpl implements AuthRepository {
     String email,
     String password,
   ) async {
-    final result = await remoteDataSource.signInWithEmail(email, password);
+    final Either<Failure, UserModel> result = await remoteDataSource.signInWithEmail(email, password);
     return result.map(
-      (user) => UserModel(
+      (UserModel user) => UserModel(
         uid: user.uid,
         firstName: user.firstName,
         lastName: user.lastName,
@@ -58,9 +58,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Stream<UserModel?> get userStream => remoteDataSource.userStream.map(
-    (either) => either.fold(
-      (failure) => null,
-      (user) => user == null ?
+    (Either<Failure, UserModel?> either) => either.fold(
+      (Failure failure) => null,
+      (UserModel? user) => user == null ?
       null :
       UserModel(
         uid: user.uid,
@@ -89,8 +89,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<bool> verifyOtp(String otp) async {
-    final result = await remoteDataSource.verifyOtp(otp);
-    return result.fold((failure) => false, (success) => success);
+    final Either<Failure, bool> result = await remoteDataSource.verifyOtp(otp);
+    return result.fold((Failure failure) => false, (bool success) => success);
   }
 
   @override
@@ -98,10 +98,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<UserModel?> getCurrentUser() async {
-    final result = await remoteDataSource.getCurrentUser();
+    final Either<Failure, UserModel?> result = await remoteDataSource.getCurrentUser();
     return result.fold(
-      (failure) => null,
-      (user) => user == null ?
+      (Failure failure) => null,
+      (UserModel? user) => user == null ?
       null :
       UserModel(
         uid: user.uid,

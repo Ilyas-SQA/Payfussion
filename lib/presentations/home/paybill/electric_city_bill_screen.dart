@@ -25,8 +25,8 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
   late Animation<Offset> _headerSlide;
   late Animation<double> _listFade;
 
-  final List<Map<String, dynamic>> electricityProviders = [
-    {
+  final List<Map<String, dynamic>> electricityProviders = <Map<String, dynamic>>[
+    <String, dynamic>{
       "name": "Pacific Gas & Electric (PG&E)",
       "description": "California's largest utility provider",
       "icon": Icons.flash_on,
@@ -35,7 +35,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
       "averageRate": "\$0.28/kWh",
       "customers": "16M+",
     },
-    {
+    <String, dynamic>{
       "name": "Southern California Edison (SCE)",
       "description": "Serving Southern California communities",
       "icon": Icons.electrical_services,
@@ -44,7 +44,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
       "averageRate": "\$0.25/kWh",
       "customers": "15M+",
     },
-    {
+    <String, dynamic>{
       "name": "Con Edison (ConEd)",
       "description": "New York's primary energy provider",
       "icon": Icons.power,
@@ -53,7 +53,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
       "averageRate": "\$0.22/kWh",
       "customers": "10M+",
     },
-    {
+    <String, dynamic>{
       "name": "Florida Power & Light (FPL)",
       "description": "Florida's largest electric utility",
       "icon": Icons.wb_sunny,
@@ -62,7 +62,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
       "averageRate": "\$0.12/kWh",
       "customers": "5.7M+",
     },
-    {
+    <String, dynamic>{
       "name": "Duke Energy",
       "description": "Multi-state energy corporation",
       "icon": Icons.business,
@@ -71,7 +71,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
       "averageRate": "\$0.11/kWh",
       "customers": "8.2M+",
     },
-    {
+    <String, dynamic>{
       "name": "Commonwealth Edison (ComEd)",
       "description": "Northern Illinois electric utility",
       "icon": Icons.location_city,
@@ -80,7 +80,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
       "averageRate": "\$0.13/kWh",
       "customers": "4M+",
     },
-    {
+    <String, dynamic>{
       "name": "National Grid",
       "description": "Northeast electricity & gas utility",
       "icon": Icons.grid_on,
@@ -89,7 +89,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
       "averageRate": "\$0.20/kWh",
       "customers": "3.3M+",
     },
-    {
+    <String, dynamic>{
       "name": "Xcel Energy",
       "description": "Multi-state utility company",
       "icon": Icons.wind_power,
@@ -98,7 +98,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
       "averageRate": "\$0.12/kWh",
       "customers": "3.7M+",
     },
-    {
+    <String, dynamic>{
       "name": "PPL Electric Utilities",
       "description": "Pennsylvania electric utility",
       "icon": Icons.energy_savings_leaf,
@@ -107,7 +107,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
       "averageRate": "\$0.14/kWh",
       "customers": "1.4M+",
     },
-    {
+    <String, dynamic>{
       "name": "Entergy",
       "description": "Southern US energy provider",
       "icon": Icons.eco,
@@ -116,7 +116,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
       "averageRate": "\$0.10/kWh",
       "customers": "3M+",
     },
-    {
+    <String, dynamic>{
       "name": "Eversource Energy",
       "description": "New England's largest utility",
       "icon": Icons.cottage,
@@ -125,7 +125,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
       "averageRate": "\$0.23/kWh",
       "customers": "4.3M+",
     },
-    {
+    <String, dynamic>{
       "name": "OG&E (Oklahoma Gas & Electric)",
       "description": "Oklahoma's primary utility",
       "icon": Icons.local_gas_station,
@@ -134,7 +134,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
       "averageRate": "\$0.11/kWh",
       "customers": "900K+",
     },
-    {
+    <String, dynamic>{
       "name": "Evergy",
       "description": "Kansas & Missouri energy provider",
       "icon": Icons.wb_incandescent,
@@ -143,7 +143,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
       "averageRate": "\$0.13/kWh",
       "customers": "1.7M+",
     },
-    {
+    <String, dynamic>{
       "name": "Oncor",
       "description": "Texas electric delivery company",
       "icon": Icons.electrical_services,
@@ -152,7 +152,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
       "averageRate": "\$0.12/kWh",
       "customers": "10M+",
     },
-    {
+    <String, dynamic>{
       "name": "Avista Utilities",
       "description": "Pacific Northwest utility",
       "icon": Icons.water_drop,
@@ -236,8 +236,8 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
           ),
         ),
       ),
-      body: Column(
-        children: [
+      body: Stack(
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -245,13 +245,13 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
             opacity: _listFade,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 // Header Section
                 Padding(
                   padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(
                         "Pay Your",
                         style: theme.textTheme.headlineMedium?.copyWith(
@@ -324,7 +324,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -336,7 +336,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
           onTap: () {
             context.push(
               RouteNames.payBillsDetailView,
-              extra: {
+              extra: <String, dynamic>{
                 'billType': "electricity",
                 'companyName': provider['name'],
                 'region': provider['region'],
@@ -349,7 +349,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
           child: Padding(
             padding: EdgeInsets.all(20.w),
             child: Row(
-              children: [
+              children: <Widget>[
                 // Icon Container
                 Hero(
                   tag: 'electricity_icon_${provider['name']}',
@@ -366,10 +366,10 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       // Provider name and rate
                       Row(
-                        children: [
+                        children: <Widget>[
                           Expanded(
                             child: Text(
                               provider['name'] as String,
@@ -410,7 +410,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
 
                       /// Region and customers info
                       Row(
-                        children: [
+                        children: <Widget>[
                           Icon(
                             Icons.location_on,
                             size: 14.sp,

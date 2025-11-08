@@ -15,7 +15,7 @@ class SettingItemsHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
+      children: <Widget>[
         Text(
           itemHeaderText,
           style: TextStyle(

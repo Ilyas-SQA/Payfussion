@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/fonts.dart';
 import '../../../../core/theme/theme.dart';
 import '../receive_money_payment_screen.dart';
 
@@ -27,7 +28,7 @@ class PaymentSuccessView extends StatelessWidget {
             SizedBox(height: 24.h),
             Text(
               'Payment Request Created',
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 24.sp, // Slightly larger
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -38,7 +39,7 @@ class PaymentSuccessView extends StatelessWidget {
             RichText(
               textAlign: TextAlign.center,
               text: TextSpan(
-                style: TextStyle(
+                style: Font.montserratFont(
                   fontSize: 16.sp,
                   color: AppColors.textSecondary,
                 ),
@@ -46,7 +47,7 @@ class PaymentSuccessView extends StatelessWidget {
                   const TextSpan(text: 'You\'ve requested '),
                   TextSpan(
                     text: provider.getFormattedAmount(),
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontWeight: FontWeight.bold,
                       color: MyTheme.primaryColor,
                       fontSize: 18.sp,
@@ -134,7 +135,7 @@ class PaymentSuccessView extends StatelessWidget {
                       SizedBox(height: 8.h),
                       Text(
                         'Error generating QR code',
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           color: AppColors.errorRed,
                           fontSize: 14.sp,
                         ),
@@ -156,7 +157,7 @@ class PaymentSuccessView extends StatelessWidget {
               SizedBox(width: 4.w),
               Text(
                 'Scan to pay',
-                style: TextStyle(
+                style: Font.montserratFont(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w500,
                   color: AppColors.textPrimary,
@@ -203,12 +204,12 @@ class PaymentSuccessView extends StatelessWidget {
         children: <Widget>[
           Text(
             label,
-            style: TextStyle(fontSize: 14.sp, color: AppColors.textSecondary),
+            style: Font.montserratFont(fontSize: 14.sp, color: AppColors.textSecondary),
           ),
           Flexible(
             child: Text(
               value,
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w600,
               ),
@@ -265,7 +266,7 @@ class PaymentSuccessView extends StatelessWidget {
               }
             },
             icon: Icon(Icons.share, size: 20.sp),
-            label: Text('Share', style: TextStyle(fontSize: 16.sp)),
+            label: Text('Share', style: Font.montserratFont(fontSize: 16.sp)),
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: 16.h),
               backgroundColor: MyTheme.primaryColor,
@@ -291,7 +292,7 @@ class PaymentSuccessView extends StatelessWidget {
       ),
       child: Text(
         'Create New Request',
-        style: TextStyle(
+        style: Font.montserratFont(
           fontSize: 16.sp,
           fontWeight: FontWeight.w600,
           color: MyTheme.primaryColor,

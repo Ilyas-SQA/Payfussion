@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
+import '../../../core/constants/fonts.dart';
 import '../../../core/theme/theme.dart';
 import '../../../data/models/recipient/recipient_model.dart';
 import '../../../logic/blocs/bank_transaction/bank_transaction_bloc.dart';
@@ -43,7 +45,7 @@ class _SelectBankScreenState extends State<SelectBankScreen> with TickerProvider
   void _toggleBankSelection(Bank bank, bool isCurrentlySelected) {
     if (isCurrentlySelected) {
       // Unselect the bank
-      context.read<BankTransactionBloc>().add(BankUnselected());
+      context.read<BankTransactionBloc>().add(const BankUnselected());
     } else {
       // Select the bank
       context.read<BankTransactionBloc>().add(BankSelected(bank));
@@ -54,7 +56,7 @@ class _SelectBankScreenState extends State<SelectBankScreen> with TickerProvider
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const BankDetailsScreen(),
+        builder: (BuildContext context) => const BankDetailsScreen(),
       ),
     );
   }
@@ -71,12 +73,12 @@ class _SelectBankScreenState extends State<SelectBankScreen> with TickerProvider
         color: Theme.of(context).scaffoldBackgroundColor,
         gradient: isSelected ?
         LinearGradient(
-          colors: [MyTheme.primaryColor, MyTheme.primaryColor.withOpacity(0.8)],
+          colors: <Color>[MyTheme.primaryColor, MyTheme.primaryColor.withOpacity(0.8)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ) : null,
         borderRadius: BorderRadius.circular(12.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -84,88 +86,80 @@ class _SelectBankScreenState extends State<SelectBankScreen> with TickerProvider
           ),
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12.r),
-          onTap: () => _toggleBankSelection(bank, isSelected),
-          child: Padding(
-            padding: EdgeInsets.all(16.w),
-            child: Row(
-              children: [
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12.r),
+        onTap: () => _toggleBankSelection(bank, isSelected),
+        child: Padding(
+          padding: EdgeInsets.all(16.w),
+          child: Row(
+            children: <Widget>[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(100),
+                child: CachedNetworkImage(
+                  imageUrl: bank.image.isEmpty ? 'https://via.placeholder.com/50' : bank.image,
+                  height: 50,
+                  width: 50,
+                  placeholder: (BuildContext context, String url) => const CircularProgressIndicator(),
+                  errorWidget: (BuildContext context, String url, Object error) => const Icon(Icons.error),
+                ),
+              ),
+              SizedBox(width: 16.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      bank.name,
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
+                    if (bank.branchName.isNotEmpty)
+                      Text(
+                        bank.branchName,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                    if (bank.city.isNotEmpty)
+                      Text(
+                        bank.city,
+                        style: TextStyle(
+                          fontSize: 11.sp,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              if (isSelected)
                 Container(
-                  width: 50.w,
-                  height: 50.w,
+                  width: 24.w,
+                  height: 24.w,
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? Colors.white.withOpacity(0.2)
-                        : MyTheme.primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(25.r),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Icon(
-                    Icons.account_balance,
-                    color: isSelected ? Colors.white : MyTheme.primaryColor,
-                    size: 24.sp,
+                    Icons.check,
+                    color: MyTheme.primaryColor,
+                    size: 16.sp,
+                  ),
+                )
+              else
+                Container(
+                  width: 24.w,
+                  height: 24.w,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.grey.shade400,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                 ),
-                SizedBox(width: 16.w),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        bank.name,
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(height: 4.h),
-                      if (bank.branchName.isNotEmpty)
-                        Text(
-                          bank.branchName,
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                          ),
-                        ),
-                      if (bank.city.isNotEmpty)
-                        Text(
-                          bank.city,
-                          style: TextStyle(
-                            fontSize: 11.sp,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                if (isSelected)
-                  Container(
-                    width: 24.w,
-                    height: 24.w,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: Icon(
-                      Icons.check,
-                      color: MyTheme.primaryColor,
-                      size: 16.sp,
-                    ),
-                  )
-                else
-                  Container(
-                    width: 24.w,
-                    height: 24.w,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey.shade400,
-                        width: 2,
-                      ),
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                  ),
-              ],
-            ),
+            ],
           ),
         ),
       ),
@@ -178,7 +172,7 @@ class _SelectBankScreenState extends State<SelectBankScreen> with TickerProvider
       appBar: AppBar(
         title: Text(
           'Select Bank',
-          style: TextStyle(
+          style: Font.montserratFont(
             fontSize: 20.sp,
             fontWeight: FontWeight.w600,
           ),
@@ -190,7 +184,7 @@ class _SelectBankScreenState extends State<SelectBankScreen> with TickerProvider
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -205,19 +199,19 @@ class _SelectBankScreenState extends State<SelectBankScreen> with TickerProvider
                 );
               }
             },
-            builder: (context, state) {
+            builder: (BuildContext context, BankTransactionState state) {
               return Column(
-                children: [
+                children: <Widget>[
                   // Header
                   Container(
                     width: double.infinity,
                     padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 24.h),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         Text(
                           'Choose your bank',
-                          style: TextStyle(
+                          style: Font.montserratFont(
                             fontSize: 20.sp,
                             fontWeight: FontWeight.bold,
                           ),
@@ -225,7 +219,7 @@ class _SelectBankScreenState extends State<SelectBankScreen> with TickerProvider
                         SizedBox(height: 8.h),
                         Text(
                           'Select a bank from the list below (tap again to unselect)',
-                          style: TextStyle(
+                          style: Font.montserratFont(
                             fontSize: 12.sp,
                           ),
                         ),
@@ -236,7 +230,7 @@ class _SelectBankScreenState extends State<SelectBankScreen> with TickerProvider
                   // Banks List
                   Expanded(
                     child: state.isLoadingBanks
-                        ? Center(
+                        ? const Center(
                       child: CircularProgressIndicator(
                         color: MyTheme.primaryColor,
                       ),
@@ -245,7 +239,7 @@ class _SelectBankScreenState extends State<SelectBankScreen> with TickerProvider
                         ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                        children: <Widget>[
                           Icon(
                             Icons.account_balance_outlined,
                             size: 64.sp,
@@ -254,7 +248,7 @@ class _SelectBankScreenState extends State<SelectBankScreen> with TickerProvider
                           SizedBox(height: 16.h),
                           Text(
                             'No Banks Available',
-                            style: TextStyle(
+                            style: Font.montserratFont(
                               fontSize: 18.sp,
                               fontWeight: FontWeight.w600,
                             ),
@@ -265,9 +259,9 @@ class _SelectBankScreenState extends State<SelectBankScreen> with TickerProvider
                         : ListView.builder(
                       padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
                       itemCount: state.availableBanks.length,
-                      itemBuilder: (context, index) {
-                        final bank = state.availableBanks[index];
-                        final isSelected = state.selectedBank?.id == bank.id;
+                      itemBuilder: (BuildContext context, int index) {
+                        final Bank bank = state.availableBanks[index];
+                        final bool isSelected = state.selectedBank?.id == bank.id;
                         return _buildBankCard(bank, isSelected);
                       },
                     ),
@@ -290,10 +284,10 @@ class _SelectBankScreenState extends State<SelectBankScreen> with TickerProvider
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
+                          children: <Widget>[
                             Text(
                               'Continue',
-                              style: TextStyle(
+                              style: Font.montserratFont(
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -327,14 +321,14 @@ class BankDetailsScreen extends StatefulWidget {
 }
 
 class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProviderStateMixin{
-  final _formKey = GlobalKey<FormState>();
-  final _accountNumberController = TextEditingController();
-  final _paymentPurposeController = TextEditingController();
-  final _phoneNumberController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _accountNumberController = TextEditingController();
+  final TextEditingController _paymentPurposeController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
   late AnimationController _backgroundAnimationController;
 
   String? _selectedPurpose;
-  final List<String> _paymentPurposes = [
+  final List<String> _paymentPurposes = <String>[
     'Salary Transfer',
     'Bill Payment',
     'Personal Transfer',
@@ -395,14 +389,14 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
 
   void _submitDetails() {
     if (_formKey.currentState!.validate()) {
-      final accountNumber = _accountNumberController.text.trim();
-      final paymentPurpose = _selectedPurpose == 'Other'
+      final String accountNumber = _accountNumberController.text.trim();
+      final String paymentPurpose = _selectedPurpose == 'Other'
           ? _paymentPurposeController.text.trim()
           : _selectedPurpose!;
-      final phoneNumber = _phoneNumberController.text.trim();
+      final String phoneNumber = _phoneNumberController.text.trim();
 
       // Get selected bank from state
-      final selectedBank = context.read<BankTransactionBloc>().state.selectedBank;
+      final Bank? selectedBank = context.read<BankTransactionBloc>().state.selectedBank;
 
       if (selectedBank != null) {
         // Submit details to bloc
@@ -419,7 +413,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const BankTransferAmountScreen(),
+            builder: (BuildContext context) => const BankTransferAmountScreen(),
           ),
         );
       }
@@ -433,7 +427,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
       appBar: AppBar(
         title: Text(
           'Bank Details',
-          style: TextStyle(
+          style: Font.montserratFont(
             fontSize: 20.sp,
             fontWeight: FontWeight.w600,
           ),
@@ -441,12 +435,12 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
         elevation: 0,
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
           BlocConsumer<BankTransactionBloc, BankTransactionState>(
-            listener: (context, state) {
+            listener: (BuildContext context, BankTransactionState state) {
               if (state.errorMessage != null) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -456,11 +450,11 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
                 );
               }
             },
-            builder: (context, state) {
+            builder: (BuildContext context, BankTransactionState state) {
               return Form(
                 key: _formKey,
                 child: Column(
-                  children: [
+                  children: <Widget>[
                     // Selected Bank Info
                     if (state.selectedBank != null)
                       Container(
@@ -468,14 +462,14 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
                         padding: EdgeInsets.all(16.w),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [MyTheme.primaryColor, MyTheme.primaryColor.withOpacity(0.8)],
+                            colors: <Color>[MyTheme.primaryColor, MyTheme.primaryColor.withOpacity(0.8)],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           borderRadius: BorderRadius.circular(12.r),
                         ),
                         child: Row(
-                          children: [
+                          children: <Widget>[
                             Container(
                               width: 50.w,
                               height: 50.w,
@@ -493,20 +487,20 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
+                                children: <Widget>[
                                   Text(
                                     state.selectedBank!.name,
-                                    style: TextStyle(
+                                    style: Font.montserratFont(
                                       fontSize: 16.sp,
                                       fontWeight: FontWeight.w600,
                                       color: Colors.white,
                                     ),
                                   ),
-                                  if (state.selectedBank!.branchName.isNotEmpty) ...[
+                                  if (state.selectedBank!.branchName.isNotEmpty) ...<Widget>[
                                     SizedBox(height: 4.h),
                                     Text(
                                       state.selectedBank!.branchName,
-                                      style: TextStyle(
+                                      style: Font.montserratFont(
                                         fontSize: 12.sp,
                                         color: Colors.white.withOpacity(0.8),
                                       ),
@@ -530,10 +524,10 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
                         padding: EdgeInsets.all(16.w),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                          children: <Widget>[
                             Text(
                               'Enter Transfer Details',
-                              style: TextStyle(
+                              style: Font.montserratFont(
                                 fontSize: 18.sp,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -543,10 +537,10 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
                             // Account Number Field
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                              children: <Widget>[
                                 Text(
                                   'Account Number',
-                                  style: TextStyle(
+                                  style: Font.montserratFont(
                                     fontSize: 14.sp,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -566,21 +560,21 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
                             // Payment Purpose Dropdown
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                              children: <Widget>[
                                 Text(
                                   'Payment Purpose',
-                                  style: TextStyle(
+                                  style: Font.montserratFont(
                                     fontSize: 14.sp,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
                                 SizedBox(height: 8.h),
                                 DropdownButtonFormField<String>(
-                                  value: _selectedPurpose,
+                                  initialValue: _selectedPurpose,
                                   validator: _validatePaymentPurpose,
                                   decoration: InputDecoration(
                                     hintText: 'Select payment purpose',
-                                    hintStyle: const TextStyle(color: Colors.white),
+                                    hintStyle: Font.montserratFont(color: Colors.white),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12.r),
                                       borderSide: const BorderSide(color: MyTheme.primaryColor, width: 2),
@@ -597,7 +591,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
                                   items: _paymentPurposes.map((String purpose) {
                                     return DropdownMenuItem<String>(
                                       value: purpose,
-                                      child: Text(purpose,style: TextStyle(color: Theme.brightnessOf(context) == Brightness.light ? Colors.black : Colors.white),),
+                                      child: Text(purpose,style: Font.montserratFont(color: Theme.brightnessOf(context) == Brightness.light ? Colors.black : Colors.white),),
                                     );
                                   }).toList(),
                                   onChanged: (String? newValue) {
@@ -606,14 +600,14 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
                                     });
                                   },
                                 ),
-                                if (_selectedPurpose == 'Other') ...[
+                                if (_selectedPurpose == 'Other') ...<Widget>[
                                   SizedBox(height: 16.h),
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
+                                    children: <Widget>[
                                       Text(
                                         'Specify Purpose',
-                                        style: TextStyle(
+                                        style: Font.montserratFont(
                                           fontSize: 14.sp,
                                           fontWeight: FontWeight.w600,
                                         ),
@@ -636,10 +630,10 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
                             // Phone Number Field
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                              children: <Widget>[
                                 Text(
                                   'Phone Number',
-                                  style: TextStyle(
+                                  style: Font.montserratFont(
                                     fontSize: 14.sp,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -662,7 +656,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
                               decoration: BoxDecoration(
                                 color: Theme.of(context).scaffoldBackgroundColor,
                                 borderRadius: BorderRadius.circular(5.r),
-                                boxShadow: [
+                                boxShadow: <BoxShadow>[
                                   BoxShadow(
                                     color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                                     blurRadius: 5,
@@ -671,7 +665,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
                                 ],
                               ),
                               child: Row(
-                                children: [
+                                children: <Widget>[
                                   Icon(
                                     Icons.info_outline,
                                     color: MyTheme.primaryColor,
@@ -681,7 +675,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
                                   Expanded(
                                     child: Text(
                                       'Please ensure all details are correct. Account number should be verified with the bank.',
-                                      style: TextStyle(
+                                      style: Font.montserratFont(
                                         fontSize: 12.sp,
                                         color: MyTheme.primaryColor,
                                       ),
@@ -711,7 +705,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
                         ),
                         child: Text(
                           'Continue',
-                          style: TextStyle(
+                          style: Font.montserratFont(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
@@ -767,7 +761,7 @@ class _BankTransferAmountScreenState extends State<BankTransferAmountScreen> wit
   @override
   Widget build(BuildContext context) {
     return BlocListener<BankTransactionBloc, BankTransactionState>(
-      listener: (context, state) {
+      listener: (BuildContext context, BankTransactionState state) {
         if (state.isSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -775,7 +769,7 @@ class _BankTransferAmountScreenState extends State<BankTransferAmountScreen> wit
               backgroundColor: Colors.green,
             ),
           );
-          Navigator.popUntil(context, (route) => route.isFirst);
+          Navigator.popUntil(context, (Route route) => route.isFirst);
         }
 
         if (state.errorMessage != null) {
@@ -792,7 +786,7 @@ class _BankTransferAmountScreenState extends State<BankTransferAmountScreen> wit
         appBar: AppBar(
           title: Text(
             'Enter Amount',
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 20.sp,
               fontWeight: FontWeight.w600,
             ),
@@ -800,14 +794,14 @@ class _BankTransferAmountScreenState extends State<BankTransferAmountScreen> wit
           elevation: 0,
         ),
         body: Stack(
-          children: [
+          children: <Widget>[
             AnimatedBackground(
               animationController: _backgroundAnimationController,
             ),
             BlocBuilder<BankTransactionBloc, BankTransactionState>(
               builder: (BuildContext context, BankTransactionState state) {
                 return Column(
-                  children: [
+                  children: <Widget>[
                     // Bank Info Header
                     if (state.hasCompleteDetails)
                       Container(
@@ -815,30 +809,30 @@ class _BankTransferAmountScreenState extends State<BankTransferAmountScreen> wit
                         padding: EdgeInsets.all(16.w),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                          children: <Widget>[
                             Text(
                               'Transfer to:',
-                              style: TextStyle(
+                              style: Font.montserratFont(
                                 fontSize: 12.sp,
                               ),
                             ),
                             SizedBox(height: 4.h),
                             Text(
                               state.selectedBank!.name,
-                              style: TextStyle(
+                              style: Font.montserratFont(
                                 fontSize: 18.sp,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                             Text(
                               'Account: ${state.accountNumber}',
-                              style: TextStyle(
+                              style: Font.montserratFont(
                                 fontSize: 14.sp,
                               ),
                             ),
                             Text(
                               'Purpose: ${state.paymentPurpose}',
-                              style: TextStyle(
+                              style: Font.montserratFont(
                                 fontSize: 12.sp,
                               ),
                             ),
@@ -848,13 +842,13 @@ class _BankTransferAmountScreenState extends State<BankTransferAmountScreen> wit
 
                     Expanded(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
                         child: Column(
-                          children: [
+                          children: <Widget>[
                             // Amount Input
                             Text(
                               'Enter Amount',
-                              style: TextStyle(
+                              style: Font.montserratFont(
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -863,7 +857,7 @@ class _BankTransferAmountScreenState extends State<BankTransferAmountScreen> wit
                             TextField(
                               controller: _amountController,
                               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                              style: TextStyle(
+                              style: Font.montserratFont(
                                 fontSize: 24.sp,
                                 fontWeight: FontWeight.bold,
                                 color: MyTheme.primaryColor,
@@ -872,22 +866,22 @@ class _BankTransferAmountScreenState extends State<BankTransferAmountScreen> wit
                               decoration: InputDecoration(
                                 hintText: '0.00',
                                 prefixText: '\$ ',
-                                prefixStyle: TextStyle(
+                                prefixStyle: Font.montserratFont(
                                   fontSize: 24.sp,
                                   fontWeight: FontWeight.bold,
                                   color: MyTheme.primaryColor,
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.r),
-                                  borderSide: BorderSide(color: MyTheme.primaryColor),
+                                  borderSide: const BorderSide(color: MyTheme.primaryColor),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.r),
-                                  borderSide: BorderSide(color: MyTheme.primaryColor, width: 2),
+                                  borderSide: const BorderSide(color: MyTheme.primaryColor, width: 2),
                                 ),
                                 errorText: state.amountError,
                               ),
-                              onChanged: (value) {
+                              onChanged: (String value) {
                                 context.read<BankTransactionBloc>().add(BankTransferAmountChanged(value));
                               },
                             ),
@@ -902,36 +896,36 @@ class _BankTransferAmountScreenState extends State<BankTransferAmountScreen> wit
                                   borderRadius: BorderRadius.circular(12.r),
                                 ),
                                 child: Column(
-                                  children: [
+                                  children: <Widget>[
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text('Transfer Amount:', style: TextStyle(fontSize: 14.sp)),
-                                        Text(state.formattedAmount, style: TextStyle(fontSize: 14.sp)),
+                                      children: <Widget>[
+                                        Text('Transfer Amount:', style: Font.montserratFont(fontSize: 14.sp)),
+                                        Text(state.formattedAmount, style: Font.montserratFont(fontSize: 14.sp)),
                                       ],
                                     ),
                                     SizedBox(height: 8.h),
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text('Transaction Fee:', style: TextStyle(fontSize: 14.sp)),
-                                        Text('\$${state.transactionFee.toStringAsFixed(2)}', style: TextStyle(fontSize: 14.sp)),
+                                      children: <Widget>[
+                                        Text('Transaction Fee:', style: Font.montserratFont(fontSize: 14.sp)),
+                                        Text('\$${state.transactionFee.toStringAsFixed(2)}', style: Font.montserratFont(fontSize: 14.sp)),
                                       ],
                                     ),
                                     Divider(height: 16.h),
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
+                                      children: <Widget>[
                                         Text(
                                           'Total Amount:',
-                                          style: TextStyle(
+                                          style: Font.montserratFont(
                                             fontSize: 16.sp,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
                                         Text(
                                           state.formattedTotalAmount,
-                                          style: TextStyle(
+                                          style: Font.montserratFont(
                                             fontSize: 16.sp,
                                             fontWeight: FontWeight.w600,
                                             color: MyTheme.primaryColor,
@@ -961,7 +955,7 @@ class _BankTransferAmountScreenState extends State<BankTransferAmountScreen> wit
                                     ? const CircularProgressIndicator(color: Colors.white)
                                     : Text(
                                   'Complete Transfer',
-                                  style: TextStyle(
+                                  style: Font.montserratFont(
                                     fontSize: 16.sp,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.white,

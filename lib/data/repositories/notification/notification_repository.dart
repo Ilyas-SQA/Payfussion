@@ -24,7 +24,7 @@ class NotificationRepository {
   // Add notification to Firestore
   Future<String> addNotification(NotificationModel notification) async {
     try {
-      final docRef = await _notificationsCollection.add(notification.toFirestore());
+      final DocumentReference<Object?> docRef = await _notificationsCollection.add(notification.toFirestore());
       return docRef.id;
     } catch (e) {
       throw Exception('Failed to add notification: $e');
@@ -34,12 +34,12 @@ class NotificationRepository {
   // Get all notifications for current user
   Future<List<NotificationModel>> getUserNotifications() async {
     try {
-      final querySnapshot = await _notificationsCollection
+      final QuerySnapshot<Object?> querySnapshot = await _notificationsCollection
           .orderBy('createdAt', descending: true)
           .get();
 
       return querySnapshot.docs
-          .map((doc) => NotificationModel.fromFirestore(doc))
+          .map((QueryDocumentSnapshot<Object?> doc) => NotificationModel.fromFirestore(doc))
           .toList();
     } catch (e) {
       throw Exception('Failed to load notifications: $e');
@@ -49,13 +49,13 @@ class NotificationRepository {
   // Get notifications by type
   Future<List<NotificationModel>> getNotificationsByType(String type) async {
     try {
-      final querySnapshot = await _notificationsCollection
+      final QuerySnapshot<Object?> querySnapshot = await _notificationsCollection
           .where('type', isEqualTo: type)
           .orderBy('createdAt', descending: true)
           .get();
 
       return querySnapshot.docs
-          .map((doc) => NotificationModel.fromFirestore(doc))
+          .map((QueryDocumentSnapshot<Object?> doc) => NotificationModel.fromFirestore(doc))
           .toList();
     } catch (e) {
       throw Exception('Failed to load notifications by type: $e');
@@ -65,7 +65,7 @@ class NotificationRepository {
   // Get unread notifications count
   Future<int> getUnreadNotificationsCount() async {
     try {
-      final querySnapshot = await _notificationsCollection
+      final QuerySnapshot<Object?> querySnapshot = await _notificationsCollection
           .where('isRead', isEqualTo: false)
           .get();
 
@@ -78,7 +78,7 @@ class NotificationRepository {
   // Mark notification as read
   Future<void> markNotificationAsRead(String notificationId) async {
     try {
-      await _notificationsCollection.doc(notificationId).update({
+      await _notificationsCollection.doc(notificationId).update(<Object, Object?>{
         'isRead': true,
         'readAt': Timestamp.now(),
       });
@@ -90,14 +90,14 @@ class NotificationRepository {
   // Mark all notifications as read
   Future<void> markAllNotificationsAsRead() async {
     try {
-      final querySnapshot = await _notificationsCollection
+      final QuerySnapshot<Object?> querySnapshot = await _notificationsCollection
           .where('isRead', isEqualTo: false)
           .get();
 
-      final batch = _firestore.batch();
+      final WriteBatch batch = _firestore.batch();
 
-      for (final doc in querySnapshot.docs) {
-        batch.update(doc.reference, {
+      for (final QueryDocumentSnapshot<Object?> doc in querySnapshot.docs) {
+        batch.update(doc.reference, <String, dynamic>{
           'isRead': true,
           'readAt': Timestamp.now(),
         });
@@ -121,10 +121,10 @@ class NotificationRepository {
   // Clear all notifications
   Future<void> clearAllNotifications() async {
     try {
-      final querySnapshot = await _notificationsCollection.get();
-      final batch = _firestore.batch();
+      final QuerySnapshot<Object?> querySnapshot = await _notificationsCollection.get();
+      final WriteBatch batch = _firestore.batch();
 
-      for (final doc in querySnapshot.docs) {
+      for (final QueryDocumentSnapshot<Object?> doc in querySnapshot.docs) {
         batch.delete(doc.reference);
       }
 
@@ -140,8 +140,8 @@ class NotificationRepository {
       return _notificationsCollection
           .orderBy('createdAt', descending: true)
           .snapshots()
-          .map((snapshot) => snapshot.docs
-          .map((doc) => NotificationModel.fromFirestore(doc))
+          .map((QuerySnapshot<Object?> snapshot) => snapshot.docs
+          .map((QueryDocumentSnapshot<Object?> doc) => NotificationModel.fromFirestore(doc))
           .toList());
     } catch (e) {
       throw Exception('Failed to listen to notifications: $e');
@@ -154,7 +154,7 @@ class NotificationRepository {
       return _notificationsCollection
           .where('isRead', isEqualTo: false)
           .snapshots()
-          .map((snapshot) => snapshot.size);
+          .map((QuerySnapshot<Object?> snapshot) => snapshot.size);
     } catch (e) {
       throw Exception('Failed to listen to unread count: $e');
     }

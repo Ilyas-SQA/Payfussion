@@ -37,7 +37,7 @@ class PayBillModel {
 
   // Convert to Map for Firebase
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'id': id,
       'companyName': companyName,
       'companyIcon': companyIcon,
@@ -79,7 +79,7 @@ class PayBillModel {
 
   // Convert from Firestore DocumentSnapshot
   factory PayBillModel.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return PayBillModel.fromMap(data);
   }
 

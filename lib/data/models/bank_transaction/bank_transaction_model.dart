@@ -71,7 +71,7 @@ class BankTransactionModel extends Equatable {
   }
 
   factory BankTransactionModel.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+    final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return BankTransactionModel(
       id: doc.id,
       userId: data['userId'] ?? '',
@@ -96,7 +96,7 @@ class BankTransactionModel extends Equatable {
   }
 
   Map<String, dynamic> toJson() {
-    return {
+    return <String, dynamic>{
       'id': id,
       'userId': userId,
       'bank': bank.toJson(),
@@ -118,7 +118,7 @@ class BankTransactionModel extends Equatable {
   }
 
   Map<String, dynamic> toFirestore() {
-    return {
+    return <String, dynamic>{
       'userId': userId,
       'bank': bank.toJson(),
       'accountNumber': accountNumber,
@@ -205,7 +205,7 @@ class BankTransactionModel extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
     id,
     userId,
     bank,

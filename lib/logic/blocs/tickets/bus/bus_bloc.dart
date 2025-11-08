@@ -32,8 +32,8 @@ class BusBloc extends Bloc<BusEvent, BusState> {
     try {
       await emit.forEach<List<BusModel>>(
         _firebaseService.getUserBuses(FirebaseAuth.instance.currentUser!.uid),
-        onData: (buses) => BusLoaded(buses),
-        onError: (error, _) => BusError('Failed to load buses: $error'),
+        onData: (List<BusModel> buses) => BusLoaded(buses),
+        onError: (Object error, _) => BusError('Failed to load buses: $error'),
       );
     } catch (e) {
       emit(BusError('Failed to load buses: $e'));
@@ -74,7 +74,7 @@ class BusBookingBloc extends Bloc<BusBookingEvent, BusBookingState> {
       try {
         print('🔔 Adding bus booking notification to Firestore...');
 
-        final notificationData = {
+        final Map<String, Object> notificationData = <String, Object>{
           'bookingId': event.booking.id,
           'busId': event.booking.busId,
           'companyName': event.booking.companyName,
@@ -124,7 +124,7 @@ class BusBookingBloc extends Bloc<BusBookingEvent, BusBookingState> {
         title: 'Bus Booking Failed',
         message: 'Failed to book bus ticket: ${e.toString()}',
         type: 'bus_booking_failed',
-        data: {
+        data: <String, dynamic>{
           'bookingId': event.booking.id,
           'companyName': event.booking.companyName,
           'error': e.toString(),
@@ -140,8 +140,8 @@ class BusBookingBloc extends Bloc<BusBookingEvent, BusBookingState> {
     try {
       await emit.forEach<List<BusBookingModel>>(
         _firebaseService.getUserBookings(event.userId),
-        onData: (bookings) => UserBusBookingsLoaded(bookings),
-        onError: (error, _) => BusBookingError('Failed to load bookings: $error'),
+        onData: (List<BusBookingModel> bookings) => UserBusBookingsLoaded(bookings),
+        onError: (Object error, _) => BusBookingError('Failed to load bookings: $error'),
       );
     } catch (e) {
       emit(BusBookingError('Failed to load bookings: $e'));

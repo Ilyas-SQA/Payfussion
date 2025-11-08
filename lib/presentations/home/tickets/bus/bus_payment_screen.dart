@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:nested/nested.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:payfussion/services/payment_service.dart';
 import 'package:uuid/uuid.dart';
+import '../../../../core/constants/fonts.dart';
 import '../../../../core/constants/tax.dart';
 import '../../../../data/models/card/card_model.dart';
 import '../../../../data/models/notification/notification_model.dart';
@@ -92,14 +94,14 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
         iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
           MultiBlocListener(
-            listeners: [
+            listeners: <SingleChildWidget>[
               BlocListener<BusBookingBloc, BusBookingState>(
-                listener: (context, state) {
+                listener: (BuildContext context, BusBookingState state) {
                   if (state is BusBookingSuccess) {
                     // Add notification when booking is successful
                     _addTicketNotification(
@@ -112,7 +114,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
                         backgroundColor: Colors.green,
                       ),
                     );
-                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    Navigator.of(context).popUntil((Route route) => route.isFirst);
                   } else if (state is BusBookingError) {
                     // Add notification when booking fails
                     _addTicketNotification(
@@ -130,7 +132,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
                 },
               ),
               BlocListener<NotificationBloc, NotificationState>(
-                listener: (context, state) {
+                listener: (BuildContext context, NotificationState state) {
                   if (state is NotificationError) {
                     // Handle notification error silently or log it
                     print('Notification error: ${state.message}');
@@ -144,7 +146,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     _buildTripSummary(),
                     const SizedBox(height: 16),
                     _buildPassengerDetails(),
@@ -171,7 +173,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
     required bool success,
     String? errorMessage,
   }) {
-    final notification = NotificationModel.createTicketNotification(
+    final NotificationModel notification = NotificationModel.createTicketNotification(
       companyName: widget.bus.companyName,
       route: widget.bus.route,
       travelDate: _selectedDate,
@@ -198,7 +200,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -210,10 +212,10 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
+          children: <Widget>[
+            Text(
               "Trip Summary",
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -225,11 +227,11 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
             Text("Duration: ${widget.bus.duration.inHours}h ${widget.bus.duration.inMinutes % 60}m"),
             const SizedBox(height: 8),
             Row(
-              children: [
+              children: <Widget>[
                 const Text("Travel Date: "),
                 TextButton(
                   onPressed: () async {
-                    final date = await showDatePicker(
+                    final DateTime? date = await showDatePicker(
                       context: context,
                       initialDate: _selectedDate,
                       firstDate: DateTime.now(),
@@ -243,7 +245,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
                   },
                   child: Text(
                     "${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}",
-                    style: TextStyle(color: Colors.orange.shade700),
+                    style: Font.montserratFont(color: Colors.orange.shade700),
                   ),
                 ),
               ],
@@ -259,7 +261,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -271,10 +273,10 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
+          children: <Widget>[
+             Text(
               "Passenger Details",
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -285,7 +287,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
               helpText: "Full Name",
               prefixIcon: const Icon(Icons.person,color: MyTheme.secondaryColor,),
               useGreenColor: true,
-              validator: (value) {
+              validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter passenger name';
                 }
@@ -316,7 +318,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
               prefixIcon: const Icon(Icons.phone,color: MyTheme.secondaryColor,),
               isPasswordField: false,
               useGreenColor: true,
-              validator: (value) {
+              validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter phone number';
                 }
@@ -334,7 +336,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -346,25 +348,25 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
+          children: <Widget>[
+            Text(
               "Travel Options",
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 16),
             Row(
-              children: [
+              children: <Widget>[
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       const Text("Number of Passengers"),
                       const SizedBox(height: 8),
                       Row(
-                        children: [
+                        children: <Widget>[
                           IconButton(
                             onPressed: _numberOfPassengers > 1
                                 ? () {
@@ -377,7 +379,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
                           ),
                           Text(
                             '$_numberOfPassengers',
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            style: Font.montserratFont(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           IconButton(
                             onPressed: _numberOfPassengers < 6
@@ -397,11 +399,11 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       const Text("Seat Type"),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
-                        value: _selectedSeatType,
+                        initialValue: _selectedSeatType,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(
                             borderSide: BorderSide(
@@ -420,11 +422,11 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
                           ),
                           focusColor: MyTheme.secondaryColor,
                         ),
-                        items: ['Standard', 'Premium'].map((type) => DropdownMenuItem(
+                        items: <String>['Standard', 'Premium'].map((String type) => DropdownMenuItem(
                           value: type,
                           child: Text(type),
                         )).toList(),
-                        onChanged: (value) {
+                        onChanged: (String? value) {
                           setState(() {
                             _selectedSeatType = value!;
                           });
@@ -446,7 +448,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -458,14 +460,14 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               spacing: 10,
-              children: [
-                const Text(
+              children: <Widget>[
+                Text(
                   "Payment Method",
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -496,7 +498,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -508,10 +510,10 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
+          children: <Widget>[
+            Text(
               "Fare Breakdown",
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -519,16 +521,16 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+              children: <Widget>[
                 Text("Base Fare ($_numberOfPassengers passenger${_numberOfPassengers > 1 ? 's' : ''})"),
                 Text("\$${(widget.bus.approxCostUSD * _numberOfPassengers).toStringAsFixed(2)}"),
               ],
             ),
-            if (_selectedSeatType == 'Premium') ...[
+            if (_selectedSeatType == 'Premium') ...<Widget>[
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: <Widget>[
                   const Text("Premium Seat Upgrade (30%)"),
                   Text("\$${(widget.bus.approxCostUSD * _numberOfPassengers * 0.3).toStringAsFixed(2)}"),
                 ],
@@ -537,33 +539,33 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Subtotal"),
+              children: <Widget>[
+                const Text("Subtotal"),
                 Text("\$${_baseFare.toStringAsFixed(2)}"),
               ],
             ),
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Ticket Tax (${Taxes.ticketFeeTax}%)"),
+              children: <Widget>[
+                const Text("Ticket Tax (${Taxes.ticketFeeTax}%)"),
                 Text("\$${_ticketTax.toStringAsFixed(2)}"),
               ],
             ),
             const Divider(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
+              children: <Widget>[
+                Text(
                   "Total Amount",
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
                   "\$${_totalAmount.toStringAsFixed(2)}",
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.green.shade600,
@@ -581,7 +583,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
     return SizedBox(
       width: double.infinity,
       child: BlocBuilder<BusBookingBloc, BusBookingState>(
-        builder: (context, state) {
+        builder: (BuildContext context, BusBookingState state) {
           return AppButton(
             text: "${state is BusBookingLoading ? const SizedBox(
                   height: 20,
@@ -611,7 +613,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
         return;
       }
 
-      final booking = BusBookingModel(
+      final BusBookingModel booking = BusBookingModel(
         id: const Uuid().v4(),
         busId: widget.bus.id,
         companyName: widget.bus.companyName,
@@ -635,7 +637,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
 
   Widget _buildCardsSection() {
     return BlocBuilder<CardBloc, CardState>(
-      builder: (context, state) {
+      builder: (BuildContext context, CardState state) {
         if (state is CardLoading) {
           return Container(
             height: 60,
@@ -650,10 +652,10 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
                 border: Border.all(color: Colors.grey.shade300),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
                   'No cards available. Please add a card first.',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     color: Colors.grey,
                     fontSize: 14,
                   ),
@@ -664,13 +666,13 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
 
           if (_selectedCard == null) {
             _selectedCard = state.cards.firstWhere(
-                  (card) => card.isDefault,
+                  (CardModel card) => card.isDefault,
               orElse: () => state.cards.first,
             );
           }
 
           return Column(
-            children: [
+            children: <Widget>[
               _buildAccountItem(
                 context: context,
                 card: _selectedCard!,
@@ -679,11 +681,11 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
                   _showCardSelectionBottomSheet(context, state.cards);
                 },
               ),
-              if (_selectedCard != null) ...[
+              if (_selectedCard != null) ...<Widget>[
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Tap to change card',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 10,
                     color: Colors.grey,
                     fontStyle: FontStyle.italic,
@@ -703,16 +705,16 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
+                children: <Widget>[
+                  Text(
                     'Error loading cards',
-                    style: TextStyle(color: Colors.red, fontSize: 12),
+                    style: Font.montserratFont(color: Colors.red, fontSize: 12),
                   ),
                   TextButton(
                     onPressed: () {
                       context.read<CardBloc>().add(LoadCards());
                     },
-                    child: const Text('Retry', style: TextStyle(fontSize: 10)),
+                    child: Text('Retry', style: Font.montserratFont(fontSize: 10)),
                   ),
                 ],
               ),
@@ -743,7 +745,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -758,7 +760,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
             height: 24,
             width: 40,
             color: isDark ? Colors.white : Colors.black,
-            errorBuilder: (context, error, stackTrace) {
+            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
               return Image.asset(
                 'assets/icons/mastercard.png',
                 height: 24,
@@ -786,7 +788,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
           ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
-            children: [
+            children: <Widget>[
               if (isSelected)
                 const Icon(
                   Icons.check_circle,
@@ -818,7 +820,7 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
           decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor,
             borderRadius: BorderRadius.circular(5.r),
-            boxShadow: [
+            boxShadow: <BoxShadow>[
               BoxShadow(
                 color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                 blurRadius: 5,
@@ -831,17 +833,17 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Text(
                   'Select Card',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: isDark ? Colors.white : Colors.black,
                   ),
                 ),
                 const SizedBox(height: 16),
-                ...cards.map((card) => Padding(
+                ...cards.map((CardModel card) => Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: _buildAccountItem(
                     context: context,

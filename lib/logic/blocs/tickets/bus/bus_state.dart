@@ -6,7 +6,7 @@ abstract class BusState extends Equatable {
   const BusState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class BusInitial extends BusState {}
@@ -19,7 +19,7 @@ class BusLoaded extends BusState {
   const BusLoaded(this.buses);
 
   @override
-  List<Object> get props => [buses];
+  List<Object> get props => <Object>[buses];
 }
 
 class BusError extends BusState {
@@ -28,14 +28,14 @@ class BusError extends BusState {
   const BusError(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 abstract class BusBookingState extends Equatable {
   const BusBookingState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class BusBookingInitial extends BusBookingState {}
@@ -48,7 +48,7 @@ class BusBookingSuccess extends BusBookingState {
   const BusBookingSuccess(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class BusBookingError extends BusBookingState {
@@ -57,7 +57,7 @@ class BusBookingError extends BusBookingState {
   const BusBookingError(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class UserBusBookingsLoaded extends BusBookingState {
@@ -66,5 +66,5 @@ class UserBusBookingsLoaded extends BusBookingState {
   const UserBusBookingsLoaded(this.bookings);
 
   @override
-  List<Object> get props => [bookings];
+  List<Object> get props => <Object>[bookings];
 }

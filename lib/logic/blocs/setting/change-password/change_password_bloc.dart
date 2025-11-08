@@ -2,6 +2,8 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:dartz/dartz.dart';
+import 'package:payfussion/core/exceptions/failure.dart';
 import 'package:payfussion/domain/repository/auth/auth_repository.dart';
 import 'package:payfussion/logic/blocs/setting/change-password/change_pasword_state.dart';
 
@@ -12,11 +14,11 @@ import 'change_pasword_event.dart';
 enum PasswordStrength { weak, medium, strong } // Simplified for this example
 
 PasswordStrength _checkPasswordStrength(String password) {
-  final hasUppercase = password.contains(RegExp(r'[A-Z]'));
-  final hasLowercase = password.contains(RegExp(r'[a-z]'));
-  final hasDigit = password.contains(RegExp(r'\d'));
-  final hasSpecialChar = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
-  final hasMinLength = password.length >= 8;
+  final bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
+  final bool hasLowercase = password.contains(RegExp(r'[a-z]'));
+  final bool hasDigit = password.contains(RegExp(r'\d'));
+  final bool hasSpecialChar = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+  final bool hasMinLength = password.length >= 8;
 
   if (hasUppercase &&
       hasLowercase &&
@@ -34,7 +36,7 @@ PasswordStrength _checkPasswordStrength(String password) {
 class ChangePasswordBloc
     extends Bloc<ChangePasswordEvent, ChangePasswordState> {
   final AuthRepository _authRepository;
-  final sessionController = getIt<SessionController>();
+  final SessionController sessionController = getIt<SessionController>();
   ChangePasswordBloc(this._authRepository)
     : super(const ChangePasswordState()) {
     on<PasswordFieldsChangedEvent>(_onPasswordFieldsChanged);
@@ -67,7 +69,7 @@ class ChangePasswordBloc
     PasswordFieldsChangedEvent event,
     Emitter<ChangePasswordState> emit,
   ) {
-    final mismatchError =
+    final bool mismatchError =
         event.newPassword.isNotEmpty &&
         event.confirmNewPassword.isNotEmpty &&
         event.newPassword != event.confirmNewPassword;
@@ -116,7 +118,7 @@ class ChangePasswordBloc
       return;
     }
 
-    final passwordStrength = _checkPasswordStrength(event.newPassword);
+    final PasswordStrength passwordStrength = _checkPasswordStrength(event.newPassword);
     if (passwordStrength != PasswordStrength.strong) {
       emit(
         state.copyWith(
@@ -137,13 +139,13 @@ class ChangePasswordBloc
       ),
     );
 
-    final result = await _authRepository.changePassword(
+    final Either<Failure, Unit> result = await _authRepository.changePassword(
       newPassword: event.newPassword,
       oldPassword: event.oldPassword,
     );
 
     result.fold(
-      (failure) => emit(
+      (Failure failure) => emit(
         state.copyWith(
           isLoading: false,
           isSuccess: false,

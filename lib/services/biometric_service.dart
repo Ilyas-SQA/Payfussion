@@ -6,7 +6,7 @@ import 'local_storage.dart';
 
 class BiometricService {
   final LocalAuthentication _localAuth = LocalAuthentication();
-  final _localDb = getIt<LocalStorage>();
+  final LocalStorage _localDb = getIt<LocalStorage>();
 
   static const String _biometricEnabledKey = 'biometric_enabled';
 
@@ -40,7 +40,7 @@ class BiometricService {
       return await _localAuth.getAvailableBiometrics();
     } catch (e) {
       print('Error getting available biometrics: $e');
-      return [];
+      return <BiometricType>[];
     }
   }
 
@@ -59,9 +59,9 @@ class BiometricService {
       );
 
       if (didAuthenticate) {
-        return {'success': true, 'error': ''};
+        return <String, dynamic>{'success': true, 'error': ''};
       } else {
-        return {'success': false, 'error': 'Authentication failed'};
+        return <String, dynamic>{'success': false, 'error': 'Authentication failed'};
       }
     } catch (e) {
       String errorMessage = 'Authentication error occurred';
@@ -78,7 +78,7 @@ class BiometricService {
       }
 
       print('Biometric authentication error: $e');
-      return {'success': false, 'error': errorMessage};
+      return <String, dynamic>{'success': false, 'error': errorMessage};
     }
   }
 

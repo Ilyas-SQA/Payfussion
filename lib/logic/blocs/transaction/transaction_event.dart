@@ -6,7 +6,7 @@ import '../../../../data/models/recipient/recipient_model.dart';
 abstract class TransactionEvent extends Equatable {
   const TransactionEvent();
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class PaymentStarted extends TransactionEvent {
@@ -14,7 +14,7 @@ class PaymentStarted extends TransactionEvent {
   const PaymentStarted(this.recipient);
 
   @override
-  List<Object?> get props => [recipient];
+  List<Object?> get props => <Object?>[recipient];
 }
 
 class PaymentAmountChanged extends TransactionEvent {
@@ -22,7 +22,7 @@ class PaymentAmountChanged extends TransactionEvent {
   const PaymentAmountChanged(this.raw);
 
   @override
-  List<Object?> get props => [raw];
+  List<Object?> get props => <Object?>[raw];
 }
 
 class PaymentSelectCard extends TransactionEvent {
@@ -30,7 +30,7 @@ class PaymentSelectCard extends TransactionEvent {
   const PaymentSelectCard(this.card);
 
   @override
-  List<Object?> get props => [card];
+  List<Object?> get props => <Object?>[card];
 }
 
 class PaymentSubmit extends TransactionEvent {
@@ -45,5 +45,5 @@ class FetchTodaysTransactions extends TransactionEvent {
   const FetchTodaysTransactions();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }

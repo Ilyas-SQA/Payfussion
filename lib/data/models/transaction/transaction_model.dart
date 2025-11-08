@@ -60,7 +60,7 @@ class TransactionModel {
   }
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'user_id': userId,
       'recipient_id': recipientId,
       'recipient_name': recipientName,
@@ -76,10 +76,10 @@ class TransactionModel {
   }
 
   factory TransactionModel.fromDoc(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>; // Accessing the document's data
+    final Map<String, dynamic> data = doc.data() as Map<String, dynamic>; // Accessing the document's data
 
     // Check if 'created_at' is a Timestamp
-    final createdAt = data['created_at'] is Timestamp
+    final DateTime createdAt = data['created_at'] is Timestamp
         ? (data['created_at'] as Timestamp).toDate()
         : DateTime.now(); // Default to current time if it's not a valid timestamp
 

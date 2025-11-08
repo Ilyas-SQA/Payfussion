@@ -44,7 +44,7 @@ class _TaxComplianceScreenState extends State<TaxComplianceScreen> with TickerPr
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -52,7 +52,7 @@ class _TaxComplianceScreenState extends State<TaxComplianceScreen> with TickerPr
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 _buildSectionTitle('Tax Reporting'),
                 _buildTaxReportingCard(
                   context: context,
@@ -69,7 +69,7 @@ class _TaxComplianceScreenState extends State<TaxComplianceScreen> with TickerPr
                     );
                   },
                 ),
-                SizedBox(height: 10,),
+                const SizedBox(height: 10,),
                 _buildTaxReportingCard(
                   context: context,
                   icon: Icons.picture_as_pdf_outlined,
@@ -213,7 +213,7 @@ class _TaxComplianceScreenState extends State<TaxComplianceScreen> with TickerPr
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -223,9 +223,9 @@ class _TaxComplianceScreenState extends State<TaxComplianceScreen> with TickerPr
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Row(
-            children: [
+            children: <Widget>[
               Icon(icon, size: 28,color: MyTheme.primaryColor,),
               const SizedBox(width: 12),
               Expanded(child: Text(title)),
@@ -272,7 +272,7 @@ class _TaxComplianceScreenState extends State<TaxComplianceScreen> with TickerPr
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -281,13 +281,13 @@ class _TaxComplianceScreenState extends State<TaxComplianceScreen> with TickerPr
           ],
         ),
         child: Row(
-          children: [
+          children: <Widget>[
             Icon(icon, size: 26,color: MyTheme.primaryColor,),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Text(title),
                   const SizedBox(height: 4),
                   Text(description),

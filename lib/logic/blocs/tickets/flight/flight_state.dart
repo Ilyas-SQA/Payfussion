@@ -6,7 +6,7 @@ abstract class FlightState extends Equatable {
   const FlightState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class FlightInitial extends FlightState {}
@@ -19,7 +19,7 @@ class FlightLoaded extends FlightState {
   const FlightLoaded(this.flights);
 
   @override
-  List<Object> get props => [flights];
+  List<Object> get props => <Object>[flights];
 }
 
 class FlightError extends FlightState {
@@ -28,14 +28,14 @@ class FlightError extends FlightState {
   const FlightError(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 abstract class FlightBookingState extends Equatable {
   const FlightBookingState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class FlightBookingInitial extends FlightBookingState {}
@@ -48,7 +48,7 @@ class FlightBookingSuccess extends FlightBookingState {
   const FlightBookingSuccess(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class FlightBookingError extends FlightBookingState {
@@ -57,7 +57,7 @@ class FlightBookingError extends FlightBookingState {
   const FlightBookingError(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class UserFlightBookingsLoaded extends FlightBookingState {
@@ -66,5 +66,5 @@ class UserFlightBookingsLoaded extends FlightBookingState {
   const UserFlightBookingsLoaded(this.bookings);
 
   @override
-  List<Object> get props => [bookings];
+  List<Object> get props => <Object>[bookings];
 }

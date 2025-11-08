@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import '../../core/constants/fonts.dart';
 import '../../data/models/calculator/historyitem.dart';
 
 class CalculatorHistoryView extends StatelessWidget {
@@ -69,7 +70,7 @@ class CalculatorHistoryView extends StatelessWidget {
                       const SizedBox(height: 16),
                       Text(
                         'No calculations yet',
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           fontSize: 18,
                           color: Theme.of(context).disabledColor,
                         ),
@@ -95,7 +96,7 @@ class CalculatorHistoryView extends StatelessWidget {
                     child: ListTile(
                       title: Text(
                         item.title,
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -105,12 +106,12 @@ class CalculatorHistoryView extends StatelessWidget {
                         children: <Widget>[
                           Text(
                             item.subtitle,
-                            style: const TextStyle(fontSize: 16),
+                            style: Font.montserratFont(fontSize: 16),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             '${item.timestamp.day}/${item.timestamp.month}/${item.timestamp.year} ${item.timestamp.hour}:${item.timestamp.minute.toString().padLeft(2, '0')}',
-                            style: TextStyle(
+                            style: Font.montserratFont(
                               fontSize: 12,
                               color: Theme.of(context).textTheme.bodySmall?.color,
                             ),

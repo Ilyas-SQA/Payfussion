@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nested/nested.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:payfussion/presentations/widgets/custom_button.dart';
 import 'package:uuid/uuid.dart';
+import '../../../core/constants/fonts.dart';
 import '../../../core/theme/theme.dart';
 import '../../../data/models/card/card_model.dart';
 import '../../../data/models/insurance/insurance_model.dart';
@@ -176,7 +178,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
 
   Future<void> _authenticateWithBiometric() async {
     try {
-      final result = await _biometricService.authenticate(
+      final Map<String, dynamic> result = await _biometricService.authenticate(
         reason: 'Authenticate to complete insurance premium payment',
         biometricOnly: true,
       );
@@ -208,7 +210,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
 
   void _completePayment() {
     final double amount = double.tryParse(_premiumAmountController.text) ?? 0.0;
-    final insurancePayment = InsurancePaymentModel(
+    final InsurancePaymentModel insurancePayment = InsurancePaymentModel(
       id: const Uuid().v4(),
       companyName: widget.companyName,
       insuranceType: widget.insuranceType,
@@ -239,14 +241,14 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
     return Scaffold(
       // backgroundColor: isDark ? MyTheme.darkBackgroundColor : MyTheme.backgroundColor,
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
           MultiBlocListener(
-            listeners: [
+            listeners: <SingleChildWidget>[
               BlocListener<InsurancePaymentBloc, InsurancePaymentState>(
-                  listener: (context, state) {
+                  listener: (BuildContext context, InsurancePaymentState state) {
                     if (state is InsurancePaymentSuccess) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text(state.message), backgroundColor: Colors.green));
@@ -264,7 +266,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
                           ));
 
                       // Navigate back after short delay
-                      Future.delayed(Duration(seconds: 2), () {
+                      Future.delayed(const Duration(seconds: 2), () {
                         if (mounted) {
                           Navigator.of(context).pop();
                         }
@@ -278,7 +280,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
               ),
             ],
             child: CustomScrollView(
-              slivers: [
+              slivers: <Widget>[
                 // Enhanced App Bar
                 SliverAppBar(
                   expandedHeight: 200.h,
@@ -292,7 +294,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
                   flexibleSpace: FlexibleSpaceBar(
                     title: Text(
                       widget.companyName,
-                      style: TextStyle(
+                      style: Font.montserratFont(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 16.sp,
@@ -303,7 +305,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [
+                          colors: <Color>[
                             widget.color,
                             widget.color.withOpacity(0.8),
                           ],
@@ -346,7 +348,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
                         key: _formKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                          children: <Widget>[
                             // Header Info Card
                             _buildInfoCard(isDark),
 
@@ -400,7 +402,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -409,7 +411,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
           ],
         ),
         child: Row(
-          children: [
+          children: <Widget>[
             Icon(
               Icons.info_outline,
               color: widget.color,
@@ -419,10 +421,10 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Text(
                     'Insurance Premium Payment',
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
                       color: isDark ? Colors.white : Colors.black,
@@ -431,7 +433,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
                   SizedBox(height: 4.h),
                   Text(
                     'Secure payment for ${widget.insuranceType}',
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontSize: 14.sp,
                       color: Colors.grey[600],
                     ),
@@ -448,9 +450,9 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
   Widget _buildSectionHeader(String title, IconData icon, bool isDark,bool isCard) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
+      children: <Widget>[
         Row(
-          children: [
+          children: <Widget>[
             Icon(
               icon,
               color: widget.color,
@@ -459,7 +461,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
             SizedBox(width: 8.w),
             Text(
               title,
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w600,
                 color: isDark ? Colors.white : Colors.black,
@@ -468,12 +470,12 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
           ],
         ),
         isCard ? TextButton.icon(
-          label: Text("Add  New Card",style: TextStyle(color: MyTheme.secondaryColor,fontSize: 12.sp),),
-          icon: Icon(Icons.add,color: MyTheme.secondaryColor),
+          label: Text("Add  New Card",style: Font.montserratFont(color: MyTheme.secondaryColor,fontSize: 12.sp),),
+          icon: const Icon(Icons.add,color: MyTheme.secondaryColor),
           onPressed: (){
             PaymentService().saveCard(context);
           },
-        ) : SizedBox()
+        ) : const SizedBox()
       ],
     );
   }
@@ -494,7 +496,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
           helpText: 'Policy Number',
           controller: _policyNumberController,
           useGreenColor: true,
-          validator: (value) {
+          validator: (String? value) {
             if (value == null || value.isEmpty) return 'Please enter policy number';
             if (value.length < 6) return 'Policy number must be at least 6 characters';
             return null;
@@ -520,7 +522,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
           decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor,
             borderRadius: BorderRadius.circular(5.r),
-            boxShadow: [
+            boxShadow: <BoxShadow>[
               BoxShadow(
                 color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                 blurRadius: 5,
@@ -529,10 +531,10 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
             ],
           ),
           child: Column(
-            children: [
+            children: <Widget>[
               Text(
                 'Premium Amount',
-                style: TextStyle(
+                style: Font.montserratFont(
                   fontSize: 14.sp,
                   color: Colors.grey[600],
                   fontWeight: FontWeight.w500,
@@ -541,7 +543,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
               SizedBox(height: 8.h),
               TextFormField(
                 controller: _premiumAmountController,
-                validator: (value) {
+                validator: (String? value) {
                   if (value == null || value.isEmpty)
                     return 'Please enter premium amount';
                   final double? amount = double.tryParse(value);
@@ -549,7 +551,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
                     return 'Please enter a valid amount';
                   return null;
                 },
-                style: TextStyle(
+                style: Font.montserratFont(
                   fontSize: 36.sp,
                   fontWeight: FontWeight.bold,
                   color: widget.color,
@@ -563,14 +565,14 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
-                  hintStyle: TextStyle(
+                  hintStyle: Font.montserratFont(
                     fontSize: 36.sp,
                     fontWeight: FontWeight.bold,
                     color: Colors.grey[400],
                   ),
                   hintText: '\$ 0.00',
                   prefixText: '\$ ',
-                  prefixStyle: TextStyle(
+                  prefixStyle: Font.montserratFont(
                     fontSize: 36.sp,
                     fontWeight: FontWeight.bold,
                     color: widget.color,
@@ -586,7 +588,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
 
   Widget _buildCardsSection() {
     return BlocBuilder<CardBloc, CardState>(
-      builder: (context, state) {
+      builder: (BuildContext context, CardState state) {
         if (state is CardLoading) {
           return Container(
             height: 80.h,
@@ -608,19 +610,19 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
               child: Center(
                 child: Text(
                   'No cards available. Please add a card first.',
-                  style: TextStyle(color: Colors.grey, fontSize: 14.sp),
+                  style: Font.montserratFont(color: Colors.grey, fontSize: 14.sp),
                 ),
               ),
             );
           }
           if (_selectedCard == null) {
             _selectedCard = state.cards.firstWhere(
-                  (card) => card.isDefault,
+                  (CardModel card) => card.isDefault,
               orElse: () => state.cards.first,
             );
           }
           return Column(
-            children: [
+            children: <Widget>[
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
                 child: _buildAccountItem(
@@ -630,13 +632,13 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
                   onTap: () => _showCardSelectionBottomSheet(context, state.cards),
                 ),
               ),
-              if (_selectedCard != null) ...[
+              if (_selectedCard != null) ...<Widget>[
                 8.verticalSpace,
                 FadeTransition(
                   opacity: _fadeAnimation,
                   child: Text(
                     'Tap to change card',
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontSize: 12.sp,
                       color: Colors.grey,
                       fontStyle: FontStyle.italic,
@@ -657,14 +659,14 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) {
+      builder: (BuildContext context) {
         final ThemeData theme = Theme.of(context);
         final bool isDark = theme.brightness == Brightness.dark;
         return Container(
           decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor,
             borderRadius: BorderRadius.circular(5.r),
-            boxShadow: [
+            boxShadow: <BoxShadow>[
               BoxShadow(
                 color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                 blurRadius: 5,
@@ -677,7 +679,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 // Handle
                 Center(
                   child: Container(
@@ -699,8 +701,8 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
                   ),
                 ),
                 20.verticalSpace,
-                ...cards.asMap().entries.map((entry) {
-                  CardModel card = entry.value;
+                ...cards.asMap().entries.map((MapEntry<int, CardModel> entry) {
+                  final CardModel card = entry.value;
                   return Padding(
                     padding: EdgeInsets.only(bottom: 12.h),
                     child: _buildAccountItem(
@@ -734,13 +736,13 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
 
   Widget _buildBottomNav({required bool isDark}) {
     return BlocBuilder<InsurancePaymentBloc, InsurancePaymentState>(
-      builder: (context, state) {
+      builder: (BuildContext context, InsurancePaymentState state) {
         if (state is InsurancePaymentProcessing) {
           return Container(
             padding: EdgeInsets.all(24.w),
             decoration: BoxDecoration(
               color: isDark ? MyTheme.darkBackgroundColor : Colors.white,
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1),
                   blurRadius: 10,
@@ -771,7 +773,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
             padding: EdgeInsets.all(24.w),
             decoration: BoxDecoration(
               color: isDark ? MyTheme.darkBackgroundColor : Colors.white,
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1),
                   blurRadius: 10,
@@ -802,7 +804,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
         padding: EdgeInsets.all(24.w),
         decoration: BoxDecoration(
           color: isDark ? MyTheme.darkBackgroundColor : Colors.white,
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
               blurRadius: 10,
@@ -812,7 +814,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
+          children: <Widget>[
             TextButton(
               onPressed: () {
                 setState(() {
@@ -827,7 +829,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
               ),
               child: Text(
                 'Cancel',
-                style: TextStyle(
+                style: Font.montserratFont(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
                   color: Colors.grey[600],
@@ -846,7 +848,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
                 _isBiometricAvailable && _isBiometricEnabled
                     ? 'Enter PIN Instead?'
                     : 'Complete Payment',
-                style: TextStyle(
+                style: Font.montserratFont(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
                   color: widget.color,
@@ -861,8 +863,8 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
 
   Widget _buildFingerPrint({required bool isDark}) {
     IconData biometricIcon = Icons.fingerprint;
-    String authTitle = '$_biometricTypeName Authentication';
-    String authDescription = 'Use $_biometricTypeName to complete the payment';
+    final String authTitle = '$_biometricTypeName Authentication';
+    final String authDescription = 'Use $_biometricTypeName to complete the payment';
 
     // Set icon based on biometric type
     if (_biometricTypeName.toLowerCase().contains('face')) {
@@ -875,7 +877,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
 
     return AnimatedBuilder(
       animation: _fingerprintFadeAnimation,
-      builder: (context, child) {
+      builder: (BuildContext context, Widget? child) {
         return Opacity(
           opacity: _fingerprintFadeAnimation.value,
           child: Transform.translate(
@@ -891,7 +893,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
                 ),
               ),
               child: Column(
-                children: [
+                children: <Widget>[
                   Icon(
                     biometricIcon,
                     size: 40.sp,
@@ -900,7 +902,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
                   16.verticalSpace,
                   Text(
                     authTitle,
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontSize: 20.sp,
                       fontWeight: FontWeight.w700,
                       color: isDark ? Colors.white : Colors.black,
@@ -911,7 +913,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
                   Text(
                     authDescription,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontSize: 14.sp,
                       color: Colors.grey[600],
                     ),
@@ -919,7 +921,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
                   24.verticalSpace,
                   AnimatedBuilder(
                     animation: _pulseAnimation,
-                    builder: (context, child) {
+                    builder: (BuildContext context, Widget? child) {
                       return Transform.scale(
                         scale: _pulseAnimation.value,
                         child: GestureDetector(
@@ -944,11 +946,11 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
                       );
                     },
                   ),
-                  if (!_isBiometricAvailable || !_isBiometricEnabled) ...[
+                  if (!_isBiometricAvailable || !_isBiometricEnabled) ...<Widget>[
                     16.verticalSpace,
                     Text(
                       'Biometric not available. Use PIN instead.',
-                      style: TextStyle(
+                      style: Font.montserratFont(
                         fontSize: 12.sp,
                         color: Colors.orange,
                         fontStyle: FontStyle.italic,
@@ -983,7 +985,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -992,7 +994,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
           ],
         ),
         child: Row(
-          children: [
+          children: <Widget>[
             Image.asset(
               card.brandIconPath,
               height: 24.h,
@@ -1003,10 +1005,10 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Text(
                     card.cardEnding,
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
                       color: isDark ? Colors.white : Colors.black,
@@ -1015,7 +1017,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
                   4.verticalSpace,
                   Text(
                     'Exp: ${card.formattedExpiry}${card.isDefault ? ' • Default' : ''}',
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontSize: 12.sp,
                       color: Colors.grey[600],
                     ),

@@ -28,7 +28,7 @@ class PaymentCard {
   });
 
   factory PaymentCard.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+    final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return PaymentCard(
       id: doc.id,
       brand: data['brand'] ?? '',
@@ -68,8 +68,8 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
         .collection('card')
         .orderBy('create_date', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-        .map((doc) => PaymentCard.fromFirestore(doc))
+        .map((QuerySnapshot<Map<String, dynamic>> snapshot) => snapshot.docs
+        .map((QueryDocumentSnapshot<Map<String, dynamic>> doc) => PaymentCard.fromFirestore(doc))
         .toList());
   }
 
@@ -89,11 +89,11 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return StreamBuilder<List<PaymentCard>>(
       stream: getPaymentCardsStream(),
-      builder: (context, snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<List<PaymentCard>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return _buildShimmerCard(theme);
         }
@@ -106,7 +106,7 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
           return _buildEmptyCard(theme);
         }
 
-        final cards = snapshot.data!;
+        final List<PaymentCard> cards = snapshot.data!;
 
         // Set selected card to first card if not already selected
         if (selectedCard == null && cards.isNotEmpty) {
@@ -114,7 +114,7 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
         }
 
         return Column(
-          children: [
+          children: <Widget>[
             _buildMainCard(theme, selectedCard!, cards),
             if (isExpanded) _buildCardsList(theme, cards),
           ],
@@ -131,7 +131,7 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
         height: 55.h,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: theme.colorScheme.primary.withOpacity(0.2),
               spreadRadius: 2,
@@ -152,7 +152,7 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: <Widget>[
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10.w),
                     child: TImageUrl.getCardBrandLogo(card.brand),
@@ -196,7 +196,7 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10.r),
             color: theme.colorScheme.surface,
-            boxShadow: [
+            boxShadow: <BoxShadow>[
               BoxShadow(
                 color: theme.colorScheme.shadow.withOpacity(0.1),
                 spreadRadius: 1,
@@ -206,8 +206,8 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
             ],
           ),
           child: Column(
-            children: cards.map((card) {
-              final isSelected = selectedCard?.id == card.id;
+            children: cards.map((PaymentCard card) {
+              final bool isSelected = selectedCard?.id == card.id;
               return _buildCardItem(theme, card, isSelected);
             }).toList(),
           ),
@@ -230,7 +230,7 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
             borderRadius: BorderRadius.circular(10.r),
           ),
           child: Row(
-            children: [
+            children: <Widget>[
               TImageUrl.getCardBrandLogo(card.brand),
               SizedBox(width: 12.w),
               Expanded(
@@ -274,7 +274,7 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10.r),
-            boxShadow: [
+            boxShadow: <BoxShadow>[
               BoxShadow(
                 color: theme.colorScheme.primary.withOpacity(0.1),
                 spreadRadius: 1,
@@ -285,7 +285,7 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+            children: <Widget>[
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10.w),
                 child: Container(
@@ -328,7 +328,7 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
         child: Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            children: <Widget>[
               Icon(
                 Icons.error_outline,
                 color: Colors.red,
@@ -365,7 +365,7 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
         child: Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            children: <Widget>[
               Icon(
                 Icons.add_card,
                 color: theme.colorScheme.primary,

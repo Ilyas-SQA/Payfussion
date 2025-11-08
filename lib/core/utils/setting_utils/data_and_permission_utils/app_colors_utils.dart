@@ -20,7 +20,7 @@ class AppColors {
   });
 
   factory AppColors.of(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return AppColors(
       primary: Theme.of(context).colorScheme.primary,

@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 
 abstract class CommunityFormEvent extends Equatable {
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class AddPostEvent extends CommunityFormEvent {
@@ -13,7 +13,7 @@ class AddPostEvent extends CommunityFormEvent {
   AddPostEvent({required this.question, required this.content});
 
   @override
-  List<Object?> get props => [question, content];
+  List<Object?> get props => <Object?>[question, content];
 }
 
 class GetPostsEvent extends CommunityFormEvent {}
@@ -25,7 +25,7 @@ class AddCommentEvent extends CommunityFormEvent {
   AddCommentEvent({required this.postId, required this.content});
 
   @override
-  List<Object?> get props => [postId, content];
+  List<Object?> get props => <Object?>[postId, content];
 }
 
 class AddReplyEvent extends CommunityFormEvent {
@@ -40,7 +40,7 @@ class AddReplyEvent extends CommunityFormEvent {
   });
 
   @override
-  List<Object?> get props => [postId, commentId, content];
+  List<Object?> get props => <Object?>[postId, commentId, content];
 }
 
 // Post Like/Dislike Events
@@ -50,7 +50,7 @@ class LikePostEvent extends CommunityFormEvent {
   LikePostEvent({required this.postId});
 
   @override
-  List<Object?> get props => [postId];
+  List<Object?> get props => <Object?>[postId];
 }
 
 class DislikePostEvent extends CommunityFormEvent {
@@ -59,7 +59,7 @@ class DislikePostEvent extends CommunityFormEvent {
   DislikePostEvent({required this.postId});
 
   @override
-  List<Object?> get props => [postId];
+  List<Object?> get props => <Object?>[postId];
 }
 
 // Comment Like/Dislike Events - NEW
@@ -70,7 +70,7 @@ class LikeCommentEvent extends CommunityFormEvent {
   LikeCommentEvent({required this.postId, required this.commentId});
 
   @override
-  List<Object?> get props => [postId, commentId];
+  List<Object?> get props => <Object?>[postId, commentId];
 }
 
 class DislikeCommentEvent extends CommunityFormEvent {
@@ -80,7 +80,7 @@ class DislikeCommentEvent extends CommunityFormEvent {
   DislikeCommentEvent({required this.postId, required this.commentId});
 
   @override
-  List<Object?> get props => [postId, commentId];
+  List<Object?> get props => <Object?>[postId, commentId];
 }
 
 // Reply Like/Dislike Events - NEW
@@ -96,7 +96,7 @@ class LikeReplyEvent extends CommunityFormEvent {
   });
 
   @override
-  List<Object?> get props => [postId, commentId, replyId];
+  List<Object?> get props => <Object?>[postId, commentId, replyId];
 }
 
 class DislikeReplyEvent extends CommunityFormEvent {
@@ -111,7 +111,7 @@ class DislikeReplyEvent extends CommunityFormEvent {
   });
 
   @override
-  List<Object?> get props => [postId, commentId, replyId];
+  List<Object?> get props => <Object?>[postId, commentId, replyId];
 }
 
 class StartListeningPostsEvent extends CommunityFormEvent {}
@@ -125,5 +125,5 @@ class PostsUpdatedEvent extends CommunityFormEvent {
   PostsUpdatedEvent(this.docs, {this.error});
 
   @override
-  List<Object?> get props => [docs, error];
+  List<Object?> get props => <Object?>[docs, error];
 }

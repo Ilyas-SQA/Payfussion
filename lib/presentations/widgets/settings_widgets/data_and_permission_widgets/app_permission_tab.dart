@@ -4,7 +4,6 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../../../core/constants/fonts.dart';
 import '../../../../core/utils/setting_utils/data_and_permission_utils/app_colors_utils.dart';
-import '../../../../core/utils/setting_utils/data_and_permission_utils/app_styles.dart';
 import '../../../../core/utils/setting_utils/data_and_permission_utils/permission_utils.dart';
 import '../../background_theme.dart';
 import 'bullet_points.dart';
@@ -47,7 +46,7 @@ class _AppPermissionsTabState extends State<AppPermissionsTab> with TickerProvid
   @override
   Widget build(BuildContext context) {
     return Stack(
-      children: [
+      children: <Widget>[
         AnimatedBackground(
           animationController: _backgroundAnimationController,
         ),
@@ -55,7 +54,7 @@ class _AppPermissionsTabState extends State<AppPermissionsTab> with TickerProvid
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               Text(
                 'App Permissions',
                 style: Font.montserratFont(fontSize: 18,fontWeight: FontWeight.bold,),
@@ -68,9 +67,9 @@ class _AppPermissionsTabState extends State<AppPermissionsTab> with TickerProvid
               const SizedBox(height: 24),
 
               // Permission cards
-              ...PermissionUtils.allPermissions.map((permission) =>
+              ...PermissionUtils.allPermissions.map((Permission permission) =>
                   Column(
-                    children: [
+                    children: <Widget>[
                       PermissionCard(
                         permission: permission,
                         status: widget.permissionStatus[permission],
@@ -90,7 +89,7 @@ class _AppPermissionsTabState extends State<AppPermissionsTab> with TickerProvid
                 colors: widget.colors,
                 content: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     BulletPoint(
                       'PayFusion only requests permissions essential to its functionality.',
                     ),

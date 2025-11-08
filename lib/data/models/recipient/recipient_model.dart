@@ -16,7 +16,7 @@ class RecipientModel extends Equatable {
     required this.institutionName,
   });
 
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toMap() => <String, dynamic>{
     'id': id,
     'name': name,
     'imageUrl': imageUrl,
@@ -25,7 +25,7 @@ class RecipientModel extends Equatable {
   };
 
   @override
-  List<Object?> get props => [id, name, imageUrl, accountNumber, institutionName];
+  List<Object?> get props => <Object?>[id, name, imageUrl, accountNumber, institutionName];
 }
 
 class Bank extends Equatable {
@@ -36,6 +36,7 @@ class Bank extends Equatable {
   final String branchCode;
   final String address;
   final String city;
+  final String image;
 
   const Bank({
     required this.id,
@@ -45,6 +46,7 @@ class Bank extends Equatable {
     this.branchCode = '',
     this.address = '',
     this.city = '',
+    this.image = '',
   });
 
   // Factory constructor for JSON
@@ -57,12 +59,13 @@ class Bank extends Equatable {
       branchCode: json['branchCode'] ?? '',
       address: json['address'] ?? '',
       city: json['city'] ?? '',
+      image: json['image'] ?? '',
     );
   }
 
   // Factory constructor for Firestore
   factory Bank.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return Bank(
       id: doc.id,
       name: data['name'] ?? '',
@@ -71,12 +74,13 @@ class Bank extends Equatable {
       branchCode: data['branchCode'] ?? '',
       address: data['address'] ?? '',
       city: data['city'] ?? '',
+      image: data['image'] ?? '',
     );
   }
 
   // Convert to JSON
   Map<String, dynamic> toJson() {
-    return {
+    return <String, dynamic>{
       'id': id,
       'name': name,
       'code': code,
@@ -84,11 +88,12 @@ class Bank extends Equatable {
       'branchCode': branchCode,
       'address': address,
       'city': city,
+      'image': image,
     };
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
     id,
     name,
     code,
@@ -96,6 +101,7 @@ class Bank extends Equatable {
     branchCode,
     address,
     city,
+    image,
   ];
 
   // Copy with method
@@ -107,6 +113,7 @@ class Bank extends Equatable {
     String? branchCode,
     String? address,
     String? city,
+    String? image,
   }) {
     return Bank(
       id: id ?? this.id,
@@ -116,6 +123,7 @@ class Bank extends Equatable {
       branchCode: branchCode ?? this.branchCode,
       address: address ?? this.address,
       city: city ?? this.city,
+      image: image ?? this.image,
     );
   }
 }

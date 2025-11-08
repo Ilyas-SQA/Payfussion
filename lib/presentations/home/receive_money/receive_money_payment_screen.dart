@@ -112,7 +112,7 @@ class ReceiveMoneyPaymentProvider extends ChangeNotifier {
       await Future.delayed(const Duration(milliseconds: 1000));
 
       // Mock contact data - in a real app, this would come from a contacts API
-      _contacts = [
+      _contacts = <Contact>[
         const Contact(
           id: 'contact1',
           name: 'Alice Wonderland',
@@ -237,13 +237,13 @@ class ReceiveMoneyPaymentProvider extends ChangeNotifier {
 
     try {
       // Check if biometrics are available and enrolled
-      bool isBiometricAvailable = await _biometricService
+      final bool isBiometricAvailable = await _biometricService
           .isBiometricAvailable();
-      bool hasBiometrics = await _biometricService.hasBiometricsEnrolled();
+      final bool hasBiometrics = await _biometricService.hasBiometricsEnrolled();
 
       if (isBiometricAvailable && hasBiometrics) {
         // Request biometric authentication
-        final authResult = await _biometricService.authenticate(
+        final Map<String, dynamic> authResult = await _biometricService.authenticate(
           reason:
               'Authenticate to request \$${_amount.toStringAsFixed(2)} from ${_selectedContact!.name}',
         );
@@ -338,11 +338,11 @@ class _ReceiveMoneyPaymentScreenState extends State<ReceiveMoneyPaymentScreen> w
           ),
         ),
         body: Stack(
-          children: [
+          children: <Widget>[
             AnimatedBackground(
               animationController: _backgroundAnimationController,
             ),
-            ReceiveMoneyPaymentForm(),
+            const ReceiveMoneyPaymentForm(),
           ],
         ),
       ),

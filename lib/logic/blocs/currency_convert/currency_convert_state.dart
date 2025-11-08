@@ -28,7 +28,7 @@ class CurrencyConversionState extends Equatable {
 
   const CurrencyConversionState({
     this.isLoading = false,
-    this.exchangeRates = const {},
+    this.exchangeRates = const <String, double>{},
     this.fromCurrency = 'USD',
     this.toCurrency = 'EUR',
     this.amount = 0.0,
@@ -60,7 +60,7 @@ class CurrencyConversionState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
     isLoading,
     exchangeRates,
     fromCurrency,

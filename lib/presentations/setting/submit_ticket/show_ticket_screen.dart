@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import '../../../core/constants/fonts.dart';
 import '../../../core/constants/routes_name.dart';
 import '../../../services/submit_ticket_service.dart';
-import '../../widgets/background_theme.dart'; // Adjust path as needed
+import '../../widgets/background_theme.dart';
 
 class ShowTicketScreen extends StatefulWidget {
   const ShowTicketScreen({super.key});
@@ -90,12 +90,12 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
       ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
           Column(
-            children: [
+            children: <Widget>[
 
               SizedBox(height: 20.h),
 
@@ -154,11 +154,11 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+        children: <Widget>[
           TweenAnimationBuilder<double>(
             duration: const Duration(milliseconds: 1000),
             tween: Tween(begin: 0.0, end: 1.0),
-            builder: (context, value, child) {
+            builder: (BuildContext context, double value, Widget? child) {
               return Transform.rotate(
                 angle: value * 2 * 3.14159,
                 child: SizedBox(
@@ -175,8 +175,7 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
           SizedBox(height: 20.h),
           Text(
             'Loading tickets...',
-            style: TextStyle(
-              fontFamily: 'Montserrat',
+            style: Font.montserratFont(
               fontSize: 16.sp,
               color: Colors.grey,
               fontWeight: FontWeight.w500,
@@ -191,7 +190,7 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+        children: <Widget>[
           Icon(
             Icons.error_outline,
             size: 60.r,
@@ -200,8 +199,7 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
           SizedBox(height: 20.h),
           Text(
             'Error loading tickets',
-            style: TextStyle(
-              fontFamily: 'Montserrat',
+            style: Font.montserratFont(
               fontSize: 18.sp,
               color: Colors.red,
               fontWeight: FontWeight.w600,
@@ -211,8 +209,7 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
           Text(
             error,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'Montserrat',
+            style: Font.montserratFont(
               fontSize: 14.sp,
               color: Colors.grey,
             ),
@@ -226,7 +223,7 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+        children: <Widget>[
           TweenAnimationBuilder<double>(
             duration: const Duration(milliseconds: 800),
             tween: Tween(begin: 0.0, end: 1.0),
@@ -244,8 +241,7 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
           SizedBox(height: 20.h),
           Text(
             'No tickets found',
-            style: TextStyle(
-              fontFamily: 'Montserrat',
+            style: Font.montserratFont(
               fontSize: 18.sp,
               color: Colors.grey,
               fontWeight: FontWeight.w600,
@@ -254,8 +250,7 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
           SizedBox(height: 10.h),
           Text(
             'You haven\'t created any tickets yet',
-            style: TextStyle(
-              fontFamily: 'Montserrat',
+            style: Font.montserratFont(
               fontSize: 14.sp,
               color: Colors.grey,
             ),
@@ -267,7 +262,7 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
 
   Widget _buildTicketsListView(List<QueryDocumentSnapshot> tickets) {
     // Sort tickets by date in Flutter instead of Firestore
-    tickets.sort((a, b) {
+    tickets.sort((QueryDocumentSnapshot<Object?> a, QueryDocumentSnapshot<Object?> b) {
       final Map<String, dynamic> aData = a.data() as Map<String, dynamic>;
       final Map<String, dynamic> bData = b.data() as Map<String, dynamic>;
 
@@ -286,9 +281,9 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
     return ListView.builder(
       padding: EdgeInsets.symmetric(horizontal: 20.w),
       itemCount: tickets.length,
-      itemBuilder: (context, index) {
-        final ticket = tickets[index];
-        final data = ticket.data() as Map<String, dynamic>;
+      itemBuilder: (BuildContext context, int index) {
+        final QueryDocumentSnapshot<Object?> ticket = tickets[index];
+        final Map<String, dynamic> data = ticket.data() as Map<String, dynamic>;
 
         return TweenAnimationBuilder<double>(
           duration: Duration(milliseconds: 600 + (index * 100)),
@@ -312,11 +307,11 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
     final description = data['description'] ?? 'No Description';
     final status = data['status'] ?? 'pending';
     final userId = data['userId'] ?? '';
-    final date = data['date'] as Timestamp?;
+    final Timestamp? date = data['date'] as Timestamp?;
 
     String formattedDate = 'Unknown Date';
     if (date != null) {
-      final dateTime = date.toDate();
+      final DateTime dateTime = date.toDate();
       formattedDate =
       '${dateTime.day}/${dateTime.month}/${dateTime.year} at ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
     }
@@ -331,7 +326,7 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -341,16 +336,15 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             // Header Row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+              children: <Widget>[
                 Expanded(
                   child: Text(
                     title,
-                    style: TextStyle(
-                      fontFamily: 'Montserrat',
+                    style: Font.montserratFont(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
                       color: MyTheme.primaryColor,
@@ -370,7 +364,7 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: [
+                    children: <Widget>[
                       Icon(
                         statusIcon,
                         size: 14.r,
@@ -379,8 +373,7 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
                       SizedBox(width: 4.w),
                       Text(
                         status.toUpperCase(),
-                        style: TextStyle(
-                          fontFamily: 'Montserrat',
+                        style: Font.montserratFont(
                           fontSize: 12.sp,
                           color: statusColor,
                           fontWeight: FontWeight.w600,
@@ -397,8 +390,7 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
             // Description
             Text(
               description,
-              style: TextStyle(
-                fontFamily: 'Montserrat',
+              style: Font.montserratFont(
                 fontSize: 14.sp,
                 color: Colors.grey.shade700,
                 height: 1.4,
@@ -411,7 +403,7 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
 
             // Footer Row
             Row(
-              children: [
+              children: <Widget>[
                 Icon(
                   Icons.access_time,
                   size: 16.r,
@@ -420,8 +412,7 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
                 SizedBox(width: 6.w),
                 Text(
                   formattedDate,
-                  style: TextStyle(
-                    fontFamily: 'Montserrat',
+                  style: Font.montserratFont(
                     fontSize: 12.sp,
                     color: Colors.grey,
                     fontWeight: FontWeight.w500,
@@ -430,8 +421,7 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
                 const Spacer(),
                 Text(
                   'ID: ${documentId.substring(0, 8)}...',
-                  style: TextStyle(
-                    fontFamily: 'Montserrat',
+                  style: Font.montserratFont(
                     fontSize: 12.sp,
                     color: const Color(0xff2D9CDB),
                     fontWeight: FontWeight.w500,

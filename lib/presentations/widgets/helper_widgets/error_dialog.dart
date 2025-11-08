@@ -5,7 +5,7 @@ class ErrorDialog {
   static void show(BuildContext context, String message) {
     showDialog(
       context: context,
-      builder: (context) => Dialog(
+      builder: (BuildContext context) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
         elevation: 5,
         backgroundColor: Colors.white,
@@ -13,7 +13,7 @@ class ErrorDialog {
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: [
+            children: <Widget>[
               Icon(Icons.error_outline, color: Colors.redAccent, size: 48.r),
               SizedBox(height: 16.h),
               Text(

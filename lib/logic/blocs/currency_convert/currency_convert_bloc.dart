@@ -23,13 +23,13 @@ class CurrencyConversionBloc extends Bloc<CurrencyConversionEvent, CurrencyConve
 
     try {
       // Using a free API for exchange rates - you might want to use a different API
-      final response = await http.get(
+      final http.Response response = await http.get(
         Uri.parse('https://api.exchangerate-api.com/v4/latest/USD'),
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final rates = Map<String, double>.from(
+        final Map<String, double> rates = Map<String, double>.from(
           data['rates'].map((key, value) => MapEntry(key, value.toDouble())),
         );
 
@@ -70,18 +70,18 @@ class CurrencyConversionBloc extends Bloc<CurrencyConversionEvent, CurrencyConve
     }
 
     try {
-      final fromRate = event.fromCurrency == 'USD' ? 1.0 : state.exchangeRates[event.fromCurrency] ?? 1.0;
-      final toRate = event.toCurrency == 'USD' ? 1.0 : state.exchangeRates[event.toCurrency] ?? 1.0;
+      final double fromRate = event.fromCurrency == 'USD' ? 1.0 : state.exchangeRates[event.fromCurrency] ?? 1.0;
+      final double toRate = event.toCurrency == 'USD' ? 1.0 : state.exchangeRates[event.toCurrency] ?? 1.0;
 
       /// Convert to USD first, then to target currency
-      final usdAmount = event.amount / fromRate;
-      final convertedAmount = usdAmount * toRate;
-      final rate = toRate / fromRate;
+      final double usdAmount = event.amount / fromRate;
+      final double convertedAmount = usdAmount * toRate;
+      final double rate = toRate / fromRate;
 
       /// Calculate change percentage (mock data - in real app, you'd fetch historical data)
-      final changePercent = _calculateMockChangePercent(event.fromCurrency, event.toCurrency);
+      final double changePercent = _calculateMockChangePercent(event.fromCurrency, event.toCurrency);
 
-      final currentRate = ExchangeRate(
+      final ExchangeRate currentRate = ExchangeRate(
         from: event.fromCurrency,
         to: event.toCurrency,
         rate: rate,
@@ -145,7 +145,7 @@ class CurrencyConversionBloc extends Bloc<CurrencyConversionEvent, CurrencyConve
   /// Mock function to generate change percentage - replace with real API data
   double _calculateMockChangePercent(String from, String to) {
     // This is mock data - in a real app, you'd fetch historical data
-    final mockChanges = {
+    final Map<String, double> mockChanges = <String, double>{
       'USDEUR': -0.15,
       'EURUSD': 0.12,
       'USDGBP': -0.08,
@@ -154,7 +154,7 @@ class CurrencyConversionBloc extends Bloc<CurrencyConversionEvent, CurrencyConve
       'AEDUSD': 0.02,
     };
 
-    final key = '$from$to';
+    final String key = '$from$to';
     return mockChanges[key] ?? (DateTime.now().millisecond % 100 - 50) / 100;
   }
 }
@@ -165,7 +165,7 @@ class CurrencyRepository {
 
   Future<Map<String, double>> getExchangeRates({String baseCurrency = 'USD'}) async {
     try {
-      final response = await http.get(
+      final http.Response response = await http.get(
         Uri.parse('$_baseUrl/latest/$baseCurrency'),
       );
 
@@ -187,8 +187,8 @@ class CurrencyRepository {
     required String to,
     required double amount,
   }) async {
-    final rates = await getExchangeRates(baseCurrency: from);
-    final rate = rates[to];
+    final Map<String, double> rates = await getExchangeRates(baseCurrency: from);
+    final double? rate = rates[to];
     if (rate == null) {
       throw Exception('Exchange rate not found for $from to $to');
     }

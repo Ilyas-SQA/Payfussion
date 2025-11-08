@@ -30,11 +30,11 @@ class FlightModel {
     required this.flightType,
     required this.totalSeats,
     this.stops = 0,
-    this.amenities = const [],
+    this.amenities = const <String>[],
   });
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'id': id,
       'airline': airline,
       'flightNumber': flightNumber,
@@ -67,7 +67,7 @@ class FlightModel {
       flightType: map['flightType'] ?? '',
       totalSeats: map['totalSeats'] ?? 0,
       stops: map['stops'] ?? 0,
-      amenities: List<String>.from(map['amenities'] ?? []),
+      amenities: List<String>.from(map['amenities'] ?? <dynamic>[]),
     );
   }
 }
@@ -120,7 +120,7 @@ class FlightBookingModel {
   });
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'id': id,
       'flightId': flightId,
       'airline': airline,
@@ -171,7 +171,7 @@ class FlightBookingModel {
 }
 
 // US Airlines Flight Data
-List<FlightModel> usFlightServices = [
+List<FlightModel> usFlightServices = <FlightModel>[
   // American Airlines
   FlightModel(
     id: 'aa_001',
@@ -187,7 +187,7 @@ List<FlightModel> usFlightServices = [
     flightType: 'Domestic',
     totalSeats: 160,
     stops: 0,
-    amenities: ['In-flight Entertainment', 'WiFi', 'Food Service', 'Power Outlets'],
+    amenities: <String>['In-flight Entertainment', 'WiFi', 'Food Service', 'Power Outlets'],
   ),
 
   FlightModel(
@@ -204,7 +204,7 @@ List<FlightModel> usFlightServices = [
     flightType: 'International',
     totalSeats: 285,
     stops: 0,
-    amenities: ['Lie-flat Seats', 'Premium Entertainment', 'WiFi', 'Full Meal Service'],
+    amenities: <String>['Lie-flat Seats', 'Premium Entertainment', 'WiFi', 'Full Meal Service'],
   ),
 
   // Delta Air Lines
@@ -222,7 +222,7 @@ List<FlightModel> usFlightServices = [
     flightType: 'Domestic',
     totalSeats: 150,
     stops: 0,
-    amenities: ['In-flight Entertainment', 'WiFi', 'Snacks', 'Power Outlets'],
+    amenities: <String>['In-flight Entertainment', 'WiFi', 'Snacks', 'Power Outlets'],
   ),
 
   FlightModel(
@@ -239,7 +239,7 @@ List<FlightModel> usFlightServices = [
     flightType: 'International',
     totalSeats: 306,
     stops: 0,
-    amenities: ['Delta One Suites', 'Premium Entertainment', 'WiFi', 'Gourmet Dining'],
+    amenities: <String>['Delta One Suites', 'Premium Entertainment', 'WiFi', 'Gourmet Dining'],
   ),
 
   // United Airlines
@@ -257,7 +257,7 @@ List<FlightModel> usFlightServices = [
     flightType: 'Domestic',
     totalSeats: 166,
     stops: 0,
-    amenities: ['WiFi', 'Snacks for Purchase', 'Power Outlets', 'Streaming Entertainment'],
+    amenities: <String>['WiFi', 'Snacks for Purchase', 'Power Outlets', 'Streaming Entertainment'],
   ),
 
   FlightModel(
@@ -274,7 +274,7 @@ List<FlightModel> usFlightServices = [
     flightType: 'International',
     totalSeats: 364,
     stops: 0,
-    amenities: ['Polaris Business Class', 'Premium Entertainment', 'WiFi', 'Multi-course Dining'],
+    amenities: <String>['Polaris Business Class', 'Premium Entertainment', 'WiFi', 'Multi-course Dining'],
   ),
 
   // Southwest Airlines
@@ -292,7 +292,7 @@ List<FlightModel> usFlightServices = [
     flightType: 'Domestic',
     totalSeats: 175,
     stops: 0,
-    amenities: ['Free Checked Bags', 'WiFi', 'Snacks', 'No Change Fees'],
+    amenities: <String>['Free Checked Bags', 'WiFi', 'Snacks', 'No Change Fees'],
   ),
 
   FlightModel(
@@ -309,7 +309,7 @@ List<FlightModel> usFlightServices = [
     flightType: 'Domestic',
     totalSeats: 175,
     stops: 0,
-    amenities: ['Free Checked Bags', 'WiFi', 'Drinks & Snacks', 'Flexible Booking'],
+    amenities: <String>['Free Checked Bags', 'WiFi', 'Drinks & Snacks', 'Flexible Booking'],
   ),
 
   // JetBlue Airways
@@ -327,7 +327,7 @@ List<FlightModel> usFlightServices = [
     flightType: 'Domestic',
     totalSeats: 150,
     stops: 0,
-    amenities: ['Free WiFi', 'Live TV', 'Extra Legroom', 'Free Snacks & Drinks'],
+    amenities: <String>['Free WiFi', 'Live TV', 'Extra Legroom', 'Free Snacks & Drinks'],
   ),
 
   FlightModel(
@@ -344,7 +344,7 @@ List<FlightModel> usFlightServices = [
     flightType: 'International',
     totalSeats: 200,
     stops: 0,
-    amenities: ['Mint Class Available', 'Free WiFi', 'Live TV', 'Premium Dining'],
+    amenities: <String>['Mint Class Available', 'Free WiFi', 'Live TV', 'Premium Dining'],
   ),
 
   // Alaska Airlines
@@ -362,7 +362,7 @@ List<FlightModel> usFlightServices = [
     flightType: 'Domestic',
     totalSeats: 178,
     stops: 0,
-    amenities: ['WiFi', 'Power Outlets', 'Food for Purchase', 'Alaska Beyond Entertainment'],
+    amenities: <String>['WiFi', 'Power Outlets', 'Food for Purchase', 'Alaska Beyond Entertainment'],
   ),
 
   FlightModel(
@@ -379,7 +379,7 @@ List<FlightModel> usFlightServices = [
     flightType: 'Domestic',
     totalSeats: 159,
     stops: 0,
-    amenities: ['WiFi', 'Premium Class', 'Hawaiian Meals', 'Entertainment System'],
+    amenities: <String>['WiFi', 'Premium Class', 'Hawaiian Meals', 'Entertainment System'],
   ),
 
   // Spirit Airlines
@@ -397,7 +397,7 @@ List<FlightModel> usFlightServices = [
     flightType: 'Domestic',
     totalSeats: 145,
     stops: 0,
-    amenities: ['WiFi for Purchase', 'Big Front Seat Option', 'Food & Drinks for Purchase'],
+    amenities: <String>['WiFi for Purchase', 'Big Front Seat Option', 'Food & Drinks for Purchase'],
   ),
 
   // Frontier Airlines
@@ -415,7 +415,7 @@ List<FlightModel> usFlightServices = [
     flightType: 'Domestic',
     totalSeats: 186,
     stops: 0,
-    amenities: ['WiFi for Purchase', 'Stretch Seating Available', 'Food & Drinks for Purchase'],
+    amenities: <String>['WiFi for Purchase', 'Stretch Seating Available', 'Food & Drinks for Purchase'],
   ),
 
   // Hawaiian Airlines
@@ -433,7 +433,7 @@ List<FlightModel> usFlightServices = [
     flightType: 'Domestic',
     totalSeats: 294,
     stops: 0,
-    amenities: ['WiFi', 'Island-inspired Meals', 'Premium Cabin', 'Hawaiian Entertainment'],
+    amenities: <String>['WiFi', 'Island-inspired Meals', 'Premium Cabin', 'Hawaiian Entertainment'],
   ),
 
   // Allegiant Air
@@ -451,7 +451,7 @@ List<FlightModel> usFlightServices = [
     flightType: 'Domestic',
     totalSeats: 156,
     stops: 0,
-    amenities: ['Priority Seating Available', 'Snacks for Purchase', 'Giant Seats Option'],
+    amenities: <String>['Priority Seating Available', 'Snacks for Purchase', 'Giant Seats Option'],
   ),
 
   // Sun Country Airlines
@@ -469,7 +469,7 @@ List<FlightModel> usFlightServices = [
     flightType: 'Domestic',
     totalSeats: 162,
     stops: 0,
-    amenities: ['WiFi', 'First Class Available', 'Snacks & Drinks for Purchase'],
+    amenities: <String>['WiFi', 'First Class Available', 'Snacks & Drinks for Purchase'],
   ),
 
   // Regional Airlines
@@ -489,7 +489,7 @@ List<FlightModel> usFlightServices = [
     flightType: 'Regional',
     totalSeats: 76,
     stops: 0,
-    amenities: ['WiFi', 'First Class Available', 'Complimentary Snacks'],
+    amenities: <String>['WiFi', 'First Class Available', 'Complimentary Snacks'],
   ),
 
   // Mesa Airlines (Operating as American Eagle)
@@ -507,7 +507,7 @@ List<FlightModel> usFlightServices = [
     flightType: 'Regional',
     totalSeats: 76,
     stops: 0,
-    amenities: ['First Class Available', 'Complimentary Beverages'],
+    amenities: <String>['First Class Available', 'Complimentary Beverages'],
   ),
 
   // Connecting Flights with Stops
@@ -525,7 +525,7 @@ List<FlightModel> usFlightServices = [
     flightType: 'Domestic',
     totalSeats: 160,
     stops: 1,
-    amenities: ['WiFi', 'In-flight Entertainment', 'Food Service', 'Power Outlets'],
+    amenities: <String>['WiFi', 'In-flight Entertainment', 'Food Service', 'Power Outlets'],
   ),
 
   FlightModel(
@@ -542,6 +542,6 @@ List<FlightModel> usFlightServices = [
     flightType: 'Domestic',
     totalSeats: 199,
     stops: 1,
-    amenities: ['WiFi', 'Delta Studio', 'Meal Service', 'Power Outlets'],
+    amenities: <String>['WiFi', 'Delta Studio', 'Meal Service', 'Power Outlets'],
   ),
 ];

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import '../../../core/constants/fonts.dart';
 import '../../widgets/background_theme.dart';
 import 'insurance_payment_screen.dart';
 
@@ -158,14 +159,14 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
     Navigator.push(
       context,
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
+        pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) =>
             InsurancePaymentScreen(
               companyName: widget.companyName,
               insuranceType: insuranceType,
               color: _getInsuranceTypeColor(insuranceType),
               icon: _getInsuranceTypeIcon(insuranceType),
             ),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        transitionsBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
           return SlideTransition(
             position: Tween<Offset>(
               begin: const Offset(1.0, 0.0),
@@ -184,7 +185,7 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -193,7 +194,7 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
             child: SlideTransition(
               position: _slideAnimation,
               child: CustomScrollView(
-                slivers: [
+                slivers: <Widget>[
                   // App Bar
                   SliverAppBar(
                     expandedHeight: 200.h,
@@ -206,7 +207,7 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
                     flexibleSpace: FlexibleSpaceBar(
                       title: Text(
                         widget.companyName,
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 16.sp,
@@ -217,7 +218,7 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
                           gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
-                            colors: [
+                            colors: <Color>[
                               widget.color,
                               widget.color.withOpacity(0.8),
                             ],
@@ -251,14 +252,14 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
                       padding: EdgeInsets.all(20.w),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                        children: <Widget>[
                           // Header Section
                           Container(
                             padding: EdgeInsets.all(20.w),
                             decoration: BoxDecoration(
                               color: Theme.of(context).scaffoldBackgroundColor,
                               borderRadius: BorderRadius.circular(5.r),
-                              boxShadow: [
+                              boxShadow: <BoxShadow>[
                                 BoxShadow(
                                   color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                                   blurRadius: 5,
@@ -267,7 +268,7 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
                               ],
                             ),
                             child: Row(
-                              children: [
+                              children: <Widget>[
                                 Icon(
                                   Icons.info_outline,
                                   color: widget.color,
@@ -277,10 +278,10 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
+                                    children: <Widget>[
                                       Text(
                                         'Available Insurance Types',
-                                        style: TextStyle(
+                                        style: Font.montserratFont(
                                           fontSize: 16.sp,
                                           fontWeight: FontWeight.w600,
                                           color: theme.primaryColor != Colors.white
@@ -291,7 +292,7 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
                                       SizedBox(height: 4.h),
                                       Text(
                                         'Choose from ${widget.types.length} insurance options',
-                                        style: TextStyle(
+                                        style: Font.montserratFont(
                                           fontSize: 14.sp,
                                           color: Colors.grey[600],
                                         ),
@@ -324,10 +325,10 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
                   // Insurance Types List
                   SliverList(
                     delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                        final insuranceType = widget.types[index];
-                        final typeColor = _getInsuranceTypeColor(insuranceType);
-                        final typeIcon = _getInsuranceTypeIcon(insuranceType);
+                          (BuildContext context, int index) {
+                        final String insuranceType = widget.types[index];
+                        final Color typeColor = _getInsuranceTypeColor(insuranceType);
+                        final IconData typeIcon = _getInsuranceTypeIcon(insuranceType);
 
                         return AnimationConfiguration.staggeredList(
                           position: index,
@@ -340,7 +341,7 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).scaffoldBackgroundColor,
                                   borderRadius: BorderRadius.circular(5.r),
-                                  boxShadow: [
+                                  boxShadow: <BoxShadow>[
                                     BoxShadow(
                                       color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                                       blurRadius: 5,
@@ -357,7 +358,7 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
                                     child: Padding(
                                       padding: EdgeInsets.all(20.w),
                                       child: Row(
-                                        children: [
+                                        children: <Widget>[
                                           // Icon Container
                                           Icon(
                                             typeIcon,
@@ -371,7 +372,7 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
                                           Expanded(
                                             child: Column(
                                               crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
+                                              children: <Widget>[
                                                 Text(
                                                   insuranceType,
                                                   style: theme.textTheme.titleSmall?.copyWith(
@@ -384,7 +385,7 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
                                                 SizedBox(height: 4.h),
                                                 Text(
                                                   'Tap to pay premium',
-                                                  style: TextStyle(
+                                                  style: Font.montserratFont(
                                                     fontSize: 12.sp,
                                                     color: Colors.grey[600],
                                                   ),
@@ -395,7 +396,7 @@ class _InsuranceTypeScreenState extends State<InsuranceTypeScreen> with TickerPr
 
                                           // Arrow and Premium Indicator
                                           Column(
-                                            children: [
+                                            children: <Widget>[
                                               Icon(
                                                 Icons.arrow_forward_ios,
                                                 size: 12.sp,

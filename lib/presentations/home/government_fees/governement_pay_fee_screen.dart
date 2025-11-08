@@ -5,6 +5,7 @@ import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 
+import '../../../core/constants/fonts.dart';
 import '../../widgets/background_theme.dart';
 
 class GovernmentPayFeeScreen extends StatefulWidget {
@@ -29,44 +30,44 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
   late Animation<double> _contentFade;
   late AnimationController _backgroundAnimationController;
 
-  List<GovernmentServiceSuggestion> filteredSuggestions = [];
+  List<GovernmentServiceSuggestion> filteredSuggestions = <GovernmentServiceSuggestion>[];
   bool showSuggestions = false;
 
   // Government services data for suggestions
-  final List<GovernmentServiceSuggestion> governmentServices = [
+  final List<GovernmentServiceSuggestion> governmentServices = <GovernmentServiceSuggestion>[
     // Federal Services
     GovernmentServiceSuggestion(
         id: "irs",
         name: "IRS Tax Payment",
-        keywords: ["irs", "tax", "income", "federal", "revenue"],
+        keywords: <String>["irs", "tax", "income", "federal", "revenue"],
         icon: Icons.account_balance,
         category: "Federal"
     ),
     GovernmentServiceSuggestion(
         id: "ssa",
         name: "Social Security",
-        keywords: ["ssa", "social", "security", "benefits"],
+        keywords: <String>["ssa", "social", "security", "benefits"],
         icon: Icons.security,
         category: "Federal"
     ),
     GovernmentServiceSuggestion(
         id: "medicare",
         name: "Medicare Services",
-        keywords: ["medicare", "health", "medical", "premium"],
+        keywords: <String>["medicare", "health", "medical", "premium"],
         icon: Icons.local_hospital,
         category: "Federal"
     ),
     GovernmentServiceSuggestion(
         id: "tsa",
         name: "TSA PreCheck",
-        keywords: ["tsa", "precheck", "airport", "security", "flight"],
+        keywords: <String>["tsa", "precheck", "airport", "security", "flight"],
         icon: Icons.flight_takeoff,
         category: "Federal"
     ),
     GovernmentServiceSuggestion(
         id: "passport",
         name: "Passport Services",
-        keywords: ["passport", "state", "department", "travel"],
+        keywords: <String>["passport", "state", "department", "travel"],
         icon: Icons.library_books,
         category: "Federal"
     ),
@@ -75,21 +76,21 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
     GovernmentServiceSuggestion(
         id: "dmv",
         name: "DMV Services",
-        keywords: ["dmv", "license", "driving", "vehicle", "registration"],
+        keywords: <String>["dmv", "license", "driving", "vehicle", "registration"],
         icon: Icons.directions_car,
         category: "State"
     ),
     GovernmentServiceSuggestion(
         id: "state_tax",
         name: "State Tax Board",
-        keywords: ["state", "tax", "income", "board"],
+        keywords: <String>["state", "tax", "income", "board"],
         icon: Icons.account_balance_wallet,
         category: "State"
     ),
     GovernmentServiceSuggestion(
         id: "employment",
         name: "Employment Department",
-        keywords: ["employment", "unemployment", "job", "work"],
+        keywords: <String>["employment", "unemployment", "job", "work"],
         icon: Icons.work,
         category: "State"
     ),
@@ -98,28 +99,28 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
     GovernmentServiceSuggestion(
         id: "police",
         name: "Police Department",
-        keywords: ["police", "fine", "citation", "permit"],
+        keywords: <String>["police", "fine", "citation", "permit"],
         icon: Icons.local_police,
         category: "Local"
     ),
     GovernmentServiceSuggestion(
         id: "traffic",
         name: "Traffic Citations",
-        keywords: ["traffic", "parking", "citation", "fine", "ticket"],
+        keywords: <String>["traffic", "parking", "citation", "fine", "ticket"],
         icon: Icons.traffic,
         category: "Local"
     ),
     GovernmentServiceSuggestion(
         id: "property_tax",
         name: "Property Tax",
-        keywords: ["property", "tax", "real", "estate", "home"],
+        keywords: <String>["property", "tax", "real", "estate", "home"],
         icon: Icons.home,
         category: "Local"
     ),
     GovernmentServiceSuggestion(
         id: "water",
         name: "Water Department",
-        keywords: ["water", "sewer", "utility", "bill"],
+        keywords: <String>["water", "sewer", "utility", "bill"],
         icon: Icons.water_drop,
         category: "Local"
     ),
@@ -128,7 +129,7 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
     GovernmentServiceSuggestion(
         id: "court",
         name: "Court Services",
-        keywords: ["court", "filing", "legal", "case"],
+        keywords: <String>["court", "filing", "legal", "case"],
         icon: Icons.gavel,
         category: "Judicial"
     ),
@@ -180,19 +181,19 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
   }
 
   void _onTextChanged() {
-    final query = _textIdController.text.toLowerCase().trim();
+    final String query = _textIdController.text.toLowerCase().trim();
 
     if (query.isEmpty) {
       setState(() {
         showSuggestions = false;
-        filteredSuggestions = [];
+        filteredSuggestions = <GovernmentServiceSuggestion>[];
       });
       return;
     }
 
     // Filter suggestions based on text input
-    final suggestions = governmentServices.where((service) {
-      return service.keywords.any((keyword) =>
+    final List<GovernmentServiceSuggestion> suggestions = governmentServices.where((GovernmentServiceSuggestion service) {
+      return service.keywords.any((String keyword) =>
           keyword.toLowerCase().contains(query)) ||
           service.name.toLowerCase().contains(query);
     }).toList();
@@ -234,7 +235,7 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -247,13 +248,13 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
               ).animate(_contentController),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   // Header Section
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         Text(
                           "Enter Service ID",
                           style: theme.textTheme.headlineMedium?.copyWith(
@@ -290,7 +291,7 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
                   SizedBox(height: 10.h),
 
                   // Suggestions List
-                  if (showSuggestions) ...[
+                  if (showSuggestions) ...<Widget>[
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 24.w),
                       child: Text(
@@ -334,7 +335,7 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
         child: ListView.builder(
           physics: const BouncingScrollPhysics(),
           itemCount: filteredSuggestions.length,
-          itemBuilder: (context, index) {
+          itemBuilder: (BuildContext context, int index) {
             return AnimationConfiguration.staggeredList(
               position: index,
               duration: const Duration(milliseconds: 375),
@@ -360,7 +361,7 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(12.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Colors.black.withOpacity(0.03),
             blurRadius: 8,
@@ -382,7 +383,7 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
           child: Padding(
             padding: EdgeInsets.all(16.w),
             child: Row(
-              children: [
+              children: <Widget>[
                 Container(
                   height: 45.h,
                   width: 45.w,
@@ -400,7 +401,7 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(
                         suggestion.name,
                         style: theme.textTheme.bodyLarge?.copyWith(
@@ -441,7 +442,7 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
       padding: EdgeInsets.symmetric(horizontal: 24.w),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+        children: <Widget>[
           Icon(
             Icons.account_balance,
             size: 50.sp,
@@ -478,12 +479,12 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
     showDialog(
       context: context,
       barrierDismissible: true,
-      builder: (context) => AlertDialog(
+      builder: (BuildContext context) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.r),
         ),
         title: Row(
-          children: [
+          children: <Widget>[
             Icon(
               Icons.construction,
               color: MyTheme.secondaryColor,
@@ -505,7 +506,7 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
             color: const Color(0xff718096),
           ),
         ),
-        actions: [
+        actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.pop(context),
             style: TextButton.styleFrom(
@@ -513,7 +514,7 @@ class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
             ),
             child: Text(
               "Got it",
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontWeight: FontWeight.w600,
                 fontSize: 16.sp,
               ),

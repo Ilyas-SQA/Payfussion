@@ -4,6 +4,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
+import '../../../core/constants/fonts.dart';
 import '../../../core/constants/routes_name.dart';
 import '../../widgets/background_theme.dart';
 
@@ -24,78 +25,78 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
   late Animation<Offset> _headerSlide;
   late Animation<double> _listFade;
 
-  final List<Map<String, dynamic>> postpaidProviders = [
-    {
+  final List<Map<String, dynamic>> postpaidProviders = <Map<String, dynamic>>[
+    <String, dynamic>{
       "name": "Verizon Wireless",
       "description": "Premium postpaid plans with 5G",
       "icon": Icons.signal_cellular_4_bar,
       "color": MyTheme.primaryColor,
       "planType": "Unlimited Plans",
       "startingPrice": "\$70/month",
-      "features": ["5G Ultra Wideband", "Premium Data", "Hotspot"],
+      "features": <String>["5G Ultra Wideband", "Premium Data", "Hotspot"],
     },
-    {
+    <String, dynamic>{
       "name": "AT&T Mobility",
       "description": "Reliable nationwide coverage",
       "icon": Icons.wifi_tethering,
       "color": MyTheme.primaryColor,
       "planType": "Unlimited Plans",
       "startingPrice": "\$65/month",
-      "features": ["5G Access", "HBO Max", "Mobile Hotspot"],
+      "features": <String>["5G Access", "HBO Max", "Mobile Hotspot"],
     },
-    {
+    <String, dynamic>{
       "name": "T-Mobile US",
       "description": "Un-carrier benefits included",
       "icon": Icons.cell_tower,
       "color": MyTheme.primaryColor,
       "planType": "Magenta Plans",
       "startingPrice": "\$70/month",
-      "features": ["5G Included", "Netflix", "International"],
+      "features": <String>["5G Included", "Netflix", "International"],
     },
-    {
+    <String, dynamic>{
       "name": "US Cellular",
       "description": "Rural coverage specialist",
       "icon": Icons.landscape,
       "color": MyTheme.primaryColor,
       "planType": "Unlimited Plans",
       "startingPrice": "\$60/month",
-      "features": ["5G Access", "Roaming", "Family Plans"],
+      "features": <String>["5G Access", "Roaming", "Family Plans"],
     },
-    {
+    <String, dynamic>{
       "name": "Google Fi Wireless",
       "description": "Flexible data plans",
       "icon": Icons.cloud,
       "color": MyTheme.primaryColor,
       "planType": "Flexible & Unlimited",
       "startingPrice": "\$50/month",
-      "features": ["International", "Multi-network", "Data Only"],
+      "features": <String>["International", "Multi-network", "Data Only"],
     },
-    {
+    <String, dynamic>{
       "name": "Visible",
       "description": "All-in-one unlimited plan",
       "icon": Icons.visibility,
       "color": MyTheme.primaryColor,
       "planType": "Single Plan",
       "startingPrice": "\$40/month",
-      "features": ["Unlimited Everything", "5G", "Party Pay"],
+      "features": <String>["Unlimited Everything", "5G", "Party Pay"],
     },
-    {
+    <String, dynamic>{
       "name": "Cricket Wireless",
       "description": "AT&T network coverage",
       "icon": Icons.sports_cricket,
       "color": MyTheme.primaryColor,
       "planType": "Unlimited Plans",
       "startingPrice": "\$55/month",
-      "features": ["AT&T 5G", "Unlimited Talk", "Mobile Hotspot"],
+      "features": <String>["AT&T 5G", "Unlimited Talk", "Mobile Hotspot"],
     },
-    {
+    <String, dynamic>{
       "name": "Boost Mobile",
       "description": "Shrinking payments plan",
       "icon": Icons.rocket_launch,
       "color": MyTheme.primaryColor,
       "planType": "Shrinking Plans",
       "startingPrice": "\$50/month",
-      "features": ["T-Mobile 5G", "Shrinks to \$25", "Unlimited"],
+      "features": <String>["T-Mobile 5G", "Shrinks to \$25", "Unlimited"],
     },
   ];
 
@@ -177,7 +178,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -185,13 +186,13 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
             opacity: _listFade,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 // Header Section
                 Padding(
                   padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(
                         "Pay Your",
                         style: theme.textTheme.headlineMedium?.copyWith(
@@ -237,7 +238,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
       child: ListView.builder(
         physics: const BouncingScrollPhysics(),
         itemCount: postpaidProviders.length,
-        itemBuilder: (context, index) {
+        itemBuilder: (BuildContext context, int index) {
           return AnimationConfiguration.staggeredList(
             position: index,
             duration: const Duration(milliseconds: 400),
@@ -264,7 +265,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -276,7 +277,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
           onTap: () {
             context.push(
               RouteNames.payBillsDetailView,
-              extra: {
+              extra: <String, dynamic>{
                 'billType': "postpaidBill",
                 'companyName': provider['name'],
                 'planType': provider['planType'],
@@ -289,7 +290,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
           child: Padding(
             padding: EdgeInsets.all(20.w),
             child: Row(
-              children: [
+              children: <Widget>[
                 // Icon Container
                 Hero(
                   tag: 'postpaid_icon_${provider['name']}',
@@ -306,10 +307,10 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       // Provider name and price
                       Row(
-                        children: [
+                        children: <Widget>[
                           Expanded(
                             child: Text(
                               provider['name'] as String,
@@ -353,7 +354,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
 
                       // Plan type and features
                       Row(
-                        children: [
+                        children: <Widget>[
                           Icon(
                             Icons.featured_play_list,
                             size: 14.sp,
@@ -362,7 +363,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
                           Expanded(
                             child: Text(
                               "${provider['planType']} • ${(provider['features'] as List).length} features",
-                              style: const TextStyle(
+                              style: Font.montserratFont(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 12,
                               ),

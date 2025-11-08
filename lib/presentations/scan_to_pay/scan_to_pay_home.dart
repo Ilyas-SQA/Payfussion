@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:camera/camera.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -22,7 +21,7 @@ class ScanToPayHomeScreen extends StatefulWidget {
 
 extension ScanToPayHomeScreenExtension on GlobalKey<State<ScanToPayHomeScreen>> {
   ScreenVisibilityInterface? getVisibilityHandler() {
-    final state = currentState;
+    final State<ScanToPayHomeScreen>? state = currentState;
     if (state is ScreenVisibilityInterface) {
       return state as ScreenVisibilityInterface;
     }
@@ -65,7 +64,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
   Future<void> _initializeScanner() async {
     try {
       // Check camera permission first
-      final status = await Permission.camera.request();
+      final PermissionStatus status = await Permission.camera.request();
       if (status.isDenied) {
         _showErrorSnackBar("Camera permission is required for QR scanning");
         return;
@@ -75,7 +74,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
       mobileScannerController = MobileScannerController(
         facing: CameraFacing.back,
         torchEnabled: false,
-        formats: const [BarcodeFormat.qrCode], // Only QR codes
+        formats: const <BarcodeFormat>[BarcodeFormat.qrCode], // Only QR codes
         returnImage: false,
       );
 
@@ -130,7 +129,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
         onDiscovered: (NfcTag tag) async {
           _handleNfcTag(tag);
         },
-        pollingOptions: {
+        pollingOptions: <NfcPollingOption>{
           NfcPollingOption.iso14443,
           NfcPollingOption.iso15693,
           NfcPollingOption.iso18092,
@@ -160,7 +159,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
     HapticFeedback.mediumImpact();
 
     try {
-      final paymentData = await _extractPaymentDataFromNfc(tag);
+      final Map<String, String>? paymentData = await _extractPaymentDataFromNfc(tag);
 
       if (paymentData != null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -194,19 +193,19 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
       final Map<String, dynamic> tagData = tag.data as Map<String, dynamic>;
 
       if (tagData.containsKey('ndef')) {
-        final ndefData = tagData['ndef'] as Map<String, dynamic>?;
+        final Map<String, dynamic>? ndefData = tagData['ndef'] as Map<String, dynamic>?;
         if (ndefData != null && ndefData.containsKey('cachedMessage')) {
-          final cachedMessage = ndefData['cachedMessage'] as Map<String, dynamic>?;
+          final Map<String, dynamic>? cachedMessage = ndefData['cachedMessage'] as Map<String, dynamic>?;
           if (cachedMessage != null && cachedMessage.containsKey('records')) {
-            final records = cachedMessage['records'] as List?;
+            final List? records = cachedMessage['records'] as List?;
 
             if (records != null && records.isNotEmpty) {
               for (final record in records) {
-                final recordMap = record as Map<String, dynamic>;
+                final Map<String, dynamic> recordMap = record as Map<String, dynamic>;
                 if (recordMap['typeNameFormat'] == 1) {
-                  final payload = recordMap['payload'] as List<int>?;
+                  final List<int>? payload = recordMap['payload'] as List<int>?;
                   if (payload != null) {
-                    final payloadString = String.fromCharCodes(payload);
+                    final String payloadString = String.fromCharCodes(payload);
                     if (payloadString.startsWith('PAY:')) {
                       return _parseNfcPayload(payloadString);
                     }
@@ -225,10 +224,10 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
   }
 
   Map<String, String> _parseNfcPayload(String payload) {
-    final Map<String, String> data = {};
-    final parts = payload.substring(4).split('&');
-    for (final part in parts) {
-      final keyValue = part.split('=');
+    final Map<String, String> data = <String, String>{};
+    final List<String> parts = payload.substring(4).split('&');
+    for (final String part in parts) {
+      final List<String> keyValue = part.split('=');
       if (keyValue.length == 2) {
         data[keyValue[0]] = keyValue[1];
       }
@@ -357,10 +356,10 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
   }
 
   Map<String, String> _parseQrData(String code) {
-    final Map<String, String> data = {};
-    final parts = code.split('&');
-    for (final part in parts) {
-      final keyValue = part.split('=');
+    final Map<String, String> data = <String, String>{};
+    final List<String> parts = code.split('&');
+    for (final String part in parts) {
+      final List<String> keyValue = part.split('=');
       if (keyValue.length == 2) {
         data[keyValue[0]] = keyValue[1];
       }
@@ -373,7 +372,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
-        children: [
+        children: <Widget>[
           /// Camera preview or NFC screen
           isQRMode ? _buildCameraPreview() : _buildNFCScreen(),
 
@@ -391,7 +390,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
             left: 0,
             right: 0,
             child: Column(
-              children: [
+              children: <Widget>[
                 if (isQRMode) _buildFlashlightButton(),
                 SizedBox(height: 20.h),
                 _buildModeSwitcher(),
@@ -405,13 +404,13 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
 
   Widget _buildCameraPreview() {
     return Stack(
-      children: [
+      children: <Widget>[
         // Show loading until camera is ready
         if (!isCameraInitialized)
           const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 CircularProgressIndicator(color: Colors.white),
                 SizedBox(height: 16),
                 Text(
@@ -426,7 +425,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
         if (isCameraInitialized && mobileScannerController != null)
           MobileScanner(
             controller: mobileScannerController,
-            onDetect: (capture) {
+            onDetect: (BarcodeCapture capture) {
               final List<Barcode> barcodes = capture.barcodes;
               if (barcodes.isNotEmpty && mounted) {
                 final String code = barcodes.first.rawValue ?? '';
@@ -435,11 +434,11 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                 }
               }
             },
-            errorBuilder: (context, error, child) {
+            errorBuilder: (BuildContext context, MobileScannerException error, Widget? child) {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+                  children: <Widget>[
                     const Icon(
                       Icons.error,
                       color: Colors.red,
@@ -473,7 +472,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: Stack(
-                children: [
+                children: <Widget>[
                   // Corner indicators
                   Positioned(top: 0, left: 0, child: _buildCornerIndicator()),
                   Positioned(top: 0, right: 0, child: _buildCornerIndicator(isRight: true)),
@@ -494,7 +493,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
               color: Colors.black.withOpacity(0.5),
               child: Column(
-                children: [
+                children: <Widget>[
                   Text(
                     "Align QR code within the frame",
                     textAlign: TextAlign.center,
@@ -527,7 +526,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.w),
         child: Column(
-          children: [
+          children: <Widget>[
             SizedBox(height: 80.h),
 
             // NFC Animation
@@ -541,16 +540,16 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
               ),
               child: Stack(
                 alignment: Alignment.center,
-                children: [
+                children: <Widget>[
                   // Wave animation
                   WaveWidget(
                     config: CustomConfig(
-                      colors: [
+                      colors: <Color>[
                         MyTheme.secondaryColor,
                         MyTheme.primaryColor
                       ],
-                      durations: [4000, 5000],
-                      heightPercentages: [0.65, 0.66],
+                      durations: <int>[4000, 5000],
+                      heightPercentages: <double>[0.65, 0.66],
                       blur: const MaskFilter.blur(BlurStyle.solid, 5),
                     ),
                     waveAmplitude: 0,
@@ -564,7 +563,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                     decoration: BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.circle,
-                      boxShadow: [
+                      boxShadow: <BoxShadow>[
                         BoxShadow(
                           color: MyTheme.primaryColor.withOpacity(0.3),
                           blurRadius: 15,
@@ -577,7 +576,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                       width: 40.w,
                       height: 40.h,
                       fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) => Icon(
+                      errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) => Icon(
                         Icons.contactless_rounded,
                         size: 40.sp,
                         color: MyTheme.secondaryColor,
@@ -609,7 +608,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: Row(
-                children: [
+                children: <Widget>[
                   Icon(
                     Icons.info_outline,
                     color: Colors.white.withOpacity(0.8),
@@ -636,12 +635,12 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
               padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 24.w),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [MyTheme.primaryColor, MyTheme.secondaryColor],
+                  colors: <Color>[MyTheme.primaryColor, MyTheme.secondaryColor],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(12.r),
-                boxShadow: [
+                boxShadow: <BoxShadow>[
                   BoxShadow(
                     color: MyTheme.secondaryColor.withOpacity(0.3),
                     blurRadius: 8,
@@ -651,7 +650,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: <Widget>[
                   Text(
                     "Transaction Amount",
                     style: TextStyle(color: Colors.white, fontSize: 14.sp),
@@ -673,7 +672,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
             // Security note
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 Icon(
                   Icons.lock_outline,
                   color: Colors.white.withOpacity(0.7),
@@ -755,14 +754,14 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
         height: 50.h,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [MyTheme.primaryColor, MyTheme.secondaryColor],
+            colors: <Color>[MyTheme.primaryColor, MyTheme.secondaryColor],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
           borderRadius: BorderRadius.circular(25.r),
         ),
         child: Stack(
-          children: [
+          children: <Widget>[
             // Animated selected background
             AnimatedPositioned(
               duration: const Duration(milliseconds: 300),
@@ -781,7 +780,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
 
             // QR and NFC text options
             Row(
-              children: [
+              children: <Widget>[
                 Expanded(
                   child: GestureDetector(
                     onTap: () {

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:payfussion/core/circular_indicator.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -73,12 +74,12 @@ class _FaqsScreenState extends State<FaqsScreen> with TickerProviderStateMixin {
         centerTitle: true,
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
           Column(
-            children: [
+            children: <Widget>[
 
               SizedBox(height: 10.h),
 
@@ -88,12 +89,12 @@ class _FaqsScreenState extends State<FaqsScreen> with TickerProviderStateMixin {
                   opacity: _contentController,
                   child: FutureBuilder(
                     future: FirebaseFirestore.instance.collection("faqs").get(),
-                    builder: (context, snapshot) {
+                    builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
                       if (snapshot.hasData) {
                         return AnimationLimiter(
                           child: ListView.builder(
                             itemCount: snapshot.data!.docs.length,
-                            itemBuilder: (context, index) {
+                            itemBuilder: (BuildContext context, int index) {
                               return AnimationConfiguration.staggeredList(
                                 position: index,
                                 duration: const Duration(milliseconds: 200),
@@ -106,7 +107,7 @@ class _FaqsScreenState extends State<FaqsScreen> with TickerProviderStateMixin {
                                         decoration: BoxDecoration(
                                           color: Theme.of(context).scaffoldBackgroundColor,
                                           borderRadius: BorderRadius.circular(5.r),
-                                          boxShadow: [
+                                          boxShadow: <BoxShadow>[
                                             BoxShadow(
                                               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                                               blurRadius: 5,
@@ -128,7 +129,7 @@ class _FaqsScreenState extends State<FaqsScreen> with TickerProviderStateMixin {
                                               fontSize: 16,
                                             ),
                                           ),
-                                          children: [
+                                          children: <Widget>[
                                             ListTile(
                                               title: Text(
                                                 snapshot.data!.docs[index]["answer"],
@@ -149,7 +150,7 @@ class _FaqsScreenState extends State<FaqsScreen> with TickerProviderStateMixin {
                           ),
                         );
                       } else {
-                        return const AnimatedShimmerListTile();
+                        return CircularIndicator.circular;
                       }
                     },
                   ),
@@ -158,80 +159,6 @@ class _FaqsScreenState extends State<FaqsScreen> with TickerProviderStateMixin {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class AnimatedShimmerListTile extends StatelessWidget {
-  const AnimatedShimmerListTile({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimationLimiter(
-      child: ListView.builder(
-        itemCount: 6,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemBuilder: (context, index) {
-          return AnimationConfiguration.staggeredList(
-            position: index,
-            duration: const Duration(milliseconds: 150),
-            child: SlideAnimation(
-              verticalOffset: 20.0,
-              child: FadeInAnimation(
-                child: Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 16.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          spreadRadius: 1,
-                          blurRadius: 3,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: ListTile(
-                      title: Container(
-                        height: 16.0,
-                        width: double.infinity,
-                        color: Colors.grey[300],
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 8.0),
-                          Container(
-                            height: 12.0,
-                            width: double.infinity,
-                            color: Colors.grey[300],
-                          ),
-                          const SizedBox(height: 4.0),
-                          Container(
-                            height: 12.0,
-                            width: double.infinity * 0.8,
-                            color: Colors.grey[300],
-                          ),
-                        ],
-                      ),
-                      trailing: Container(
-                        width: 24.0,
-                        height: 24.0,
-                        color: Colors.grey[300],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
       ),
     );
   }

@@ -20,7 +20,7 @@ class Comment {
   Comment({
     required this.author,
     required this.content,
-    this.replies = const [],
+    this.replies = const <Reply>[],
   });
 
   factory Comment.fromMap(Map<String, dynamic> map) {
@@ -30,7 +30,7 @@ class Comment {
       replies: (map['replies'] as List<dynamic>?)
           ?.map((e) => Reply.fromMap(e))
           .toList() ??
-          [],
+          <Reply>[],
     );
   }
 }
@@ -47,7 +47,7 @@ class ForumPost {
     required this.author,
     required this.content,
     this.likes = 0,
-    this.comments = const [],
+    this.comments = const <Comment>[],
   });
 
   ForumPost copyWith({

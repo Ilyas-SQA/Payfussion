@@ -14,13 +14,13 @@ import '../../logic/blocs/add_card/card_event.dart';
 import '../../logic/blocs/add_card/card_state.dart';
 import '../widgets/add_card_widgets/expiry_date_validator.dart';
 
-class AddCardHomescreen extends StatefulWidget {
-  const AddCardHomescreen({super.key});
+class AddCardHomeScreen extends StatefulWidget {
+  const AddCardHomeScreen({super.key});
   @override
-  State<AddCardHomescreen> createState() => _AddCardHomescreenState();
+  State<AddCardHomeScreen> createState() => _AddCardHomeScreenState();
 }
 
-class _AddCardHomescreenState extends State<AddCardHomescreen> {
+class _AddCardHomeScreenState extends State<AddCardHomeScreen> {
   final TextEditingController cardNumberController = TextEditingController();
   final TextEditingController expiryDateController = TextEditingController();
   final TextEditingController cardHolderNameController =
@@ -109,7 +109,7 @@ class _AddCardHomescreenState extends State<AddCardHomescreen> {
                   context.go(RouteNames.homeScreen);
                 } else if (state is AddCardFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("You cannot add more than 5 cards.")),
+                    const SnackBar(content: Text("You cannot add more than 5 cards.")),
                   );
                 }
               },

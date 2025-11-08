@@ -6,7 +6,7 @@ abstract class MovieEvent extends Equatable {
   const MovieEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class LoadMovies extends MovieEvent {}
@@ -17,7 +17,7 @@ abstract class MovieBookingEvent extends Equatable {
   const MovieBookingEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class CreateMovieBooking extends MovieBookingEvent {
@@ -26,7 +26,7 @@ class CreateMovieBooking extends MovieBookingEvent {
   const CreateMovieBooking(this.booking);
 
   @override
-  List<Object> get props => [booking];
+  List<Object> get props => <Object>[booking];
 }
 
 class LoadUserMovieBookings extends MovieBookingEvent {
@@ -35,5 +35,5 @@ class LoadUserMovieBookings extends MovieBookingEvent {
   const LoadUserMovieBookings(this.userId);
 
   @override
-  List<Object> get props => [userId];
+  List<Object> get props => <Object>[userId];
 }

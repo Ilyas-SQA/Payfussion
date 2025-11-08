@@ -3,7 +3,7 @@ import '../../data/models/currency_model.dart';
 import '../../core/constants/currency_data_json.dart';
 
 class CurrencyViewmodel {
-  List<Currency> currencies = [];
+  List<Currency> currencies = <Currency>[];
   bool isLoading = false;
   String? errorMessage;
 
@@ -17,7 +17,7 @@ class CurrencyViewmodel {
       errorMessage = null;
 
       // Parse the JSON string from currencyData
-      List<dynamic> currenciesList = jsonDecode(currencyData);
+      final List<dynamic> currenciesList = jsonDecode(currencyData);
 
       // Convert to Currency objects
       currencies = currenciesList.map((currencyJson) {
@@ -37,7 +37,7 @@ class CurrencyViewmodel {
   }
 
   List<Currency> _getFallbackCurrencies() {
-    return [
+    return <Currency>[
       Currency(
         code: 'USD',
         name: 'US Dollar',
@@ -149,7 +149,7 @@ class CurrencyViewmodel {
   Currency? getCurrencyByCode(String code) {
     try {
       return currencies.firstWhere(
-        (currency) => currency.code.toUpperCase() == code.toUpperCase(),
+        (Currency currency) => currency.code.toUpperCase() == code.toUpperCase(),
       );
     } catch (e) {
       return null;
@@ -160,7 +160,7 @@ class CurrencyViewmodel {
     if (query.isEmpty) return currencies;
 
     query = query.toLowerCase();
-    return currencies.where((currency) {
+    return currencies.where((Currency currency) {
       return currency.code.toLowerCase().contains(query) ||
           currency.name.toLowerCase().contains(query) ||
           currency.country.toLowerCase().contains(query);

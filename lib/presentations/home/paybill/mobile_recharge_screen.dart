@@ -4,6 +4,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
+import '../../../core/constants/fonts.dart';
 import '../../../core/constants/routes_name.dart';
 import '../../widgets/background_theme.dart';
 
@@ -24,8 +25,8 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
   late Animation<Offset> _headerSlide;
   late Animation<double> _listFade;
 
-  final List<Map<String, dynamic>> mobileCarriers = [
-    {
+  final List<Map<String, dynamic>> mobileCarriers = <Map<String, dynamic>>[
+    <String, dynamic>{
       "name": "Verizon Wireless",
       "description": "America's most reliable network",
       "icon": Icons.signal_cellular_4_bar,
@@ -34,7 +35,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
       "customers": "94M+",
       "coverage": "99% Population",
     },
-    {
+    <String, dynamic>{
       "name": "AT&T Mobility",
       "description": "Connect to your world",
       "icon": Icons.wifi_tethering,
@@ -43,7 +44,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
       "customers": "80M+",
       "coverage": "99% Population",
     },
-    {
+    <String, dynamic>{
       "name": "T-Mobile US",
       "description": "The Un-carrier",
       "icon": Icons.cell_tower,
@@ -52,7 +53,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
       "customers": "109M+",
       "coverage": "98% Population",
     },
-    {
+    <String, dynamic>{
       "name": "Metro by T-Mobile",
       "description": "Prepaid wireless service",
       "icon": Icons.smartphone,
@@ -61,7 +62,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
       "customers": "20M+",
       "coverage": "98% Population",
     },
-    {
+    <String, dynamic>{
       "name": "Cricket Wireless",
       "description": "AT&T network coverage",
       "icon": Icons.sports_cricket,
@@ -70,7 +71,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
       "customers": "10M+",
       "coverage": "99% Population",
     },
-    {
+    <String, dynamic>{
       "name": "Boost Mobile",
       "description": "Where you at?",
       "icon": Icons.rocket_launch,
@@ -79,7 +80,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
       "customers": "8M+",
       "coverage": "98% Population",
     },
-    {
+    <String, dynamic>{
       "name": "Mint Mobile",
       "description": "Premium wireless for less",
       "icon": Icons.eco,
@@ -88,7 +89,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
       "customers": "5M+",
       "coverage": "98% Population",
     },
-    {
+    <String, dynamic>{
       "name": "Google Fi Wireless",
       "description": "Flexible wireless service",
       "icon": Icons.cloud,
@@ -97,7 +98,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
       "customers": "2M+",
       "coverage": "Multi-network",
     },
-    {
+    <String, dynamic>{
       "name": "Straight Talk Wireless",
       "description": "No contract wireless",
       "icon": Icons.straighten,
@@ -106,7 +107,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
       "customers": "25M+",
       "coverage": "99% Population",
     },
-    {
+    <String, dynamic>{
       "name": "TracFone Wireless",
       "description": "America's #1 prepaid wireless",
       "icon": Icons.track_changes,
@@ -115,7 +116,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
       "customers": "21M+",
       "coverage": "Multi-network",
     },
-    {
+    <String, dynamic>{
       "name": "US Mobile",
       "description": "Built for you",
       "icon": Icons.flag,
@@ -124,7 +125,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
       "customers": "1M+",
       "coverage": "Multi-network",
     },
-    {
+    <String, dynamic>{
       "name": "Visible",
       "description": "Wireless that gets better",
       "icon": Icons.visibility,
@@ -133,7 +134,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
       "customers": "3M+",
       "coverage": "99% Population",
     },
-    {
+    <String, dynamic>{
       "name": "Ultra Mobile",
       "description": "International calling plans",
       "icon": Icons.public,
@@ -142,7 +143,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
       "customers": "2M+",
       "coverage": "98% Population",
     },
-    {
+    <String, dynamic>{
       "name": "Lycamobile USA",
       "description": "World in your hands",
       "icon": Icons.language,
@@ -151,7 +152,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
       "customers": "1.5M+",
       "coverage": "98% Population",
     },
-    {
+    <String, dynamic>{
       "name": "H2O Wireless",
       "description": "Affordable wireless plans",
       "icon": Icons.water_drop,
@@ -239,7 +240,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -247,13 +248,13 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
             opacity: _listFade,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 // Header Section
                 Padding(
                   padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(
                         "Recharge Your",
                         style: theme.textTheme.headlineMedium?.copyWith(
@@ -326,7 +327,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -338,7 +339,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
           onTap: () {
             context.push(
               RouteNames.payBillsDetailView,
-              extra: {
+              extra: <String, dynamic>{
                 'billType': "mobileRecharge",
                 'companyName': carrier['name'],
                 'network': carrier['network'],
@@ -351,7 +352,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
           child: Padding(
             padding: EdgeInsets.all(20.w),
             child: Row(
-              children: [
+              children: <Widget>[
                 // Icon Container
                 Hero(
                   tag: 'mobile_icon_${carrier['name']}',
@@ -368,10 +369,10 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       // Carrier name and network
                       Row(
-                        children: [
+                        children: <Widget>[
                           Expanded(
                             child: Text(
                               carrier['name'] as String,
@@ -416,7 +417,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
 
                       // Customers and coverage info
                       Row(
-                        children: [
+                        children: <Widget>[
                           Icon(
                             Icons.people,
                             size: 14.sp,
@@ -425,7 +426,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
                           Expanded(
                             child: Text(
                               "${carrier['customers']} • ${carrier['coverage']}",
-                              style: const TextStyle(
+                              style: Font.montserratFont(
                                 fontSize: 10,
                               ),
                             ),

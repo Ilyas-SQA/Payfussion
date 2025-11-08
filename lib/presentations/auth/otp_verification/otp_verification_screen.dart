@@ -75,7 +75,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
 
   void _sendOtpOnInit() {
     // Get phone number from widget parameter or session
-    final phoneNumber = widget.phoneNumber ??
+    final String phoneNumber = widget.phoneNumber ??
         SessionController.user.phoneNumber?.toString() ?? '';
 
     if (phoneNumber.isNotEmpty) {
@@ -86,7 +86,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
   void _startTimer() {
     _start = 30;
     _timer?.cancel(); // Cancel existing timer if any
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
       if (_start == 0) {
         _timer?.cancel();
         // Timer complete ho gaya, ab user manually resend kar sakta hai
@@ -101,7 +101,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
   }
 
   void _onOtpChanged() {
-    otp = _controllers.map((c) => c.text).join();
+    otp = _controllers.map((TextEditingController c) => c.text).join();
     setState(() {
       isButtonEnabled = otp.length == 6;
     });
@@ -119,7 +119,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
       _startTimer(); // Restart timer
       _clearOtpFields();
 
-      final phoneNumber = widget.phoneNumber ??
+      final String phoneNumber = widget.phoneNumber ??
           SessionController.user.phoneNumber?.toString() ?? '';
 
       if (phoneNumber.isNotEmpty) {
@@ -140,7 +140,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
   }
 
   void _clearOtpFields() {
-    for (var controller in _controllers) {
+    for (TextEditingController controller in _controllers) {
       controller.clear();
     }
     setState(() {
@@ -158,10 +158,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
     _timer?.cancel();
     _fadeController.dispose();
     _slideController.dispose();
-    for (var c in _controllers) {
+    for (TextEditingController c in _controllers) {
       c.dispose();
     }
-    for (var f in _focusNodes) {
+    for (FocusNode f in _focusNodes) {
       f.dispose();
     }
     super.dispose();
@@ -188,14 +188,14 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
             ? Colors.blue.shade50
             : Colors.white,
         boxShadow: _focusNodes[index].hasFocus
-            ? [
+            ? <BoxShadow>[
           BoxShadow(
             color: Colors.blue.withOpacity(0.2),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ]
-            : [],
+            : <BoxShadow>[],
       ),
       child: TextField(
         controller: _controllers[index],
@@ -210,7 +210,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
               ? Colors.blue.shade800
               : Colors.grey.shade600,
         ),
-        inputFormatters: [
+        inputFormatters: <TextInputFormatter>[
           FilteringTextInputFormatter.digitsOnly,
         ],
         decoration: const InputDecoration(
@@ -218,7 +218,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
           border: InputBorder.none,
           contentPadding: EdgeInsets.zero,
         ),
-        onChanged: (value) {
+        onChanged: (String value) {
           if (value.isNotEmpty) {
             // Move to next field
             if (index < 5) {
@@ -269,13 +269,13 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
+          colors: <Color>[
             Colors.blue.shade400,
             Colors.blue.shade600,
           ],
         ),
         shape: BoxShape.circle,
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Colors.blue.withOpacity(0.3),
             blurRadius: 15,
@@ -293,7 +293,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
 
   @override
   Widget build(BuildContext context) {
-    final phoneNumber = widget.phoneNumber ??
+    final String phoneNumber = widget.phoneNumber ??
         SessionController.user.phoneNumber?.toString() ?? '';
 
     return Scaffold(
@@ -312,13 +312,13 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
         automaticallyImplyLeading: false,
       ),
       body: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
+        listener: (BuildContext context, AuthState state) {
           if (state is OtpSent) {
             verificationId = state.verificationId;
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Row(
-                  children: [
+                  children: <Widget>[
                     const Icon(Icons.check_circle, color: Colors.white, size: 20),
                     const SizedBox(width: 12),
                     Expanded(
@@ -344,7 +344,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Row(
-                  children: [
+                  children: <Widget>[
                     const Icon(Icons.verified, color: Colors.white, size: 20),
                     const SizedBox(width: 12),
                     Expanded(
@@ -377,7 +377,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Row(
-                  children: [
+                  children: <Widget>[
                     const Icon(Icons.error_outline, color: Colors.white, size: 20),
                     const SizedBox(width: 12),
                     Expanded(
@@ -399,7 +399,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
           }
         },
         child: BlocBuilder<AuthBloc, AuthState>(
-          builder: (context, state) {
+          builder: (BuildContext context, AuthState state) {
             return FadeTransition(
               opacity: _fadeAnimation,
               child: SlideTransition(
@@ -408,7 +408,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
+                    children: <Widget>[
                       const SizedBox(height: 30),
 
                       // Phone Icon with Animation
@@ -457,7 +457,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
                       if (state is! OtpVerified)
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: List.generate(6, (index) => _buildOtpBox(index)),
+                          children: List.generate(6, (int index) => _buildOtpBox(index)),
                         ),
 
                       const SizedBox(height: 50),
@@ -506,7 +506,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
                       // Manual Resend Section
                       if (state is! OtpVerified)
                         Column(
-                          children: [
+                          children: <Widget>[
                             Text(
                               "Didn't receive the code?",
                               style: TextStyle(
@@ -536,7 +536,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
-                                children: [
+                                children: <Widget>[
                                   Icon(
                                     Icons.timer,
                                     size: 16,

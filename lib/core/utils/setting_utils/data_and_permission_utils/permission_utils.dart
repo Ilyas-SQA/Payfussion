@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class PermissionUtils {
-  static List<Permission> get allPermissions => [
+  static List<Permission> get allPermissions => <Permission>[
     Permission.camera,
     Permission.contacts,
     Permission.location,

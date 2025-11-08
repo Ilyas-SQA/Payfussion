@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:payfussion/data/models/messages/message_model.dart';
 
 import '../../../../services/live_chat_services.dart';
 import 'live_chat_event.dart';
@@ -28,13 +29,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       await _dialogflowService.initializeDialogflow();
 
       // Load messages from Firestore
-      final firestoreMessages = await LiveChatServices.getInitialMessages(userId);
+      final List<Message> firestoreMessages = await LiveChatServices.getInitialMessages(userId);
 
-      List<Map<String, dynamic>> messages = [];
+      List<Map<String, dynamic>> messages = <Map<String, dynamic>>[];
 
       if (firestoreMessages.isEmpty) {
         // Add initial welcome message if no messages exist
-        const welcomeMessage = 'Hello! How can we assist you today?';
+        const String welcomeMessage = 'Hello! How can we assist you today?';
 
         // Save welcome message to Firestore
         await LiveChatServices.saveMessage(
@@ -43,16 +44,16 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           sender: 'support',
         );
 
-        messages.add({
+        messages.add(<String, dynamic>{
           'sender': 'support',
           'text': welcomeMessage,
           'timestamp': DateTime.now(),
         });
       } else {
         /// Convert Firestore messages to the format used by UI with null safety
-        messages = firestoreMessages.map((message) {
+        messages = firestoreMessages.map((Message message) {
           /// Add null safety checks here
-          return {
+          return <String, Object>{
             'sender': message.sender,
             'text': message.text,
             'timestamp': message.timestamp,
@@ -75,7 +76,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       ) async {
     if (state is! ChatLoaded) return;
 
-    final currentState = state as ChatLoaded;
+    final ChatLoaded currentState = state as ChatLoaded;
 
     try {
       /// Validate input message
@@ -92,8 +93,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       );
 
       /// Add user message to UI
-      final updatedMessages = List<Map<String, dynamic>>.from(currentState.messages)
-        ..add({
+      final List<Map<String, dynamic>> updatedMessages = List<Map<String, dynamic>>.from(currentState.messages)
+        ..add(<String, dynamic>{
           'sender': 'user',
           'text': event.message,
           'timestamp': DateTime.now(),
@@ -116,7 +117,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       }
 
       // Ensure we have a valid response
-      final responseText = dialogflowResponse?.trim().isNotEmpty == true
+      final String responseText = dialogflowResponse?.trim().isNotEmpty == true
           ? dialogflowResponse!
           : 'I apologize, but I\'m having trouble processing your request right now. Please try again.';
 
@@ -128,8 +129,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       );
 
       // Add bot response to UI
-      final finalMessages = List<Map<String, dynamic>>.from(updatedMessages)
-        ..add({
+      final List<Map<String, dynamic>> finalMessages = List<Map<String, dynamic>>.from(updatedMessages)
+        ..add(<String, dynamic>{
           'sender': 'support',
           'text': responseText,
           'timestamp': DateTime.now(),
@@ -146,17 +147,17 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       print('Error sending message: $e');
 
       // Get current messages safely
-      List<Map<String, dynamic>> currentMessages = [];
+      List<Map<String, dynamic>> currentMessages = <Map<String, dynamic>>[];
       if (state is ChatLoaded) {
         currentMessages = List<Map<String, dynamic>>.from((state as ChatLoaded).messages);
       }
 
       // Add user message if it was not added due to error
-      bool userMessageExists = currentMessages.any((msg) =>
+      final bool userMessageExists = currentMessages.any((Map<String, dynamic> msg) =>
       msg['text'] == event.message && msg['sender'] == 'user');
 
       if (!userMessageExists) {
-        currentMessages.add({
+        currentMessages.add(<String, dynamic>{
           'sender': 'user',
           'text': event.message,
           'timestamp': DateTime.now(),
@@ -164,8 +165,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       }
 
       // Add error message (but don't save error messages to Firestore)
-      final errorMessages = List<Map<String, dynamic>>.from(currentMessages)
-        ..add({
+      final List<Map<String, dynamic>> errorMessages = List<Map<String, dynamic>>.from(currentMessages)
+        ..add(<String, dynamic>{
           'sender': 'support',
           'text': 'Sorry, there was an error processing your request. Please try again.',
           'timestamp': DateTime.now(),

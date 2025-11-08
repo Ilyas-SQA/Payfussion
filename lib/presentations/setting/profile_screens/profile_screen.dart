@@ -7,7 +7,9 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:payfussion/core/constants/routes_name.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/data/models/user/user_model.dart';
 import 'package:payfussion/logic/blocs/setting/user_profile/profile_state.dart';
+import '../../../core/circular_indicator.dart';
 import '../../../core/constants/fonts.dart';
 import '../../../logic/blocs/setting/user_profile/profile_bloc.dart';
 import '../../../logic/blocs/setting/user_profile/profile_event.dart';
@@ -131,7 +133,7 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
   }
 
   void _initUserData() {
-    final user = SessionController.user;
+    final UserModel user = SessionController.user;
     _userName = user.fullName ?? '';
     _userEmail = user.email ?? '';
     _userFirstName = user.firstName ?? '';
@@ -151,7 +153,7 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
     Theme.of(context);
 
     return BlocConsumer<ProfileBloc, ProfileState>(
-      listener: (context, state) {
+      listener: (BuildContext context, ProfileState state) {
         if (state is ProfileLoading) {
           _showLoadingDialog();
           return;
@@ -177,7 +179,7 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
             elevation: 0,
           ),
           body: Stack(
-            children: [
+            children: <Widget>[
               AnimatedBackground(
                 animationController: _backgroundAnimationController,
               ),
@@ -185,7 +187,7 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
                 padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 20.h),
                 child: SingleChildScrollView(
                   child: Column(
-                    children: [
+                    children: <Widget>[
                       SizedBox(height: 15.h),
 
                       // Animated profile image
@@ -230,7 +232,7 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
                             end: Offset.zero,
                           ).animate(_buttonsController),
                           child: Column(
-                            children: [
+                            children: <Widget>[
                               _buildChangePasswordButton(),
                               SizedBox(height: 20.h),
                               _buildLogoutButton(),
@@ -251,7 +253,7 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
 
   Widget _buildProfileImage() {
     return Stack(
-      children: [
+      children: <Widget>[
         Material(
           color: Colors.transparent,
           shape: const CircleBorder(),
@@ -286,7 +288,7 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
   }
 
   Widget _userProfileImage() {
-    final profileImageUrl = SessionController.user.profileImageUrl;
+    final String? profileImageUrl = SessionController.user.profileImageUrl;
     return profileImageUrl != null && profileImageUrl.isNotEmpty ? ClipOval(
       child: CachedNetworkImage(
         imageUrl: profileImageUrl,
@@ -316,27 +318,27 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
   }
 
   Widget _buildEditableCards() {
-    final List<Map<String, Object>> cards = [
-      {
+    final List<Map<String, Object>> cards = <Map<String, Object>>[
+      <String, Object>{
         'title': 'First Name',
         'value': _userFirstName,
         'icon': Icons.person_outline,
         'onSave': (String newValue) async => _updateFirstName(newValue),
       },
-      {
+      <String, Object>{
         'title': 'Last Name',
         'value': _userLastName,
         'icon': Icons.person_outline,
         'onSave': (String newValue) async => _updateLastName(newValue),
       },
-      {
+      <String, Object>{
         'title': 'Phone Number',
         'value': _phoneNumber,
         'icon': Icons.phone_outlined,
         'keyboardType': TextInputType.phone,
         'onSave': (String newValue) async {},
       },
-      {
+      <String, Object>{
         'title': 'Email',
         'value': _userEmail,
         'icon': Icons.email_outlined,
@@ -349,13 +351,13 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
       child: Column(
         children: AnimationConfiguration.toStaggeredList(
           duration: const Duration(milliseconds: 200),
-          childAnimationBuilder: (widget) => SlideAnimation(
+          childAnimationBuilder: (Widget widget) => SlideAnimation(
             verticalOffset: 20.0,
             child: FadeInAnimation(child: widget),
           ),
           children: cards.map((Map<String, Object> card) {
             return Column(
-              children: [
+              children: <Widget>[
                 EditableCard(
                   title: card['title'] as String,
                   initialValue: card['value'] as String,
@@ -386,7 +388,7 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
+            children: <Widget>[
               Icon(Icons.lock_outline, size: 24.r, color: Colors.white),
               Text(
                 'Change Password',
@@ -424,7 +426,7 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            children: <Widget>[
               Text(
                 'Logout',
                 style: Font.montserratFont(
@@ -446,7 +448,7 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
       barrierDismissible: false,
       builder: (_) => WillPopScope(
         onWillPop: () async => false,
-        child: const Center(child: CircularProgressIndicator()),
+        child: Center(child: CircularIndicator.circular),
       ),
     );
   }

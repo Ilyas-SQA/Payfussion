@@ -22,7 +22,7 @@ class BillPaymentItemWidget extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: gradient[0].withOpacity(0.2),
             offset: const Offset(0, 4),
@@ -47,7 +47,7 @@ class BillPaymentItemWidget extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 16.h),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 SvgPicture.asset(icon, height: 32.h, width: 32.w),
                 SizedBox(height: 12.h),
                 Padding(

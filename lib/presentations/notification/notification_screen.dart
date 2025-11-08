@@ -72,34 +72,34 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
             child: FadeTransition(
               opacity: _headerFade,
               child: const Text('Notifications', style: TextStyle(fontWeight: FontWeight.w600,),),),),
-          actions: [
+          actions: <Widget>[
             SlideTransition(
                 position: Tween<Offset>(begin: const Offset(0.5, 0), end: Offset.zero).animate(_headerController),
                 child: FadeTransition(
                     opacity: _headerFade,
                     child: PopupMenuButton<String>(
                         icon: const Icon(Icons.more_vert),
-                        onSelected: (value) {
+                        onSelected: (String value) {
                           switch (value) {
                             case 'mark_all_read': context.read<NotificationBloc>().add(MarkAllNotificationsAsRead()); break;
                             case 'clear_all': _showClearAllDialog(); break;
                           }
                         },
-                        itemBuilder: (context) => [
+                        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                           const PopupMenuItem(value: 'mark_all_read',
-                              child: Row(children: [Icon(Icons.mark_email_read, size: 20), SizedBox(width: 12), Text('Mark All Read')])),
+                              child: Row(children: <Widget>[Icon(Icons.mark_email_read, size: 20), SizedBox(width: 12), Text('Mark All Read')])),
                           const PopupMenuItem(value: 'clear_all',
-                              child: Row(children: [Icon(Icons.clear_all, size: 20), SizedBox(width: 12), Text('Clear All')]))
+                              child: Row(children: <Widget>[Icon(Icons.clear_all, size: 20), SizedBox(width: 12), Text('Clear All')]))
                         ]))),
           ],
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
           Column(
-              children: [
+              children: <Widget>[
                 SlideTransition(
                     position: Tween<Offset>(begin: const Offset(0, -0.2), end: Offset.zero).animate(_headerController),
                     child: FadeTransition(opacity: _headerFade, child: _buildFilterTabs())),
@@ -107,7 +107,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                     child: FadeTransition(
                         opacity: _contentController,
                         child: BlocConsumer<NotificationBloc, NotificationState>(
-                            listener: (context, state) {
+                            listener: (BuildContext context, NotificationState state) {
                               if (state is NotificationError) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(content: Text(state.message), backgroundColor: Colors.red));
@@ -116,10 +116,10 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                                     SnackBar(content: Text(state.message), backgroundColor: Colors.green));
                               }
                             },
-                            builder: (context, state) {
+                            builder: (BuildContext context, NotificationState state) {
                               if (state is NotificationLoading) return _buildShimmerLoading();
                               if (state is NotificationsLoaded) {
-                                final filteredNotifications = _filterNotifications(state.notifications);
+                                final List<NotificationModel> filteredNotifications = _filterNotifications(state.notifications);
                                 if (filteredNotifications.isEmpty) return _buildEmptyState();
                                 return RefreshIndicator(
                                     onRefresh: () async { context.read<NotificationBloc>().add(LoadNotifications()); },
@@ -127,8 +127,8 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                                         child: ListView.builder(
                                             padding: const EdgeInsets.all(16),
                                             itemCount: filteredNotifications.length,
-                                            itemBuilder: (context, index) {
-                                              final notification = filteredNotifications[index];
+                                            itemBuilder: (BuildContext context, int index) {
+                                              final NotificationModel notification = filteredNotifications[index];
                                               return AnimationConfiguration.staggeredList(
                                                   position: index, duration: const Duration(milliseconds: 200),
                                                   child: SlideAnimation(
@@ -147,7 +147,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
     return AnimationLimiter(
         child: ListView.builder(
             padding: const EdgeInsets.all(16), itemCount: 8,
-            itemBuilder: (context, index) {
+            itemBuilder: (BuildContext context, int index) {
               return AnimationConfiguration.staggeredList(
                   position: index, duration: const Duration(milliseconds: 150),
                   child: SlideAnimation(
@@ -161,20 +161,20 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(12),
-            boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), blurRadius: 4, offset: const Offset(0, 2))]),
+            boxShadow: <BoxShadow>[BoxShadow(color: Colors.grey.withOpacity(0.1), blurRadius: 4, offset: const Offset(0, 2))]),
         child: Shimmer.fromColors(
             baseColor: Colors.grey[300]!, highlightColor: Colors.grey[100]!,
             child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Container(width: 40, height: 40, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10))),
                       const SizedBox(width: 12),
                       Expanded(
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                              children: <Widget>[
                                 Container(width: double.infinity, height: 16, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
                                 const SizedBox(height: 8),
                                 Container(width: double.infinity, height: 14, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
@@ -183,7 +183,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                                 const SizedBox(height: 12),
                                 Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
+                                    children: <Widget>[
                                       Container(width: 80, height: 12, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
                                       Container(width: 60, height: 20, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(6)))
                                     ])
@@ -198,7 +198,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: [
+          children: <Widget>[
             _buildFilterChip('all', 'All', Icons.notifications),
             const SizedBox(width: 8),
             _buildFilterChip('bill_payment_success', 'Bills', Icons.receipt),
@@ -214,7 +214,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
   }
 
   Widget _buildFilterChip(String value, String label, IconData icon) {
-    final isSelected = _selectedFilter == value;
+    final bool isSelected = _selectedFilter == value;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       child: Material(
@@ -240,7 +240,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                     : Colors.grey[200]!,
                 width: 1,
               ),
-              boxShadow: isSelected ? [
+              boxShadow: isSelected ? <BoxShadow>[
                 BoxShadow(
                   color: MyTheme.primaryColor.withOpacity(0.3), // Changed here
                   blurRadius: 8,
@@ -250,7 +250,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              children: [
+              children: <Widget>[
                 Icon(
                   icon,
                   size: 16,
@@ -280,7 +280,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           const BoxShadow(
             color: Colors.black26,
             blurRadius: 5,
@@ -300,7 +300,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
           padding: const EdgeInsets.all(20), // Increased padding
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               // Icon with better styling
               Container(
                 width: 48, // Increased size
@@ -325,11 +325,11 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     // Title row with read indicator
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         Expanded(
                           child: Text(
                             notification.title,
@@ -342,12 +342,12 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        if (!notification.isRead) ...[
+                        if (!notification.isRead) ...<Widget>[
                           const SizedBox(width: 8),
                           Container(
                             width: 10,
                             height: 10,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: MyTheme.primaryColor, // Changed here
                               shape: BoxShape.circle,
                             ),
@@ -374,7 +374,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
+                      children: <Widget>[
                         Flexible(
                           child: Text(
                             timeago.format(notification.createdAt),
@@ -385,7 +385,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                             ),
                           ),
                         ),
-                        if (notification.data != null && notification.data!['amount'] != null) ...[
+                        if (notification.data != null && notification.data!['amount'] != null) ...<Widget>[
                           const SizedBox(width: 12),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -425,7 +425,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                onSelected: (value) {
+                onSelected: (String value) {
                   switch (value) {
                     case 'mark_read':
                       if (notification.id != null) {
@@ -439,12 +439,12 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                       break;
                   }
                 },
-                itemBuilder: (context) => [
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                   if (!notification.isRead)
                     const PopupMenuItem(
                       value: 'mark_read',
                       child: Row(
-                        children: [
+                        children: <Widget>[
                           Icon(Icons.mark_email_read, size: 18),
                           SizedBox(width: 8),
                           Text('Mark as Read'),
@@ -454,7 +454,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                   const PopupMenuItem(
                     value: 'delete',
                     child: Row(
-                      children: [
+                      children: <Widget>[
                         Icon(Icons.delete_outline, size: 18, color: Colors.red),
                         SizedBox(width: 8),
                         Text('Delete', style: TextStyle(color: Colors.red)),
@@ -476,7 +476,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             Container(
               width: 120,
               height: 120,
@@ -520,7 +520,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
 
   List<NotificationModel> _filterNotifications(List<NotificationModel> notifications) {
     if (_selectedFilter == 'all') return notifications;
-    return notifications.where((notification) => notification.type == _selectedFilter).toList();
+    return notifications.where((NotificationModel notification) => notification.type == _selectedFilter).toList();
   }
 
   // Fixed notification details modal
@@ -529,14 +529,14 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
+      builder: (BuildContext context) => Container(
         height: MediaQuery.of(context).size.height * 0.85,
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
-          children: [
+          children: <Widget>[
             // Handle bar
             Container(
               margin: const EdgeInsets.only(top: 12, bottom: 20),
@@ -552,7 +552,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Row(
-                children: [
+                children: <Widget>[
                   Container(
                     width: 56,
                     height: 56,
@@ -574,7 +574,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         Text(
                           notification.title,
                           style: const TextStyle(
@@ -611,7 +611,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     // Message content
                     Container(
                       width: double.infinity,
@@ -632,7 +632,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                     ),
 
                     // Transaction details
-                    if (notification.data != null && notification.data!.isNotEmpty) ...[
+                    if (notification.data != null && notification.data!.isNotEmpty) ...<Widget>[
                       const SizedBox(height: 24),
                       Text(
                         'Transaction Details',
@@ -648,7 +648,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: Colors.grey[200]!, width: 1),
-                          boxShadow: [
+                          boxShadow: <BoxShadow>[
                             BoxShadow(
                               color: Colors.grey.withOpacity(0.05),
                               blurRadius: 10,
@@ -658,8 +658,8 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                         ),
                         child: Column(
                           children: notification.data!.entries
-                              .where((entry) => entry.key != 'paidAt' && entry.value != null)
-                              .map((entry) => Container(
+                              .where((MapEntry<String, dynamic> entry) => entry.key != 'paidAt' && entry.value != null)
+                              .map((MapEntry<String, dynamic> entry) => Container(
                             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                             decoration: BoxDecoration(
                               border: Border(
@@ -671,7 +671,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                             ),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                              children: <Widget>[
                                 Expanded(
                                   flex: 2,
                                   child: Text(
@@ -831,7 +831,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
       case 'numberOfPassengers': return 'Passengers';
       case 'travelClass': return 'Class';
       case 'baseFare': return 'Base Fare';
-      default: return key.split('_').map((word) => word.isEmpty ? '' : word[0].toUpperCase() + word.substring(1)).join(' ');
+      default: return key.split('_').map((String word) => word.isEmpty ? '' : word[0].toUpperCase() + word.substring(1)).join(' ');
     }
   }
 
@@ -842,7 +842,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
     if (key.toLowerCase().contains('date') || key.toLowerCase().contains('time')) {
       if (value is String && value.contains('T')) {
         try {
-          final date = DateTime.parse(value);
+          final DateTime date = DateTime.parse(value);
           return '${date.day}/${date.month}/${date.year} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
         } catch (e) { return value.toString(); }
       }
@@ -856,10 +856,10 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
   void _showDeleteDialog(NotificationModel notification) {
     showDialog(
         context: context,
-        builder: (context) => AlertDialog(
+        builder: (BuildContext context) => AlertDialog(
             title: const Text('Delete Notification'),
             content: const Text('Are you sure you want to delete this notification?'),
-            actions: [
+            actions: <Widget>[
               TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
               TextButton(
                   onPressed: () {
@@ -874,10 +874,10 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
   void _showClearAllDialog() {
     showDialog(
         context: context,
-        builder: (context) => AlertDialog(
+        builder: (BuildContext context) => AlertDialog(
             title: const Text('Clear All Notifications'),
             content: const Text('Are you sure you want to clear all notifications? This action cannot be undone.'),
-            actions: [
+            actions: <Widget>[
               TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
               TextButton(
                   onPressed: () {

@@ -45,7 +45,7 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget button = ElevatedButton(
+    final Widget button = ElevatedButton(
       onPressed: (isEnabled && !isLoading) ? onPressed : null,
       style: ButtonStyle(
         fixedSize: WidgetStateProperty.all(Size(width, height)),
@@ -84,8 +84,8 @@ class CustomButton extends StatelessWidget {
           : Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (icon != null) ...[
+              children: <Widget>[
+                if (icon != null) ...<Widget>[
                   Flexible(child: icon!),
                   8.horizontalSpace,
                 ],
@@ -109,7 +109,7 @@ class CustomButton extends StatelessWidget {
         ? Container(
             decoration: BoxDecoration(
               borderRadius: borderRadius ?? BorderRadius.circular(12.r),
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 shadowOptions ??
                     BoxShadow(
                       color: Colors.black.withOpacity(0.1),

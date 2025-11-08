@@ -29,7 +29,7 @@ class ProfileAppBar extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
+        children: <Widget>[
 
           // Profile Avatar
           GestureDetector(
@@ -47,9 +47,9 @@ class ProfileAppBar extends StatelessWidget {
                     width: 40.r,
                     height: 40.r,
                     fit: BoxFit.cover,
-                    placeholder: (context, url) =>
+                    placeholder: (BuildContext context, String url) =>
                     const CircularProgressIndicator(strokeWidth: 2),
-                    errorWidget: (context, url, error) =>
+                    errorWidget: (BuildContext context, String url, Object error) =>
                     const Icon(Icons.person),
                   ),
                 )
@@ -66,7 +66,7 @@ class ProfileAppBar extends StatelessWidget {
               onTap: () => context.push(RouteNames.profile),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Text(
                     SessionController.user.fullName ?? 'User',
                     style: Font.montserratFont(
@@ -90,9 +90,9 @@ class ProfileAppBar extends StatelessWidget {
 
           // Icons: Notification & Reward
           Row(
-            children: [
+            children: <Widget>[
               BlocBuilder<NotificationBloc, NotificationState>(
-                builder: (context, state) {
+                builder: (BuildContext context, NotificationState state) {
                   int unreadCount = 0;
                   if (state is NotificationsLoaded) {
                     unreadCount = state.unreadCount;
@@ -104,7 +104,7 @@ class ProfileAppBar extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const NotificationScreen(),
+                          builder: (BuildContext context) => const NotificationScreen(),
                         ),
                       );
                     },

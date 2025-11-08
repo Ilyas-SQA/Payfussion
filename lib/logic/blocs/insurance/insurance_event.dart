@@ -6,7 +6,7 @@ abstract class InsurancePaymentEvent extends Equatable {
   const InsurancePaymentEvent();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class LoadInsurancePayments extends InsurancePaymentEvent {
@@ -15,7 +15,7 @@ class LoadInsurancePayments extends InsurancePaymentEvent {
   const LoadInsurancePayments([this.userId]);
 
   @override
-  List<Object?> get props => [userId];
+  List<Object?> get props => <Object?>[userId];
 }
 
 class AddInsurancePayment extends InsurancePaymentEvent {
@@ -24,7 +24,7 @@ class AddInsurancePayment extends InsurancePaymentEvent {
   const AddInsurancePayment(this.payment);
 
   @override
-  List<Object> get props => [payment];
+  List<Object> get props => <Object>[payment];
 }
 
 class UpdateInsurancePayment extends InsurancePaymentEvent {
@@ -33,7 +33,7 @@ class UpdateInsurancePayment extends InsurancePaymentEvent {
   const UpdateInsurancePayment(this.payment);
 
   @override
-  List<Object> get props => [payment];
+  List<Object> get props => <Object>[payment];
 }
 
 class DeleteInsurancePayment extends InsurancePaymentEvent {
@@ -42,7 +42,7 @@ class DeleteInsurancePayment extends InsurancePaymentEvent {
   const DeleteInsurancePayment(this.paymentId);
 
   @override
-  List<Object> get props => [paymentId];
+  List<Object> get props => <Object>[paymentId];
 }
 
 class ProcessInsurancePayment extends InsurancePaymentEvent {
@@ -53,7 +53,7 @@ class ProcessInsurancePayment extends InsurancePaymentEvent {
   const ProcessInsurancePayment(this.paymentId, this.paymentMethod, this.cardId);
 
   @override
-  List<Object> get props => [paymentId, paymentMethod, cardId];
+  List<Object> get props => <Object>[paymentId, paymentMethod, cardId];
 }
 
 class GetInsurancePaymentById extends InsurancePaymentEvent {
@@ -62,7 +62,7 @@ class GetInsurancePaymentById extends InsurancePaymentEvent {
   const GetInsurancePaymentById(this.paymentId);
 
   @override
-  List<Object> get props => [paymentId];
+  List<Object> get props => <Object>[paymentId];
 }
 
 class GetInsurancePaymentsByCompany extends InsurancePaymentEvent {
@@ -71,7 +71,7 @@ class GetInsurancePaymentsByCompany extends InsurancePaymentEvent {
   const GetInsurancePaymentsByCompany(this.companyName);
 
   @override
-  List<Object> get props => [companyName];
+  List<Object> get props => <Object>[companyName];
 }
 
 class GetInsurancePaymentsByType extends InsurancePaymentEvent {
@@ -80,7 +80,7 @@ class GetInsurancePaymentsByType extends InsurancePaymentEvent {
   const GetInsurancePaymentsByType(this.insuranceType);
 
   @override
-  List<Object> get props => [insuranceType];
+  List<Object> get props => <Object>[insuranceType];
 }
 
 class GetInsurancePaymentsByStatus extends InsurancePaymentEvent {
@@ -89,7 +89,7 @@ class GetInsurancePaymentsByStatus extends InsurancePaymentEvent {
   const GetInsurancePaymentsByStatus(this.status);
 
   @override
-  List<Object> get props => [status];
+  List<Object> get props => <Object>[status];
 }
 
 class GetInsurancePaymentsInDateRange extends InsurancePaymentEvent {
@@ -99,7 +99,7 @@ class GetInsurancePaymentsInDateRange extends InsurancePaymentEvent {
   const GetInsurancePaymentsInDateRange(this.startDate, this.endDate);
 
   @override
-  List<Object> get props => [startDate, endDate];
+  List<Object> get props => <Object>[startDate, endDate];
 }
 
 class CalculateInsurancePaymentSummary extends InsurancePaymentEvent {
@@ -108,7 +108,7 @@ class CalculateInsurancePaymentSummary extends InsurancePaymentEvent {
   const CalculateInsurancePaymentSummary(this.payments);
 
   @override
-  List<Object> get props => [payments];
+  List<Object> get props => <Object>[payments];
 }
 
 class RefreshInsurancePayments extends InsurancePaymentEvent {
@@ -121,7 +121,7 @@ class SearchInsurancePayments extends InsurancePaymentEvent {
   const SearchInsurancePayments(this.query);
 
   @override
-  List<Object> get props => [query];
+  List<Object> get props => <Object>[query];
 }
 
 class FilterInsurancePayments extends InsurancePaymentEvent {
@@ -140,7 +140,7 @@ class FilterInsurancePayments extends InsurancePaymentEvent {
   });
 
   @override
-  List<Object?> get props => [companyFilter, typeFilter, statusFilter, startDate, endDate];
+  List<Object?> get props => <Object?>[companyFilter, typeFilter, statusFilter, startDate, endDate];
 }
 
 class SortInsurancePayments extends InsurancePaymentEvent {
@@ -150,5 +150,5 @@ class SortInsurancePayments extends InsurancePaymentEvent {
   const SortInsurancePayments(this.sortBy, {this.ascending = true});
 
   @override
-  List<Object> get props => [sortBy, ascending];
+  List<Object> get props => <Object>[sortBy, ascending];
 }

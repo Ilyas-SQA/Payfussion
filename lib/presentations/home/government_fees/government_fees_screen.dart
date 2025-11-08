@@ -222,7 +222,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
   late AnimationController _backgroundAnimationController;
 
   String selectedCategory = "All";
-  final List<String> categories = ["All", "Federal", "State", "Local", "Judicial"];
+  final List<String> categories = <String>["All", "Federal", "State", "Local", "Judicial"];
 
   @override
   void initState() {
@@ -280,7 +280,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
     if (selectedCategory == "All") {
       return governmentFeeItems;
     }
-    return governmentFeeItems.where((item) => item.category == selectedCategory).toList();
+    return governmentFeeItems.where((GovernmentFeeItem item) => item.category == selectedCategory).toList();
   }
 
   // /// Generate random fee details based on service type
@@ -360,7 +360,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -373,13 +373,13 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
               ).animate(_feesController),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   // Header Section
                   Padding(
                     padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         Text(
                           "US Government",
                           style: theme.textTheme.headlineMedium?.copyWith(
@@ -438,9 +438,9 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         itemCount: categories.length,
-        itemBuilder: (context, index) {
-          final category = categories[index];
-          final isSelected = selectedCategory == category;
+        itemBuilder: (BuildContext context, int index) {
+          final String category = categories[index];
+          final bool isSelected = selectedCategory == category;
 
           return AnimationConfiguration.staggeredList(
             position: index,
@@ -455,7 +455,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
                     decoration: BoxDecoration(
                       color: isSelected ? MyTheme.secondaryColor : theme.cardColor,
                       borderRadius: BorderRadius.circular(25.r),
-                      boxShadow: [
+                      boxShadow: <BoxShadow>[
                         BoxShadow(
                           color: Colors.black.withOpacity(0.05),
                           blurRadius: 8,
@@ -497,7 +497,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
             childAspectRatio: 9 / 12,
           ),
           itemCount: filteredItems.length,
-          itemBuilder: (context, index) {
+          itemBuilder: (BuildContext context, int index) {
             return AnimationConfiguration.staggeredList(
               position: index,
               duration: const Duration(milliseconds: 375),
@@ -523,7 +523,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -533,14 +533,14 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
       ),
       child: InkWell(
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const GovernmentPayFeeScreen()));
+          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const GovernmentPayFeeScreen()));
         },
         borderRadius: BorderRadius.circular(16.r),
         child: Padding(
           padding: EdgeInsets.all(10.w),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
+            children: <Widget>[
               // Icon Container
               Icon(
                 item.icon,
@@ -571,12 +571,12 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
   void _showPaymentDialog(BuildContext context, GovernmentFeeItem item, Map<String, dynamic> details) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (BuildContext context) => AlertDialog(
         title: Text(item.label),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             Text('Service: ${details['serviceName']}'),
             SizedBox(height: 8.h),
             Text('Reference: ${details['referenceNumber']}'),
@@ -584,7 +584,7 @@ class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with Ticker
             Text('Amount: \$${details['amount'].toStringAsFixed(2)}'),
           ],
         ),
-        actions: [
+        actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancel'),

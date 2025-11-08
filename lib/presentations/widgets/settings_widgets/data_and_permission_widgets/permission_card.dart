@@ -31,7 +31,7 @@ class PermissionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -41,10 +41,10 @@ class PermissionCard extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               Icon(
                 PermissionUtils.getPermissionIcon(permission),
                 size: 28,
@@ -54,7 +54,7 @@ class PermissionCard extends StatelessWidget {
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     Text(PermissionUtils.getPermissionTitle(permission), style: AppStyles.cardTitleStyle(context)),
                     const SizedBox(height: 4),
                     Text(
@@ -71,7 +71,7 @@ class PermissionCard extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+            children: <Widget>[
               Text(
                 isGranted ? 'Currently allowed' : 'Currently denied',
                 style: AppStyles.bodyTextStyle(context).copyWith(

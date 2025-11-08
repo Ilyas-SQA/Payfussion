@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:payfussion/presentations/widgets/settings_widgets/data_and_permission_widgets/switch_setting.dart';
 import '../../../../core/utils/setting_utils/data_and_permission_utils/app_colors_utils.dart';
 import '../../../../core/utils/setting_utils/data_and_permission_utils/app_styles.dart';
@@ -39,7 +38,7 @@ class _PrivacySettingsTabState extends State<PrivacySettingsTab>  with TickerPro
   @override
   Widget build(BuildContext context) {
     return Stack(
-      children: [
+      children: <Widget>[
         AnimatedBackground(
           animationController: _backgroundAnimationController,
         ),
@@ -47,7 +46,7 @@ class _PrivacySettingsTabState extends State<PrivacySettingsTab>  with TickerPro
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               Text(
                 'Privacy Preferences',
                 style: AppStyles.sectionTitleStyle(context, color: Theme.of(context).secondaryHeaderColor,),
@@ -67,7 +66,7 @@ class _PrivacySettingsTabState extends State<PrivacySettingsTab>  with TickerPro
                 colors: widget.colors,
                 content: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     SwitchSetting(
                       title: 'Usage Analytics',
                       description: 'Allow collection of anonymized app usage data to improve our services',
@@ -95,9 +94,9 @@ class _PrivacySettingsTabState extends State<PrivacySettingsTab>  with TickerPro
                 iconColor: widget.colors.warning,
                 title: 'Marketing Preferences',
                 colors: widget.colors,
-                content: Column(
+                content: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     SwitchSetting(
                       title: 'Personalized Offers',
                       description: 'Receive customized promotions based on your activity',
@@ -130,9 +129,9 @@ class _PrivacySettingsTabState extends State<PrivacySettingsTab>  with TickerPro
                 iconColor: widget.colors.error,
                 title: 'Data Sharing',
                 colors: widget.colors,
-                content: Column(
+                content: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     SwitchSetting(
                       title: 'Third-party Data Sharing',
                       description: 'Allow sharing data with trusted third-party providers for service improvement',
@@ -160,9 +159,9 @@ class _PrivacySettingsTabState extends State<PrivacySettingsTab>  with TickerPro
                 iconColor: widget.colors.success,
                 title: 'Enhanced Privacy',
                 colors: widget.colors,
-                content: Column(
+                content: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     SwitchSetting(
                       title: 'Private Mode',
                       description: 'Hide transaction details on activity feeds',
@@ -192,14 +191,14 @@ class _PrivacySettingsTabState extends State<PrivacySettingsTab>  with TickerPro
                 colors: widget.colors,
                 content: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    BulletPoint(
+                  children: <Widget>[
+                    const BulletPoint(
                       'PayFusion complies with major data protection regulations including GDPR, CCPA, and PIPEDA.',
                     ),
-                    BulletPoint(
+                    const BulletPoint(
                       'We implement data minimization principles and only collect information necessary for services.',
                     ),
-                    BulletPoint(
+                    const BulletPoint(
                       'Your data is encrypted both in transit and at rest using industry-standard protocols.',
                     ),
                     const SizedBox(height: 12),

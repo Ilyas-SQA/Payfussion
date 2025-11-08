@@ -39,7 +39,7 @@ class CardModel {
 
   // Convert to Map for Firestore
   Map<String, dynamic> toFirestore() {
-    return {
+    return <String, dynamic>{
       'brand': brand,
       'last4': last4,
       'exp_month': expMonth,

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/data/models/card/card_model.dart';
 import 'package:payfussion/presentations/setting/avalible_limit_screen.dart';
 import 'package:payfussion/presentations/setting/community_forum/community_forum_screen.dart';
 import 'package:payfussion/presentations/setting/profile_screens/cashbacks_and_refund_screen.dart';
@@ -133,7 +134,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
 
   Future<void> updateTransactionStatus(String userID, bool transactionValue) async {
     try {
-      await FirebaseFirestore.instance.collection("users").doc(userID).update({
+      await FirebaseFirestore.instance.collection("users").doc(userID).update(<Object, Object?>{
         "transaction": transactionValue,
       });
 
@@ -149,8 +150,8 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isBiometricEnabled = SessionController.isBiometric ?? context.select((SettingsBloc b) => b.state.security['fingerprint']);
+    final ThemeData theme = Theme.of(context);
+    final bool? isBiometricEnabled = SessionController.isBiometric ?? context.select((SettingsBloc b) => b.state.security['fingerprint']);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -163,7 +164,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
           ),
           centerTitle: true,
           elevation: 0,
-          actions: [
+          actions: <Widget>[
             SlideTransition(
               position: Tween<Offset>(
                 begin: const Offset(0.5, 0),
@@ -172,8 +173,8 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
               child: FadeTransition(
                 opacity: _headerFade,
                 child: BlocBuilder<ThemeBloc, ThemeState>(
-                  builder: (context, themeState) {
-                    bool isDark = themeState.themeMode == ThemeMode.dark;
+                  builder: (BuildContext context, ThemeState themeState) {
+                    final bool isDark = themeState.themeMode == ThemeMode.dark;
 
                     return AnimatedSwitcher(
                       duration: const Duration(milliseconds: 200),
@@ -197,7 +198,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
           ],
         ),
         body: Stack(
-          children: [
+          children: <Widget>[
             AnimatedBackground(
               animationController: _backgroundAnimationController,
             ),
@@ -208,11 +209,11 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                   child: Column(
                     children: AnimationConfiguration.toStaggeredList(
                       duration: const Duration(milliseconds: 200),
-                      childAnimationBuilder: (widget) => SlideAnimation(
+                      childAnimationBuilder: (Widget widget) => SlideAnimation(
                         verticalOffset: 20.0,
                         child: FadeInAnimation(child: widget),
                       ),
-                      children: [
+                      children: <Widget>[
                         // Error message
                         _buildErrorMessage(),
                         SizedBox(height: 18.h),
@@ -230,7 +231,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                           ),
                         ),
                         SizedBox(height: 20.h),
-                        LimitSettingContainer(),
+                        const LimitSettingContainer(),
 
                         SizedBox(height: 35.h),
                         // Linked Accounts
@@ -265,8 +266,8 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
 
   Widget _buildErrorMessage() {
     return Builder(
-      builder: (context) {
-        final errorMessage = context.select(
+      builder: (BuildContext context) {
+        final String errorMessage = context.select(
               (SettingsBloc b) => b.state.errorMessage,
         );
         if (errorMessage.isEmpty) return const SizedBox.shrink();
@@ -293,7 +294,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
 
   Widget _buildLinkedAccountsSection() {
     return Column(
-      children: [
+      children: <Widget>[
         SettingItemsHeader(
           itemHeaderSideButton: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
@@ -321,9 +322,9 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
         ),
         SizedBox(height: 20.h),
         BlocProvider(
-          create: (context) => CardBloc()..add(LoadCards()),
+          create: (BuildContext context) => CardBloc()..add(LoadCards()),
           child: BlocBuilder<CardBloc, CardState>(
-            builder: (context, state) {
+            builder: (BuildContext context, CardState state) {
               if (state is CardLoading) {
                 return _buildShimmerCard();
               } else if (state is CardLoaded) {
@@ -336,19 +337,19 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                     child: Column(
                       children: AnimationConfiguration.toStaggeredList(
                         duration: const Duration(milliseconds: 150),
-                        childAnimationBuilder: (widget) => SlideAnimation(
+                        childAnimationBuilder: (Widget widget) => SlideAnimation(
                           horizontalOffset: 20.0,
                           child: FadeInAnimation(child: widget),
                         ),
-                        children: [
-                          for (final card in state.cards) ...[
+                        children: <Widget>[
+                          for (final CardModel card in state.cards) ...<Widget>[
                             SettingTile(
                               icon: TImageUrl.visa,
                               title: card.cardEnding,
                               subtitle: "Exp: ${card.formattedExpiry}",
-                              trailingBuilder: (ctx) => _animatedSwitch(
+                              trailingBuilder: (BuildContext ctx) => _animatedSwitch(
                                 value: card.isDefault,
-                                onChanged: (v) {
+                                onChanged: (bool v) {
                                   context.read<CardBloc>().add(
                                     SetDefaultCard(
                                       cardId: card.id,
@@ -378,7 +379,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
 
   Widget _buildSecuritySection() {
     return Column(
-      children: [
+      children: <Widget>[
         SettingItemsHeader(itemHeaderText: 'Security Settings'),
         SizedBox(height: 20.h),
         SettingContainer(
@@ -386,20 +387,20 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
             child: Column(
               children: AnimationConfiguration.toStaggeredList(
                 duration: const Duration(milliseconds: 150),
-                childAnimationBuilder: (widget) => SlideAnimation(
+                childAnimationBuilder: (Widget widget) => SlideAnimation(
                   horizontalOffset: 20.0,
                   child: FadeInAnimation(child: widget),
                 ),
-                children: [
+                children: <Widget>[
                   BlocBuilder<SettingsBloc, SettingsState>(
-                    builder: (context, state) {
+                    builder: (BuildContext context, SettingsState state) {
                       return SettingTile(
                         icon: TImageUrl.fingerPrint,
                         title: "Fingerprint Login",
                         subtitle: "Enable this for a quick access",
-                        trailingBuilder: (context) => _animatedSwitch(
+                        trailingBuilder: (BuildContext context) => _animatedSwitch(
                           value: SessionController.isBiometric ?? state.security['fingerprint']!,
-                          onChanged: (v) {
+                          onChanged: (bool v) {
                             context.read<SettingsBloc>().add(
                               LinkedAccountToggled(
                                 accountId: 'fingerprint',
@@ -413,16 +414,16 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                   ),
                   SizedBox(height: 20.h),
                   BlocProvider(
-                    create: (context) => SettingsBloc()..add(LoadTwoFactorStatus()),
+                    create: (BuildContext context) => SettingsBloc()..add(LoadTwoFactorStatus()),
                     child: BlocBuilder<SettingsBloc, SettingsState>(
-                      builder: (context, state) {
+                      builder: (BuildContext context, SettingsState state) {
                         return SettingTile(
                           icon: TImageUrl.twoFactor,
                           title: "2 Factor Authentication",
                           subtitle: "We will send an OTP to your \nregistered number",
-                          trailingBuilder: (ctx) => _animatedSwitch(
+                          trailingBuilder: (BuildContext ctx) => _animatedSwitch(
                             value: state.isTwoFactorEnabled,
-                            onChanged: (v) {
+                            onChanged: (bool v) {
                               context.read<SettingsBloc>().add(UpdateTwoFactorStatus(v));
                             },
                           ),
@@ -435,11 +436,11 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                     icon: TImageUrl.lockAccount,
                     title: "Lock Your Account",
                     subtitle: "This will lock all types of\ntransactions from your account",
-                    trailingBuilder: (ctx) => _animatedSwitch(
+                    trailingBuilder: (BuildContext ctx) => _animatedSwitch(
                       value: SessionController.user.transaction ?? true,
-                      onChanged: (v) async {
+                      onChanged: (bool v) async {
                         try {
-                          String? userID = SessionController.user.uid;
+                          final String? userID = SessionController.user.uid;
                           if (userID != null && userID.isNotEmpty) {
                             await updateTransactionStatus(userID, v);
                             setState(() {});
@@ -465,7 +466,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
 
   Widget _buildPrivacySection() {
     return Column(
-      children: [
+      children: <Widget>[
         SettingItemsHeader(itemHeaderText: 'Privacy Settings'),
         SizedBox(height: 20.h),
         SettingContainer(
@@ -473,23 +474,23 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
             child: Column(
               children: AnimationConfiguration.toStaggeredList(
                 duration: const Duration(milliseconds: 150),
-                childAnimationBuilder: (widget) => SlideAnimation(
+                childAnimationBuilder: (Widget widget) => SlideAnimation(
                   horizontalOffset: 20.0,
                   child: FadeInAnimation(child: widget),
                 ),
-                children: [
+                children: <Widget>[
                   SettingTile(
                     icon:  TImageUrl.currency,
                     title: 'Currency',
                     subtitle: 'Choose your currency',
-                    trailingBuilder: (ctx) => currencyPicker(context: ctx),
+                    trailingBuilder: (BuildContext ctx) => currencyPicker(context: ctx),
                   ),
                   SizedBox(height: 20.h),
                   SettingTile(
                     icon: TImageUrl.refund,
                     title: 'Refund and cashback',
                     subtitle: 'Checkout our policies of refund\nand cash backs',
-                    trailingBuilder: (ctx) => _animatedArrow(() {
+                    trailingBuilder: (BuildContext ctx) => _animatedArrow(() {
                       context.push(
                         '/refundAndCashback',
                         extra: const CashbackAndRefundsScreen(),
@@ -501,7 +502,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                     icon: TImageUrl.tax,
                     title: 'Tax and Legal Compliance',
                     subtitle: 'Generate annual reports, view\nguidelines, and know custom tax laws',
-                    trailingBuilder: (ctx) => _animatedArrow(() {
+                    trailingBuilder: (BuildContext ctx) => _animatedArrow(() {
                       context.push(
                         '/taxAndLegalCompliance',
                         extra: const TaxComplianceScreen(),
@@ -519,7 +520,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
 
   Widget _buildPaymentSection(ThemeData theme) {
     return Column(
-      children: [
+      children: <Widget>[
         SettingItemsHeader(itemHeaderText: 'Payment & Transactions'),
         SizedBox(height: 20.h),
         SettingContainer(
@@ -527,17 +528,17 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
             child: Column(
               children: AnimationConfiguration.toStaggeredList(
                 duration: const Duration(milliseconds: 150),
-                childAnimationBuilder: (widget) => SlideAnimation(
+                childAnimationBuilder: (Widget widget) => SlideAnimation(
                   horizontalOffset: 20.0,
                   child: FadeInAnimation(child: widget),
                 ),
-                children: [
+                children: <Widget>[
                   SettingTile(
                     icon: TImageUrl.reward,
                     title: 'My Reward',
                     subtitle: 'View vouchers, games & exciting rewards',
-                    trailingBuilder: (ctx) => _animatedArrow(() {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => MyRewardScreen()));
+                    trailingBuilder: (BuildContext ctx) => _animatedArrow(() {
+                      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const MyRewardScreen()));
                     }),
                   ),
                   SizedBox(height: 20.h),
@@ -546,7 +547,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                     icon: TImageUrl.transactionPrivacy,
                     title: 'Transaction Privacy',
                     subtitle: 'Choose who can see your\ntransactions history',
-                    trailingBuilder: (ctx) => AnimatedContainer(
+                    trailingBuilder: (BuildContext ctx) => AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       width: 80,
                       child: DropdownButton<String>(
@@ -557,11 +558,11 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                           color: theme.secondaryHeaderColor,
                           fontWeight: FontWeight.bold,
                         ),
-                        onChanged: (v) => ctx.read<SettingsBloc>().add(
+                        onChanged: (String? v) => ctx.read<SettingsBloc>().add(
                           TransactionPrivacyModeChanged(v ?? 'Public'),
                         ),
                         underline: const SizedBox(),
-                        items: [
+                        items: <DropdownMenuItem<String>>[
                           DropdownMenuItem(
                             value: 'Public',
                             child: Text(
@@ -604,7 +605,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                     icon: TImageUrl.data,
                     title: 'Data And Permissions',
                     subtitle: 'Choose how you want to manage\nyour data with us',
-                    trailingBuilder: (ctx) => _animatedArrow(() {
+                    trailingBuilder: (BuildContext ctx) => _animatedArrow(() {
                       context.push(
                         '/dataAndPermissions',
                         extra: const DataAndPermissionsScreen(),
@@ -616,7 +617,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                     icon: TImageUrl.deviceManagement,
                     title: 'Device Management',
                     subtitle: 'See where accounts are currently\nlogged in and manage them\naccording to your choice',
-                    trailingBuilder: (ctx) => _animatedArrow(() {
+                    trailingBuilder: (BuildContext ctx) => _animatedArrow(() {
                       context.push(
                         '/deviceManagement',
                         extra: const DevicesManagementScreen(),
@@ -634,7 +635,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
 
   Widget _buildSupportSection() {
     return Column(
-      children: [
+      children: <Widget>[
         SettingItemsHeader(itemHeaderText: 'Customer Support'),
         SizedBox(height: 20.h),
         SettingContainer(
@@ -642,16 +643,16 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
             child: Column(
               children: AnimationConfiguration.toStaggeredList(
                 duration: const Duration(milliseconds: 150),
-                childAnimationBuilder: (widget) => SlideAnimation(
+                childAnimationBuilder: (Widget widget) => SlideAnimation(
                   horizontalOffset: 20.0,
                   child: FadeInAnimation(child: widget),
                 ),
-                children: [
+                children: <Widget>[
                   SettingTile(
                     icon: TImageUrl.liveChat,
                     title: 'Live Chat',
                     subtitle: 'Talk with our chat-bot and\nhuman support 24/7',
-                    trailingBuilder: (ctx) => _animatedArrow(() {
+                    trailingBuilder: (BuildContext ctx) => _animatedArrow(() {
                       context.push(
                         '/liveChat',
                         extra: const LiveChatScreen(),
@@ -663,7 +664,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                     icon: TImageUrl.submitTTicket,
                     title: 'Submit A Ticket',
                     subtitle: 'Submit a ticket with your complaint\nor suggestion',
-                    trailingBuilder: (ctx) => _animatedArrow(() {
+                    trailingBuilder: (BuildContext ctx) => _animatedArrow(() {
                       context.push(
                         '/showTicket',
                         extra: const ShowTicketScreen(),
@@ -675,7 +676,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                     icon: TImageUrl.communityForm,
                     title: 'Community Forum',
                     subtitle: 'Ask and answer common issues with\nthe other members of our app',
-                    trailingBuilder: (ctx) => _animatedArrow(() {
+                    trailingBuilder: (BuildContext ctx) => _animatedArrow(() {
                       context.push(
                         RouteNames.communityForum,
                         extra: const CommunityForumScreen(),
@@ -687,7 +688,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                     icon: TImageUrl.faq,
                     title: 'FAQs',
                     subtitle: 'Common questions and answers\nabout our app',
-                    trailingBuilder: (ctx) => _animatedArrow(() {
+                    trailingBuilder: (BuildContext ctx) => _animatedArrow(() {
                       context.push(
                         RouteNames.faqs,
                         extra: const FaqsScreen(),
@@ -710,7 +711,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
       child: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: MyTheme.primaryColor,
+        activeThumbColor: MyTheme.primaryColor,
       ),
     );
   }
@@ -742,7 +743,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Row(
-        children: [
+        children: <Widget>[
           Container(
             width: 40.r,
             height: 40.r,
@@ -755,7 +756,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Container(
                   width: double.infinity,
                   height: 16.h,

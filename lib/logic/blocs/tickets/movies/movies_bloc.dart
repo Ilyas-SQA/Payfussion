@@ -32,8 +32,8 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
     try {
       await emit.forEach<List<MovieModel>>(
         _firebaseService.getUserMovies(FirebaseAuth.instance.currentUser!.uid),
-        onData: (movies) => MovieLoaded(movies),
-        onError: (error, _) => MovieError('Failed to load movies: $error'),
+        onData: (List<MovieModel> movies) => MovieLoaded(movies),
+        onError: (Object error, _) => MovieError('Failed to load movies: $error'),
       );
     } catch (e) {
       emit(MovieError('Failed to load movies: $e'));
@@ -74,7 +74,7 @@ class MovieBookingBloc extends Bloc<MovieBookingEvent, MovieBookingState> {
       try {
         print('🔔 Adding movie booking notification to Firestore...');
 
-        final notificationData = {
+        final Map<String, Object> notificationData = <String, Object>{
           'bookingId': event.booking.id,
           'movieId': event.booking.movieId,
           'movieTitle': event.booking.movieTitle,
@@ -109,7 +109,7 @@ class MovieBookingBloc extends Bloc<MovieBookingEvent, MovieBookingState> {
         print('❌ Error adding movie booking notification: $notificationError');
       }
 
-      emit(MovieBookingSuccess('Movie booking created successfully!'));
+      emit(const MovieBookingSuccess('Movie booking created successfully!'));
 
     } catch (e) {
       print('❌ Movie booking error: $e');
@@ -126,7 +126,7 @@ class MovieBookingBloc extends Bloc<MovieBookingEvent, MovieBookingState> {
         title: 'Movie Booking Failed',
         message: 'Failed to book movie ticket: ${e.toString()}',
         type: 'movie_booking_failed',
-        data: {
+        data: <String, dynamic>{
           'bookingId': event.booking.id,
           'movieTitle': event.booking.movieTitle,
           'error': e.toString(),
@@ -142,8 +142,8 @@ class MovieBookingBloc extends Bloc<MovieBookingEvent, MovieBookingState> {
     try {
       await emit.forEach<List<MovieBookingModel>>(
         _firebaseService.getUserBookings(event.userId),
-        onData: (bookings) => UserMovieBookingsLoaded(bookings),
-        onError: (error, _) => MovieBookingError('Failed to load bookings: $error'),
+        onData: (List<MovieBookingModel> bookings) => UserMovieBookingsLoaded(bookings),
+        onError: (Object error, _) => MovieBookingError('Failed to load bookings: $error'),
       );
     } catch (e) {
       emit(MovieBookingError('Failed to load bookings: $e'));

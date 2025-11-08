@@ -136,7 +136,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -145,7 +145,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 // Header Card with Hero Animation
                 SlideTransition(
                   position: _headerAnimation.drive(
@@ -187,7 +187,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -199,9 +199,9 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             Row(
-              children: [
+              children: <Widget>[
                 Hero(
                   tag: 'train-icon-${widget.train.name}',
                   child: const Icon(
@@ -215,7 +215,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
                   child: TweenAnimationBuilder<double>(
                     duration: const Duration(milliseconds: 1000),
                     tween: Tween(begin: 0, end: 1),
-                    builder: (context, value, child) {
+                    builder: (BuildContext context, double value, Widget? child) {
                       return Opacity(
                         opacity: value,
                         child: Transform.translate(
@@ -245,7 +245,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
   }
 
   List<Widget> _buildAnimatedDetailRows() {
-    final details = [
+    final List<(IconData, String, String)> details = <(IconData, String, String)>[
       (Icons.route, "Route", widget.train.route),
       if (widget.train.via.isNotEmpty)
         (Icons.location_on, "Via", widget.train.via),
@@ -255,14 +255,14 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
       "\$${widget.train.approxCostUSD.toStringAsFixed(0)} per person"),
     ];
 
-    return details.asMap().entries.map((entry) {
-      final index = entry.key;
-      final detail = entry.value;
+    return details.asMap().entries.map((MapEntry<int, (IconData, String, String)> entry) {
+      final int index = entry.key;
+      final (IconData, String, String) detail = entry.value;
 
       return TweenAnimationBuilder<double>(
         duration: Duration(milliseconds: 600 + (index * 100)),
         tween: Tween(begin: 0, end: 1),
-        builder: (context, value, child) {
+        builder: (BuildContext context, double value, Widget? child) {
           return Opacity(
             opacity: value,
             child: Transform.translate(
@@ -276,7 +276,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
   }
 
   List<Widget> _buildAnimatedContent() {
-    final List<Widget> content = [];
+    final List<Widget> content = <Widget>[];
     int animationIndex = 0;
 
     // Description Card
@@ -305,7 +305,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
       duration: Duration(milliseconds: 800 + (index * 200)),
       tween: Tween(begin: 0, end: 1),
       curve: Curves.easeOutCubic,
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Opacity(
           opacity: value,
           child: Transform.translate(
@@ -323,7 +323,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.2) : Colors.black.withOpacity(0.2),
             blurRadius: 8,
@@ -333,9 +333,9 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           const Row(
-            children: [
+            children: <Widget>[
               Icon(Icons.description, color: MyTheme.secondaryColor),
               SizedBox(width: 8),
               Text(
@@ -368,7 +368,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.2) : Colors.black.withOpacity(0.2),
             blurRadius: 8,
@@ -378,9 +378,9 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Row(
-            children: [
+            children: <Widget>[
               Icon(Icons.star, color: Colors.amber.shade600),
               const SizedBox(width: 8),
               const Text(
@@ -393,14 +393,14 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
             ],
           ),
           const SizedBox(height: 12),
-          ...widget.train.amenities.asMap().entries.map((entry) {
-            final index = entry.key;
-            final amenity = entry.value;
+          ...widget.train.amenities.asMap().entries.map((MapEntry<int, String> entry) {
+            final int index = entry.key;
+            final String amenity = entry.value;
 
             return TweenAnimationBuilder<double>(
               duration: Duration(milliseconds: 300 + (index * 100)),
               tween: Tween(begin: 0, end: 1),
-              builder: (context, value, child) {
+              builder: (BuildContext context, double value, Widget? child) {
                 return Opacity(
                   opacity: value,
                   child: Transform.translate(
@@ -408,7 +408,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       child: Row(
-                        children: [
+                        children: <Widget>[
                           AnimatedContainer(
                             duration: Duration(milliseconds: 200 + (index * 50)),
                             child: Icon(
@@ -446,9 +446,9 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
         Navigator.push(
           context,
           PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
+            pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) =>
                 TrainPaymentScreen(train: widget.train),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            transitionsBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
               return SlideTransition(
                 position: animation.drive(
                   Tween(begin: const Offset(1.0, 0.0), end: Offset.zero)
@@ -469,13 +469,13 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(5.r),
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                   blurRadius: 5,
@@ -493,7 +493,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Text(
                   label,
                   style: const TextStyle(

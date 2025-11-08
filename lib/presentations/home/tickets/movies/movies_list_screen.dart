@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/data/models/tickets/movies_model.dart';
 
 import '../../../../logic/blocs/tickets/movies/movies_bloc.dart';
 import '../../../../logic/blocs/tickets/movies/movies_event.dart';
@@ -18,7 +19,7 @@ class MovieListScreen extends StatefulWidget {
 }
 
 class _MovieListScreenState extends State<MovieListScreen> with TickerProviderStateMixin{
-  List<String> moviesImage = [
+  List<String> moviesImage = <String>[
     "assets/images/movies/download (2).jpeg",
     "assets/images/movies/download.jpeg",
     "assets/images/movies/download (1).jpeg",
@@ -62,7 +63,7 @@ class _MovieListScreenState extends State<MovieListScreen> with TickerProviderSt
       appBar: AppBar(
         title: const Text("US Cinemas & Movies"),
         iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
-        actions: [
+        actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
@@ -72,7 +73,7 @@ class _MovieListScreenState extends State<MovieListScreen> with TickerProviderSt
         ],
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -82,7 +83,7 @@ class _MovieListScreenState extends State<MovieListScreen> with TickerProviderSt
                 return const Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                    children: <Widget>[
                       CircularProgressIndicator(),
                       SizedBox(height: 16),
                       Text('Loading movies...'),
@@ -97,11 +98,11 @@ class _MovieListScreenState extends State<MovieListScreen> with TickerProviderSt
                     duration: const Duration(milliseconds: 300),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: <Widget>[
                         TweenAnimationBuilder<double>(
                           duration: const Duration(milliseconds: 600),
                           tween: Tween(begin: 0.0, end: 1.0),
-                          builder: (context, value, child) {
+                          builder: (BuildContext context, double value, Widget? child) {
                             return Transform.scale(
                               scale: value,
                               child: Icon(
@@ -114,7 +115,7 @@ class _MovieListScreenState extends State<MovieListScreen> with TickerProviderSt
                         ),
                         const SizedBox(height: 16),
                         FadeTransition(
-                          opacity: AlwaysStoppedAnimation(1.0),
+                          opacity: const AlwaysStoppedAnimation(1.0),
                           child: Text(state.message, textAlign: TextAlign.center),
                         ),
                         const SizedBox(height: 16),
@@ -138,10 +139,10 @@ class _MovieListScreenState extends State<MovieListScreen> with TickerProviderSt
                 return AnimatedList(
                   padding: const EdgeInsets.all(8),
                   initialItemCount: state.movies.length,
-                  itemBuilder: (context, index, animation) {
+                  itemBuilder: (BuildContext context, int index, Animation<double> animation) {
                     if (index >= state.movies.length) return const SizedBox.shrink();
 
-                    final movie = state.movies[index];
+                    final MovieModel movie = state.movies[index];
                     return SlideTransition(
                       position: animation.drive(
                         Tween(begin: const Offset(1.0, 0.0), end: Offset.zero).chain(
@@ -279,7 +280,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(5.r),
-                boxShadow: [
+                boxShadow: <BoxShadow>[
                   BoxShadow(
                     color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                     blurRadius: 5,
@@ -315,7 +316,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                   padding: const EdgeInsets.all(16),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Hero(
                         tag: 'movie_poster_${widget.movie.title}',
                         child: AnimatedContainer(
@@ -325,7 +326,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
                             color: Colors.grey.shade300,
-                            boxShadow: [
+                            boxShadow: <BoxShadow>[
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.1),
                                 blurRadius: 4,
@@ -345,7 +346,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                          children: <Widget>[
                             TweenAnimationBuilder<double>(
                               duration: Duration(milliseconds: 400 + (widget.index * 50)),
                               tween: Tween(begin: 0.0, end: 1.0),
@@ -390,18 +391,18 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                             TweenAnimationBuilder<double>(
                               duration: Duration(milliseconds: 600 + (widget.index * 50)),
                               tween: Tween(begin: 0.0, end: 1.0),
-                              builder: (context, value, child) {
+                              builder: (BuildContext context, double value, Widget? child) {
                                 return Transform.scale(
                                   scale: value,
                                   child: Row(
-                                    children: [
+                                    children: <Widget>[
                                       AnimatedContainer(
                                         duration: const Duration(milliseconds: 300),
                                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                         decoration: BoxDecoration(
                                           color: _getRatingColor(widget.movie.rating),
                                           borderRadius: BorderRadius.circular(4),
-                                          boxShadow: [
+                                          boxShadow: <BoxShadow>[
                                             BoxShadow(
                                               color: _getRatingColor(widget.movie.rating).withOpacity(0.3),
                                               blurRadius: 4,
@@ -436,17 +437,17 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                             TweenAnimationBuilder<double>(
                               duration: Duration(milliseconds: 700 + (widget.index * 50)),
                               tween: Tween(begin: 0.0, end: 1.0),
-                              builder: (context, value, child) {
+                              builder: (BuildContext context, double value, Widget? child) {
                                 return Transform.translate(
                                   offset: Offset(0, 10 * (1 - value)),
                                   child: Opacity(
                                     opacity: value,
                                     child: Row(
-                                      children: [
+                                      children: <Widget>[
                                         TweenAnimationBuilder<double>(
                                           duration: const Duration(milliseconds: 400),
                                           tween: Tween(begin: 0.0, end: 1.0),
-                                          builder: (context, rotateValue, child) {
+                                          builder: (BuildContext context, double rotateValue, Widget? child) {
                                             return Transform.rotate(
                                               angle: rotateValue * 2 * 3.14159,
                                               child: const Icon(
@@ -476,7 +477,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                             TweenAnimationBuilder<double>(
                               duration: Duration(milliseconds: 800 + (widget.index * 50)),
                               tween: Tween(begin: 0.0, end: 1.0),
-                              builder: (context, value, child) {
+                              builder: (BuildContext context, double value, Widget? child) {
                                 return Transform.translate(
                                   offset: Offset(0, 10 * (1 - value)),
                                   child: Opacity(
@@ -500,12 +501,12 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                       TweenAnimationBuilder<double>(
                         duration: Duration(milliseconds: 600 + (widget.index * 50)),
                         tween: Tween(begin: 0.0, end: 1.0),
-                        builder: (context, value, child) {
+                        builder: (BuildContext context, double value, Widget? child) {
                           return Transform.scale(
                             scale: value,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
+                              children: <Widget>[
                                 AnimatedContainer(
                                   duration: const Duration(milliseconds: 200),
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

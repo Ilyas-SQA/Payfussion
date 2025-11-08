@@ -23,12 +23,12 @@ class MessageBubble extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: isUser
             ? const LinearGradient(
-          colors: [Color(0xFF4CAF50), Color(0xFF81C784)],
+          colors: <Color>[Color(0xFF4CAF50), Color(0xFF81C784)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         )
             : const LinearGradient(
-          colors: [Color(0xFFE0E0E0), Color(0xFFBDBDBD)],
+          colors: <Color>[Color(0xFFE0E0E0), Color(0xFFBDBDBD)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -38,7 +38,7 @@ class MessageBubble extends StatelessWidget {
           bottomLeft: isUser ? const Radius.circular(16.0) : const Radius.circular(0.0),
           bottomRight: isUser ? const Radius.circular(0.0) : const Radius.circular(16.0),
         ),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
             blurRadius: 6.0,

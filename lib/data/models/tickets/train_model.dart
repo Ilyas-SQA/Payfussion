@@ -18,11 +18,11 @@ class TrainModel {
     required this.duration,
     required this.approxCostUSD,
     this.description = '',
-    this.amenities = const [],
+    this.amenities = const <String>[],
   });
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'id': id,
       'name': name,
       'route': route,
@@ -47,7 +47,7 @@ class TrainModel {
       ),
       approxCostUSD: (map['approxCostUSD'] ?? 0.0).toDouble(),
       description: map['description'] ?? '',
-      amenities: List<String>.from(map['amenities'] ?? []),
+      amenities: List<String>.from(map['amenities'] ?? <dynamic>[]),
     );
   }
 }
@@ -88,7 +88,7 @@ class BookingModel {
   });
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'id': id,
       'trainId': trainId,
       'trainName': trainName,

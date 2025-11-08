@@ -4,6 +4,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
+import '../../../core/constants/fonts.dart';
 import '../../../core/constants/routes_name.dart';
 import '../../widgets/background_theme.dart';
 
@@ -25,8 +26,8 @@ class _GasBillScreenState extends State<GasBillScreen>
   late Animation<Offset> _headerSlide;
   late Animation<double> _listFade;
 
-  final List<Map<String, dynamic>> gasProviders = [
-    {
+  final List<Map<String, dynamic>> gasProviders = <Map<String, dynamic>>[
+    <String, dynamic>{
       "name": "PG&E (Pacific Gas & Electric)",
       "description": "California's largest gas & electric utility",
       "icon": Icons.local_gas_station,
@@ -35,7 +36,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "averageRate": "\$1.15/therm",
       "customers": "16M+",
     },
-    {
+    <String, dynamic>{
       "name": "Southern California Gas Company (SoCalGas)",
       "description": "Largest natural gas utility in US",
       "icon": Icons.whatshot,
@@ -44,7 +45,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "averageRate": "\$1.20/therm",
       "customers": "22M+",
     },
-    {
+    <String, dynamic>{
       "name": "Con Edison",
       "description": "New York's primary gas utility",
       "icon": Icons.fireplace,
@@ -53,7 +54,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "averageRate": "\$1.35/therm",
       "customers": "1.2M+",
     },
-    {
+    <String, dynamic>{
       "name": "Dominion Energy",
       "description": "Multi-state energy provider",
       "icon": Icons.factory,
@@ -62,7 +63,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "averageRate": "\$1.05/therm",
       "customers": "2.5M+",
     },
-    {
+    <String, dynamic>{
       "name": "National Grid",
       "description": "Northeast gas & electric utility",
       "icon": Icons.grid_on,
@@ -71,7 +72,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "averageRate": "\$1.28/therm",
       "customers": "3.4M+",
     },
-    {
+    <String, dynamic>{
       "name": "Atmos Energy",
       "description": "Nation's largest gas-only distributor",
       "icon": Icons.cloud,
@@ -80,7 +81,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "averageRate": "\$0.95/therm",
       "customers": "3.2M+",
     },
-    {
+    <String, dynamic>{
       "name": "CenterPoint Energy",
       "description": "Texas & Minnesota gas provider",
       "icon": Icons.center_focus_strong,
@@ -89,7 +90,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "averageRate": "\$1.08/therm",
       "customers": "7M+",
     },
-    {
+    <String, dynamic>{
       "name": "Xcel Energy",
       "description": "Multi-state utility company",
       "icon": Icons.wind_power,
@@ -98,7 +99,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "averageRate": "\$1.02/therm",
       "customers": "3.7M+",
     },
-    {
+    <String, dynamic>{
       "name": "Duke Energy",
       "description": "Southeast energy corporation",
       "icon": Icons.business,
@@ -107,7 +108,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "averageRate": "\$1.12/therm",
       "customers": "1.6M+",
     },
-    {
+    <String, dynamic>{
       "name": "NiSource (Columbia Gas)",
       "description": "Midwest natural gas distributor",
       "icon": Icons.propane_tank,
@@ -116,7 +117,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "averageRate": "\$1.18/therm",
       "customers": "3.5M+",
     },
-    {
+    <String, dynamic>{
       "name": "PPL Gas Utilities",
       "description": "Pennsylvania gas services",
       "icon": Icons.energy_savings_leaf,
@@ -125,7 +126,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "averageRate": "\$1.22/therm",
       "customers": "350K+",
     },
-    {
+    <String, dynamic>{
       "name": "Eversource Energy",
       "description": "New England's gas utility",
       "icon": Icons.cottage,
@@ -134,7 +135,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "averageRate": "\$1.32/therm",
       "customers": "1.3M+",
     },
-    {
+    <String, dynamic>{
       "name": "Washington Gas",
       "description": "DC metro area gas provider",
       "icon": Icons.account_balance,
@@ -143,7 +144,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "averageRate": "\$1.24/therm",
       "customers": "1.2M+",
     },
-    {
+    <String, dynamic>{
       "name": "AVISTA Utilities",
       "description": "Pacific Northwest gas utility",
       "icon": Icons.water_drop,
@@ -152,7 +153,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       "averageRate": "\$1.08/therm",
       "customers": "370K+",
     },
-    {
+    <String, dynamic>{
       "name": "Vectren (CenterPoint Energy)",
       "description": "Indiana & Ohio gas services",
       "icon": Icons.science,
@@ -241,7 +242,7 @@ class _GasBillScreenState extends State<GasBillScreen>
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -249,13 +250,13 @@ class _GasBillScreenState extends State<GasBillScreen>
             opacity: _listFade,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 // Header Section
                 Padding(
                   padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(
                         "Pay Your",
                         style: theme.textTheme.headlineMedium?.copyWith(
@@ -303,7 +304,7 @@ class _GasBillScreenState extends State<GasBillScreen>
       child: ListView.builder(
         physics: const BouncingScrollPhysics(),
         itemCount: gasProviders.length,
-        itemBuilder: (context, index) {
+        itemBuilder: (BuildContext context, int index) {
           return AnimationConfiguration.staggeredList(
             position: index,
             duration: const Duration(milliseconds: 400),
@@ -330,7 +331,7 @@ class _GasBillScreenState extends State<GasBillScreen>
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -342,7 +343,7 @@ class _GasBillScreenState extends State<GasBillScreen>
           onTap: () {
             context.push(
               RouteNames.payBillsDetailView,
-              extra: {
+              extra: <String, dynamic>{
                 'billType': "gasBill",
                 'companyName': provider['name'],
                 'region': provider['region'],
@@ -355,7 +356,7 @@ class _GasBillScreenState extends State<GasBillScreen>
           child: Padding(
             padding: EdgeInsets.all(20.w),
             child: Row(
-              children: [
+              children: <Widget>[
                 // Icon Container
                 Hero(
                   tag: 'gas_icon_${provider['name']}',
@@ -372,10 +373,10 @@ class _GasBillScreenState extends State<GasBillScreen>
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       // Provider name and rate
                       Row(
-                        children: [
+                        children: <Widget>[
                           Expanded(
                             child: Text(
                               provider['name'] as String,
@@ -419,7 +420,7 @@ class _GasBillScreenState extends State<GasBillScreen>
 
                       // Region and customers info
                       Row(
-                        children: [
+                        children: <Widget>[
                           Icon(
                             Icons.location_on,
                             size: 14.sp,
@@ -429,7 +430,7 @@ class _GasBillScreenState extends State<GasBillScreen>
                           Expanded(
                             child: Text(
                               "${provider['region']} • ${provider['customers']} customers",
-                              style: const TextStyle(
+                              style: Font.montserratFont(
                                 fontSize: 10,
                               ),
                             ),

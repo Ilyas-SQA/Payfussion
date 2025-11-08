@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/fonts.dart';
 import '../../../../core/theme/theme.dart';
 import '../receive_money_payment_screen.dart';
 
@@ -19,10 +19,10 @@ class ExpirySelectorWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         Text(
           'Request Expires In',
-          style: TextStyle(
+          style: Font.montserratFont(
             fontSize: 16.sp,
             fontWeight: FontWeight.w500,
           ),
@@ -38,16 +38,16 @@ class ExpirySelectorWidget extends StatelessWidget {
   }
 
   List<Widget> _buildExpiryOptions() {
-    final options = [
-      {'days': 1, 'label': '1 Day'},
-      {'days': 3, 'label': '3 Days'},
-      {'days': 7, 'label': '7 Days'},
-      {'days': 14, 'label': '14 Days'},
-      {'days': 30, 'label': '30 Days'},
-      {'days': 60, 'label': '60 Days'},
+    final List<Map<String, Object>> options = <Map<String, Object>>[
+      <String, Object>{'days': 1, 'label': '1 Day'},
+      <String, Object>{'days': 3, 'label': '3 Days'},
+      <String, Object>{'days': 7, 'label': '7 Days'},
+      <String, Object>{'days': 14, 'label': '14 Days'},
+      <String, Object>{'days': 30, 'label': '30 Days'},
+      <String, Object>{'days': 60, 'label': '60 Days'},
     ];
 
-    return options.map((option) {
+    return options.map((Map<String, Object> option) {
       final int days = option['days'] as int;
       final String label = option['label'] as String;
       final bool isSelected = provider.expiryDays == days;
@@ -56,7 +56,7 @@ class ExpirySelectorWidget extends StatelessWidget {
         child: ChoiceChip(
           label: Text(
             label,
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 14.sp,
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
               color: isSelected ? Colors.white : Colors.black87,

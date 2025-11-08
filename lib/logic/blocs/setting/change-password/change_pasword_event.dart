@@ -4,7 +4,7 @@ abstract class ChangePasswordEvent extends Equatable {
   const ChangePasswordEvent();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class SubmitChangePasswordEvent extends ChangePasswordEvent {
@@ -17,7 +17,7 @@ class SubmitChangePasswordEvent extends ChangePasswordEvent {
   });
 
   @override
-  List<Object?> get props => [oldPassword, newPassword];
+  List<Object?> get props => <Object?>[oldPassword, newPassword];
 }
 
 // New event to indicate password fields have changed, for validation
@@ -34,7 +34,7 @@ class PasswordFieldsChangedEvent extends ChangePasswordEvent {
   });
 
   @override
-  List<Object?> get props => [newPassword, confirmNewPassword];
+  List<Object?> get props => <Object?>[newPassword, confirmNewPassword];
 }
 
 // Optional: Event to clear specific UI errors if needed

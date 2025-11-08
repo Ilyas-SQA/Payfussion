@@ -122,13 +122,13 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
           AnimatedBuilder(
             animation: _mainController,
-            builder: (context, child) {
+            builder: (BuildContext context, Widget? child) {
               return FadeTransition(
                 opacity: _fadeAnimation,
                 child: SlideTransition(
@@ -137,7 +137,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         // Main Movie Info Card
                         _AnimatedCard(
                           delay: 0,
@@ -148,7 +148,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
                         const SizedBox(height: 20),
 
                         // Synopsis Card
-                        if (widget.movie.synopsis.isNotEmpty) ...[
+                        if (widget.movie.synopsis.isNotEmpty) ...<Widget>[
                           _AnimatedCard(
                             delay: 200,
                             controller: _mainController,
@@ -158,7 +158,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
                         ],
 
                         // Cast Card
-                        if (widget.movie.cast.isNotEmpty) ...[
+                        if (widget.movie.cast.isNotEmpty) ...<Widget>[
                           _AnimatedCard(
                             delay: 400,
                             controller: _mainController,
@@ -200,7 +200,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -211,14 +211,14 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
           padding: const EdgeInsets.all(20),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               // Animated Poster with Hero
               Hero(
                 tag: 'movie_poster_${widget.movie.title}',
                 child: TweenAnimationBuilder<double>(
                   duration: const Duration(milliseconds: 800),
                   tween: Tween(begin: 0.0, end: 1.0),
-                  builder: (context, value, child) {
+                  builder: (BuildContext context, double value, Widget? child) {
                     return Transform.scale(
                       scale: value,
                       child: Container(
@@ -227,7 +227,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           color: Colors.grey.shade300,
-                          boxShadow: [
+                          boxShadow: <BoxShadow>[
                             BoxShadow(
                               color: Colors.black.withOpacity(0.2),
                               blurRadius: 8,
@@ -251,12 +251,12 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     // Title with typing animation
                     TweenAnimationBuilder<int>(
                       duration: const Duration(milliseconds: 1000),
                       tween: IntTween(begin: 0, end: widget.movie.title.length),
-                      builder: (context, value, child) {
+                      builder: (BuildContext context, int value, Widget? child) {
                         return Text(
                           widget.movie.title.substring(0, value),
                           style: const TextStyle(
@@ -284,20 +284,20 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
   Widget _buildShimmerPlaceholder() {
     return AnimatedBuilder(
       animation: _shimmerController,
-      builder: (context, child) {
+      builder: (BuildContext context, Widget? child) {
         return Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
+              colors: <Color>[
                 Colors.grey.shade300,
                 Colors.grey.shade100,
                 Colors.grey.shade300,
               ],
-              stops: [
+              stops: <double>[
                 _shimmerController.value - 0.3,
                 _shimmerController.value,
                 _shimmerController.value + 0.3,
-              ].map((e) => e.clamp(0.0, 1.0)).toList(),
+              ].map((double e) => e.clamp(0.0, 1.0)).toList(),
             ),
           ),
         );
@@ -309,7 +309,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 500),
       tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Transform.scale(
           scale: value,
           child: Icon(
@@ -323,7 +323,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
   }
 
   List<Widget> _buildAnimatedDetailRows() {
-    final details = [
+    final List<(IconData, String, String)> details = <(IconData, String, String)>[
       (Icons.category, "Genre", widget.movie.genre),
       (Icons.access_time, "Duration", widget.movie.duration),
       (Icons.calendar_today, "Release Date", widget.movie.releaseDate),
@@ -331,14 +331,14 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
       (Icons.theaters, "Cinema Chain", widget.movie.cinemaChain),
     ];
 
-    return details.asMap().entries.map((entry) {
-      final index = entry.key;
-      final detail = entry.value;
+    return details.asMap().entries.map((MapEntry<int, (IconData, String, String)> entry) {
+      final int index = entry.key;
+      final (IconData, String, String) detail = entry.value;
 
       return TweenAnimationBuilder<double>(
         duration: Duration(milliseconds: 600 + (index * 100)),
         tween: Tween(begin: 0.0, end: 1.0),
-        builder: (context, value, child) {
+        builder: (BuildContext context, double value, Widget? child) {
           return Transform.translate(
             offset: Offset(0, 20 * (1 - value)),
             child: Opacity(
@@ -354,13 +354,13 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
         TweenAnimationBuilder<double>(
           duration: const Duration(milliseconds: 800),
           tween: Tween(begin: 0.0, end: 1.0),
-          builder: (context, value, child) {
+          builder: (BuildContext context, double value, Widget? child) {
             return Transform.scale(
               scale: value,
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Row(
-                  children: [
+                  children: <Widget>[
                     Icon(Icons.info_outline, size: 16, color: Colors.grey.shade600),
                     const SizedBox(width: 8),
                     AnimatedContainer(
@@ -369,7 +369,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
                       decoration: BoxDecoration(
                         color: _getRatingColor(widget.movie.rating),
                         borderRadius: BorderRadius.circular(6),
-                        boxShadow: [
+                        boxShadow: <BoxShadow>[
                           BoxShadow(
                             color: _getRatingColor(widget.movie.rating).withOpacity(0.3),
                             blurRadius: 4,
@@ -401,7 +401,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -411,7 +411,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           const Text(
             "Synopsis",
             style: TextStyle(
@@ -423,7 +423,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
           TweenAnimationBuilder<int>(
             duration: const Duration(milliseconds: 2000),
             tween: IntTween(begin: 0, end: widget.movie.synopsis.length),
-            builder: (context, value, child) {
+            builder: (BuildContext context, int value, Widget? child) {
               return Text(
                 widget.movie.synopsis.substring(0, value),
                 style: const TextStyle(height: 1.5),
@@ -441,7 +441,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -451,7 +451,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           const Text(
             "Cast",
             style: TextStyle(
@@ -503,7 +503,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -513,7 +513,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           const Text(
             "Available Showtimes",
             style: TextStyle(
@@ -525,7 +525,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: widget.movie.showtimes.asMap().entries.map((entry) {
+            children: widget.movie.showtimes.asMap().entries.map((MapEntry<int, String> entry) {
               final int index = entry.key;
               final String time = entry.value;
               final bool isSelected = _selectedShowtime == time;
@@ -573,14 +573,14 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 800),
       tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Transform.translate(
           offset: Offset(0, 50 * (1 - value)),
           child: Opacity(
             opacity: value,
             child: AnimatedBuilder(
               animation: _buttonController,
-              builder: (context, child) {
+              builder: (BuildContext context, Widget? child) {
                 return Transform.scale(
                   scale: 1.0 - (_buttonController.value * 0.05),
                   child: GestureDetector(
@@ -594,9 +594,9 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
                         Navigator.push(
                           context,
                           PageRouteBuilder(
-                            pageBuilder: (context, animation, secondaryAnimation) =>
+                            pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) =>
                                 MoviePaymentScreen(movie: widget.movie),
-                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                            transitionsBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
                               return SlideTransition(
                                 position: animation.drive(
                                   Tween(begin: const Offset(1.0, 0.0), end: Offset.zero)
@@ -625,14 +625,14 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Icon(icon, size: 16, color: MyTheme.secondaryColor),
           const SizedBox(width: 8),
           Expanded(
             child: RichText(
               text: TextSpan(
                 style: TextStyle(fontSize: 12,color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,),
-                children: [
+                children: <InlineSpan>[
                   TextSpan(
                     text: "$label: ",
                     style: const TextStyle(
@@ -684,7 +684,7 @@ class _AnimatedCard extends StatelessWidget {
     return TweenAnimationBuilder<double>(
       duration: Duration(milliseconds: 600 + delay),
       tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
+      builder: (BuildContext context, double value, Widget? child) {
         return Transform.translate(
           offset: Offset(0, 30 * (1 - value)),
           child: Opacity(

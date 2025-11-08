@@ -15,23 +15,23 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   SettingsBloc() : super(SettingsState.initial()) {
 
     // Added inside constructor block
-    on<SecurityOptionToggled>((e, emit) {
-      final updated = Map<String, bool>.from(state.security)..[e.optionKey] = e.enabled;
+    on<SecurityOptionToggled>((SecurityOptionToggled e, Emitter<SettingsState> emit) {
+      final Map<String, bool> updated = Map<String, bool>.from(state.security)..[e.optionKey] = e.enabled;
       emit(state.copyWith(security: updated, errorMessage: ''));
     });
 
-    on<CurrencyChanged>((e, emit) {
+    on<CurrencyChanged>((CurrencyChanged e, Emitter<SettingsState> emit) {
       emit(state.copyWith(currencyCode: e.currencyCode, errorMessage: ''));
     });
 
-    on<TransactionPrivacyModeChanged>((e, emit) {
+    on<TransactionPrivacyModeChanged>((TransactionPrivacyModeChanged e, Emitter<SettingsState> emit) {
       emit(state.copyWith(transactionPrivacyMode: e.mode, errorMessage: ''));
     });
 
     // Add this to initialize biometric settings
-    on<InitializeSettings>((event, emit) async {
-      final isBiometricEnabled = await biometricService.isBiometricEnabled();
-      final updatedSecurity = Map<String, bool>.from(state.security);
+    on<InitializeSettings>((InitializeSettings event, Emitter<SettingsState> emit) async {
+      final bool isBiometricEnabled = await biometricService.isBiometricEnabled();
+      final Map<String, bool> updatedSecurity = Map<String, bool>.from(state.security);
       updatedSecurity['fingerprint'] = isBiometricEnabled;
       emit(state.copyWith(security: updatedSecurity, errorMessage: ''));
     });
@@ -44,14 +44,14 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
 
   Future<void> _onLoadStatus(LoadTwoFactorStatus event, Emitter<SettingsState> emit) async {
-    final doc = await FirebaseFirestore.instance.collection('users').doc(SessionController.user.uid).get();
+    final DocumentSnapshot<Map<String, dynamic>> doc = await FirebaseFirestore.instance.collection('users').doc(SessionController.user.uid).get();
     final status = doc.data()?['twoStepAuthentication'] ?? false;
     emit(state.copyWith(isTwoFactorEnabled: status));
   }
 
   Future<void> _onUpdateStatus(UpdateTwoFactorStatus event, Emitter<SettingsState> emit) async {
     emit(state.copyWith(isLoading: true));
-    await FirebaseFirestore.instance.collection('users').doc(SessionController.user.uid).update({
+    await FirebaseFirestore.instance.collection('users').doc(SessionController.user.uid).update(<Object, Object?>{
       'twoStepAuthentication': event.value,
     });
     emit(state.copyWith(isTwoFactorEnabled: event.value, isLoading: false));
@@ -61,7 +61,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   Future<void> _onLinkedAccountToggled(LinkedAccountToggled event, Emitter<SettingsState> emit,) async {
     if (event.accountId == 'fingerprint') {
       /// Special handling for fingerprint toggle
-      final isAvailable = await biometricService.isBiometricAvailable();
+      final bool isAvailable = await biometricService.isBiometricAvailable();
       print('Biometric available: $isAvailable'); // Debug log
 
       if (!isAvailable && event.enabled) {
@@ -76,7 +76,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       }
 
       if (event.enabled) {
-        final hasBiometrics = await biometricService.hasBiometricsEnrolled();
+        final bool hasBiometrics = await biometricService.hasBiometricsEnrolled();
         print('Has biometrics enrolled: $hasBiometrics'); // Debug log
 
         if (!hasBiometrics) {
@@ -90,7 +90,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         }
 
         /// Verify identity before enabling
-        final result = await biometricService.authenticate(
+        final Map<String, dynamic> result = await biometricService.authenticate(
           reason: 'Verify your identity to enable fingerprint login',
         );
 
@@ -100,7 +100,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
           await biometricService.setBiometricEnabled(true);
           await sessionController.saveBiometric(true);
 
-          final updatedSecurity = Map<String, bool>.from(state.security);
+          final Map<String, bool> updatedSecurity = Map<String, bool>.from(state.security);
           updatedSecurity['fingerprint'] = true;
 
           emit(state.copyWith(
@@ -116,7 +116,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         await biometricService.setBiometricEnabled(false);
         await sessionController.saveBiometric(false);
 
-        final updatedSecurity = Map<String, bool>.from(state.security);
+        final Map<String, bool> updatedSecurity = Map<String, bool>.from(state.security);
         updatedSecurity['fingerprint'] = false;
 
         emit(state.copyWith(
@@ -127,7 +127,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       }
     } else {
       /// Handle other account toggles normally
-      final updatedAccounts = Map<String, bool>.from(state.linkedAccounts);
+      final Map<String, bool> updatedAccounts = Map<String, bool>.from(state.linkedAccounts);
       updatedAccounts[event.accountId] = event.enabled;
       emit(state.copyWith(linkedAccounts: updatedAccounts, errorMessage: ''));
     }
@@ -138,7 +138,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       final bool enabled = await sessionController.getBiometric();
       final bool supported = await biometricService.isBiometricAvailable();
 
-      final updatedSecurity = Map<String, bool>.from(state.security);
+      final Map<String, bool> updatedSecurity = Map<String, bool>.from(state.security);
       updatedSecurity['fingerprint'] = enabled;
 
       emit(state.copyWith(
@@ -162,7 +162,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       return;
     }
 
-    final result = await biometricService.authenticate(
+    final Map<String, dynamic> result = await biometricService.authenticate(
       reason: 'Please authenticate to access the app',
     );
 

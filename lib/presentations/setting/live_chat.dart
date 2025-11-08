@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:payfussion/core/circular_indicator.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import '../../core/constants/fonts.dart';
 import '../../logic/blocs/setting/live_chat/live_chat_bloc.dart';
@@ -67,7 +68,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
   }
 
   String _getCurrentUserId() {
-    final user = FirebaseAuth.instance.currentUser;
+    final User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       return user.uid;
     }
@@ -91,7 +92,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
   }
 
   void _sendMessage() {
-    final messageText = _messageController.text.trim();
+    final String messageText = _messageController.text.trim();
     if (messageText.isNotEmpty) {
       _chatBloc.add(SendMessage(messageText));
       _messageController.clear();
@@ -138,18 +139,18 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: BlocListener<ChatBloc, ChatState>(
           bloc: _chatBloc,
-          listener: (context, state) {
+          listener: (BuildContext context, ChatState state) {
             if (state is ChatLoaded) {
               _scrollToBottom();
             }
           },
           child: Stack(
-            children: [
+            children: <Widget>[
               AnimatedBackground(
                 animationController: _backgroundAnimationController,
               ),
               Column(
-                children: [
+                children: <Widget>[
                   /// Chat Messages Area
                   Expanded(
                     child: _buildChatArea(),
@@ -174,10 +175,8 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
       bloc: _chatBloc,
       builder: (BuildContext context, ChatState state) {
         if (state is ChatInitial || state is ChatLoading) {
-          return const Center(
-            child: CircularProgressIndicator(
-              color: MyTheme.primaryColor,
-            ),
+          return Center(
+            child: CircularIndicator.circular,
           );
         }
 
@@ -185,7 +184,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 Icon(
                   Icons.error_outline,
                   size: 60.r,
@@ -234,7 +233,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: <Widget>[
                   Icon(
                     Icons.chat_bubble_outline,
                     size: 80.r,
@@ -270,8 +269,8 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
             itemBuilder: (BuildContext context, int index) {
               final Map<String, dynamic> message = state.messages[index];
 
-              final sender = message['sender'] as String?;
-              final text = message['text'] as String?;
+              final String? sender = message['sender'] as String?;
+              final String? text = message['text'] as String?;
               final timestamp = message['timestamp'];
 
               if (sender == null || text == null) {
@@ -286,13 +285,13 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
                 curve: Curves.easeOutBack,
                 child: Column(
                   crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     if (isFirstInGroup) SizedBox(height: 12.h),
 
                     Row(
                       mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
+                      children: <Widget>[
                         if (!isUser && isLastInGroup)
                           Container(
                             margin: EdgeInsets.only(right: 8.w),
@@ -337,7 +336,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                              children: <Widget>[
                                 Text(
                                   text,
                                   style: Font.montserratFont(
@@ -396,12 +395,12 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
   Widget _buildTypingIndicator() {
     return BlocBuilder<ChatBloc, ChatState>(
       bloc: _chatBloc,
-      builder: (context, state) {
+      builder: (BuildContext context, ChatState state) {
         if (state is ChatLoaded && state.isTyping) {
           return Container(
             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
             child: Row(
-              children: [
+              children: <Widget>[
                 CircleAvatar(
                   radius: 16.r,
                   backgroundColor: MyTheme.primaryColor,
@@ -417,7 +416,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
                   decoration: BoxDecoration(
                     color: Theme.of(context).scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(5.r),
-                    boxShadow: [
+                    boxShadow: <BoxShadow>[
                       BoxShadow(
                         color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                         blurRadius: 5,
@@ -427,14 +426,11 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: [
+                    children: <Widget>[
                       SizedBox(
                         width: 20.w,
                         height: 20.h,
-                        child: const CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: MyTheme.primaryColor,
-                        ),
+                        child: CircularIndicator.circular,
                       ),
                       SizedBox(width: 12.w),
                       Text(
@@ -463,7 +459,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -472,7 +468,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
         ],
       ),
       child: Row(
-        children: [
+        children: <Widget>[
           Expanded(
             child: Container(
               decoration: BoxDecoration(
@@ -558,9 +554,9 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
       return 'Now';
     }
 
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final messageDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
+    final DateTime now = DateTime.now();
+    final DateTime today = DateTime(now.year, now.month, now.day);
+    final DateTime messageDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
 
     if (messageDate == today) {
       return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';

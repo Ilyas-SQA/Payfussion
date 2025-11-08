@@ -1,11 +1,10 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/constants/routes_name.dart';
 import 'package:payfussion/presentations/auth/sign_up/sign_up_header.dart';
-import '../../../core/theme/theme.dart';
+import '../../../core/circular_indicator.dart';
 import '../../../logic/blocs/auth/auth_bloc.dart';
 import '../../../logic/blocs/auth/auth_state.dart';
 import '../../widgets/background_theme.dart';
@@ -41,10 +40,9 @@ class _SignUpScreenState extends State<SignUpScreen> with TickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -61,7 +59,7 @@ class _SignUpScreenState extends State<SignUpScreen> with TickerProviderStateMix
                   showDialog(
                     context: context,
                     barrierDismissible: false,
-                    builder: (_) => const Center(child: CircularProgressIndicator())
+                    builder: (_) => Center(child: CircularIndicator.circular)
                   );
                 } else if (state is SignUpSuccess) {
                   context.go(RouteNames.signIn);

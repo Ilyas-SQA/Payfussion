@@ -6,7 +6,7 @@ abstract class FlightEvent extends Equatable {
   const FlightEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class LoadFlights extends FlightEvent {}
@@ -17,7 +17,7 @@ abstract class FlightBookingEvent extends Equatable {
   const FlightBookingEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class CreateFlightBooking extends FlightBookingEvent {
@@ -26,7 +26,7 @@ class CreateFlightBooking extends FlightBookingEvent {
   const CreateFlightBooking(this.booking);
 
   @override
-  List<Object> get props => [booking];
+  List<Object> get props => <Object>[booking];
 }
 
 class LoadUserFlightBookings extends FlightBookingEvent {
@@ -35,5 +35,5 @@ class LoadUserFlightBookings extends FlightBookingEvent {
   const LoadUserFlightBookings(this.userId);
 
   @override
-  List<Object> get props => [userId];
+  List<Object> get props => <Object>[userId];
 }

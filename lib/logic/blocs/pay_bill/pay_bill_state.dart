@@ -6,7 +6,7 @@ abstract class PayBillState extends Equatable {
   const PayBillState();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 // Initial state
@@ -22,7 +22,7 @@ class PayBillLoaded extends PayBillState {
   const PayBillLoaded(this.payBills);
 
   @override
-  List<Object?> get props => [payBills];
+  List<Object?> get props => <Object?>[payBills];
 }
 
 // Payment processing state
@@ -32,7 +32,7 @@ class PayBillProcessing extends PayBillState {
   const PayBillProcessing(this.billId);
 
   @override
-  List<Object?> get props => [billId];
+  List<Object?> get props => <Object?>[billId];
 }
 
 // Payment success state
@@ -43,7 +43,7 @@ class PayBillPaymentSuccess extends PayBillState {
   const PayBillPaymentSuccess(this.payBill, {this.message = 'Payment successful!'});
 
   @override
-  List<Object?> get props => [payBill, message];
+  List<Object?> get props => <Object?>[payBill, message];
 }
 
 // Payment failed state
@@ -54,7 +54,7 @@ class PayBillPaymentFailed extends PayBillState {
   const PayBillPaymentFailed(this.error, this.billId);
 
   @override
-  List<Object?> get props => [error, billId];
+  List<Object?> get props => <Object?>[error, billId];
 }
 
 // Error state
@@ -64,7 +64,7 @@ class PayBillError extends PayBillState {
   const PayBillError(this.error);
 
   @override
-  List<Object?> get props => [error];
+  List<Object?> get props => <Object?>[error];
 }
 
 // Success state for general operations
@@ -74,5 +74,5 @@ class PayBillSuccess extends PayBillState {
   const PayBillSuccess(this.message);
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => <Object?>[message];
 }

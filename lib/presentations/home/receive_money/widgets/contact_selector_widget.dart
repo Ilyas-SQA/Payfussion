@@ -7,6 +7,7 @@ import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/data/repositories/recipient/recipient_repository.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/fonts.dart';
 import '../../../../data/models/recipient/recipient_model.dart';
 import '../../../../logic/blocs/recipient/recipient_bloc.dart';
 import '../../../../logic/blocs/recipient/recipient_event.dart';
@@ -42,16 +43,16 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<RecipientBloc, AddRecipientState>(
-      builder: (context, state) {
+      builder: (BuildContext context, AddRecipientState state) {
         return Column(
           children: <Widget>[
             // "Select Recipient" text
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+              children: <Widget>[
                 Text(
                   'Select Recipient',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
                   ),
@@ -61,11 +62,11 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                   onPressed: (){
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const AddRecipientScreen()),
+                      MaterialPageRoute(builder: (BuildContext context) => const AddRecipientScreen()),
                     );
                   },
-                  label: Text("Add New",style: TextStyle(color: MyTheme.primaryColor),),
-                  icon: Icon(Icons.add,color: MyTheme.primaryColor),
+                  label: Text("Add New",style: Font.montserratFont(color: MyTheme.primaryColor),),
+                  icon: const Icon(Icons.add,color: MyTheme.primaryColor),
                 )
               ],
             ),
@@ -86,7 +87,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                   children: <Widget>[
                     Text(
                       'Change Recipient',
-                      style: TextStyle(
+                      style: Font.montserratFont(
                         color: MyTheme.primaryColor,
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w500,
@@ -123,7 +124,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                    children: <Widget>[
                       Icon(
                         Icons.person_add_rounded,
                         color: MyTheme.primaryColor,
@@ -132,7 +133,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                       SizedBox(width: 8.w),
                       Text(
                         'Select Recipient',
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           color: MyTheme.primaryColor,
                           fontWeight: FontWeight.w600,
                           fontSize: 16.sp,
@@ -197,7 +198,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
               children: <Widget>[
                 Text(
                   recipient.name,
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
@@ -207,7 +208,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                 SizedBox(height: 4.h),
                 Text(
                   '${recipient.institutionName} - ${_formatAccountNumber(recipient.accountNumber)}',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 14.sp,
                     color: AppColors.textSecondary,
                   ),
@@ -226,7 +227,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
     return Center(
       child: Text(
         recipient.name.isNotEmpty ? recipient.name[0].toUpperCase() : '?',
-        style: TextStyle(
+        style: Font.montserratFont(
           color: MyTheme.primaryColor,
           fontSize: 20.sp,
           fontWeight: FontWeight.bold,
@@ -239,8 +240,8 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
     if (accountNumber.length <= 4) return accountNumber;
 
     // Show first 2 and last 4 digits with asterisks in between
-    final start = accountNumber.substring(0, 2);
-    final end = accountNumber.substring(accountNumber.length - 4);
+    final String start = accountNumber.substring(0, 2);
+    final String end = accountNumber.substring(accountNumber.length - 4);
     return '$start****$end';
   }
 
@@ -251,7 +252,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return StatefulBuilder(
-          builder: (context, setModalState) {
+          builder: (BuildContext context, setModalState) {
             return Container(
               height: MediaQuery.of(context).size.height * 0.7,
               decoration: BoxDecoration(
@@ -281,7 +282,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                   SizedBox(height: 20.h),
                   Text(
                     'Select Recipient',
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.w600,
                     ),
@@ -293,7 +294,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
                     child: TextField(
-                      onChanged: (query) {
+                      onChanged: (String query) {
                         context.read<RecipientBloc>().add(
                           RecipientsSearchChanged(query),
                         );
@@ -311,7 +312,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12.r),
-                          borderSide: BorderSide(color: MyTheme.primaryColor),
+                          borderSide: const BorderSide(color: MyTheme.primaryColor),
                         ),
                       ),
                     ),
@@ -326,7 +327,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                         userId: FirebaseAuth.instance.currentUser!.uid,
                       ),
                       child: BlocBuilder<RecipientBloc, AddRecipientState>(
-                        builder: (context, blocState) {
+                        builder: (BuildContext context, AddRecipientState blocState) {
                           if (blocState.recipientsStatus == RecipientsStatus.loading) {
                             return const Center(
                               child: CircularProgressIndicator(
@@ -339,7 +340,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                             return Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
+                                children: <Widget>[
                                   Icon(
                                     Icons.error_outline,
                                     color: Colors.grey[400],
@@ -348,7 +349,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                                   SizedBox(height: 16.h),
                                   Text(
                                     'Failed to load recipients',
-                                    style: TextStyle(
+                                    style: Font.montserratFont(
                                       color: Colors.grey[600],
                                       fontSize: 16.sp,
                                     ),
@@ -371,7 +372,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                             return Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
+                                children: <Widget>[
                                   Icon(
                                     Icons.people_outline,
                                     color: Colors.grey[400],
@@ -382,7 +383,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                                     blocState.searchQuery.isNotEmpty
                                         ? 'No recipients found'
                                         : 'No recipients added yet',
-                                    style: TextStyle(
+                                    style: Font.montserratFont(
                                       color: Colors.grey[600],
                                       fontSize: 16.sp,
                                     ),
@@ -395,9 +396,9 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                           return ListView.builder(
                             itemCount: blocState.filteredRecipients.length,
                             padding: EdgeInsets.symmetric(horizontal: 16.w),
-                            itemBuilder: (context, index) {
-                              final recipient = blocState.filteredRecipients[index];
-                              final isSelected = _selectedRecipient?.id == recipient.id;
+                            itemBuilder: (BuildContext context, int index) {
+                              final RecipientModel recipient = blocState.filteredRecipients[index];
+                              final bool isSelected = _selectedRecipient?.id == recipient.id;
 
                               return Material(
                                 color: isSelected
@@ -438,7 +439,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                                       ),
                                       title: Text(
                                         recipient.name,
-                                        style: TextStyle(
+                                        style: Font.montserratFont(
                                           fontWeight: FontWeight.w600,
                                           color: isSelected
                                               ? MyTheme.primaryColor
@@ -448,7 +449,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                                       ),
                                       subtitle: Text(
                                         '${recipient.institutionName} - ${_formatAccountNumber(recipient.accountNumber)}',
-                                        style: TextStyle(
+                                        style: Font.montserratFont(
                                           fontSize: 14.sp,
                                           color: AppColors.textSecondary,
                                         ),

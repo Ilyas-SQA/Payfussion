@@ -4,6 +4,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
+import '../../../core/constants/fonts.dart';
 import '../../../core/constants/routes_name.dart';
 import '../../widgets/background_theme.dart';
 
@@ -25,61 +26,61 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
   late Animation<double> _listFade;
   late AnimationController _backgroundAnimationController;
 
-  final List<Map<String, dynamic>> dthProviders = [
-    {
+  final List<Map<String, dynamic>> dthProviders = <Map<String, dynamic>>[
+    <String, dynamic>{
       "name": "DISH Network",
       "description": "America's top-rated TV provider",
       "icon": Icons.satellite_alt,
       "color": MyTheme.primaryColor,
-      "plans": ["Basic HD - \$60/month", "Top 200 - \$85/month", "Top 250 - \$95/month"],
+      "plans": <String>["Basic HD - \$60/month", "Top 200 - \$85/month", "Top 250 - \$95/month"],
       "rating": 4.2,
     },
-    {
+    <String, dynamic>{
       "name": "DIRECTV (AT&T)",
       "description": "Premium entertainment experience",
       "icon": Icons.settings_input_antenna,
       "color": MyTheme.primaryColor,
-      "plans": ["Entertainment - \$70/month", "Choice - \$90/month", "Ultimate - \$105/month"],
+      "plans": <String>["Entertainment - \$70/month", "Choice - \$90/month", "Ultimate - \$105/month"],
       "rating": 4.0,
     },
-    {
+    <String, dynamic>{
       "name": "Sky Angel",
       "description": "Family-friendly programming",
       "icon": Icons.family_restroom,
       "color": MyTheme.primaryColor,
-      "plans": ["Family Pack - \$25/month", "Premium Pack - \$40/month"],
+      "plans": <String>["Family Pack - \$25/month", "Premium Pack - \$40/month"],
       "rating": 3.8,
     },
-    {
+    <String, dynamic>{
       "name": "C band Satellite Providers",
       "description": "Professional satellite solutions",
       "icon": Icons.radar,
       "color": MyTheme.primaryColor,
-      "plans": ["Basic Package - \$45/month", "Professional - \$80/month"],
+      "plans": <String>["Basic Package - \$45/month", "Professional - \$80/month"],
       "rating": 3.5,
     },
-    {
+    <String, dynamic>{
       "name": "Viasat Satellite TV",
       "description": "Bundled internet & TV services",
       "icon": Icons.wifi_tethering,
       "color": MyTheme.primaryColor,
-      "plans": ["TV + Internet Bundle - \$120/month", "Premium Bundle - \$150/month"],
+      "plans": <String>["TV + Internet Bundle - \$120/month", "Premium Bundle - \$150/month"],
       "rating": 3.9,
     },
-    {
+    <String, dynamic>{
       "name": "Bell TV",
       "description": "Cross-border satellite service",
       "icon": Icons.public,
       "color": MyTheme.primaryColor,
-      "plans": ["Basic Plan - \$55/month", "Premium Plan - \$75/month"],
+      "plans": <String>["Basic Plan - \$55/month", "Premium Plan - \$75/month"],
       "rating": 3.7,
     },
-    {
+    <String, dynamic>{
       "name": "HughesNet TV Bundles",
       "description": "Satellite internet with TV",
       "icon": Icons.router,
       "color": MyTheme.primaryColor,
-      "plans": ["Bundle 50GB - \$100/month", "Bundle 100GB - \$130/month"],
+      "plans": <String>["Bundle 50GB - \$100/month", "Bundle 100GB - \$130/month"],
       "rating": 3.6,
     },
   ];
@@ -161,7 +162,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -169,13 +170,13 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
             opacity: _listFade,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 // Header Section
                 Padding(
                   padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(
                         "Choose Your",
                         style: theme.textTheme.headlineMedium?.copyWith(
@@ -248,7 +249,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -260,7 +261,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
           onTap: () {
             context.push(
               RouteNames.payBillsDetailView,
-              extra: {
+              extra: <String, dynamic>{
                 'billType': "dthRecharge",
                 'companyName': provider['name'],
                 'plans': provider['plans'],
@@ -272,7 +273,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
           child: Padding(
             padding: EdgeInsets.all(20.w),
             child: Row(
-              children: [
+              children: <Widget>[
                 // Icon Container
                 Hero(
                   tag: 'dth_icon_${provider['name']}',
@@ -289,10 +290,10 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       // Provider name and rating
                       Row(
-                        children: [
+                        children: <Widget>[
                           Expanded(
                             child: Text(
                               provider['name'] as String,
@@ -311,7 +312,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
-                              children: [
+                              children: <Widget>[
                                 Icon(
                                   Icons.star,
                                   size: 12.sp,
@@ -343,7 +344,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
 
                       // Plans count
                       Row(
-                        children: [
+                        children: <Widget>[
                           Icon(
                             Icons.tv,
                             size: 14.sp,
@@ -351,7 +352,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
                           SizedBox(width: 4.w),
                           Text(
                             "${(provider['plans'] as List).length} Available Plans",
-                            style: const TextStyle(
+                            style: Font.montserratFont(
                               fontWeight: FontWeight.w400,
                               fontSize: 12,
                             ),

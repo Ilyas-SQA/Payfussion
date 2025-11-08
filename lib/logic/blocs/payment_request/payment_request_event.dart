@@ -6,7 +6,7 @@ abstract class PaymentRequestEvent extends Equatable {
   const PaymentRequestEvent();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class LoadPaymentRequests extends PaymentRequestEvent {
@@ -19,7 +19,7 @@ class PaymentRequestsUpdated extends PaymentRequestEvent {
   const PaymentRequestsUpdated(this.requests);
 
   @override
-  List<Object> get props => [requests];
+  List<Object> get props => <Object>[requests];
 }
 
 class CreatePaymentRequest extends PaymentRequestEvent {
@@ -28,7 +28,7 @@ class CreatePaymentRequest extends PaymentRequestEvent {
   const CreatePaymentRequest(this.paymentRequest);
 
   @override
-  List<Object> get props => [paymentRequest];
+  List<Object> get props => <Object>[paymentRequest];
 }
 
 class AcceptPaymentRequest extends PaymentRequestEvent {
@@ -37,7 +37,7 @@ class AcceptPaymentRequest extends PaymentRequestEvent {
   const AcceptPaymentRequest(this.requestId);
 
   @override
-  List<Object> get props => [requestId];
+  List<Object> get props => <Object>[requestId];
 }
 
 class RejectPaymentRequest extends PaymentRequestEvent {
@@ -46,5 +46,5 @@ class RejectPaymentRequest extends PaymentRequestEvent {
   const RejectPaymentRequest(this.requestId);
 
   @override
-  List<Object> get props => [requestId];
+  List<Object> get props => <Object>[requestId];
 }

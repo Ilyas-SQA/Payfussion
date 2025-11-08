@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:nested/nested.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
@@ -33,12 +34,12 @@ class RideBookingScreen extends StatefulWidget {
 }
 
 class _RideBookingScreenState extends State<RideBookingScreen> with TickerProviderStateMixin{
-  final _formKey = GlobalKey<FormState>();
-  final _pickupController = TextEditingController();
-  final _destinationController = TextEditingController();
-  final _notesController = TextEditingController();
-  final _nameController = TextEditingController();
-  final _phoneController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _pickupController = TextEditingController();
+  final TextEditingController _destinationController = TextEditingController();
+  final TextEditingController _notesController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   late AnimationController _backgroundAnimationController;
 
   DateTime _selectedDateTime = DateTime.now().add(const Duration(minutes: 15));
@@ -97,14 +98,14 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
           MultiBlocListener(
-            listeners: [
+            listeners: <SingleChildWidget>[
               BlocListener<RideBookingBloc, RideBookingState>(
-                listener: (context, state) {
+                listener: (BuildContext context, RideBookingState state) {
                   if (state is RideBookingSuccess) {
                     // Add notification when ride booking is successful
                     _addRideNotification(
@@ -117,7 +118,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
                         backgroundColor: Colors.green,
                       ),
                     );
-                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    Navigator.of(context).popUntil((Route route) => route.isFirst);
                   } else if (state is RideBookingError) {
                     // Add notification when ride booking fails
                     _addRideNotification(
@@ -135,7 +136,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
                 },
               ),
               BlocListener<NotificationBloc, NotificationState>(
-                listener: (context, state) {
+                listener: (BuildContext context, NotificationState state) {
                   if (state is NotificationError) {
                     // Handle notification error silently or log it
                     print('Notification error: ${state.message}');
@@ -149,7 +150,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     _buildRideSummary(),
                     const SizedBox(height: 16),
                     _buildLocationDetails(),
@@ -174,7 +175,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
   }
 
   void _addRideNotification({required bool success, String? bookingId, String? errorMessage,}) {
-    final notification = NotificationModel.createRideNotification(
+    final NotificationModel notification = NotificationModel.createRideNotification(
       driverName: widget.ride.driverName,
       serviceType: widget.ride.serviceType,
       passengerName: _nameController.text,
@@ -203,7 +204,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -215,7 +216,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             const Text(
               "Ride Summary",
               style: TextStyle(
@@ -225,7 +226,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
             ),
             const SizedBox(height: 12),
             Row(
-              children: [
+              children: <Widget>[
                 CircleAvatar(
                   radius: 20,
                   backgroundColor: _getServiceColor(widget.ride.serviceType),
@@ -241,7 +242,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(
                         widget.ride.driverName,
                         style: const TextStyle(fontWeight: FontWeight.bold),
@@ -264,7 +265,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -276,7 +277,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             const Text(
               "Trip Details",
               style: TextStyle(
@@ -290,7 +291,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
               helpText: "Pickup Location",
               prefixIcon: const Icon(Icons.my_location, color: Colors.green),
               useGreenColor: true,
-              validator: (value) {
+              validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter pickup location';
                 }
@@ -301,9 +302,9 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
             AppTextFormField(
               controller: _destinationController,
               helpText: "Destination",
-              prefixIcon: Icon(Icons.place, color: Colors.red),
+              prefixIcon: const Icon(Icons.place, color: Colors.red),
               useGreenColor: true,
-              validator: (value) {
+              validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter destination';
                 }
@@ -312,11 +313,11 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
             ),
             const SizedBox(height: 16),
             Row(
-              children: [
+              children: <Widget>[
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       const Text("Estimated Distance"),
                       const SizedBox(height: 8),
                       Slider(
@@ -326,7 +327,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
                         divisions: 49,
                         label: "${_estimatedDistance.toStringAsFixed(1)} miles",
                         activeColor: MyTheme.secondaryColor,
-                        onChanged: (value) {
+                        onChanged: (double value) {
                           setState(() {
                             _estimatedDistance = value;
                           });
@@ -352,7 +353,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -364,7 +365,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             const Text(
               "Ride Options",
               style: TextStyle(
@@ -397,7 +398,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
                 });
               },
             ),
-            if (_rideType == 'Scheduled') ...[
+            if (_rideType == 'Scheduled') ...<Widget>[
               const SizedBox(height: 16),
               ListTile(
                 leading: const Icon(Icons.schedule),
@@ -407,14 +408,14 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
                 ),
                 trailing: const Icon(Icons.edit),
                 onTap: () async {
-                  final date = await showDatePicker(
+                  final DateTime? date = await showDatePicker(
                     context: context,
                     initialDate: _selectedDateTime,
                     firstDate: DateTime.now(),
                     lastDate: DateTime.now().add(const Duration(days: 7)),
                   );
                   if (date != null) {
-                    final time = await showTimePicker(
+                    final TimeOfDay? time = await showTimePicker(
                       context: context,
                       initialTime: TimeOfDay.fromDateTime(_selectedDateTime),
                     );
@@ -451,7 +452,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -463,7 +464,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             const Text(
               "Passenger Details",
               style: TextStyle(
@@ -475,9 +476,9 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
             AppTextFormField(
               controller: _nameController,
               helpText: "Passenger Name",
-              prefixIcon: Icon(Icons.person,color: MyTheme.secondaryColor,),
+              prefixIcon: const Icon(Icons.person,color: MyTheme.secondaryColor,),
               useGreenColor: true,
-              validator: (value) {
+              validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter passenger name';
                 }
@@ -488,9 +489,9 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
             AppTextFormField(
               controller: _phoneController,
               helpText: "Phone Number",
-              prefixIcon: Icon(Icons.phone,color: MyTheme.secondaryColor),
+              prefixIcon: const Icon(Icons.phone,color: MyTheme.secondaryColor),
               useGreenColor: true,
-              validator: (value) {
+              validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter phone number';
                 }
@@ -508,7 +509,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -520,11 +521,11 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               spacing: 10,
-              children: [
+              children: <Widget>[
                 const Text(
                   "Payment Method",
                   style: TextStyle(
@@ -558,7 +559,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -570,7 +571,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             const Text(
               "Fare Estimate",
               style: TextStyle(
@@ -581,16 +582,16 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+              children: <Widget>[
                 Text("Base fare (${_estimatedDistance.toStringAsFixed(1)} miles × \$${widget.ride.baseRate.toStringAsFixed(2)})"),
                 Text("\$${_baseFare.toStringAsFixed(2)}"),
               ],
             ),
-            if (_rideType == 'Scheduled') ...[
+            if (_rideType == 'Scheduled') ...<Widget>[
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: <Widget>[
                   const Text("Scheduling fee"),
                   Text("\$${_schedulingFee.toStringAsFixed(2)}"),
                 ],
@@ -599,7 +600,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+              children: <Widget>[
                 const Text("Subtotal"),
                 Text("\$${_subtotal.toStringAsFixed(2)}"),
               ],
@@ -607,15 +608,15 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Ticket Tax (${Taxes.ticketFeeTax}%)"),
+              children: <Widget>[
+                const Text("Ticket Tax (${Taxes.ticketFeeTax}%)"),
                 Text("\$${_ticketTax.toStringAsFixed(2)}"),
               ],
             ),
             const Divider(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+              children: <Widget>[
                 const Text(
                   "Estimated Total",
                   style: TextStyle(
@@ -650,7 +651,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
 
   Widget _buildBookButton() {
     return BlocBuilder<RideBookingBloc, RideBookingState>(
-      builder: (context, state) {
+      builder: (BuildContext context, RideBookingState state) {
         return AppButton(
           text: "${state is RideBookingLoading ?
           const SizedBox(
@@ -680,7 +681,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
         return;
       }
 
-      final booking = RideBookingModel(
+      final RideBookingModel booking = RideBookingModel(
         id: const Uuid().v4(),
         rideId: widget.ride.id,
         driverName: widget.ride.driverName,
@@ -708,7 +709,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
 
   Widget _buildCardsSection() {
     return BlocBuilder<CardBloc, CardState>(
-      builder: (context, state) {
+      builder: (BuildContext context, CardState state) {
         if (state is CardLoading) {
           return Container(
             height: 60,
@@ -737,13 +738,13 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
 
           if (_selectedCard == null) {
             _selectedCard = state.cards.firstWhere(
-                  (card) => card.isDefault,
+                  (CardModel card) => card.isDefault,
               orElse: () => state.cards.first,
             );
           }
 
           return Column(
-            children: [
+            children: <Widget>[
               _buildAccountItem(
                 context: context,
                 card: _selectedCard!,
@@ -752,7 +753,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
                   _showCardSelectionBottomSheet(context, state.cards);
                 },
               ),
-              if (_selectedCard != null) ...[
+              if (_selectedCard != null) ...<Widget>[
                 const SizedBox(height: 8),
                 const Text(
                   'Tap to change card',
@@ -776,7 +777,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: <Widget>[
                   const Text(
                     'Error loading cards',
                     style: TextStyle(color: Colors.red, fontSize: 12),
@@ -816,7 +817,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -831,7 +832,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
             height: 24,
             width: 40,
             color: isDark ? Colors.white : Colors.black,
-            errorBuilder: (context, error, stackTrace) {
+            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
               return Image.asset(
                 'assets/icons/mastercard.png',
                 height: 24,
@@ -859,7 +860,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
           ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
-            children: [
+            children: <Widget>[
               if (isSelected)
                 const Icon(
                   Icons.check_circle,
@@ -883,7 +884,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) {
+      builder: (BuildContext context) {
         final ThemeData theme = Theme.of(context);
         final bool isDark = theme.brightness == Brightness.dark;
 
@@ -891,7 +892,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
           decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor,
             borderRadius: BorderRadius.circular(5.r),
-            boxShadow: [
+            boxShadow: <BoxShadow>[
               BoxShadow(
                 color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                 blurRadius: 5,
@@ -904,7 +905,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Text(
                   'Select Card',
                   style: theme.textTheme.titleLarge?.copyWith(
@@ -913,7 +914,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
                   ),
                 ),
                 const SizedBox(height: 16),
-                ...cards.map((card) => Padding(
+                ...cards.map((CardModel card) => Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: _buildAccountItem(
                     context: context,

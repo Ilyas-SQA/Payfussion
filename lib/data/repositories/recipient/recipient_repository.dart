@@ -47,7 +47,7 @@ class RecipientRepositoryFB {
   /// Get banks from Firebase with auto-initialization
   Future<List<Bank>> getBanks() async {
     try {
-      final querySnapshot = await _firestore
+      final QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
           .collection(_banksCol)
           .orderBy('name')
           .get();
@@ -59,8 +59,8 @@ class RecipientRepositoryFB {
       }
 
       // Convert Firestore documents to Bank objects with all fields
-      return querySnapshot.docs.map((doc) {
-        final data = doc.data();
+      return querySnapshot.docs.map((QueryDocumentSnapshot<Map<String, dynamic>> doc) {
+        final Map<String, dynamic> data = doc.data();
         return Bank(
           id: doc.id,
           name: data['name'] ?? '',
@@ -82,11 +82,11 @@ class RecipientRepositoryFB {
   /// Initialize Firestore with default banks
   Future<void> _initializeDefaultBanks() async {
     try {
-      final batch = _firestore.batch();
+      final WriteBatch batch = _firestore.batch();
 
-      for (final bank in defaultBanks) {
-        final docRef = _firestore.collection(_banksCol).doc();
-        batch.set(docRef, {
+      for (final Bank bank in defaultBanks) {
+        final DocumentReference<Map<String, dynamic>> docRef = _firestore.collection(_banksCol).doc();
+        batch.set(docRef, <String, Object>{
           'name': bank.name,
           'createdAt': FieldValue.serverTimestamp(),
           'isDefault': true,
@@ -104,7 +104,7 @@ class RecipientRepositoryFB {
   Future<Bank> addNewBank(String bankName) async {
     try {
       // Check if bank already exists
-      final existingQuery = await _firestore
+      final QuerySnapshot<Map<String, dynamic>> existingQuery = await _firestore
           .collection(_banksCol)
           .where('name', isEqualTo: bankName.trim())
           .limit(1)
@@ -115,8 +115,8 @@ class RecipientRepositoryFB {
       }
 
       // Add new bank
-      final docRef = _firestore.collection(_banksCol).doc();
-      await docRef.set({
+      final DocumentReference<Map<String, dynamic>> docRef = _firestore.collection(_banksCol).doc();
+      await docRef.set(<String, dynamic>{
         'name': bankName.trim(),
         'createdAt': FieldValue.serverTimestamp(),
         'isDefault': false,
@@ -138,9 +138,9 @@ class RecipientRepositoryFB {
         .collection(_banksCol)
         .orderBy('name')
         .snapshots()
-        .map((snapshot) {
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
+        .map((QuerySnapshot<Map<String, dynamic>> snapshot) {
+      return snapshot.docs.map((QueryDocumentSnapshot<Map<String, dynamic>> doc) {
+        final Map<String, dynamic> data = doc.data();
         return Bank(
           id: doc.id,
           name: data['name'] ?? '',
@@ -167,7 +167,7 @@ class RecipientRepositoryFB {
   /// Update bank name (optional - for admin functionality)
   Future<void> updateBank(String bankId, String newName) async {
     try {
-      await _firestore.collection(_banksCol).doc(bankId).update({
+      await _firestore.collection(_banksCol).doc(bankId).update(<Object, Object?>{
         'name': newName.trim(),
         'updatedAt': FieldValue.serverTimestamp(),
       });
@@ -183,7 +183,7 @@ class RecipientRepositoryFB {
     required String bankName,
     required String accountNumber,
   }) async {
-    final qs = await _firestore
+    final QuerySnapshot<Map<String, dynamic>> qs = await _firestore
         .collection(_usersCol)
         .doc(userId)
         .collection(_userListCol)
@@ -197,7 +197,7 @@ class RecipientRepositoryFB {
   Future<Bank> addNewBankWithDetails(Map<String, String> bankData) async {
     try {
       // Check if bank already exists
-      final existingQuery = await _firestore
+      final QuerySnapshot<Map<String, dynamic>> existingQuery = await _firestore
           .collection(_banksCol)
           .where('name', isEqualTo: bankData['name']!.trim())
           .limit(1)
@@ -208,8 +208,8 @@ class RecipientRepositoryFB {
       }
 
       // Add new bank with all details
-      final docRef = _firestore.collection(_banksCol).doc();
-      await docRef.set({
+      final DocumentReference<Map<String, dynamic>> docRef = _firestore.collection(_banksCol).doc();
+      await docRef.set(<String, dynamic>{
         'name': bankData['name']!.trim(),
         'code': bankData['code']?.trim() ?? '',
         'branchName': bankData['branchName']?.trim() ?? '',
@@ -242,7 +242,7 @@ class RecipientRepositoryFB {
   /// Simulated verification: exactly 16 digits
   Future<bool> verifyAccountNumber(String accountNumber) async {
     await Future.delayed(const Duration(milliseconds: 800));
-    final digitsOnly = int.tryParse(accountNumber);
+    final int? digitsOnly = int.tryParse(accountNumber);
     return accountNumber.length == 16 && digitsOnly != null;
   }
 
@@ -251,7 +251,7 @@ class RecipientRepositoryFB {
     required String recipientId,
     required File file,
   }) async {
-    final ref = _storage.ref().child('users/$userId/recipients/$recipientId.jpg');
+    final Reference ref = _storage.ref().child('users/$userId/recipients/$recipientId.jpg');
     await ref.putFile(file);
     return ref.getDownloadURL();
   }
@@ -264,7 +264,7 @@ class RecipientRepositoryFB {
     required String accountNumber,
     File? imageFile,
   }) async {
-    final docRef = _firestore
+    final DocumentReference<Map<String, dynamic>> docRef = _firestore
         .collection(_usersCol)
         .doc(userId)
         .collection(_userListCol)
@@ -279,7 +279,7 @@ class RecipientRepositoryFB {
       );
     }
 
-    final recipient = RecipientModel(
+    final RecipientModel recipient = RecipientModel(
       id: docRef.id,
       name: name,
       imageUrl: imageUrl,
@@ -287,7 +287,7 @@ class RecipientRepositoryFB {
       institutionName: bankName,
     );
 
-    final data = _safeMap(recipient);
+    final Map<String, dynamic> data = _safeMap(recipient);
     await docRef.set(data);
     return recipient;
   }
@@ -300,8 +300,8 @@ class RecipientRepositoryFB {
         .collection(_userListCol)
         .orderBy('name')
         .snapshots()
-        .map((qs) => qs.docs.map((d) {
-      final m = d.data();
+        .map((QuerySnapshot<Map<String, dynamic>> qs) => qs.docs.map((QueryDocumentSnapshot<Map<String, dynamic>> d) {
+      final Map<String, dynamic> m = d.data();
       return RecipientModel(
         id: (m['id'] ?? d.id).toString(),
         name: (m['name'] ?? '').toString(),
@@ -320,20 +320,20 @@ class RecipientRepositoryFB {
     String? accountNumber,
     File? newImageFile,
   }) async {
-    final docRef = _firestore
+    final DocumentReference<Map<String, dynamic>> docRef = _firestore
         .collection(_usersCol)
         .doc(userId)
         .collection(_userListCol)
         .doc(recipientId);
 
-    final Map<String, dynamic> patch = {};
+    final Map<String, dynamic> patch = <String, dynamic>{};
 
     if (name != null) patch['name'] = name;
     if (bankName != null) patch['institutionName'] = bankName;
     if (accountNumber != null) patch['accountNumber'] = accountNumber;
 
     if (newImageFile != null) {
-      final imageUrl = await _uploadImage(
+      final String imageUrl = await _uploadImage(
         userId: userId,
         recipientId: recipientId,
         file: newImageFile,
@@ -350,7 +350,7 @@ class RecipientRepositoryFB {
     required String userId,
     required String recipientId,
   }) async {
-    final docRef = _firestore
+    final DocumentReference<Map<String, dynamic>> docRef = _firestore
         .collection(_usersCol)
         .doc(userId)
         .collection(_userListCol)
@@ -368,7 +368,7 @@ class RecipientRepositoryFB {
       final dyn = (r as dynamic);
       if (dyn.toMap != null) return Map<String, dynamic>.from(dyn.toMap());
     } catch (_) {}
-    return {
+    return <String, dynamic>{
       'id': r.id,
       'name': r.name,
       'imageUrl': r.imageUrl,

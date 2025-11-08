@@ -4,6 +4,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
+import '../../../core/constants/fonts.dart';
 import '../../../core/constants/routes_name.dart';
 import '../../widgets/background_theme.dart';
 
@@ -25,8 +26,8 @@ class _MoviesScreenState extends State<MoviesScreen>
   late Animation<Offset> _headerSlide;
   late Animation<double> _listFade;
 
-  final List<Map<String, dynamic>> streamingServices = [
-    {
+  final List<Map<String, dynamic>> streamingServices = <Map<String, dynamic>>[
+    <String, dynamic>{
       "name": "Netflix",
       "description": "The world's leading streaming service",
       "icon": Icons.play_circle_filled,
@@ -35,7 +36,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "monthlyPrice": "\$15.49/month",
       "content": "Movies, Series, Documentaries",
     },
-    {
+    <String, dynamic>{
       "name": "Amazon Prime Video",
       "description": "Stream with Prime membership",
       "icon": Icons.shopping_cart,
@@ -44,7 +45,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "monthlyPrice": "\$14.98/month",
       "content": "Movies, Series, Prime Originals",
     },
-    {
+    <String, dynamic>{
       "name": "Disney+",
       "description": "The streaming home of Disney",
       "icon": Icons.castle,
@@ -53,7 +54,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "monthlyPrice": "\$7.99/month",
       "content": "Disney, Marvel, Star Wars",
     },
-    {
+    <String, dynamic>{
       "name": "Hulu",
       "description": "Stream current TV and classic hits",
       "icon": Icons.tv,
@@ -62,7 +63,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "monthlyPrice": "\$7.99/month",
       "content": "Current TV, Hulu Originals",
     },
-    {
+    <String, dynamic>{
       "name": "HBO Max",
       "description": "Where HBO meets so much more",
       "icon": Icons.theaters,
@@ -71,7 +72,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "monthlyPrice": "\$15.99/month",
       "content": "HBO, Movies, Max Originals",
     },
-    {
+    <String, dynamic>{
       "name": "Apple TV+",
       "description": "Apple's streaming service",
       "icon": Icons.apple,
@@ -80,7 +81,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "monthlyPrice": "\$6.99/month",
       "content": "Apple TV+ Originals",
     },
-    {
+    <String, dynamic>{
       "name": "Peacock",
       "description": "NBCUniversal's streaming service",
       "icon": Icons.pets,
@@ -89,7 +90,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "monthlyPrice": "\$5.99/month",
       "content": "NBC Shows, Movies, Sports",
     },
-    {
+    <String, dynamic>{
       "name": "Paramount+",
       "description": "A mountain of entertainment",
       "icon": Icons.landscape,
@@ -98,7 +99,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "monthlyPrice": "\$5.99/month",
       "content": "CBS, Paramount, Comedy Central",
     },
-    {
+    <String, dynamic>{
       "name": "YouTube Premium",
       "description": "Ad-free YouTube with extras",
       "icon": Icons.play_arrow,
@@ -107,7 +108,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "monthlyPrice": "\$11.99/month",
       "content": "Ad-free, Music, Originals",
     },
-    {
+    <String, dynamic>{
       "name": "Sling TV",
       "description": "Live TV streaming service",
       "icon": Icons.live_tv,
@@ -116,7 +117,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "monthlyPrice": "\$40/month",
       "content": "Live TV Channels",
     },
-    {
+    <String, dynamic>{
       "name": "ESPN+",
       "description": "The ultimate sports streaming",
       "icon": Icons.sports_football,
@@ -125,7 +126,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "monthlyPrice": "\$9.99/month",
       "content": "Live Sports, Documentaries",
     },
-    {
+    <String, dynamic>{
       "name": "Showtime",
       "description": "Premium entertainment network",
       "icon": Icons.star,
@@ -134,7 +135,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "monthlyPrice": "\$10.99/month",
       "content": "Showtime Series & Movies",
     },
-    {
+    <String, dynamic>{
       "name": "Starz",
       "description": "Premium movies and series",
       "icon": Icons.auto_awesome,
@@ -143,7 +144,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "monthlyPrice": "\$9.99/month",
       "content": "Premium Movies & Series",
     },
-    {
+    <String, dynamic>{
       "name": "Discovery+",
       "description": "Real life entertainment",
       "icon": Icons.explore,
@@ -152,7 +153,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       "monthlyPrice": "\$4.99/month",
       "content": "Discovery, HGTV, Food Network",
     },
-    {
+    <String, dynamic>{
       "name": "Crunchyroll",
       "description": "The ultimate anime experience",
       "icon": Icons.animation,
@@ -241,7 +242,7 @@ class _MoviesScreenState extends State<MoviesScreen>
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -249,13 +250,13 @@ class _MoviesScreenState extends State<MoviesScreen>
             opacity: _listFade,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 // Header Section
                 Padding(
                   padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(
                         "Manage Your",
                         style: theme.textTheme.headlineMedium?.copyWith(
@@ -307,7 +308,7 @@ class _MoviesScreenState extends State<MoviesScreen>
       child: ListView.builder(
         physics: const BouncingScrollPhysics(),
         itemCount: streamingServices.length,
-        itemBuilder: (context, index) {
+        itemBuilder: (BuildContext context, int index) {
           return AnimationConfiguration.staggeredList(
             position: index,
             duration: const Duration(milliseconds: 400),
@@ -334,7 +335,7 @@ class _MoviesScreenState extends State<MoviesScreen>
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -346,7 +347,7 @@ class _MoviesScreenState extends State<MoviesScreen>
           onTap: () {
             context.push(
               RouteNames.payBillsDetailView,
-              extra: {
+              extra: <String, dynamic>{
                 'billType': "movies",
                 'companyName': service['name'],
                 'category': service['category'],
@@ -359,7 +360,7 @@ class _MoviesScreenState extends State<MoviesScreen>
           child: Padding(
             padding: EdgeInsets.all(20.w),
             child: Row(
-              children: [
+              children: <Widget>[
                 // Icon Container
                 Hero(
                   tag: 'movies_icon_${service['name']}',
@@ -376,10 +377,10 @@ class _MoviesScreenState extends State<MoviesScreen>
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       // Service name and price
                       Row(
-                        children: [
+                        children: <Widget>[
                           Expanded(
                             child: Text(
                               service['name'] as String,
@@ -423,7 +424,7 @@ class _MoviesScreenState extends State<MoviesScreen>
 
                       // Category and content info
                       Row(
-                        children: [
+                        children: <Widget>[
                           Icon(
                             Icons.category,
                             size: 14.sp,
@@ -432,7 +433,7 @@ class _MoviesScreenState extends State<MoviesScreen>
                           Expanded(
                             child: Text(
                               "${service['category']} • ${service['content']}",
-                              style: const TextStyle(
+                              style: Font.montserratFont(
                                 fontSize: 10,
                               ),
                             ),

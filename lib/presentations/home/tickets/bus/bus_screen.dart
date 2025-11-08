@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/data/models/tickets/bus_model.dart';
 import '../../../../logic/blocs/tickets/bus/bus_bloc.dart';
 import '../../../../logic/blocs/tickets/bus/bus_event.dart';
 import '../../../../logic/blocs/tickets/bus/bus_state.dart';
@@ -55,17 +56,17 @@ class _BusListScreenState extends State<BusListScreen> with TickerProviderStateM
           tween: Tween<double>(begin: 0.0, end: 1.0),
           duration: const Duration(milliseconds: 800),
           curve: Curves.easeOutBack,
-          builder: (context, value, child) {
+          builder: (BuildContext context, double value, Widget? child) {
             return Transform.scale(
               scale: value,
               child: const Text("US Bus Services"),
             );
           },
         ),
-        actions: [
+        actions: <Widget>[
           AnimatedBuilder(
             animation: _refreshRotation,
-            builder: (context, child) {
+            builder: (BuildContext context, Widget? child) {
               return Transform.rotate(
                 angle: _refreshRotation.value * 2 * 3.14159,
                 child: IconButton(
@@ -84,7 +85,7 @@ class _BusListScreenState extends State<BusListScreen> with TickerProviderStateM
         iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -94,11 +95,11 @@ class _BusListScreenState extends State<BusListScreen> with TickerProviderStateM
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                    children: <Widget>[
                       TweenAnimationBuilder<double>(
                         tween: Tween<double>(begin: 0.0, end: 1.0),
                         duration: const Duration(milliseconds: 600),
-                        builder: (context, value, child) {
+                        builder: (BuildContext context, double value, Widget? child) {
                           return Transform.scale(
                             scale: value,
                             child: const CircularProgressIndicator(),
@@ -109,7 +110,7 @@ class _BusListScreenState extends State<BusListScreen> with TickerProviderStateM
                       TweenAnimationBuilder<double>(
                         tween: Tween<double>(begin: 0.0, end: 1.0),
                         duration: const Duration(milliseconds: 800),
-                        builder: (context, value, child) {
+                        builder: (BuildContext context, double value, Widget? child) {
                           return Opacity(
                             opacity: value,
                             child: const Text(
@@ -132,13 +133,13 @@ class _BusListScreenState extends State<BusListScreen> with TickerProviderStateM
                   tween: Tween<double>(begin: 0.0, end: 1.0),
                   duration: const Duration(milliseconds: 600),
                   curve: Curves.elasticOut,
-                  builder: (context, value, child) {
+                  builder: (BuildContext context, double value, Widget? child) {
                     return Transform.scale(
                       scale: value,
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
+                          children: <Widget>[
                             Icon(Icons.error, size: 64, color: Colors.red.shade400),
                             const SizedBox(height: 16),
                             Text(state.message, textAlign: TextAlign.center),
@@ -164,10 +165,10 @@ class _BusListScreenState extends State<BusListScreen> with TickerProviderStateM
                 return AnimatedList(
                   padding: const EdgeInsets.all(8),
                   initialItemCount: state.buses.length,
-                  itemBuilder: (context, index, animation) {
+                  itemBuilder: (BuildContext context, int index, Animation<double> animation) {
                     if (index >= state.buses.length) return const SizedBox.shrink();
 
-                    final bus = state.buses[index];
+                    final BusModel bus = state.buses[index];
                     return SlideTransition(
                       position: Tween<Offset>(
                         begin: const Offset(1.0, 0.0),
@@ -184,7 +185,7 @@ class _BusListScreenState extends State<BusListScreen> with TickerProviderStateM
                           decoration: BoxDecoration(
                             color: Theme.of(context).scaffoldBackgroundColor,
                             borderRadius: BorderRadius.circular(5.r),
-                            boxShadow: [
+                            boxShadow: <BoxShadow>[
                               BoxShadow(
                                 color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                                 blurRadius: 5,
@@ -205,7 +206,7 @@ class _BusListScreenState extends State<BusListScreen> with TickerProviderStateM
                                       return BusDetailScreen(bus: bus);
                                     },
                                     transitionDuration: const Duration(milliseconds: 400),
-                                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                    transitionsBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
                                       return SlideTransition(
                                         position: Tween<Offset>(
                                           begin: const Offset(1.0, 0.0),
@@ -227,7 +228,7 @@ class _BusListScreenState extends State<BusListScreen> with TickerProviderStateM
                                 duration: const Duration(milliseconds: 200),
                                 padding: const EdgeInsets.all(16),
                                 child: Row(
-                                  children: [
+                                  children: <Widget>[
                                     TweenAnimationBuilder<double>(
                                       tween: Tween<double>(begin: 0.0, end: 1.0),
                                       duration: Duration(milliseconds: 600 + (index * 100)),
@@ -247,7 +248,7 @@ class _BusListScreenState extends State<BusListScreen> with TickerProviderStateM
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
+                                        children: <Widget>[
                                           AnimatedDefaultTextStyle(
                                             duration: const Duration(milliseconds: 300),
                                             style: TextStyle(
@@ -266,7 +267,7 @@ class _BusListScreenState extends State<BusListScreen> with TickerProviderStateM
                                             ),
                                             child: Text(bus.route),
                                           ),
-                                          if (bus.via.isNotEmpty) ...[
+                                          if (bus.via.isNotEmpty) ...<Widget>[
                                             const SizedBox(height: 2),
                                             AnimatedOpacity(
                                               duration: const Duration(milliseconds: 400),
@@ -282,7 +283,7 @@ class _BusListScreenState extends State<BusListScreen> with TickerProviderStateM
                                           ],
                                           const SizedBox(height: 4),
                                           Row(
-                                            children: [
+                                            children: <Widget>[
                                               const Icon(
                                                 Icons.access_time,
                                                 size: 16,
@@ -303,7 +304,7 @@ class _BusListScreenState extends State<BusListScreen> with TickerProviderStateM
                                                 decoration: BoxDecoration(
                                                   color: Theme.of(context).scaffoldBackgroundColor,
                                                   borderRadius: BorderRadius.circular(5.r),
-                                                  boxShadow: [
+                                                  boxShadow: <BoxShadow>[
                                                     BoxShadow(
                                                       color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                                                       blurRadius: 5,
@@ -328,12 +329,12 @@ class _BusListScreenState extends State<BusListScreen> with TickerProviderStateM
                                       tween: Tween<double>(begin: 0.0, end: 1.0),
                                       duration: Duration(milliseconds: 800 + (index * 100)),
                                       curve: Curves.bounceOut,
-                                      builder: (context, value, child) {
+                                      builder: (BuildContext context, double value, Widget? child) {
                                         return Transform.scale(
                                           scale: value,
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.end,
-                                            children: [
+                                            children: <Widget>[
                                               Text(
                                                 "\$${bus.approxCostUSD.toStringAsFixed(0)}",
                                                 style: TextStyle(
@@ -370,7 +371,7 @@ class _BusListScreenState extends State<BusListScreen> with TickerProviderStateM
               return TweenAnimationBuilder<double>(
                 tween: Tween<double>(begin: 0.0, end: 1.0),
                 duration: const Duration(milliseconds: 600),
-                builder: (context, value, child) {
+                builder: (BuildContext context, double value, Widget? child) {
                   return Opacity(
                     opacity: value,
                     child: const Center(child: Text('No buses available')),

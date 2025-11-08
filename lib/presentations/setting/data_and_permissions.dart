@@ -17,7 +17,7 @@ class DataAndPermissionsScreen extends StatefulWidget {
 
 class _DataAndPermissionsScreenState extends State<DataAndPermissionsScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  Map<Permission, PermissionStatus> _permissionStatus = {};
+  Map<Permission, PermissionStatus> _permissionStatus = <Permission, PermissionStatus>{};
 
   @override
   void initState() {
@@ -35,7 +35,7 @@ class _DataAndPermissionsScreenState extends State<DataAndPermissionsScreen> wit
   }
 
   Future<void> _initPermissions() async {
-    final permissions = PermissionUtils.allPermissions;
+    final List<Permission> permissions = PermissionUtils.allPermissions;
     await _updatePermissionStatus(permissions);
   }
 
@@ -44,8 +44,8 @@ class _DataAndPermissionsScreenState extends State<DataAndPermissionsScreen> wit
   }
 
   Future<void> _updatePermissionStatus(List<Permission> permissions) async {
-    final Map<Permission, PermissionStatus> statuses = {};
-    for (var permission in permissions) {
+    final Map<Permission, PermissionStatus> statuses = <Permission, PermissionStatus>{};
+    for (Permission permission in permissions) {
       statuses[permission] = await permission.status;
     }
 
@@ -76,7 +76,7 @@ class _DataAndPermissionsScreenState extends State<DataAndPermissionsScreen> wit
           labelColor: Theme.of(context).secondaryHeaderColor,
           isScrollable: true,
           indicatorSize: TabBarIndicatorSize.tab,
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           indicator: BoxDecoration(
             color: MyTheme.primaryColor,
             borderRadius: BorderRadius.circular(10)
@@ -111,7 +111,7 @@ class _DataAndPermissionsScreenState extends State<DataAndPermissionsScreen> wit
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
+        children: <Widget>[
           DataManagementTab(colors: colors),
           AppPermissionsTab(
             colors: colors,

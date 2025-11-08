@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/fonts.dart';
 import '../../../payment_strings.dart';
 import '../receive_money_payment_screen.dart';
 
@@ -27,7 +28,7 @@ class NoteInputWidget extends StatelessWidget {
       children: <Widget>[
         Text(
           ReceiveMoneyPaymentStrings.addNote,
-          style: TextStyle(
+          style: Font.montserratFont(
             fontSize: 16.sp,
             fontWeight: FontWeight.w600,
           ),
@@ -54,10 +55,10 @@ class NoteInputWidget extends StatelessWidget {
             minLines: 2,
             textCapitalization: TextCapitalization.sentences,
             onChanged: (String value) => provider.setNote(value),
-            style: TextStyle(fontSize: 16.sp, color: AppColors.textPrimary),
+            style: Font.montserratFont(fontSize: 16.sp, color: AppColors.textPrimary),
             decoration: InputDecoration(
               hintText: 'What\'s this payment for?',
-              hintStyle: TextStyle(
+              hintStyle: Font.montserratFont(
                 fontSize: 16.sp,
                 color: Colors.grey.withOpacity(0.6),
               ),
@@ -73,7 +74,7 @@ class NoteInputWidget extends StatelessWidget {
           alignment: Alignment.centerRight,
           child: Text(
             '${provider.note.length}/150',
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 12.sp,
               color: provider.note.length > 140
                   ? AppColors.warningOrange

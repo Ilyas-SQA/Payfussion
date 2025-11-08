@@ -69,7 +69,7 @@ class CalculatorWidget extends StatelessWidget {
               const SizedBox(height: 10.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: <Widget>[
                   IconButton(
                     icon: Icon(
                       Icons.history,
@@ -111,7 +111,7 @@ class CalculatorWidget extends StatelessWidget {
                 topLeft: Radius.circular(16.r),
                 topRight: Radius.circular(15.r),
               ),
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1),
                   blurRadius: 10,

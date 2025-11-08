@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nested/nested.dart';
 import 'package:payfussion/core/constants/image_url.dart';
 import 'package:payfussion/core/constants/routes_name.dart';
 import 'package:payfussion/presentations/widgets/custom_button.dart';
@@ -36,7 +37,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
 
   final TextEditingController _accountNumberController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // Animation Controllers
   late AnimationController _slideController;
@@ -117,7 +118,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
   Map<String, dynamic> _getInputConfig(String billType) {
     switch (billType.toLowerCase()) {
       case "mobile":
-        return {
+        return <String, dynamic>{
           'label': 'Mobile Number',
           'hint': 'Enter mobile number',
           'keyboardType': TextInputType.phone,
@@ -129,7 +130,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
           }
         };
       case "electricity":
-        return {
+        return <String, dynamic>{
           'label': 'Consumer Number',
           'hint': 'Enter consumer number',
           'keyboardType': TextInputType.text,
@@ -141,7 +142,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
           }
         };
       case "gas":
-        return {
+        return <String, dynamic>{
           'label': 'Consumer Number',
           'hint': 'Enter gas consumer number',
           'keyboardType': TextInputType.text,
@@ -153,7 +154,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
           }
         };
       case "movies":
-        return {
+        return <String, dynamic>{
           'label': 'Email Address',
           'hint': 'Enter email address',
           'keyboardType': TextInputType.emailAddress,
@@ -165,7 +166,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
           }
         };
       case "dth":
-        return {
+        return <String, dynamic>{
           'label': 'Customer ID',
           'hint': 'Enter DTH customer ID',
           'keyboardType': TextInputType.number,
@@ -177,7 +178,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
           }
         };
       case "postpaid":
-        return {
+        return <String, dynamic>{
           'label': 'Mobile Number',
           'hint': 'Enter postpaid mobile number',
           'keyboardType': TextInputType.phone,
@@ -189,7 +190,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
           }
         };
       default:
-        return {
+        return <String, dynamic>{
           'label': 'Account Number',
           'hint': 'Enter account number',
           'keyboardType': TextInputType.text,
@@ -242,7 +243,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
       print('Bill ID: $billId');
 
       // Create PayBillModel with complete company information
-      final payBill = PayBillModel(
+      final PayBillModel payBill = PayBillModel(
         id: billId,
         companyName: _companyName, // Company name explicitly set from widget parameter
         companyIcon: _getCompanyIcon(),
@@ -302,9 +303,9 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
     return Scaffold(
       backgroundColor: isDark ? MyTheme.darkBackgroundColor : MyTheme.backgroundColor,
       body: MultiBlocListener(
-        listeners: [
+        listeners: <SingleChildWidget>[
           BlocListener<PayBillBloc, PayBillState>(
-              listener: (context, state) {
+              listener: (BuildContext context, PayBillState state) {
                 if (state is PayBillSuccess) {
                   ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(state.message), backgroundColor: Colors.green));
@@ -344,7 +345,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
           ),
         ],
         child: CustomScrollView(
-          slivers: [
+          slivers: <Widget>[
             // Enhanced App Bar with company branding
             SliverAppBar(
               expandedHeight: 200.h,
@@ -365,7 +366,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
+                      colors: <Color>[
                         _getBrandColor(),
                         _getBrandColor().withOpacity(0.8),
                       ],
@@ -409,7 +410,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
                     key: _formKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         // Header Info Card with company details
                         _buildInfoCard(isDark),
 
@@ -466,7 +467,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -476,7 +477,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
         ),
 
         child: Row(
-          children: [
+          children: <Widget>[
             Icon(
               Icons.info_outline,
               color: _getBrandColor(),
@@ -486,7 +487,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Text(
                     'Bill Payment for $_companyName', // Show actual company name
                     style: TextStyle(
@@ -515,9 +516,9 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
   Widget _buildSectionHeader(String title, IconData icon, bool isDark, bool isCard) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
+      children: <Widget>[
         Row(
-          children: [
+          children: <Widget>[
             Icon(
               icon,
               color: _getBrandColor(),
@@ -536,7 +537,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
         ),
         isCard ? TextButton.icon(
           label: Text("Add New Card", style: TextStyle(color: MyTheme.primaryColor, fontSize: 12.sp)),
-          icon: Icon(Icons.add, color: MyTheme.primaryColor),
+          icon: const Icon(Icons.add, color: MyTheme.primaryColor),
           onPressed: () {
             PaymentService().saveCard(context);
           },
@@ -557,8 +558,8 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
       child: FadeTransition(
         opacity: _fadeAnimation,
         child: Builder(
-          builder: (context) {
-            final config = _getInputConfig(_billType);
+          builder: (BuildContext context) {
+            final Map<String, dynamic> config = _getInputConfig(_billType);
             return _buildInputField(
               controller: _accountNumberController,
               label: config['label'],
@@ -590,7 +591,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
           decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor,
             borderRadius: BorderRadius.circular(5.r),
-            boxShadow: [
+            boxShadow: <BoxShadow>[
               BoxShadow(
                 color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                 blurRadius: 5,
@@ -599,7 +600,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
             ],
           ),
           child: Column(
-            children: [
+            children: <Widget>[
               Text(
                 'Enter Amount for $_companyName', // Show company name in amount section
                 style: TextStyle(
@@ -611,7 +612,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
               SizedBox(height: 8.h),
               TextFormField(
                 controller: _amountController,
-                validator: (value) {
+                validator: (String? value) {
                   if (value == null || value.isEmpty) return 'Please enter Amount';
                   final double? amount = double.tryParse(value);
                   if (amount == null || amount <= 0) return 'Please enter a valid amount';
@@ -676,10 +677,10 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
         ),
         validator: validator,
         inputFormatters: keyboardType == TextInputType.phone
-            ? [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(11)]
+            ? <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(11)]
             : keyboardType == TextInputType.number
-            ? [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(12)]
-            : [],
+            ? <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(12)]
+            : <TextInputFormatter>[],
         decoration: InputDecoration(
           contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
           labelText: label,
@@ -711,7 +712,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
             builder: (BuildContext context, TextEditingValue value, Widget? child) {
               if (value.text.isEmpty) return const SizedBox();
               if (keyboardType == TextInputType.emailAddress) {
-                bool isValid = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}'
+                final bool isValid = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}'
                 ).hasMatch(value.text);
                 return Icon(
                   isValid ? Icons.check_circle : Icons.error_outline,
@@ -752,7 +753,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
 
   Widget _buildCardsSection() {
     return BlocBuilder<CardBloc, CardState>(
-      builder: (context, state) {
+      builder: (BuildContext context, CardState state) {
         if (state is CardLoading) {
           return Container(
             height: 80.h,
@@ -781,12 +782,12 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
           }
           if (_selectedCard == null) {
             _selectedCard = state.cards.firstWhere(
-                  (card) => card.isDefault,
+                  (CardModel card) => card.isDefault,
               orElse: () => state.cards.first,
             );
           }
           return Column(
-            children: [
+            children: <Widget>[
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
                 child: _buildAccountItem(
@@ -796,7 +797,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
                   onTap: () => _showCardSelectionBottomSheet(context, state.cards),
                 ),
               ),
-              if (_selectedCard != null) ...[
+              if (_selectedCard != null) ...<Widget>[
                 8.verticalSpace,
                 FadeTransition(
                   opacity: _fadeAnimation,
@@ -823,7 +824,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) {
+      builder: (BuildContext context) {
         final ThemeData theme = Theme.of(context);
         final bool isDark = theme.brightness == Brightness.dark;
         return Container(
@@ -836,7 +837,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 // Handle
                 Center(
                   child: Container(
@@ -857,8 +858,8 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
                   ),
                 ),
                 20.verticalSpace,
-                ...cards.asMap().entries.map((entry) {
-                  CardModel card = entry.value;
+                ...cards.asMap().entries.map((MapEntry<int, CardModel> entry) {
+                  final CardModel card = entry.value;
                   return Padding(
                     padding: EdgeInsets.only(bottom: 12.h),
                     child: _buildAccountItem(
@@ -892,13 +893,13 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
 
   Widget _buildBottomNav({required bool isDark}) {
     return BlocBuilder<PayBillBloc, PayBillState>(
-      builder: (context, state) {
+      builder: (BuildContext context, PayBillState state) {
         if (state is PayBillProcessing) {
           return Container(
             padding: EdgeInsets.all(24.w),
             decoration: BoxDecoration(
               color: isDark ? MyTheme.darkBackgroundColor : Colors.white,
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1),
                   blurRadius: 10,
@@ -915,8 +916,8 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
               child: Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(
+                  children: <Widget>[
+                    const CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                     SizedBox(width: 16.w),
@@ -943,7 +944,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
             padding: EdgeInsets.all(24.w),
             decoration: BoxDecoration(
               color: isDark ? MyTheme.darkBackgroundColor : Colors.white,
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1),
                   blurRadius: 10,
@@ -972,7 +973,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
         padding: EdgeInsets.all(24.w),
         decoration: BoxDecoration(
           color: isDark ? MyTheme.darkBackgroundColor : Colors.white,
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
               blurRadius: 10,
@@ -982,7 +983,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
+          children: <Widget>[
             TextButton(
               onPressed: () {
                 setState(() {
@@ -1027,7 +1028,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
   Widget _buildFingerPrint({required bool isDark}) {
     return AnimatedBuilder(
       animation: _fingerprintFadeAnimation,
-      builder: (context, child) {
+      builder: (BuildContext context, Widget? child) {
         return Opacity(
           opacity: _fingerprintFadeAnimation.value,
           child: Transform.translate(
@@ -1043,7 +1044,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
                 ),
               ),
               child: Column(
-                children: [
+                children: <Widget>[
                   Icon(
                     Icons.fingerprint,
                     size: 40.sp,
@@ -1071,7 +1072,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
                   24.verticalSpace,
                   AnimatedBuilder(
                     animation: _pulseAnimation,
-                    builder: (context, child) {
+                    builder: (BuildContext context, Widget? child) {
                       return Transform.scale(
                         scale: _pulseAnimation.value,
                         child: GestureDetector(
@@ -1124,7 +1125,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -1134,7 +1135,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
         ),
 
         child: Row(
-          children: [
+          children: <Widget>[
             Image.asset(
               card.brandIconPath,
               height: 30.h,
@@ -1145,7 +1146,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Text(
                     card.cardEnding,
                     style: TextStyle(

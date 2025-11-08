@@ -6,7 +6,7 @@ abstract class InsurancePaymentState extends Equatable {
   const InsurancePaymentState();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class InsurancePaymentInitial extends InsurancePaymentState {
@@ -23,7 +23,7 @@ class InsurancePaymentLoaded extends InsurancePaymentState {
   const InsurancePaymentLoaded(this.payments);
 
   @override
-  List<Object> get props => [payments];
+  List<Object> get props => <Object>[payments];
 }
 
 class InsurancePaymentProcessing extends InsurancePaymentState {
@@ -32,7 +32,7 @@ class InsurancePaymentProcessing extends InsurancePaymentState {
   const InsurancePaymentProcessing([this.message = 'Processing payment...']);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class InsurancePaymentSuccess extends InsurancePaymentState {
@@ -42,7 +42,7 @@ class InsurancePaymentSuccess extends InsurancePaymentState {
   const InsurancePaymentSuccess(this.message, [this.payment]);
 
   @override
-  List<Object?> get props => [message, payment];
+  List<Object?> get props => <Object?>[message, payment];
 }
 
 class InsurancePaymentProcessSuccess extends InsurancePaymentState {
@@ -52,7 +52,7 @@ class InsurancePaymentProcessSuccess extends InsurancePaymentState {
   const InsurancePaymentProcessSuccess(this.payment, [this.message = 'Payment processed successfully']);
 
   @override
-  List<Object> get props => [payment, message];
+  List<Object> get props => <Object>[payment, message];
 }
 
 class InsurancePaymentError extends InsurancePaymentState {
@@ -61,7 +61,7 @@ class InsurancePaymentError extends InsurancePaymentState {
   const InsurancePaymentError(this.error);
 
   @override
-  List<Object> get props => [error];
+  List<Object> get props => <Object>[error];
 }
 
 class InsurancePaymentProcessFailed extends InsurancePaymentState {
@@ -70,7 +70,7 @@ class InsurancePaymentProcessFailed extends InsurancePaymentState {
   const InsurancePaymentProcessFailed(this.error);
 
   @override
-  List<Object> get props => [error];
+  List<Object> get props => <Object>[error];
 }
 
 class InsurancePaymentDeleted extends InsurancePaymentState {
@@ -79,7 +79,7 @@ class InsurancePaymentDeleted extends InsurancePaymentState {
   const InsurancePaymentDeleted(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class InsurancePaymentFound extends InsurancePaymentState {
@@ -88,7 +88,7 @@ class InsurancePaymentFound extends InsurancePaymentState {
   const InsurancePaymentFound(this.payment);
 
   @override
-  List<Object> get props => [payment];
+  List<Object> get props => <Object>[payment];
 }
 
 class InsurancePaymentNotFound extends InsurancePaymentState {
@@ -97,7 +97,7 @@ class InsurancePaymentNotFound extends InsurancePaymentState {
   const InsurancePaymentNotFound(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class InsurancePaymentFiltered extends InsurancePaymentState {
@@ -107,7 +107,7 @@ class InsurancePaymentFiltered extends InsurancePaymentState {
   const InsurancePaymentFiltered(this.filteredPayments, this.filterCriteria);
 
   @override
-  List<Object> get props => [filteredPayments, filterCriteria];
+  List<Object> get props => <Object>[filteredPayments, filterCriteria];
 }
 
 class InsurancePaymentSorted extends InsurancePaymentState {
@@ -117,7 +117,7 @@ class InsurancePaymentSorted extends InsurancePaymentState {
   const InsurancePaymentSorted(this.sortedPayments, this.sortCriteria);
 
   @override
-  List<Object> get props => [sortedPayments, sortCriteria];
+  List<Object> get props => <Object>[sortedPayments, sortCriteria];
 }
 
 class InsurancePaymentSearchResults extends InsurancePaymentState {
@@ -127,7 +127,7 @@ class InsurancePaymentSearchResults extends InsurancePaymentState {
   const InsurancePaymentSearchResults(this.searchResults, this.query);
 
   @override
-  List<Object> get props => [searchResults, query];
+  List<Object> get props => <Object>[searchResults, query];
 }
 
 class InsurancePaymentSummary extends InsurancePaymentState {
@@ -148,7 +148,7 @@ class InsurancePaymentSummary extends InsurancePaymentState {
   });
 
   @override
-  List<Object> get props => [
+  List<Object> get props => <Object>[
     totalPaid,
     totalFees,
     totalTransactions,
@@ -164,7 +164,7 @@ class InsurancePaymentEmpty extends InsurancePaymentState {
   const InsurancePaymentEmpty([this.message = 'No insurance payments found']);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class InsurancePaymentOffline extends InsurancePaymentState {
@@ -173,7 +173,7 @@ class InsurancePaymentOffline extends InsurancePaymentState {
   const InsurancePaymentOffline([this.message = 'You are offline. Some features may not be available.']);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class InsurancePaymentUnauthorized extends InsurancePaymentState {
@@ -182,5 +182,5 @@ class InsurancePaymentUnauthorized extends InsurancePaymentState {
   const InsurancePaymentUnauthorized([this.message = 'Unauthorized access. Please login again.']);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }

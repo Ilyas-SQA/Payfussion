@@ -57,7 +57,7 @@ class DeviceModel {
 
   /// Convert DeviceModel to Map for Firebase
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'deviceId': deviceId,
       'model': model,
       'os': os,

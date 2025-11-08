@@ -28,10 +28,10 @@ class MoviePaymentScreen extends StatefulWidget {
 }
 
 class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProviderStateMixin {
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   late AnimationController _backgroundAnimationController;
 
   DateTime _selectedDate = DateTime.now();
@@ -66,8 +66,8 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
 
   double get _seatUpgradeAmount {
     if (_selectedSeatType == 'Regular') return 0.0;
-    double basePrice = widget.movie.ticketPrice;
-    double seatMultiplier = _getSeatMultiplier(_selectedSeatType) - 1; // Subtract 1 to get only the upgrade cost
+    final double basePrice = widget.movie.ticketPrice;
+    final double seatMultiplier = _getSeatMultiplier(_selectedSeatType) - 1; // Subtract 1 to get only the upgrade cost
     return basePrice * seatMultiplier * _numberOfTickets;
   }
 
@@ -106,12 +106,12 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
         ),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
           BlocListener<MovieBookingBloc, MovieBookingState>(
-            listener: (context, state) {
+            listener: (BuildContext context, MovieBookingState state) {
               if (state is MovieBookingSuccess) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -119,7 +119,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
                     backgroundColor: Colors.green,
                   ),
                 );
-                Navigator.of(context).popUntil((route) => route.isFirst);
+                Navigator.of(context).popUntil((Route route) => route.isFirst);
               } else if (state is MovieBookingError) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -135,7 +135,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     _buildMovieSummary(),
                     const SizedBox(height: 16),
                     _buildShowtimeSelection(),
@@ -165,7 +165,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -175,7 +175,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           const Text(
             "Movie Summary",
             style: TextStyle(
@@ -191,11 +191,11 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
           Text("Cinema: ${widget.movie.cinemaChain}"),
           const SizedBox(height: 8),
           Row(
-            children: [
+            children: <Widget>[
               const Text("Date: "),
               TextButton(
                 onPressed: () async {
-                  final date = await showDatePicker(
+                  final DateTime? date = await showDatePicker(
                     context: context,
                     initialDate: _selectedDate,
                     firstDate: DateTime.now(),
@@ -225,7 +225,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -235,7 +235,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           const Text(
             "Select Showtime",
             style: TextStyle(
@@ -247,7 +247,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: widget.movie.showtimes.map((time) =>
+            children: widget.movie.showtimes.map((String time) =>
                 ChoiceChip(
                   label: Text(time, style: const TextStyle(fontSize: 14,color: Colors.black),),
                   selected: _selectedShowtime == time,
@@ -273,7 +273,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -284,7 +284,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           const Text(
             "Customer Details",
             style: TextStyle(
@@ -298,7 +298,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
             helpText: "Full Name",
             prefixIcon: const Icon(Icons.person,color: MyTheme.secondaryColor,),
             useGreenColor: true,
-            validator: (value) {
+            validator: (String? value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter your name';
               }
@@ -311,7 +311,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
             prefixIcon: const Icon(Icons.email,color: MyTheme.secondaryColor,),
             helpText: "Email",
             useGreenColor: true,
-            validator: (value) {
+            validator: (String? value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter email address';
               }
@@ -327,7 +327,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
             helpText: "Phone Number",
             prefixIcon: const Icon(Icons.phone,color: MyTheme.secondaryColor,),
             useGreenColor: true,
-            validator: (value) {
+            validator: (String? value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter phone number';
               }
@@ -345,7 +345,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -355,7 +355,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           const Text(
             "Ticket Options",
             style: TextStyle(
@@ -365,15 +365,15 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
           ),
           const SizedBox(height: 16),
           Row(
-            children: [
+            children: <Widget>[
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     const Text("Number of Tickets"),
                     const SizedBox(height: 8),
                     Row(
-                      children: [
+                      children: <Widget>[
                         IconButton(
                           onPressed: _numberOfTickets > 1
                               ? () {
@@ -406,11 +406,11 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     const Text("Seat Type"),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
-                      value: _selectedSeatType,
+                      initialValue: _selectedSeatType,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -429,11 +429,11 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
                         ),
                         focusColor: MyTheme.secondaryColor,
                       ),
-                      items: ['Regular', 'Recliner', 'Premium', 'IMAX'].map((type) => DropdownMenuItem(
+                      items: <String>['Regular', 'Recliner', 'Premium', 'IMAX'].map((String type) => DropdownMenuItem(
                         value: type,
                         child: Text(type),
                       )).toList(),
-                      onChanged: (value) {
+                      onChanged: (String? value) {
                         setState(() {
                           _selectedSeatType = value!;
                         });
@@ -455,7 +455,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -465,11 +465,11 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             spacing: 10,
-            children: [
+            children: <Widget>[
               const Text(
                 "Payment Method",
                 style: TextStyle(
@@ -503,7 +503,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -513,7 +513,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           const Text(
             "Price Breakdown",
             style: TextStyle(
@@ -524,16 +524,16 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+            children: <Widget>[
               Text("Tickets ($_numberOfTickets x \$${widget.movie.ticketPrice.toStringAsFixed(2)})"),
               Text("\$${_baseTicketPrice.toStringAsFixed(2)}"),
             ],
           ),
-          if (_selectedSeatType != 'Regular') ...[
+          if (_selectedSeatType != 'Regular') ...<Widget>[
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+              children: <Widget>[
                 Text("$_selectedSeatType Upgrade"),
                 Text("\$${_seatUpgradeAmount.toStringAsFixed(2)}"),
               ],
@@ -542,7 +542,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+            children: <Widget>[
               const Text("Subtotal"),
               Text("\$${_subtotal.toStringAsFixed(2)}"),
             ],
@@ -550,15 +550,15 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Ticket Tax (${Taxes.ticketFeeTax}%)"),
+            children: <Widget>[
+              const Text("Ticket Tax (${Taxes.ticketFeeTax}%)"),
               Text("\$${_ticketTax.toStringAsFixed(2)}"),
             ],
           ),
           const Divider(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+            children: <Widget>[
               const Text(
                 "Total Amount",
                 style: TextStyle(
@@ -586,7 +586,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
     return SizedBox(
       width: double.infinity,
       child: BlocBuilder<MovieBookingBloc, MovieBookingState>(
-        builder: (context, state) {
+        builder: (BuildContext context, MovieBookingState state) {
           return AppButton(
             text: "${state is MovieBookingLoading ? const SizedBox(
               height: 20,
@@ -641,7 +641,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
         return;
       }
 
-      final booking = MovieBookingModel(
+      final MovieBookingModel booking = MovieBookingModel(
         id: const Uuid().v4(),
         movieId: widget.movie.id,
         movieTitle: widget.movie.title,
@@ -667,7 +667,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
 
   Widget _buildCardsSection() {
     return BlocBuilder<CardBloc, CardState>(
-      builder: (context, state) {
+      builder: (BuildContext context, CardState state) {
         if (state is CardLoading) {
           return Container(
             height: 60,
@@ -696,13 +696,13 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
 
           if (_selectedCard == null) {
             _selectedCard = state.cards.firstWhere(
-                  (card) => card.isDefault,
+                  (CardModel card) => card.isDefault,
               orElse: () => state.cards.first,
             );
           }
 
           return Column(
-            children: [
+            children: <Widget>[
               _buildAccountItem(
                 context: context,
                 card: _selectedCard!,
@@ -711,7 +711,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
                   _showCardSelectionBottomSheet(context, state.cards);
                 },
               ),
-              if (_selectedCard != null) ...[
+              if (_selectedCard != null) ...<Widget>[
                 const SizedBox(height: 8),
                 const Text(
                   'Tap to change card',
@@ -735,7 +735,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: <Widget>[
                   const Text(
                     'Error loading cards',
                     style: TextStyle(color: Colors.red, fontSize: 12),
@@ -775,7 +775,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -790,7 +790,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
             height: 24,
             width: 40,
             color: isDark ? Colors.white : Colors.black,
-            errorBuilder: (context, error, stackTrace) {
+            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
               return Image.asset(
                 'assets/icons/mastercard.png',
                 height: 24,
@@ -818,7 +818,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
           ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
-            children: [
+            children: <Widget>[
               if (isSelected)
                 const Icon(
                   Icons.check_circle,
@@ -842,7 +842,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) {
+      builder: (BuildContext context) {
         final ThemeData theme = Theme.of(context);
         final bool isDark = theme.brightness == Brightness.dark;
 
@@ -850,7 +850,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
           decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor,
             borderRadius: BorderRadius.circular(5.r),
-            boxShadow: [
+            boxShadow: <BoxShadow>[
               BoxShadow(
                 color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                 blurRadius: 5,
@@ -863,15 +863,15 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
+              children: <Widget>[
+                const Text(
                   'Select Card',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 16),
-                ...cards.map((card) => Padding(
+                ...cards.map((CardModel card) => Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: _buildAccountItem(
                     context: context,

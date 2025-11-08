@@ -8,10 +8,10 @@ class MovieRepository {
 
   Future<void> addMoviesToUser(String userId, List<MovieModel> movies) async {
     try {
-      final batch = _firestore.batch();
+      final WriteBatch batch = _firestore.batch();
 
-      for (var movie in movies) {
-        final docRef = _firestore
+      for (MovieModel movie in movies) {
+        final DocumentReference<Map<String, dynamic>> docRef = _firestore
             .collection('movies')
             .doc(movie.id);
 
@@ -28,8 +28,8 @@ class MovieRepository {
     return _firestore
         .collection('movies')
         .snapshots()
-        .map((snapshot) => snapshot.docs
-        .map((doc) => MovieModel.fromMap(doc.data()))
+        .map((QuerySnapshot<Map<String, dynamic>> snapshot) => snapshot.docs
+        .map((QueryDocumentSnapshot<Map<String, dynamic>> doc) => MovieModel.fromMap(doc.data()))
         .toList());
   }
 
@@ -52,8 +52,8 @@ class MovieRepository {
         .doc(userId)
         .collection('movie_bookings')
         .snapshots()
-        .map((snapshot) => snapshot.docs
-        .map((doc) => MovieBookingModel.fromMap(doc.data()))
+        .map((QuerySnapshot<Map<String, dynamic>> snapshot) => snapshot.docs
+        .map((QueryDocumentSnapshot<Map<String, dynamic>> doc) => MovieBookingModel.fromMap(doc.data()))
         .toList());
   }
 }

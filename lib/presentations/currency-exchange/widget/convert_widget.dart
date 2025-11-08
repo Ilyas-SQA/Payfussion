@@ -203,7 +203,7 @@ class ConvertWidget extends StatelessWidget {
                 topLeft: Radius.circular(16.r),
                 topRight: Radius.circular(15.r),
               ),
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1),
                   blurRadius: 10,

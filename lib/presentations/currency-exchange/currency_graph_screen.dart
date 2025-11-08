@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/data/models/graph_currency/graph_currency_model.dart';
 import 'package:payfussion/logic/blocs/graph_currency/graph_currency_bloc.dart';
+import '../../core/constants/fonts.dart';
 import '../../core/theme/theme.dart';
 import '../../logic/blocs/graph_currency/graph_currency_event.dart';
 import '../../logic/blocs/graph_currency/graph_currency_state.dart';
@@ -44,7 +45,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
     return Scaffold(
       appBar: _buildAppBar(isDark, context),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -87,17 +88,15 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+        children: <Widget>[
           Container(
             padding: EdgeInsets.all(20.w),
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF2A2A40) : Colors.white,
               borderRadius: BorderRadius.circular(20.r),
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(
-                  color: isDark
-                      ? Colors.black.withOpacity(0.3)
-                      : Colors.grey.withOpacity(0.1),
+                  color: isDark ? Colors.black.withOpacity(0.3) : Colors.grey.withOpacity(0.1),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -111,7 +110,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
           SizedBox(height: 24.h),
           Text(
             'Loading currency data...',
-            style: TextStyle(
+            style: Font.montserratFont(
               color: isDark ? Colors.white70 : Colors.grey[600],
               fontSize: 16.sp,
               fontWeight: FontWeight.w500,
@@ -130,7 +129,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF2A2A40) : Colors.white,
           borderRadius: BorderRadius.circular(20.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: isDark ? Colors.black.withOpacity(0.3) : Colors.grey.withOpacity(0.1),
               blurRadius: 20,
@@ -140,7 +139,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             Container(
               width: 80.w,
               height: 80.w,
@@ -157,7 +156,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
             SizedBox(height: 20.h),
             Text(
               'Oops! Something went wrong',
-              style: TextStyle(
+              style: Font.montserratFont(
                 color: isDark ? Colors.white : Colors.black,
                 fontSize: 18.sp,
                 fontWeight: FontWeight.bold,
@@ -167,7 +166,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
             SizedBox(height: 8.h),
             Text(
               state.message,
-              style: TextStyle(
+              style: Font.montserratFont(
                 color: isDark ? Colors.white70 : Colors.grey[600],
                 fontSize: 14.sp,
               ),
@@ -189,7 +188,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
               ),
               child: Text(
                 'Try Again',
-                style: TextStyle(
+                style: Font.montserratFont(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
                 ),
@@ -203,7 +202,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
 
   Widget _buildLoadedState(CurrencyLoaded state, bool isDark, BuildContext context) {
     return Column(
-      children: [
+      children: <Widget>[
         // Enhanced Currency List
         _buildCurrencyList(state, isDark, context),
 
@@ -214,7 +213,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
             decoration: BoxDecoration(
               color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(5.r),
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                   blurRadius: 5,
@@ -237,7 +236,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         itemCount: state.currencies.length,
-        itemBuilder: (context, index) {
+        itemBuilder: (BuildContext context, int index) {
           final GraphCurrencyModel currency = state.currencies[index];
           final bool isSelected = state.selectedCurrency?.code == currency.code;
 
@@ -255,7 +254,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
                 margin: EdgeInsets.only(right: 16.w),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(5.r),
-                  boxShadow: [
+                  boxShadow: <BoxShadow>[
                     BoxShadow(
                       color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                       blurRadius: 5,
@@ -272,9 +271,9 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
                   padding: EdgeInsets.all(16.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Row(
-                        children: [
+                        children: <Widget>[
                           Container(
                             padding: EdgeInsets.all(4.w),
                             decoration: BoxDecoration(
@@ -287,7 +286,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
                             ),
                             child: Text(
                               currency.symbol,
-                              style: TextStyle(
+                              style: Font.montserratFont(
                                 color: isSelected
                                     ? Colors.white
                                     : isDark
@@ -301,7 +300,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
                           SizedBox(width: 8.w),
                           Text(
                             currency.code,
-                            style: TextStyle(
+                            style: Font.montserratFont(
                               color: isSelected
                                   ? Colors.white.withOpacity(0.9)
                                   : isDark
@@ -316,7 +315,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
                       SizedBox(height: 8.h),
                       Text(
                         currency.name,
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           color: isSelected
                               ? Colors.white.withOpacity(0.7)
                               : isDark
@@ -331,7 +330,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
                       const Spacer(),
                       Text(
                         '${currency.symbol}${currency.currentPrice.toStringAsFixed(currency.code == 'JPY' ? 2 : 4)}',
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           color: isSelected
                               ? Colors.white
                               : isDark
@@ -357,16 +356,16 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
       padding: EdgeInsets.all(24.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           // Enhanced Graph Header
           Row(
-            children: [
+            children: <Widget>[
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Text(
                     '${currency.symbol} ${currency.name}',
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       color: isDark ? Colors.white : Colors.black,
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
@@ -375,7 +374,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
                   SizedBox(height: 4.h),
                   Text(
                     currency.code,
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       color: isDark ? Colors.white70 : Colors.grey[600],
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w500,
@@ -396,7 +395,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
                 ),
                 child: Text(
                   'Weekly',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     color: MyTheme.primaryColor, // Changed here
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w600,
@@ -409,10 +408,10 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
 
           // Price Display
           Row(
-            children: [
+            children: <Widget>[
               Text(
                 '${currency.symbol}${currency.currentPrice.toStringAsFixed(currency.code == 'JPY' ? 2 : 4)}',
-                style: TextStyle(
+                style: Font.montserratFont(
                   color: const Color(0xFF10B981),
                   fontSize: 32.sp,
                   fontWeight: FontWeight.bold,
@@ -427,7 +426,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: [
+                  children: <Widget>[
                     Icon(
                       Icons.trending_up_rounded,
                       color: MyTheme.secondaryColor,
@@ -436,7 +435,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
                     SizedBox(width: 2.w),
                     Text(
                       '+2.5%',
-                      style: TextStyle(
+                      style: Font.montserratFont(
                         color: MyTheme.secondaryColor,
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w600,
@@ -456,8 +455,8 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
                 gridData: FlGridData(
                   show: true,
                   drawVerticalLine: false,
-                  horizontalInterval: (currency.weeklyPrices.reduce((a, b) => a > b ? a : b) - currency.weeklyPrices.reduce((a, b) => a < b ? a : b)) / 4,
-                  getDrawingHorizontalLine: (value) {
+                  horizontalInterval: (currency.weeklyPrices.reduce((double a, double b) => a > b ? a : b) - currency.weeklyPrices.reduce((double a, double b) => a < b ? a : b)) / 4,
+                  getDrawingHorizontalLine: (double value) {
                     return FlLine(
                       color: isDark ? Colors.white.withOpacity(0.08) : Colors.grey.withOpacity(0.2),
                       strokeWidth: 1,
@@ -474,14 +473,14 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
                       reservedSize: 30,
                       interval: 1,
                       getTitlesWidget: (double value, TitleMeta meta) {
-                        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                        const List<String> days = <String>['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
                         if (value.toInt() >= 0 && value.toInt() < days.length) {
                           return SideTitleWidget(
                             // axisSide: meta.axisSide,
                             meta: meta,
                             child: Text(
                               days[value.toInt()],
-                              style: TextStyle(
+                              style: Font.montserratFont(
                                 color: isDark
                                     ? Colors.white.withOpacity(0.6)
                                     : Colors.grey[600],
@@ -498,12 +497,12 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
                   leftTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
-                      interval: (currency.weeklyPrices.reduce((a, b) => a > b ? a : b) -
-                          currency.weeklyPrices.reduce((a, b) => a < b ? a : b)) / 3,
+                      interval: (currency.weeklyPrices.reduce((double a, double b) => a > b ? a : b) -
+                          currency.weeklyPrices.reduce((double a, double b) => a < b ? a : b)) / 3,
                       getTitlesWidget: (double value, TitleMeta meta) {
                         return Text(
                           value.toStringAsFixed(currency.code == 'JPY' ? 0 : 3),
-                          style: TextStyle(
+                          style: Font.montserratFont(
                             color: isDark
                                 ? Colors.white.withOpacity(0.6)
                                 : Colors.grey[600],
@@ -519,18 +518,18 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
                 borderData: FlBorderData(show: false),
                 minX: 0,
                 maxX: 6,
-                minY: currency.weeklyPrices.reduce((a, b) => a < b ? a : b) * 0.995,
-                maxY: currency.weeklyPrices.reduce((a, b) => a > b ? a : b) * 1.005,
-                lineBarsData: [
+                minY: currency.weeklyPrices.reduce((double a, double b) => a < b ? a : b) * 0.995,
+                maxY: currency.weeklyPrices.reduce((double a, double b) => a > b ? a : b) * 1.005,
+                lineBarsData: <LineChartBarData>[
                   LineChartBarData(
                     spots: currency.weeklyPrices
                         .asMap()
                         .entries
-                        .map((e) => FlSpot(e.key.toDouble(), e.value))
+                        .map((MapEntry<int, double> e) => FlSpot(e.key.toDouble(), e.value))
                         .toList(),
                     isCurved: true,
                     gradient: LinearGradient( // Changed here
-                      colors: [MyTheme.primaryColor, MyTheme.primaryColor.withOpacity(0.8)],
+                      colors: <Color>[MyTheme.primaryColor, MyTheme.primaryColor.withOpacity(0.8)],
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                     ),
@@ -538,7 +537,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
                     isStrokeCapRound: true,
                     dotData: FlDotData(
                       show: true,
-                      getDotPainter: (spot, percent, barData, index) {
+                      getDotPainter: (FlSpot spot, double percent, LineChartBarData barData, int index) {
                         return FlDotCirclePainter(
                           radius: 5.w,
                           color: Colors.white,
@@ -550,7 +549,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
                     belowBarData: BarAreaData(
                       show: true,
                       gradient: LinearGradient(
-                        colors: [
+                        colors: <Color>[
                           MyTheme.primaryColor.withOpacity(0.3), // Changed here
                           MyTheme.primaryColor.withOpacity(0.05), // Changed here
                         ],
@@ -572,7 +571,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+        children: <Widget>[
           Container(
             width: 100.w,
             height: 100.w,
@@ -593,7 +592,7 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
           SizedBox(height: 24.h),
           Text(
             'Select a currency to view graph',
-            style: TextStyle(
+            style: Font.montserratFont(
               color: isDark
                   ? Colors.white.withOpacity(0.7)
                   : Colors.grey[600],
@@ -604,10 +603,8 @@ class _CurrencyGraphViewState extends State<CurrencyGraphView> with TickerProvid
           SizedBox(height: 8.h),
           Text(
             'Choose from the currency list above',
-            style: TextStyle(
-              color: isDark
-                  ? Colors.white.withOpacity(0.5)
-                  : Colors.grey[500],
+            style: Font.montserratFont(
+              color: isDark ? Colors.white.withOpacity(0.5) : Colors.grey[500],
               fontSize: 14.sp,
               fontWeight: FontWeight.w400,
             ),

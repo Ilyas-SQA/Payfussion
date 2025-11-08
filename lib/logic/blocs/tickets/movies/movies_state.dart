@@ -7,7 +7,7 @@ abstract class MovieState extends Equatable {
   const MovieState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class MovieInitial extends MovieState {}
@@ -20,7 +20,7 @@ class MovieLoaded extends MovieState {
   const MovieLoaded(this.movies);
 
   @override
-  List<Object> get props => [movies];
+  List<Object> get props => <Object>[movies];
 }
 
 class MovieError extends MovieState {
@@ -29,14 +29,14 @@ class MovieError extends MovieState {
   const MovieError(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 abstract class MovieBookingState extends Equatable {
   const MovieBookingState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class MovieBookingInitial extends MovieBookingState {}
@@ -49,7 +49,7 @@ class MovieBookingSuccess extends MovieBookingState {
   const MovieBookingSuccess(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class MovieBookingError extends MovieBookingState {
@@ -58,7 +58,7 @@ class MovieBookingError extends MovieBookingState {
   const MovieBookingError(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class UserMovieBookingsLoaded extends MovieBookingState {
@@ -67,5 +67,5 @@ class UserMovieBookingsLoaded extends MovieBookingState {
   const UserMovieBookingsLoaded(this.bookings);
 
   @override
-  List<Object> get props => [bookings];
+  List<Object> get props => <Object>[bookings];
 }

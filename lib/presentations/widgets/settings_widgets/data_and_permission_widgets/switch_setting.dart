@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
-import '../../../../core/utils/setting_utils/data_and_permission_utils/app_colors_utils.dart';
 import '../../../../core/utils/setting_utils/data_and_permission_utils/app_styles.dart';
 
 class SwitchSetting extends StatefulWidget {
@@ -38,11 +37,11 @@ class _SwitchSettingState extends State<SwitchSetting> {
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
+        children: <Widget>[
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Text(
                   widget.title,
                   style: AppStyles.listItemTextStyle(context).copyWith(
@@ -61,8 +60,8 @@ class _SwitchSettingState extends State<SwitchSetting> {
           ),
           Switch(
             value: value,
-            activeColor: MyTheme.primaryColor,
-            onChanged: (newValue) {
+            activeThumbColor: MyTheme.primaryColor,
+            onChanged: (bool newValue) {
               setState(() {
                 value = newValue;
               });

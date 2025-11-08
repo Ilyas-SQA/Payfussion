@@ -49,15 +49,15 @@ class AddRecipientState extends Equatable {
     this.verifyStatus = VerifyStatus.idle,
     this.submitStatus = SubmitStatus.idle,
     this.errorMessage,
-    this.banks = const [],
-    this.filteredBanks = const [],
+    this.banks = const <Bank>[],
+    this.filteredBanks = const <Bank>[],
     this.banksLoading = false,
     this.isAddingBank = false,
     this.bankSearchQuery = '',
     this.duplicateFound = false,
     this.recipientsStatus = RecipientsStatus.loading,
-    this.allRecipients = const [],
-    this.filteredRecipients = const [],
+    this.allRecipients = const <RecipientModel>[],
+    this.filteredRecipients = const <RecipientModel>[],
     this.searchQuery = '',
   });
 
@@ -113,7 +113,7 @@ class AddRecipientState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
     name,
     selectedBank,
     accountNumber,

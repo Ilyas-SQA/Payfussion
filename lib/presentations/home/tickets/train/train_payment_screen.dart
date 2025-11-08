@@ -69,7 +69,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    _sectionControllers = List.generate(5, (index) => AnimationController(
+    _sectionControllers = List.generate(5, (int index) => AnimationController(
       duration: Duration(milliseconds: 600 + (index * 100)),
       vsync: this,
     ));
@@ -95,8 +95,8 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
     _pageController.dispose();
     _cardController.dispose();
     _buttonController.dispose();
-    _sectionControllers.forEach((c) => c.dispose());
-    _controllers.forEach((c) => c.dispose());
+    _sectionControllers.forEach((AnimationController c) => c.dispose());
+    _controllers.forEach((TextEditingController c) => c.dispose());
     _backgroundAnimationController.dispose();
     super.dispose();
   }
@@ -113,7 +113,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
     return Scaffold(
       appBar: _buildAppBar(),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -124,7 +124,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
               child: Form(
                 key: _formKey,
                 child: Column(
-                  children: [
+                  children: <Widget>[
                     _buildAnimatedSection(0, _buildTripSummary()),
                     _buildAnimatedSection(1, _buildPassengerDetails()),
                     _buildAnimatedSection(2, _buildTravelOptions()),
@@ -155,7 +155,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
   Widget _buildAnimatedSection(int index, Widget child) {
     return AnimatedBuilder(
       animation: _sectionControllers[index],
-      builder: (context, _) {
+      builder: (BuildContext context, _) {
         return Transform.translate(
           offset: Offset(0, 30 * (1 - _sectionControllers[index].value)),
           child: Opacity(
@@ -173,7 +173,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
   Widget _buildAnimatedBookButton() {
     return AnimatedBuilder(
       animation: _buttonController,
-      builder: (context, _) {
+      builder: (BuildContext context, _) {
         return Transform.scale(
           scale: 0.8 + (0.2 * _buttonController.value),
           child: Opacity(
@@ -191,7 +191,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(state.message), backgroundColor: Colors.green),
       );
-      Navigator.of(context).popUntil((route) => route.isFirst);
+      Navigator.of(context).popUntil((Route route) => route.isFirst);
     } else if (state is BookingError) {
       HapticFeedback.heavyImpact();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -204,13 +204,13 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
     return _buildCard(
       title: "Trip Summary",
       icon: Icons.train,
-      children: [
+      children: <Widget>[
         _buildInfoRow("Train", widget.train.name),
         _buildInfoRow("Route", widget.train.route),
         _buildInfoRow("Duration", "${widget.train.duration.inHours}h ${widget.train.duration.inMinutes % 60}m"),
         const SizedBox(height: 8),
         Row(
-          children: [
+          children: <Widget>[
             const Text("Travel Date: "),
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
@@ -232,7 +232,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
     return _buildCard(
       title: "Passenger Details",
       icon: Icons.person,
-      children: [
+      children: <Widget>[
         _buildAnimatedTextField(_controllers[0], "Full Name", Icons.person, _validateName),
         const SizedBox(height: 16),
         _buildAnimatedTextField(_controllers[1], "Email", Icons.email, _validateEmail, TextInputType.emailAddress),
@@ -246,9 +246,9 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
     return _buildCard(
       title: "Travel Options",
       icon: Icons.settings,
-      children: [
+      children: <Widget>[
         Row(
-          children: [
+          children: <Widget>[
             Expanded(child: _buildPassengerCounter()),
             const SizedBox(width: 16),
             Expanded(child: _buildClassSelector()),
@@ -264,7 +264,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
       icon: Icons.payment,
       titleWidget: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
+        children: <Widget>[
           const Expanded(
             child: Text("Payment Method", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ),
@@ -277,7 +277,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
           ),
         ],
       ),
-      children: [_buildCardsSection()],
+      children: <Widget>[_buildCardsSection()],
     );
   }
 
@@ -287,7 +287,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
       child: _buildCard(
         title: "Fare Breakdown",
         icon: Icons.receipt,
-        children: [
+        children: <Widget>[
           _buildFareRow("Base Fare ($_numberOfPassengers passenger${_numberOfPassengers > 1 ? 's' : ''})", _baseFare),
           if (_selectedClass == 'Business')
             _buildFareRow("Business Class Upgrade (50%)", _classUpgradeAmount),
@@ -311,7 +311,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -323,9 +323,9 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             titleWidget ?? Row(
-              children: [
+              children: <Widget>[
                 Icon(icon, color: MyTheme.secondaryColor, size: 20),
                 const SizedBox(width: 8),
                 Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -343,7 +343,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
-        children: [
+        children: <Widget>[
           Text("$label: ", style: TextStyle(color: Colors.grey.shade600)),
           Flexible(child: Text(value, style: const TextStyle(fontWeight: FontWeight.w500,fontSize: 12))),
         ],
@@ -382,11 +382,11 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
   Widget _buildPassengerCounter() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         const Text("Passengers"),
         const SizedBox(height: 8),
         Row(
-          children: [
+          children: <Widget>[
             _buildCounterButton(Icons.remove, _numberOfPassengers > 1, () {
               setState(() => _numberOfPassengers--);
             }),
@@ -426,13 +426,13 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
   Widget _buildClassSelector() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         const Text("Travel Class"),
         const SizedBox(height: 8),
         AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           child: DropdownButtonFormField<String>(
-            value: _selectedClass,
+            initialValue: _selectedClass,
             decoration: const InputDecoration(
               border: OutlineInputBorder(
                 borderSide: BorderSide(
@@ -451,8 +451,8 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
               ),
               focusColor: MyTheme.secondaryColor,
             ),
-            items: ['Economy', 'Business'].map((cls) => DropdownMenuItem(value: cls, child: Text(cls))).toList(),
-            onChanged: (value) => setState(() => _selectedClass = value!),
+            items: <String>['Economy', 'Business'].map((String cls) => DropdownMenuItem(value: cls, child: Text(cls))).toList(),
+            onChanged: (String? value) => setState(() => _selectedClass = value!),
           ),
         ),
       ],
@@ -464,7 +464,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
+        children: <Widget>[
           Text(
             label,
             style: TextStyle(
@@ -490,7 +490,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
     return SizedBox(
       width: double.infinity,
       child: BlocBuilder<BookingBloc, BookingState>(
-        builder: (context, state) {
+        builder: (BuildContext context, BookingState state) {
           return AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             child: AppButton(
@@ -508,13 +508,13 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
   Widget _buildCardsSection() {
     return AnimatedBuilder(
       animation: _cardController,
-      builder: (context, _) {
+      builder: (BuildContext context, _) {
         return Transform.translate(
           offset: Offset(0, 20 * (1 - _cardController.value)),
           child: Opacity(
             opacity: _cardController.value,
             child: BlocBuilder<CardBloc, CardState>(
-              builder: (context, state) {
+              builder: (BuildContext context, CardState state) {
                 if (state is CardLoading) return const Center(child: CircularProgressIndicator());
                 if (state is CardLoaded) return _buildCardsList(state.cards);
                 if (state is CardError) return _buildErrorCard(state.message);
@@ -546,11 +546,11 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
       );
     }
 
-    _selectedCard ??= cards.firstWhere((card) => card.isDefault, orElse: () => cards.first);
+    _selectedCard ??= cards.firstWhere((CardModel card) => card.isDefault, orElse: () => cards.first);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
-      children: [
+      children: <Widget>[
         _buildCardItem(_selectedCard!, true, () => _showCardSelection(cards)),
         const SizedBox(height: 8),
         const Text(
@@ -573,7 +573,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
-        children: [
+        children: <Widget>[
           Text(
             'Error: $message',
             style: const TextStyle(color: Colors.red, fontSize: 12),
@@ -600,7 +600,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -609,7 +609,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
           ],
         ),
         child: Row(
-          children: [
+          children: <Widget>[
             SizedBox(
               width: 40,
               height: 24,
@@ -617,12 +617,12 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
                 card.brandIconPath,
                 fit: BoxFit.contain,
                 color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
-                errorBuilder: (context, error, stackTrace) {
+                errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
                   return Container(
                     width: 40,
                     height: 24,
                     color: Colors.grey.shade300,
-                    child: Icon(Icons.credit_card, size: 16),
+                    child: const Icon(Icons.credit_card, size: 16),
                   );
                 },
               ),
@@ -632,7 +632,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
-                children: [
+                children: <Widget>[
                   Text(
                     card.cardEnding,
                     style: const TextStyle(fontWeight: FontWeight.w500),
@@ -656,7 +656,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
 
   /// Event Handlers
   void _selectDate() async {
-    final date = await showDatePicker(
+    final DateTime? date = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime.now(),
@@ -670,14 +670,14 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => Container(
+      builder: (BuildContext context) => Container(
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(context).size.height * 0.7,
         ),
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -688,7 +688,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
         padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             const Text(
               'Select Card',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -698,9 +698,9 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
               child: ListView.separated(
                 shrinkWrap: true,
                 itemCount: cards.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 8),
-                itemBuilder: (context, index) {
-                  final card = cards[index];
+                separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 8),
+                itemBuilder: (BuildContext context, int index) {
+                  final CardModel card = cards[index];
                   return _buildCardItem(
                     card,
                     _selectedCard?.id == card.id,
@@ -740,7 +740,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
       return;
     }
 
-    final booking = BookingModel(
+    final BookingModel booking = BookingModel(
       id: const Uuid().v4(),
       trainId: widget.train.id,
       trainName: widget.train.name,

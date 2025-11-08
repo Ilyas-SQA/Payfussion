@@ -116,18 +116,18 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
+            colors: <Color>[
               Color(0xFF667eea),
               Color(0xFF764ba2),
               Color(0xFFf093fb),
             ],
-            stops: [0.0, 0.5, 1.0],
+            stops: <double>[0.0, 0.5, 1.0],
           ),
         ),
         child: Stack(
-          children: [
+          children: <Widget>[
             // Animated Particles Background
-            ...List.generate(20, (index) => _buildFloatingParticle(index)),
+            ...List.generate(20, (int index) => _buildFloatingParticle(index)),
 
             // Main Content
             SafeArea(
@@ -136,7 +136,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   padding: const EdgeInsets.symmetric(horizontal: 32.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                    children: <Widget>[
                       // Animated Welcome Icon
                       ScaleTransition(
                         scale: _iconAnimation,
@@ -150,7 +150,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                               color: Colors.white.withOpacity(0.3),
                               width: 2,
                             ),
-                            boxShadow: [
+                            boxShadow: <BoxShadow>[
                               BoxShadow(
                                 color: Colors.white.withOpacity(0.1),
                                 blurRadius: 20,
@@ -174,7 +174,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         child: FadeTransition(
                           opacity: _textAnimation,
                           child: Column(
-                            children: [
+                            children: <Widget>[
                               // Urdu Welcome Text
                               const Text(
                                 'خوش آمدید!',
@@ -182,7 +182,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                                   fontSize: 48,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
-                                  shadows: [
+                                  shadows: <Shadow>[
                                     Shadow(
                                       blurRadius: 10.0,
                                       color: Colors.black26,
@@ -202,7 +202,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                                   fontSize: 28,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.white,
-                                  shadows: [
+                                  shadows: <Shadow>[
                                     Shadow(
                                       blurRadius: 8.0,
                                       color: Colors.black26,
@@ -222,7 +222,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                                   fontSize: 24,
                                   fontWeight: FontWeight.w500,
                                   color: Colors.white,
-                                  shadows: [
+                                  shadows: <Shadow>[
                                     Shadow(
                                       blurRadius: 6.0,
                                       color: Colors.black26,
@@ -274,10 +274,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           height: 56,
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [Color(0xFFff6b6b), Color(0xFFee5a52)],
+                              colors: <Color>[Color(0xFFff6b6b), Color(0xFFee5a52)],
                             ),
                             borderRadius: BorderRadius.circular(28),
-                            boxShadow: [
+                            boxShadow: <BoxShadow>[
                               BoxShadow(
                                 color: const Color(0xFFff6b6b).withOpacity(0.4),
                                 blurRadius: 20,
@@ -336,7 +336,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   Widget _buildFloatingParticle(int index) {
     return AnimatedBuilder(
       animation: _particleController,
-      builder: (context, child) {
+      builder: (BuildContext context, Widget? child) {
         final double animationValue = _particleController.value;
         final double delayFactor = index * 0.1;
         final double adjustedValue = (animationValue + delayFactor) % 1.0;
@@ -353,7 +353,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white,
-                boxShadow: [
+                boxShadow: <BoxShadow>[
                   BoxShadow(
                     color: Colors.white.withOpacity(0.5),
                     blurRadius: 8,

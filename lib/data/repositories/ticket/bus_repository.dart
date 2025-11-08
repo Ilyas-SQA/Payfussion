@@ -8,10 +8,10 @@ class BusRepository {
 
   Future<void> addBusesToUser(String userId, List<BusModel> buses) async {
     try {
-      final batch = _firestore.batch();
+      final WriteBatch batch = _firestore.batch();
 
-      for (var bus in buses) {
-        final docRef = _firestore
+      for (BusModel bus in buses) {
+        final DocumentReference<Map<String, dynamic>> docRef = _firestore
             .collection('buses')
             .doc(bus.id);
 
@@ -28,8 +28,8 @@ class BusRepository {
     return _firestore
         .collection('buses')
         .snapshots()
-        .map((snapshot) => snapshot.docs
-        .map((doc) => BusModel.fromMap(doc.data()))
+        .map((QuerySnapshot<Map<String, dynamic>> snapshot) => snapshot.docs
+        .map((QueryDocumentSnapshot<Map<String, dynamic>> doc) => BusModel.fromMap(doc.data()))
         .toList());
   }
 
@@ -52,8 +52,8 @@ class BusRepository {
         .doc(userId)
         .collection('bus_bookings')
         .snapshots()
-        .map((snapshot) => snapshot.docs
-        .map((doc) => BusBookingModel.fromMap(doc.data()))
+        .map((QuerySnapshot<Map<String, dynamic>> snapshot) => snapshot.docs
+        .map((QueryDocumentSnapshot<Map<String, dynamic>> doc) => BusBookingModel.fromMap(doc.data()))
         .toList());
   }
 }

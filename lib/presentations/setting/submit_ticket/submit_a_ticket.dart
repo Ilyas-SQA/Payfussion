@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
+import '../../../core/constants/fonts.dart';
 import '../../../logic/blocs/submit_a_ticket/submit_a_ticket_bloc.dart';
 import '../../../logic/blocs/submit_a_ticket/submit_a_ticket_event.dart';
 import '../../../logic/blocs/submit_a_ticket/submit_a_ticket_state.dart';
@@ -17,9 +18,9 @@ class SubmitATicket extends StatefulWidget {
 }
 
 class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateMixin {
-  final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
   // Animation controllers
   late AnimationController _slideController;
@@ -137,8 +138,8 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
 
   void _handleSubmit() {
     if (_formKey.currentState!.validate()) {
-      final title = _titleController.text.trim();
-      final description = _descriptionController.text.trim();
+      final String title = _titleController.text.trim();
+      final String description = _descriptionController.text.trim();
 
       HapticFeedback.mediumImpact();
 
@@ -181,8 +182,8 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Row(
-                children: [
-                  Icon(Icons.error_outline, color: Colors.white),
+                children: <Widget>[
+                  const Icon(Icons.error_outline, color: Colors.white),
                   SizedBox(width: 8.w),
                   Expanded(child: Text(state.errorMessage!)),
                 ],
@@ -204,7 +205,7 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
           ),
           resizeToAvoidBottomInset: false,
           body: Column(
-            children: [
+            children: <Widget>[
               // Animated Form
               Expanded(
                 child: SlideTransition(
@@ -244,19 +245,19 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   // Animated Title Field
                   TweenAnimationBuilder<double>(
                     duration: const Duration(milliseconds: 600),
                     tween: Tween(begin: 0.0, end: 1.0),
-                    builder: (context, value, child) {
+                    builder: (BuildContext context, double value, Widget? child) {
                       return Transform.translate(
                         offset: Offset(30 * (1 - value), 0),
                         child: Opacity(
                           opacity: value,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                            children: <Widget>[
                               _buildLabel('Title'),
                               SizedBox(height: 20.h),
                               _CustomTextField(
@@ -292,7 +293,7 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
                           opacity: value,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                            children: <Widget>[
                               _buildLabel('Description'),
                               SizedBox(height: 20.h),
                               _CustomTextField(
@@ -323,7 +324,7 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
                     child: TweenAnimationBuilder<double>(
                       duration: const Duration(milliseconds: 1000),
                       tween: Tween(begin: 0.0, end: 1.0),
-                      builder: (context, value, child) {
+                      builder: (BuildContext context, double value, Widget? child) {
                         return Transform.scale(
                           scale: 0.8 + (0.2 * value),
                           child: Opacity(
@@ -353,7 +354,7 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
       child: TweenAnimationBuilder<double>(
         duration: const Duration(milliseconds: 500),
         tween: Tween(begin: 0.0, end: 1.0),
-        builder: (context, value, child) {
+        builder: (BuildContext context, double value, Widget? child) {
           return Transform.scale(
             scale: 0.7 + (0.3 * value),
             child: Opacity(
@@ -364,11 +365,11 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
                 ),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: [
+                  children: <Widget>[
                     // Animated Success Icon
                     AnimatedBuilder(
                       animation: _successController,
-                      builder: (context, child) {
+                      builder: (BuildContext context, Widget? child) {
                         return Transform.scale(
                           scale: _successScaleAnimation.value,
                           child: Transform.rotate(
@@ -379,16 +380,16 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 gradient: LinearGradient(
-                                  colors: [
-                                    Color(0xff2D9CDB).withOpacity(_successScaleAnimation.value),
-                                    Color(0xff56CCF2).withOpacity(_successScaleAnimation.value),
+                                  colors: <Color>[
+                                    const Color(0xff2D9CDB).withOpacity(_successScaleAnimation.value),
+                                    const Color(0xff56CCF2).withOpacity(_successScaleAnimation.value),
                                   ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
-                                boxShadow: [
+                                boxShadow: <BoxShadow>[
                                   BoxShadow(
-                                    color: Color(0xff2D9CDB).withOpacity(0.3 * _successScaleAnimation.value),
+                                    color: const Color(0xff2D9CDB).withOpacity(0.3 * _successScaleAnimation.value),
                                     blurRadius: 20 * _successScaleAnimation.value,
                                     spreadRadius: 5 * _successScaleAnimation.value,
                                   ),
@@ -411,7 +412,7 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
                     TweenAnimationBuilder<double>(
                       duration: const Duration(milliseconds: 600),
                       tween: Tween(begin: 0.0, end: 1.0),
-                      builder: (context, textValue, child) {
+                      builder: (BuildContext context, double textValue, Widget? child) {
                         return Transform.translate(
                           offset: Offset(0, 20 * (1 - textValue)),
                           child: Opacity(
@@ -419,8 +420,7 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
                             child: Text(
                               "Ticket Submitted Successfully!",
                               textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontFamily: 'Montserrat',
+                              style: Font.montserratFont(
                                 fontSize: 18.sp,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -436,7 +436,7 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
                     TweenAnimationBuilder<double>(
                       duration: const Duration(milliseconds: 800),
                       tween: Tween(begin: 0.0, end: 1.0),
-                      builder: (context, idValue, child) {
+                      builder: (BuildContext context, double idValue, Widget? child) {
                         return Transform.translate(
                           offset: Offset(0, 15 * (1 - idValue)),
                           child: Opacity(
@@ -444,19 +444,18 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
                             child: Container(
                               padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                               decoration: BoxDecoration(
-                                color: Color(0xff2D9CDB).withOpacity(0.1),
+                                color: const Color(0xff2D9CDB).withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(8.r),
                                 border: Border.all(
-                                  color: Color(0xff2D9CDB).withOpacity(0.3),
+                                  color: const Color(0xff2D9CDB).withOpacity(0.3),
                                 ),
                               ),
                               child: Text(
                                 "Ticket ID: ${state.ticketId}",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontFamily: 'Montserrat',
+                                style: Font.montserratFont(
                                   fontSize: 14.sp,
-                                  color: Color(0xff2D9CDB),
+                                  color: const Color(0xff2D9CDB),
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -472,7 +471,7 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
                     TweenAnimationBuilder<double>(
                       duration: const Duration(milliseconds: 1000),
                       tween: Tween(begin: 0.0, end: 1.0),
-                      builder: (context, buttonValue, child) {
+                      builder: (BuildContext context, double buttonValue, Widget? child) {
                         return Transform.scale(
                           scale: 0.8 + (0.2 * buttonValue),
                           child: Opacity(
@@ -489,14 +488,13 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
                                   borderRadius: BorderRadius.circular(24.r),
                                 ),
                                 elevation: 3,
-                                shadowColor: Color(0xff2D9CDB).withOpacity(0.3),
+                                shadowColor: const Color(0xff2D9CDB).withOpacity(0.3),
                               ),
                               child: Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
                                 child: Text(
                                   "OK",
-                                  style: TextStyle(
-                                    fontFamily: 'Montserrat',
+                                  style: Font.montserratFont(
                                     fontSize: 16.sp,
                                     color: Colors.white,
                                     fontWeight: FontWeight.w600,
@@ -521,8 +519,7 @@ class _SubmitATicketState extends State<SubmitATicket> with TickerProviderStateM
   Widget _buildLabel(String text) {
     return Text(
       text,
-      style: TextStyle(
-        fontFamily: 'Montserrat',
+      style: Font.montserratFont(
         fontSize: 16.sp,
         fontWeight: FontWeight.w600,
         color: Theme.of(context).secondaryHeaderColor,
@@ -602,8 +599,7 @@ class _CustomTextFieldState extends State<_CustomTextField> with SingleTickerPro
                     cursorColor: MyTheme.primaryColor,
                     decoration: InputDecoration(
                       hintText: widget.hintText,
-                      hintStyle: TextStyle(
-                        fontFamily: 'Montserrat',
+                      hintStyle: Font.montserratFont(
                         fontSize: 14.sp,
                         color: Colors.grey,
                       ),
@@ -727,8 +723,7 @@ class _CustomButtonState extends State<_CustomButton>
                   Text(
                     key: const ValueKey('text'),
                     widget.text,
-                    style: TextStyle(
-                      fontFamily: 'Montserrat',
+                    style: Font.montserratFont(
                       fontSize: 18.sp,
                       color: Colors.white,
                       fontWeight: FontWeight.bold,

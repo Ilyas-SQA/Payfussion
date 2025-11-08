@@ -4,7 +4,7 @@ abstract class CurrencyConversionEvent extends Equatable {
   const CurrencyConversionEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class LoadExchangeRates extends CurrencyConversionEvent {
@@ -23,7 +23,7 @@ class ConvertCurrency extends CurrencyConversionEvent {
   });
 
   @override
-  List<Object> get props => [fromCurrency, toCurrency, amount];
+  List<Object> get props => <Object>[fromCurrency, toCurrency, amount];
 }
 
 class UpdateFromCurrency extends CurrencyConversionEvent {
@@ -32,7 +32,7 @@ class UpdateFromCurrency extends CurrencyConversionEvent {
   const UpdateFromCurrency(this.currencyCode);
 
   @override
-  List<Object> get props => [currencyCode];
+  List<Object> get props => <Object>[currencyCode];
 }
 
 class UpdateToCurrency extends CurrencyConversionEvent {
@@ -41,7 +41,7 @@ class UpdateToCurrency extends CurrencyConversionEvent {
   const UpdateToCurrency(this.currencyCode);
 
   @override
-  List<Object> get props => [currencyCode];
+  List<Object> get props => <Object>[currencyCode];
 }
 
 class UpdateAmount extends CurrencyConversionEvent {
@@ -50,5 +50,5 @@ class UpdateAmount extends CurrencyConversionEvent {
   const UpdateAmount(this.amount);
 
   @override
-  List<Object> get props => [amount];
+  List<Object> get props => <Object>[amount];
 }

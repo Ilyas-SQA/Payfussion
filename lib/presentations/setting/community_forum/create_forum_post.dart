@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/logic/blocs/setting/community_forum/community_form_bloc.dart';
 import 'package:payfussion/logic/blocs/setting/community_forum/community_form_state.dart';
-
+import '../../../core/constants/fonts.dart';
 import '../../../core/constants/image_url.dart';
 import '../../../core/widget/appbutton/app_button.dart';
 import '../../../logic/blocs/setting/community_forum/community_form_event.dart';
@@ -39,10 +39,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
         child: Column(
-          children: [
+          children: <Widget>[
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 Hero(
                   tag: 'logo',
                   child: Image.asset(TImageUrl.iconLogo, height: 100.h),
@@ -50,8 +50,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 SizedBox(height: 30.h),
                 Text(
                   'Pay Fussion',
-                  style: TextStyle(
-                    fontFamily: 'Montserrat',
+                  style: Font.montserratFont(
                     fontSize: 22.sp,
                     fontWeight: FontWeight.w600,
                   ),
@@ -59,10 +58,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 const SizedBox(height: 20),
                 Text(
                   'Create a new post',
-                  style: TextStyle(
-                    fontSize: 28.sp,
+                  style: Font.montserratFont(
+                    fontSize: 24.sp,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xff2D9CDB),
                   ),
                 ),
 
@@ -73,7 +71,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
-                  children: [
+                  children: <Widget>[
                     AppTextFormField(
                       controller: _titleController,
                       isPasswordField: false,
@@ -90,7 +88,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               ),
             ),
             BlocConsumer<CommunityFormBloc, CommunityFormState>(
-              listener: (context, state) {
+              listener: (BuildContext context, CommunityFormState state) {
                 if (state is PostAdded) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text("Post added successfully")),
@@ -107,14 +105,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   );
                 }
               },
-              builder: (context, state) {
+              builder: (BuildContext context, CommunityFormState state) {
                 return AppButton(
                   text: 'Post',
                   loading: state is PostLoading,
                   width: double.infinity,
                   onTap: () {
-                    if (_titleController.text.trim().isEmpty ||
-                        _contentController.text.trim().isEmpty) {
+                    if (_titleController.text.trim().isEmpty || _contentController.text.trim().isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text("Please enter both question and content")),
                       );

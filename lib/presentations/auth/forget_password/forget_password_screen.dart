@@ -1,6 +1,3 @@
-import 'dart:async';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/core/constants/fonts.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
+import '../../../core/circular_indicator.dart';
 import '../../../core/constants/image_url.dart';
 import '../../../core/constants/routes_name.dart';
 import '../../../logic/blocs/auth/auth_bloc.dart';
@@ -172,7 +170,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> with Ticker
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return BlocListener<AuthBloc, AuthState>(
       listener: (BuildContext context, AuthState state) {
-        Navigator.of(context, rootNavigator: true).popUntil((route) => route.isFirst);
+        Navigator.of(context, rootNavigator: true).popUntil((Route route) => route.isFirst);
 
         if (state is ForgotFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -182,7 +180,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> with Ticker
           showDialog(
             context: context,
             barrierDismissible: false,
-            builder: (_) => const Center(child: CircularProgressIndicator()),
+            builder: (_) => Center(child: CircularIndicator.circular),
           );
         } else if (state is ForgotSuccess) {
           context.go(RouteNames.signIn);
@@ -195,7 +193,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> with Ticker
       },
       child: Scaffold(
         body: Stack(
-          children: [
+          children: <Widget>[
             AnimatedBackground(
               animationController: _backgroundAnimationController,
             ),
@@ -207,7 +205,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> with Ticker
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
+                  children: <Widget>[
                     SizedBox(height: 60.h),
 
                     // Animated Logo
@@ -271,7 +269,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> with Ticker
                             if (value == null || value.isEmpty) {
                               return 'Email cannot be empty';
                             }
-                            final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                            final RegExp emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
                             if (!emailRegex.hasMatch(value)) {
                               return 'Please enter a valid email address';
                             }
@@ -329,7 +327,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> with Ticker
                                 fontSize: 14.sp,
                                 color: Theme.brightnessOf(context) == Brightness.light ? Colors.black : Colors.white,
                               ),
-                              children: [
+                              children: <InlineSpan>[
                                 TextSpan(
                                   text: "Sign in",
                                   style: Font.montserratFont(

@@ -45,17 +45,17 @@ class _MyRewardScreenState extends State<MyRewardScreen> with TickerProviderStat
             fontWeight: FontWeight.w600,
           ),
         ),
-        iconTheme: IconThemeData(color: MyTheme.secondaryColor),
+        iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
           SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
-              children: [
+              children: <Widget>[
                 Container(
                   width: double.infinity,
                   height: 200,
@@ -66,7 +66,7 @@ class _MyRewardScreenState extends State<MyRewardScreen> with TickerProviderStat
                   ),
                   child: Stack(
                     alignment: Alignment.center,
-                    children: [
+                    children: <Widget>[
                       // Decorative dots
                       Positioned(
                         top: 30,
@@ -110,7 +110,7 @@ class _MyRewardScreenState extends State<MyRewardScreen> with TickerProviderStat
                         height: 80,
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [MyTheme.secondaryColor, MyTheme.secondaryColor],
+                            colors: <Color>[MyTheme.secondaryColor, MyTheme.secondaryColor],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -128,7 +128,7 @@ class _MyRewardScreenState extends State<MyRewardScreen> with TickerProviderStat
                           decoration: const BoxDecoration(
                             color: Color(0xFFFFD700),
                             shape: BoxShape.circle,
-                            boxShadow: [
+                            boxShadow: <BoxShadow>[
                               BoxShadow(
                                 color: Colors.black12,
                                 blurRadius: 4,
@@ -200,7 +200,7 @@ class _MyRewardScreenState extends State<MyRewardScreen> with TickerProviderStat
                   subtitle: 'Invite your friend to register on the Easypaisa app',
                   iconBg: MyTheme.primaryColor.withOpacity(0.1),
                   onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const SpecificRewardScreen(title: "Invite & Earn",)));
+                    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const SpecificRewardScreen(title: "Invite & Earn",)));
                   },
                 ),
                 const SizedBox(height: 16),
@@ -213,7 +213,7 @@ class _MyRewardScreenState extends State<MyRewardScreen> with TickerProviderStat
                   subtitle: 'Complete goals and earn exiting rewards',
                   iconBg: MyTheme.primaryColor.withOpacity(0.1),
                   onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const SpecificRewardScreen(title: "Goal & Rewards",)));
+                    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const SpecificRewardScreen(title: "Goal & Rewards",)));
                   },
                 ),
                 const SizedBox(height: 16),
@@ -226,7 +226,7 @@ class _MyRewardScreenState extends State<MyRewardScreen> with TickerProviderStat
                   subtitle: 'Enter lucky code and win cash rewards',
                   iconBg: MyTheme.primaryColor.withOpacity(0.1),
                   onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const SpecificRewardScreen(title: "Enter & Win",)));
+                    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const SpecificRewardScreen(title: "Enter & Win",)));
                   },
                 ),
               ],
@@ -252,7 +252,7 @@ class _MyRewardScreenState extends State<MyRewardScreen> with TickerProviderStat
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
               blurRadius: 5,
@@ -261,7 +261,7 @@ class _MyRewardScreenState extends State<MyRewardScreen> with TickerProviderStat
           ],
         ),
         child: Row(
-          children: [
+          children: <Widget>[
             Icon(
               icon,
               color: iconColor,
@@ -271,7 +271,7 @@ class _MyRewardScreenState extends State<MyRewardScreen> with TickerProviderStat
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Text(
                     title,
                     style: Font.montserratFont(

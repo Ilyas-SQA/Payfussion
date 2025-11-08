@@ -41,7 +41,7 @@ class _TrainListScreenState extends State<TrainListScreen> with TickerProviderSt
     return Scaffold(
       appBar: AppBar(
         title: const Text("US Train Services"),
-        actions: [
+        actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
@@ -52,7 +52,7 @@ class _TrainListScreenState extends State<TrainListScreen> with TickerProviderSt
         iconTheme: const IconThemeData(color: MyTheme.secondaryColor),
       ),
       body: Stack(
-        children: [
+        children: <Widget>[
           AnimatedBackground(
             animationController: _backgroundAnimationController,
           ),
@@ -62,7 +62,7 @@ class _TrainListScreenState extends State<TrainListScreen> with TickerProviderSt
                 return const Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                    children: <Widget>[
                       CircularProgressIndicator(),
                       SizedBox(height: 16),
                       Text('Loading trains...'),
@@ -74,15 +74,15 @@ class _TrainListScreenState extends State<TrainListScreen> with TickerProviderSt
               if (state is TrainError) {
                 return Center(
                   child: AnimatedContainer(
-                    duration: Duration(milliseconds: 500),
+                    duration: const Duration(milliseconds: 500),
                     curve: Curves.easeInOut,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: <Widget>[
                         TweenAnimationBuilder<double>(
-                          duration: Duration(milliseconds: 800),
+                          duration: const Duration(milliseconds: 800),
                           tween: Tween(begin: 0, end: 1),
-                          builder: (context, value, child) {
+                          builder: (BuildContext context, double value, Widget? child) {
                             return Transform.scale(
                               scale: value,
                               child: Icon(
@@ -95,7 +95,7 @@ class _TrainListScreenState extends State<TrainListScreen> with TickerProviderSt
                         ),
                         const SizedBox(height: 16),
                         FadeInUp(
-                          delay: Duration(milliseconds: 300),
+                          delay: const Duration(milliseconds: 300),
                           child: Text(
                             state.message,
                             textAlign: TextAlign.center,
@@ -103,7 +103,7 @@ class _TrainListScreenState extends State<TrainListScreen> with TickerProviderSt
                         ),
                         const SizedBox(height: 16),
                         FadeInUp(
-                          delay: Duration(milliseconds: 600),
+                          delay: const Duration(milliseconds: 600),
                           child: ElevatedButton(
                             onPressed: () {
                               context.read<TrainBloc>().add(LoadTrains());
@@ -121,10 +121,10 @@ class _TrainListScreenState extends State<TrainListScreen> with TickerProviderSt
                 return AnimatedList(
                   padding: const EdgeInsets.all(8),
                   initialItemCount: state.trains.length,
-                  itemBuilder: (context, index, animation) {
+                  itemBuilder: (BuildContext context, int index, Animation<double> animation) {
                     if (index >= state.trains.length) return const SizedBox.shrink();
 
-                    final train = state.trains[index];
+                    final TrainModel train = state.trains[index];
 
                     return SlideTransition(
                       position: animation.drive(
@@ -155,7 +155,7 @@ class _TrainListScreenState extends State<TrainListScreen> with TickerProviderSt
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                    children: <Widget>[
                       Icon(
                         Icons.train,
                         size: 64,
@@ -268,9 +268,9 @@ class _AnimatedTrainCardState extends State<AnimatedTrainCard> with TickerProvid
                 Navigator.push(
                   context,
                   PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
+                    pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) =>
                         TrainDetailScreen(train: widget.train),
-                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    transitionsBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
                       return SlideTransition(
                         position: animation.drive(
                           Tween(begin: const Offset(1.0, 0.0), end: Offset.zero)
@@ -288,7 +288,7 @@ class _AnimatedTrainCardState extends State<AnimatedTrainCard> with TickerProvid
                 decoration: BoxDecoration(
                   color: Theme.of(context).scaffoldBackgroundColor,
                   borderRadius: BorderRadius.circular(5.r),
-                  boxShadow: [
+                  boxShadow: <BoxShadow>[
                     BoxShadow(
                       color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                       blurRadius: 5,
@@ -299,7 +299,7 @@ class _AnimatedTrainCardState extends State<AnimatedTrainCard> with TickerProvid
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Row(
-                    children: [
+                    children: <Widget>[
                       Hero(
                         tag: 'train-icon-${widget.train.name}',
                         child: AnimatedContainer(
@@ -316,7 +316,7 @@ class _AnimatedTrainCardState extends State<AnimatedTrainCard> with TickerProvid
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                          children: <Widget>[
                             Hero(
                               tag: 'train-name-${widget.train.name}',
                               child: Material(
@@ -340,7 +340,7 @@ class _AnimatedTrainCardState extends State<AnimatedTrainCard> with TickerProvid
                                 ),
                               ),
                             ),
-                            if (widget.train.via.isNotEmpty) ...[
+                            if (widget.train.via.isNotEmpty) ...<Widget>[
                               const SizedBox(height: 2),
                               FadeInUp(
                                 delay: Duration(milliseconds: 150 + (widget.index * 50)),
@@ -357,7 +357,7 @@ class _AnimatedTrainCardState extends State<AnimatedTrainCard> with TickerProvid
                             FadeInUp(
                               delay: Duration(milliseconds: 200 + (widget.index * 50)),
                               child: Row(
-                                children: [
+                                children: <Widget>[
                                   const Icon(
                                     Icons.access_time,
                                     size: 16,
@@ -381,7 +381,7 @@ class _AnimatedTrainCardState extends State<AnimatedTrainCard> with TickerProvid
                         delay: Duration(milliseconds: 100 + (widget.index * 50)),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
+                          children: <Widget>[
                             AnimatedDefaultTextStyle(
                               duration: const Duration(milliseconds: 200),
                               style: TextStyle(
@@ -481,7 +481,7 @@ class _FadeInUpState extends State<FadeInUp> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _controller,
-      builder: (context, child) {
+      builder: (BuildContext context, Widget? child) {
         return FadeTransition(
           opacity: _opacity,
           child: SlideTransition(
