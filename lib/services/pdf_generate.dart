@@ -85,8 +85,8 @@ class PdfServices {
 
   // Generate a payment receipt PDF with the given data
   Future<Uint8List> generateReceipt({required PaymentReceiptData data}) async {
-    final pdf = pw.Document();
-    final logoBytes = await _loadImageFromAssets(
+    final pw.Document pdf = pw.Document();
+    final Uint8List logoBytes = await _loadImageFromAssets(
       TImageUrl.iconLogo,
     ); // Load the local PNG image
 
@@ -94,7 +94,7 @@ class PdfServices {
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.symmetric(horizontal: 40, vertical: 80),
-        build: (context) => <pw.Widget>[
+        build: (pw.Context context) => <pw.Widget>[
           _buildReceiptHeader(
             data.paymentAmount,
             logoBytes,
@@ -166,7 +166,7 @@ class PdfServices {
     return pw.Row(
       children: List<pw.Widget>.generate(
         60, // Number of dashes, adjust as needed for page width
-            (index) => pw.Expanded(
+            (int index) => pw.Expanded(
           child: pw.Padding(
             padding: const pw.EdgeInsets.symmetric(horizontal: 1.0),
             child: pw.Container(height: 1, color: PdfColors.grey500),
@@ -189,7 +189,7 @@ class PdfServices {
   // Request storage permissions (for Android)
   Future<void> requestPermissions() async {
     if (Platform.isAndroid) {
-      final status = await Permission.storage.request();
+      final PermissionStatus status = await Permission.storage.request();
       if (!status.isGranted) {
         print('Permission denied for storage.');
       }
@@ -215,8 +215,8 @@ class PdfServices {
       return 'Error: Could not get a valid directory to save the file.';
     }
 
-    final filePath = "${output.path}/$fileName.pdf";
-    final file = File(filePath);
+    final String filePath = "${output.path}/$fileName.pdf";
+    final File file = File(filePath);
     await file.writeAsBytes(byteList);
     print('PDF saved to: $filePath');
     return filePath;
