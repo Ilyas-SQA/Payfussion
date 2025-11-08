@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/data/models/user/user_model.dart';
 
 import '../../../services/session_manager_service.dart';
 
@@ -12,8 +13,8 @@ class SettingProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final user = SessionController.user;
+    final ThemeData theme = Theme.of(context);
+    final UserModel user = SessionController.user;
 
     return Container(
       height: 94.h,
@@ -22,7 +23,7 @@ class SettingProfile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(5.r),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
@@ -33,14 +34,13 @@ class SettingProfile extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Row(
-          children: [
+          children: <Widget>[
             // Profile image
             CircleAvatar(
               radius: 28.r,
               backgroundColor: Colors.grey,
               child:
-                  user != null &&
-                      user.profileImageUrl != null &&
+                  user.profileImageUrl != null &&
                       user.profileImageUrl!.isNotEmpty
                   ? ClipOval(
                       child: CachedNetworkImage(
@@ -68,7 +68,7 @@ class SettingProfile extends StatelessWidget {
             // Profile name
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Text(
                   user.fullName ?? 'Guest User',
                   style: TextStyle(
