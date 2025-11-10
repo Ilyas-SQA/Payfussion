@@ -7,6 +7,7 @@ import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:payfussion/services/payment_service.dart';
 import 'package:uuid/uuid.dart';
+import '../../../../core/constants/fonts.dart';
 import '../../../../core/constants/tax.dart';
 import '../../../../data/models/card/card_model.dart';
 import '../../../../data/models/notification/notification_model.dart';
@@ -228,9 +229,9 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text(
+            Text(
               "Flight Summary",
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -261,7 +262,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
                   },
                   child: Text(
                     "${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}",
-                    style: const TextStyle(color: MyTheme.secondaryColor),
+                    style: Font.montserratFont(color: MyTheme.secondaryColor),
                   ),
                 ),
               ],
@@ -290,9 +291,9 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text(
+            Text(
               "Passenger Details",
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -364,9 +365,9 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text(
+            Text(
               "Flight Options",
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -392,7 +393,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
                           ),
                           Text(
                             '$_numberOfPassengers',
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            style: Font.montserratFont(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           IconButton(
                             onPressed: _numberOfPassengers < 9 ? () {
@@ -435,7 +436,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
                         ),
                         items: <String>['Economy', 'Premium Economy', 'Business', 'First Class'].map((String cls) => DropdownMenuItem(
                           value: cls,
-                          child: Text(cls,style: const TextStyle(fontSize: 12),),
+                          child: Text(cls,style: Font.montserratFont(fontSize: 12),),
                         )).toList(),
                         onChanged: (String? value) {
                           setState(() {
@@ -476,9 +477,9 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               spacing: 10,
               children: <Widget>[
-                const Text(
+                Text(
                   "Payment Method",
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -486,7 +487,7 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
                 Flexible(
                   child: CustomButton(
                     height: 35.h,
-                    width: 100.w,
+                    width: 110,
                     backgroundColor: MyTheme.secondaryColor,
                     onPressed: () {
                       PaymentService().saveCard(context);
@@ -522,9 +523,9 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text(
+            Text(
               "Fare Breakdown",
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -567,16 +568,16 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                const Text(
+                Text(
                   "Total Amount",
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
                   "\$${_totalAmount.toStringAsFixed(2)}",
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.green.shade600,
@@ -662,10 +663,11 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
                 border: Border.all(color: Colors.grey.shade300),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
                   'No cards available. Please add a card first.',
-                  style: TextStyle(
+                  textAlign: TextAlign.center,
+                  style: Font.montserratFont(
                     color: Colors.grey,
                     fontSize: 14,
                   ),
@@ -693,9 +695,9 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
               ),
               if (_selectedCard != null) ...<Widget>[
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Tap to change card',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 10,
                     color: Colors.grey,
                     fontStyle: FontStyle.italic,
@@ -716,15 +718,15 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const Text(
+                  Text(
                     'Error loading cards',
-                    style: TextStyle(color: Colors.red, fontSize: 12),
+                    style: Font.montserratFont(color: Colors.red, fontSize: 12),
                   ),
                   TextButton(
                     onPressed: () {
                       context.read<CardBloc>().add(LoadCards());
                     },
-                    child: const Text('Retry', style: TextStyle(fontSize: 10)),
+                    child: Text('Retry', style: Font.montserratFont(fontSize: 10)),
                   ),
                 ],
               ),
