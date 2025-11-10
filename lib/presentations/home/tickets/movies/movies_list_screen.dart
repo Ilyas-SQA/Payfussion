@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/data/models/tickets/movies_model.dart';
-
+import '../../../../core/constants/fonts.dart';
 import '../../../../logic/blocs/tickets/movies/movies_bloc.dart';
 import '../../../../logic/blocs/tickets/movies/movies_event.dart';
 import '../../../../logic/blocs/tickets/movies/movies_state.dart';
@@ -357,7 +357,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                                     opacity: value,
                                     child: Text(
                                       widget.movie.title,
-                                      style: const TextStyle(
+                                      style: Font.montserratFont(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14,
                                       ),
@@ -377,7 +377,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                                     opacity: value,
                                     child: Text(
                                       widget.movie.genre,
-                                      style: const TextStyle(
+                                      style: Font.montserratFont(
                                         fontSize: 10,
                                       ),
                                     ),
@@ -412,7 +412,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                                         ),
                                         child: Text(
                                           widget.movie.rating,
-                                          style: const TextStyle(
+                                          style: Font.montserratFont(
                                             color: Colors.white,
                                             fontSize: 10,
                                             fontWeight: FontWeight.w500,
@@ -422,7 +422,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                                       const SizedBox(width: 8),
                                       Text(
                                         widget.movie.duration,
-                                        style: const TextStyle(
+                                        style: Font.montserratFont(
                                           fontSize: 12,
                                         ),
                                       ),
@@ -461,7 +461,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                                         const SizedBox(width: 4),
                                         Text(
                                           "${widget.movie.imdbRating}/10",
-                                          style: const TextStyle(
+                                          style: Font.montserratFont(
                                             fontSize: 12,
                                           ),
                                         ),
@@ -484,7 +484,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                                     opacity: value,
                                     child: Text(
                                       "Showtimes: ${widget.movie.showtimes.take(3).join(', ')}",
-                                      style: TextStyle(
+                                      style: Font.montserratFont(
                                         color: Colors.blue.shade600,
                                         fontSize: 11,
                                       ),
@@ -516,7 +516,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                                   ),
                                   child: Text(
                                     "\$${widget.movie.ticketPrice.toStringAsFixed(2)}",
-                                    style: const TextStyle(
+                                    style: Font.montserratFont(
                                       fontWeight: FontWeight.bold,
                                       color: MyTheme.secondaryColor,
                                       fontSize: 14,
@@ -526,7 +526,7 @@ class _AnimatedMovieCardState extends State<_AnimatedMovieCard> with TickerProvi
                                 const SizedBox(height: 4),
                                 Text(
                                   "per ticket",
-                                  style: TextStyle(
+                                  style: Font.montserratFont(
                                     color: Colors.grey.shade500,
                                     fontSize: 10,
                                   ),
