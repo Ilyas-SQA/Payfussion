@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/constants/fonts.dart';
+
 class SpecificRewardScreen extends StatefulWidget {
   const SpecificRewardScreen({super.key, this.title});
   final String? title;
@@ -17,7 +19,7 @@ class _SpecificRewardScreenState extends State<SpecificRewardScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Center(child: Text("${widget.title.toString()} Coming song .... ",style: const TextStyle(fontSize: 18,fontWeight: FontWeight.bold),))
+          Center(child: Text("${widget.title.toString()} Coming song .... ",style: Font.montserratFont(fontSize: 18,fontWeight: FontWeight.bold),))
         ],
       ),
     );
