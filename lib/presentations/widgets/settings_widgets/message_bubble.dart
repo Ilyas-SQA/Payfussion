@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/fonts.dart';
+
 class MessageBubble extends StatelessWidget {
   final String message;
   final bool isUser;
@@ -48,7 +50,7 @@ class MessageBubble extends StatelessWidget {
       ),
       child: Text(
         message,
-        style: TextStyle(
+        style: Font.montserratFont(
           color: isUser ? Colors.white : Colors.black87,
           fontSize: 16.0,
           fontWeight: FontWeight.w500,
