@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
+import '../../../../core/constants/fonts.dart';
 import '../../../../data/models/tickets/movies_model.dart';
 import '../../../widgets/background_theme.dart';
 import 'movies_payment_screen.dart';
@@ -259,7 +260,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
                       builder: (BuildContext context, int value, Widget? child) {
                         return Text(
                           widget.movie.title.substring(0, value),
-                          style: const TextStyle(
+                          style: Font.montserratFont(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -281,46 +282,6 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
     );
   }
 
-  Widget _buildShimmerPlaceholder() {
-    return AnimatedBuilder(
-      animation: _shimmerController,
-      builder: (BuildContext context, Widget? child) {
-        return Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: <Color>[
-                Colors.grey.shade300,
-                Colors.grey.shade100,
-                Colors.grey.shade300,
-              ],
-              stops: <double>[
-                _shimmerController.value - 0.3,
-                _shimmerController.value,
-                _shimmerController.value + 0.3,
-              ].map((double e) => e.clamp(0.0, 1.0)).toList(),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildErrorIcon() {
-    return TweenAnimationBuilder<double>(
-      duration: const Duration(milliseconds: 500),
-      tween: Tween(begin: 0.0, end: 1.0),
-      builder: (BuildContext context, double value, Widget? child) {
-        return Transform.scale(
-          scale: value,
-          child: Icon(
-            Icons.movie,
-            size: 60,
-            color: Colors.grey.shade600,
-          ),
-        );
-      },
-    );
-  }
 
   List<Widget> _buildAnimatedDetailRows() {
     final List<(IconData, String, String)> details = <(IconData, String, String)>[
@@ -379,7 +340,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
                       ),
                       child: Text(
                         widget.movie.rating,
-                        style: const TextStyle(
+                        style: Font.montserratFont(
                           color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
@@ -412,9 +373,9 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Text(
+          Text(
             "Synopsis",
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -426,7 +387,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
             builder: (BuildContext context, int value, Widget? child) {
               return Text(
                 widget.movie.synopsis.substring(0, value),
-                style: const TextStyle(height: 1.5),
+                style: Font.montserratFont(height: 1.5),
               );
             },
           ),
@@ -452,9 +413,9 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Text(
+          Text(
             "Cast",
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -482,7 +443,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
                       ),
                       child: Text(
                         actor,
-                        style: const TextStyle(
+                        style: Font.montserratFont(
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -514,9 +475,9 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Text(
+          Text(
             "Available Showtimes",
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -553,7 +514,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
                         ),
                         child: Text(
                           time,
-                          style: const TextStyle(
+                          style: Font.montserratFont(
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -631,11 +592,11 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
           Expanded(
             child: RichText(
               text: TextSpan(
-                style: TextStyle(fontSize: 12,color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,),
+                style: Font.montserratFont(fontSize: 12,color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,),
                 children: <InlineSpan>[
                   TextSpan(
                     text: "$label: ",
-                    style: const TextStyle(
+                    style: Font.montserratFont(
                       fontWeight: FontWeight.w500,
                     ),
                   ),
