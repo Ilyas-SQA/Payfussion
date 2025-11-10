@@ -5,6 +5,7 @@ import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/home/tickets/train/train_payment_screen.dart';
 
+import '../../../../core/constants/fonts.dart';
 import '../../../../data/models/tickets/train_model.dart';
 import '../../../widgets/background_theme.dart';
 
@@ -222,7 +223,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
                           offset: Offset(30 * (1 - value), 0),
                           child: Text(
                             widget.train.name,
-                            style: const TextStyle(
+                            style: Font.montserratFont(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
@@ -334,13 +335,13 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Row(
+          Row(
             children: <Widget>[
               Icon(Icons.description, color: MyTheme.secondaryColor),
               SizedBox(width: 8),
               Text(
                 "Description",
-                style: TextStyle(
+                style: Font.montserratFont(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -352,7 +353,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
             duration: const Duration(milliseconds: 300),
             child: Text(
               widget.train.description,
-              style: const TextStyle(
+              style: Font.montserratFont(
                 height: 1.6,
               ),
             ),
@@ -383,9 +384,9 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
             children: <Widget>[
               Icon(Icons.star, color: Colors.amber.shade600),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 "Amenities",
-                style: TextStyle(
+                style: Font.montserratFont(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -421,7 +422,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
                           Expanded(
                             child: Text(
                               amenity,
-                              style: const TextStyle(fontSize: 15),
+                              style: Font.montserratFont(fontSize: 15),
                             ),
                           ),
                         ],
@@ -496,7 +497,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
               children: <Widget>[
                 Text(
                   label,
-                  style: const TextStyle(
+                  style: Font.montserratFont(
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
                   ),
@@ -504,7 +505,7 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
                 const SizedBox(height: 2),
                 Text(
                   value,
-                  style: const TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 10,
                     fontWeight: FontWeight.w500,
                   ),
