@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import '../../../core/constants/fonts.dart';
 import '../../../logic/blocs/setting/community_forum/community_form_bloc.dart';
 import '../../../logic/blocs/setting/community_forum/community_form_event.dart';
 
@@ -93,8 +93,7 @@ class _CommentWidgetState extends State<CommentWidget> {
                         children: <Widget>[
                           Text(
                             widget.comment['userName'] ?? 'Unknown User',
-                            style: TextStyle(
-                              fontFamily: 'Montserrat',
+                            style: Font.montserratFont(
                               fontSize: 14.sp,
                               fontWeight: FontWeight.bold,
                               color: theme.primaryColor,
@@ -102,8 +101,7 @@ class _CommentWidgetState extends State<CommentWidget> {
                           ),
                           Text(
                             _formatDate(widget.comment['createDate']),
-                            style: TextStyle(
-                              fontFamily: 'Montserrat',
+                            style: Font.montserratFont(
                               fontSize: 11.sp,
                               color: Colors.grey.shade500,
                             ),
@@ -126,8 +124,7 @@ class _CommentWidgetState extends State<CommentWidget> {
                 // Comment content
                 Text(
                   widget.comment['content'] ?? '',
-                  style: TextStyle(
-                    fontFamily: 'Montserrat',
+                  style: Font.montserratFont(
                     fontSize: 13.sp,
                     color: theme.textTheme.bodyLarge?.color,
                   ),
@@ -151,7 +148,7 @@ class _CommentWidgetState extends State<CommentWidget> {
                   Expanded(
                     child: TextField(
                       controller: _replyController,
-                      style: const TextStyle(fontSize: 13, color: Colors.black),
+                      style: Font.montserratFont(fontSize: 13, color: Colors.black),
                       decoration: const InputDecoration(
                         hintText: 'Write a reply...',
                         border: InputBorder.none,
@@ -170,9 +167,9 @@ class _CommentWidgetState extends State<CommentWidget> {
                         color: const Color(0xff2D9CDB),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Reply',
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
