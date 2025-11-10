@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
+import '../../../../core/constants/fonts.dart';
+
 class EditableCard extends StatefulWidget {
   final String title;
   final String initialValue;
@@ -145,7 +147,7 @@ class _EditableCardState extends State<EditableCard> {
                     color: hintColor,
                     fontWeight: FontWeight.w500,
                   ) ??
-                      TextStyle(
+                      Font.montserratFont(
                         fontSize: 12.sp,
                         color: hintColor,
                         fontWeight: FontWeight.w500,
@@ -155,7 +157,7 @@ class _EditableCardState extends State<EditableCard> {
                 Text(
                   _currentValue.isEmpty ? "Not set" : _currentValue,
                   style: textTheme.bodyLarge?.copyWith(color: textColor,fontSize: 14) ??
-                      TextStyle(
+                      Font.montserratFont(
                         fontSize: 14.sp,
                         color: textColor,
                         fontWeight: FontWeight.w600,
@@ -203,7 +205,7 @@ class _EditableCardState extends State<EditableCard> {
             color: textColor,
             fontWeight: FontWeight.bold,
           ) ??
-              TextStyle(
+              Font.montserratFont(
                 fontSize: 14.sp,
                 color: textColor,
                 fontWeight: FontWeight.bold,
@@ -214,13 +216,13 @@ class _EditableCardState extends State<EditableCard> {
           controller: _textController,
           autofocus: true,
           keyboardType: widget.keyboardType,
-          style: textTheme.bodyLarge?.copyWith(color: textColor) ?? TextStyle(fontSize: 16.sp, color: textColor),
+          style: textTheme.bodyLarge?.copyWith(color: textColor) ?? Font.montserratFont(fontSize: 16.sp, color: textColor),
           cursorColor: MyTheme.primaryColor,
           decoration: InputDecoration(
             hintText: widget.hintText ?? 'Enter ${widget.title.toLowerCase()}',
             hintStyle:
             textTheme.bodyMedium?.copyWith(color: hintTextColor) ??
-                TextStyle(color: hintTextColor),
+                Font.montserratFont(color: hintTextColor),
             isDense: true,
             contentPadding: EdgeInsets.symmetric(
               vertical: 8.h,
@@ -247,7 +249,7 @@ class _EditableCardState extends State<EditableCard> {
               }),
               child: Text(
                 'Cancel',
-                style: TextStyle(
+                style: Font.montserratFont(
                   fontSize: 14.sp,
                   color: _isLoading ? hintTextColor : iconActionColor,
                 ),
@@ -259,7 +261,7 @@ class _EditableCardState extends State<EditableCard> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: MyTheme.primaryColor,
                 foregroundColor: Colors.white,
-                textStyle: TextStyle(
+                textStyle: Font.montserratFont(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.bold,
                 ),
