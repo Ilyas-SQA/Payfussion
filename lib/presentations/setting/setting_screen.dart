@@ -536,7 +536,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                   SettingTile(
                     icon: TImageUrl.reward,
                     title: 'My Reward',
-                    subtitle: 'View vouchers, games & exciting rewards',
+                    subtitle: 'View vouchers & exciting rewards',
                     trailingBuilder: (BuildContext ctx) => _animatedArrow(() {
                       Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const MyRewardScreen()));
                     }),
