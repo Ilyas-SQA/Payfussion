@@ -8,6 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:wave/config.dart';
 import 'dart:async';
 import 'package:wave/wave.dart';
+import '../../core/constants/fonts.dart';
 import '../../core/theme/theme.dart';
 import '../interfaces/screen_visibility_interface.dart';
 import '../widgets/payment_selector_widget.dart';
@@ -407,15 +408,15 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
       children: <Widget>[
         // Show loading until camera is ready
         if (!isCameraInitialized)
-          const Center(
+          Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                CircularProgressIndicator(color: Colors.white),
-                SizedBox(height: 16),
+                const CircularProgressIndicator(color: Colors.white),
+                const SizedBox(height: 16),
                 Text(
                   "Initializing camera...",
-                  style: TextStyle(color: Colors.white),
+                  style: Font.montserratFont(color: Colors.white),
                 ),
               ],
             ),
@@ -447,7 +448,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                     const SizedBox(height: 16),
                     Text(
                       "Camera Error: ${error.toString()}",
-                      style: const TextStyle(color: Colors.white),
+                      style: Font.montserratFont(color: Colors.white),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 16),
@@ -497,7 +498,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                   Text(
                     "Align QR code within the frame",
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       color: Colors.white,
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
@@ -507,7 +508,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                   Text(
                     "Hold your phone steady",
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       color: Colors.white.withOpacity(0.8),
                       fontSize: 14.sp,
                     ),
@@ -592,7 +593,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
             // Instructions
             Text(
               "Ready to Pay",
-              style: TextStyle(
+              style: Font.montserratFont(
                 color: Colors.white,
                 fontSize: 24.sp,
                 fontWeight: FontWeight.bold,
@@ -618,7 +619,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                   Expanded(
                     child: Text(
                       "Hold your phone near the payment terminal",
-                      style: TextStyle(
+                      style: Font.montserratFont(
                         color: Colors.white.withOpacity(0.8),
                         fontSize: 14.sp,
                       ),
@@ -653,11 +654,11 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                 children: <Widget>[
                   Text(
                     "Transaction Amount",
-                    style: TextStyle(color: Colors.white, fontSize: 14.sp),
+                    style: Font.montserratFont(color: Colors.white, fontSize: 14.sp),
                   ),
                   Text(
                     "\$XXX.XX",
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       color: Colors.white,
                       fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
@@ -681,7 +682,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                 SizedBox(width: 8.w),
                 Text(
                   "Secure encrypted transaction",
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     color: Colors.white.withOpacity(0.7),
                     fontSize: 12.sp,
                   ),
@@ -789,7 +790,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                     child: Center(
                       child: Text(
                         "QR Code",
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           color: isQRMode ? MyTheme.primaryColor : Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 14.sp,
@@ -806,7 +807,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                     child: Center(
                       child: Text(
                         "NFC",
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           color: !isQRMode ? MyTheme.primaryColor : Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 14.sp,
