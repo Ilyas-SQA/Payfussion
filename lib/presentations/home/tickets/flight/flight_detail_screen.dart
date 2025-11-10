@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
 
+import '../../../../core/constants/fonts.dart';
 import '../../../../data/models/tickets/flight_model.dart';
 import '../../../widgets/background_theme.dart';
 import 'flight_payment_screen.dart';
@@ -199,7 +200,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                                             children: <Widget>[
                                               AnimatedTextReveal(
                                                 text: widget.flight.airline,
-                                                style: const TextStyle(
+                                                style: Font.montserratFont(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.bold,
                                                 ),
@@ -207,7 +208,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                                               ),
                                               AnimatedTextReveal(
                                                 text: "Flight ${widget.flight.flightNumber}",
-                                                style: const TextStyle(
+                                                style: Font.montserratFont(
                                                   fontSize: 14,
                                                 ),
                                                 delay: const Duration(milliseconds: 500),
@@ -231,7 +232,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                                                   ),
                                                   child: Text(
                                                     widget.flight.flightType,
-                                                    style: const TextStyle(
+                                                    style: Font.montserratFont(
                                                       fontSize: 12,
                                                       fontWeight: FontWeight.w500,
                                                     ),
@@ -276,9 +277,9 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    const AnimatedTextReveal(
+                                    AnimatedTextReveal(
                                       text: "Amenities",
-                                      style: TextStyle(
+                                      style: Font.montserratFont(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -406,14 +407,14 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                     children: <Widget>[
                       Text(
                         widget.flight.departureTime,
-                        style: const TextStyle(
+                        style: Font.montserratFont(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
                       ),
                       Text(
                         widget.flight.departureAirport,
-                        style: const TextStyle(
+                        style: Font.montserratFont(
                           fontSize: 10,
                         ),
                       ),
@@ -435,7 +436,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                     ),
                     Text(
                       widget.flight.duration,
-                      style: const TextStyle(
+                      style: Font.montserratFont(
                         fontSize: 10,
                       ),
                     ),
@@ -453,14 +454,14 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                     children: <Widget>[
                       Text(
                         widget.flight.arrivalTime,
-                        style: const TextStyle(
+                        style: Font.montserratFont(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
                       ),
                       Text(
                         widget.flight.arrivalAirport,
-                        style: const TextStyle(
+                        style: Font.montserratFont(
                           fontSize: 10,
                         ),
                       ),
@@ -502,7 +503,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
               builder: (BuildContext context, Widget? child) {
                 return Text(
                   "\$${_priceCountAnimation.value.toStringAsFixed(0)} per person",
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 16,
                     color: Colors.green.shade600,
                     fontWeight: FontWeight.bold,
@@ -516,7 +517,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
 
       return DelayedAnimation(
         delay: Duration(milliseconds: 900 + (index * 150)),
-        child: _buildAnimatedDetailRow(detail.$1, detail.$2, Text(detail.$3, style: const TextStyle(fontSize: 16))),
+        child: _buildAnimatedDetailRow(detail.$1, detail.$2, Text(detail.$3, style: Font.montserratFont(fontSize: 16))),
       );
     }).toList();
   }
@@ -546,7 +547,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                 children: <Widget>[
                   Text(
                     label,
-                    style: const TextStyle(
+                    style: Font.montserratFont(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
