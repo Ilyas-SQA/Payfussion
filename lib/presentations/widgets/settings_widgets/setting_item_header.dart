@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../core/constants/fonts.dart';
+
 class SettingItemsHeader extends StatelessWidget {
   Widget? itemHeaderSideButton;
   String itemHeaderText;
@@ -18,8 +20,7 @@ class SettingItemsHeader extends StatelessWidget {
       children: <Widget>[
         Text(
           itemHeaderText,
-          style: TextStyle(
-            fontFamily: 'Montserrat',
+          style: Font.montserratFont(
             fontSize: 16.sp,
             fontWeight: FontWeight.bold,
           ),
