@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/constants/fonts.dart';
+
 class InputFieldWidget extends StatelessWidget {
   final TextEditingController controller;
   final String label;
@@ -19,11 +21,10 @@ class InputFieldWidget extends StatelessWidget {
     return TextField(
       controller: controller,
       maxLines: maxLines,
-      style: TextStyle(fontSize: 16.sp),
+      style: Font.montserratFont(fontSize: 16.sp),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(
-          fontFamily: 'Montserrat',
+        labelStyle: Font.montserratFont(
           fontSize: 16.sp,
           color: Colors.grey[600],
         ),
