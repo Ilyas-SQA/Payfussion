@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/data/models/user/user_model.dart';
 
+import '../../../core/constants/fonts.dart';
 import '../../../services/session_manager_service.dart';
 
 class SettingProfile extends StatelessWidget {
@@ -71,8 +72,7 @@ class SettingProfile extends StatelessWidget {
               children: <Widget>[
                 Text(
                   user.fullName ?? 'Guest User',
-                  style: TextStyle(
-                    fontFamily: 'Montserrat',
+                  style: Font.montserratFont(
                     fontSize: 16.sp,
                     color: theme.secondaryHeaderColor,
                     fontWeight: FontWeight.bold,
@@ -80,17 +80,15 @@ class SettingProfile extends StatelessWidget {
                 ),
                 Text(
                   user.email ?? 'Not signed in',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     color: theme.secondaryHeaderColor,
-                    fontFamily: 'Roboto',
                     fontSize: 13.sp,
                   ),
                 ),
                 Text(
                   user.phoneNumber ?? '',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     color: theme.secondaryHeaderColor,
-                    fontFamily: 'Roboto',
                     fontSize: 14.sp,
                   ),
                 ),
