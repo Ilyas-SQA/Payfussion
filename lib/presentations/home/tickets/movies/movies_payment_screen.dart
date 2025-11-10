@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:uuid/uuid.dart';
+import '../../../../core/constants/fonts.dart';
 import '../../../../core/constants/tax.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../data/models/card/card_model.dart';
@@ -176,9 +177,9 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Text(
+          Text(
             "Movie Summary",
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -209,7 +210,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
                 },
                 child: Text(
                   "${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}",
-                  style: const TextStyle(color: MyTheme.secondaryColor),
+                  style: Font.montserratFont(color: MyTheme.secondaryColor),
                 ),
               ),
             ],
@@ -236,9 +237,9 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Text(
+          Text(
             "Select Showtime",
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -249,7 +250,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
             runSpacing: 8,
             children: widget.movie.showtimes.map((String time) =>
                 ChoiceChip(
-                  label: Text(time, style: const TextStyle(fontSize: 14,color: Colors.black),),
+                  label: Text(time, style: Font.montserratFont(fontSize: 14,color: Colors.black),),
                   selected: _selectedShowtime == time,
                   onSelected: (bool selected) {
                     if (selected) {
@@ -285,9 +286,9 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Text(
+          Text(
             "Customer Details",
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -356,9 +357,9 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Text(
+          Text(
             "Ticket Options",
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -386,7 +387,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
                         ),
                         Text(
                           '$_numberOfTickets',
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: Font.montserratFont(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         IconButton(
                           onPressed: _numberOfTickets < 10
@@ -470,9 +471,9 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             spacing: 10,
             children: <Widget>[
-              const Text(
+              Text(
                 "Payment Method",
-                style: TextStyle(
+                style: Font.montserratFont(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -480,7 +481,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
               Flexible(
                 child: CustomButton(
                   height: 35.h,
-                  width: 100.w,
+                  width: 120.w,
                   backgroundColor: MyTheme.secondaryColor,
                   onPressed: () {
                     PaymentService().saveCard(context);
@@ -514,9 +515,9 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Text(
+          Text(
             "Price Breakdown",
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -559,16 +560,16 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              const Text(
+              Text(
                 "Total Amount",
-                style: TextStyle(
+                style: Font.montserratFont(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               Text(
                 "\$${_totalAmount.toStringAsFixed(2)}",
-                style: TextStyle(
+                style: Font.montserratFont(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.green.shade600,
@@ -621,7 +622,7 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
           //   )
           //       : const Text(
           //     "Confirm Booking & Pay",
-          //     style: TextStyle(fontSize: 16),
+          //     style: Font.montserratFont(fontSize: 16),
           //   ),
           // );
         },
@@ -682,10 +683,11 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
                 border: Border.all(color: Colors.grey.shade300),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
                   'No cards available. Please add a card first.',
-                  style: TextStyle(
+                  textAlign: TextAlign.center,
+                  style: Font.montserratFont(
                     color: Colors.grey,
                     fontSize: 14,
                   ),
@@ -713,9 +715,9 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
               ),
               if (_selectedCard != null) ...<Widget>[
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Tap to change card',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 10,
                     color: Colors.grey,
                     fontStyle: FontStyle.italic,
@@ -736,15 +738,15 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const Text(
+                  Text(
                     'Error loading cards',
-                    style: TextStyle(color: Colors.red, fontSize: 12),
+                    style: Font.montserratFont(color: Colors.red, fontSize: 12),
                   ),
                   TextButton(
                     onPressed: () {
                       context.read<CardBloc>().add(LoadCards());
                     },
-                    child: const Text('Retry', style: TextStyle(fontSize: 10)),
+                    child: Text('Retry', style: Font.montserratFont(fontSize: 10)),
                   ),
                 ],
               ),
@@ -864,9 +866,9 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                const Text(
+                Text(
                   'Select Card',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
