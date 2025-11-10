@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import '../../../../core/constants/fonts.dart';
 import '../../../../data/models/tickets/flight_model.dart';
 import '../../../../logic/blocs/tickets/flight/flight_bloc.dart';
 import '../../../../logic/blocs/tickets/flight/flight_event.dart';
@@ -313,7 +314,7 @@ class _AnimatedFlightCardState extends State<AnimatedFlightCard> with TickerProv
                                 delay: Duration(milliseconds: 100 + (widget.index * 50)),
                                 child: Text(
                                   widget.flight.airline,
-                                  style: const TextStyle(
+                                  style: Font.montserratFont(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
                                   ),
@@ -345,7 +346,7 @@ class _AnimatedFlightCardState extends State<AnimatedFlightCard> with TickerProv
                                   ),
                                   child: Text(
                                     widget.flight.flightType,
-                                    style: const TextStyle(
+                                    style: Font.montserratFont(
                                       fontSize: 10,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -366,7 +367,7 @@ class _AnimatedFlightCardState extends State<AnimatedFlightCard> with TickerProv
                                 builder: (BuildContext context, double value, Widget? child) {
                                   return Text(
                                     "\$${value.toStringAsFixed(0)}",
-                                    style: TextStyle(
+                                    style: Font.montserratFont(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.green.shade600,
                                       fontSize: 18,
@@ -377,7 +378,7 @@ class _AnimatedFlightCardState extends State<AnimatedFlightCard> with TickerProv
                               const SizedBox(height: 4),
                               Text(
                                 "per person",
-                                style: TextStyle(
+                                style: Font.montserratFont(
                                   color: Colors.grey.shade500,
                                   fontSize: 10,
                                 ),
@@ -398,14 +399,14 @@ class _AnimatedFlightCardState extends State<AnimatedFlightCard> with TickerProv
                               children: <Widget>[
                                 Text(
                                   widget.flight.departureTime,
-                                  style: const TextStyle(
+                                  style: Font.montserratFont(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
                                   ),
                                 ),
                                 Text(
                                   widget.flight.departureAirport,
-                                  style: TextStyle(
+                                  style: Font.montserratFont(
                                     color: Colors.grey.shade600,
                                     fontSize: 12,
                                   ),
@@ -429,7 +430,7 @@ class _AnimatedFlightCardState extends State<AnimatedFlightCard> with TickerProv
                               ),
                               Text(
                                 widget.flight.duration,
-                                style: TextStyle(
+                                style: Font.montserratFont(
                                   color: Colors.grey.shade600,
                                   fontSize: 12,
                                 ),
@@ -439,7 +440,7 @@ class _AnimatedFlightCardState extends State<AnimatedFlightCard> with TickerProv
                                   duration: const Duration(milliseconds: 300),
                                   child: Text(
                                     "${widget.flight.stops} stop${widget.flight.stops > 1 ? 's' : ''}",
-                                    style: TextStyle(
+                                    style: Font.montserratFont(
                                       color: Colors.orange.shade600,
                                       fontSize: 10,
                                     ),
@@ -456,14 +457,14 @@ class _AnimatedFlightCardState extends State<AnimatedFlightCard> with TickerProv
                               children: <Widget>[
                                 Text(
                                   widget.flight.arrivalTime,
-                                  style: const TextStyle(
+                                  style: Font.montserratFont(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
                                   ),
                                 ),
                                 Text(
                                   widget.flight.arrivalAirport,
-                                  style: TextStyle(
+                                  style: Font.montserratFont(
                                     color: Colors.grey.shade600,
                                     fontSize: 12,
                                   ),
