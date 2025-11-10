@@ -8,6 +8,7 @@ import '../../../data/models/notification/notification_model.dart';
 import '../../../logic/blocs/notification/notification_bloc.dart';
 import '../../../logic/blocs/notification/notification_event.dart';
 import '../../../logic/blocs/notification/notification_state.dart';
+import '../../core/constants/fonts.dart';
 import '../../core/theme/theme.dart';
 import '../widgets/background_theme.dart';
 
@@ -67,31 +68,31 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-          title: SlideTransition(
-            position: _headerSlide,
-            child: FadeTransition(
-              opacity: _headerFade,
-              child: const Text('Notifications', style: TextStyle(fontWeight: FontWeight.w600,),),),),
-          actions: <Widget>[
-            SlideTransition(
-                position: Tween<Offset>(begin: const Offset(0.5, 0), end: Offset.zero).animate(_headerController),
-                child: FadeTransition(
-                    opacity: _headerFade,
-                    child: PopupMenuButton<String>(
-                        icon: const Icon(Icons.more_vert),
-                        onSelected: (String value) {
-                          switch (value) {
-                            case 'mark_all_read': context.read<NotificationBloc>().add(MarkAllNotificationsAsRead()); break;
-                            case 'clear_all': _showClearAllDialog(); break;
-                          }
-                        },
-                        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                          const PopupMenuItem(value: 'mark_all_read',
-                              child: Row(children: <Widget>[Icon(Icons.mark_email_read, size: 20), SizedBox(width: 12), Text('Mark All Read')])),
-                          const PopupMenuItem(value: 'clear_all',
-                              child: Row(children: <Widget>[Icon(Icons.clear_all, size: 20), SizedBox(width: 12), Text('Clear All')]))
-                        ]))),
-          ],
+        title: SlideTransition(
+          position: _headerSlide,
+          child: FadeTransition(
+            opacity: _headerFade,
+            child: Text('Notifications', style: Font.montserratFont(fontWeight: FontWeight.w600,),),),),
+        actions: <Widget>[
+          SlideTransition(
+              position: Tween<Offset>(begin: const Offset(0.5, 0), end: Offset.zero).animate(_headerController),
+              child: FadeTransition(
+                  opacity: _headerFade,
+                  child: PopupMenuButton<String>(
+                      icon: const Icon(Icons.more_vert),
+                      onSelected: (String value) {
+                        switch (value) {
+                          case 'mark_all_read': context.read<NotificationBloc>().add(MarkAllNotificationsAsRead()); break;
+                          case 'clear_all': _showClearAllDialog(); break;
+                        }
+                      },
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                        const PopupMenuItem(value: 'mark_all_read',
+                            child: Row(children: <Widget>[Icon(Icons.mark_email_read, size: 20), SizedBox(width: 12), Text('Mark All Read')])),
+                        const PopupMenuItem(value: 'clear_all',
+                            child: Row(children: <Widget>[Icon(Icons.clear_all, size: 20), SizedBox(width: 12), Text('Clear All')]))
+                      ]))),
+        ],
       ),
       body: Stack(
         children: <Widget>[
@@ -259,7 +260,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                 const SizedBox(width: 6),
                 Text(
                   label,
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     color: isSelected ? Colors.white : Colors.grey[600],
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
@@ -333,7 +334,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                         Expanded(
                           child: Text(
                             notification.title,
-                            style: TextStyle(
+                            style: Font.montserratFont(
                               fontSize: 16,
                               fontWeight: notification.isRead ? FontWeight.w500 : FontWeight.w600,
                               height: 1.3,
@@ -360,7 +361,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                     // Message
                     Text(
                       notification.message,
-                      style: TextStyle(
+                      style: Font.montserratFont(
                         fontSize: 14,
                         color: Colors.grey[600],
                         height: 1.4,
@@ -378,7 +379,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                         Flexible(
                           child: Text(
                             timeago.format(notification.createdAt),
-                            style: TextStyle(
+                            style: Font.montserratFont(
                               fontSize: 12,
                               color: Colors.grey[500],
                               fontWeight: FontWeight.w500,
@@ -399,7 +400,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                             ),
                             child: Text(
                               '${notification.data!['currency'] ?? 'USD'} ${(notification.data!['amount'] ?? 0.0).toStringAsFixed(2)}',
-                              style: TextStyle(
+                              style: Font.montserratFont(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                                 color: _getNotificationColor(notification.type),
@@ -451,13 +452,13 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                         ],
                       ),
                     ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'delete',
                     child: Row(
                       children: <Widget>[
                         Icon(Icons.delete_outline, size: 18, color: Colors.red),
                         SizedBox(width: 8),
-                        Text('Delete', style: TextStyle(color: Colors.red)),
+                        Text('Delete', style: Font.montserratFont(color: Colors.red)),
                       ],
                     ),
                   ),
@@ -496,7 +497,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
               _selectedFilter == 'all'
                   ? 'No notifications yet'
                   : 'No ${_getFilterLabel()} found',
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
                 color: Colors.grey[700],
@@ -506,7 +507,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
             const SizedBox(height: 8),
             Text(
               'When you have notifications, they\'ll appear here',
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 16,
                 color: Colors.grey[500],
               ),
@@ -577,7 +578,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                       children: <Widget>[
                         Text(
                           notification.title,
-                          style: const TextStyle(
+                          style: Font.montserratFont(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: Colors.black87,
@@ -586,7 +587,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                         const SizedBox(height: 4),
                         Text(
                           timeago.format(notification.createdAt),
-                          style: TextStyle(
+                          style: Font.montserratFont(
                             fontSize: 12,
                             color: Colors.grey[500],
                             fontWeight: FontWeight.w500,
@@ -623,7 +624,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                       ),
                       child: Text(
                         notification.message,
-                        style: const TextStyle(
+                        style: Font.montserratFont(
                           fontSize: 16,
                           height: 1.5,
                           color: Colors.black87,
@@ -636,7 +637,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                       const SizedBox(height: 24),
                       Text(
                         'Transaction Details',
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                           color: Colors.grey[800],
@@ -676,7 +677,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                                   flex: 2,
                                   child: Text(
                                     _formatKey(entry.key),
-                                    style: TextStyle(
+                                    style: Font.montserratFont(
                                       fontSize: 14,
                                       color: Colors.grey[600],
                                       fontWeight: FontWeight.w500,
@@ -687,7 +688,7 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                                   flex: 3,
                                   child: Text(
                                     _formatValue(entry.key, entry.value),
-                                    style: const TextStyle(
+                                    style: Font.montserratFont(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
                                       color: Colors.black87,
@@ -728,9 +729,9 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                       ),
                       elevation: 2,
                     ),
-                    child: const Text(
+                    child: Text(
                       'Mark as Read',
-                      style: TextStyle(
+                      style: Font.montserratFont(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
