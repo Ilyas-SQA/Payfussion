@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/presentations/home/tickets/train/train_detail_screen.dart';
+import '../../../../core/constants/fonts.dart';
 import '../../../../data/models/tickets/train_model.dart';
 import '../../../../logic/blocs/tickets/train/train_bloc.dart';
 import '../../../../logic/blocs/tickets/train/train_event.dart';
@@ -164,7 +165,7 @@ class _TrainListScreenState extends State<TrainListScreen> with TickerProviderSt
                       const SizedBox(height: 16),
                       Text(
                         'No trains available',
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           color: Colors.grey.shade600,
                           fontSize: 16,
                         ),
@@ -323,7 +324,7 @@ class _AnimatedTrainCardState extends State<AnimatedTrainCard> with TickerProvid
                                 color: Colors.transparent,
                                 child: Text(
                                   widget.train.name,
-                                  style: const TextStyle(
+                                  style: Font.montserratFont(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14,
                                   ),
@@ -335,7 +336,7 @@ class _AnimatedTrainCardState extends State<AnimatedTrainCard> with TickerProvid
                               delay: Duration(milliseconds: 100 + (widget.index * 50)),
                               child: Text(
                                 widget.train.route,
-                                style: const TextStyle(
+                                style: Font.montserratFont(
                                   fontSize: 12,
                                 ),
                               ),
@@ -346,7 +347,7 @@ class _AnimatedTrainCardState extends State<AnimatedTrainCard> with TickerProvid
                                 delay: Duration(milliseconds: 150 + (widget.index * 50)),
                                 child: Text(
                                   "Via: ${widget.train.via}",
-                                  style: TextStyle(
+                                  style: Font.montserratFont(
                                     color: Colors.grey.shade500,
                                     fontSize: 12,
                                   ),
@@ -366,7 +367,7 @@ class _AnimatedTrainCardState extends State<AnimatedTrainCard> with TickerProvid
                                   const SizedBox(width: 4),
                                   Text(
                                     "${widget.train.duration.inHours}h ${widget.train.duration.inMinutes % 60}m",
-                                    style: TextStyle(
+                                    style: Font.montserratFont(
                                       color: Colors.grey.shade600,
                                       fontSize: 12,
                                     ),
@@ -384,7 +385,7 @@ class _AnimatedTrainCardState extends State<AnimatedTrainCard> with TickerProvid
                           children: <Widget>[
                             AnimatedDefaultTextStyle(
                               duration: const Duration(milliseconds: 200),
-                              style: TextStyle(
+                              style: Font.montserratFont(
                                 fontWeight: FontWeight.bold,
                                 color: _isPressed
                                     ? Colors.green.shade700
