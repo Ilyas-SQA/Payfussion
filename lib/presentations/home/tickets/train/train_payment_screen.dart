@@ -6,6 +6,7 @@ import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:uuid/uuid.dart';
+import '../../../../core/constants/fonts.dart';
 import '../../../../core/constants/tax.dart';
 import '../../../../data/models/card/card_model.dart';
 import '../../../../data/models/tickets/train_model.dart';
@@ -218,7 +219,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
                 onPressed: _selectDate,
                 child: Text(
                   "${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}",
-                  style: const TextStyle(color: MyTheme.secondaryColor, fontWeight: FontWeight.w600),
+                  style: Font.montserratFont(color: MyTheme.secondaryColor, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -265,8 +266,8 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
       titleWidget: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          const Expanded(
-            child: Text("Payment Method", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Expanded(
+            child: Text("Payment Method", style: Font.montserratFont(fontSize: 18, fontWeight: FontWeight.bold)),
           ),
           AppButton(
             onTap: () => PaymentService().saveCard(context),
@@ -328,7 +329,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
               children: <Widget>[
                 Icon(icon, color: MyTheme.secondaryColor, size: 20),
                 const SizedBox(width: 8),
-                Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(title, style: Font.montserratFont(fontSize: 18, fontWeight: FontWeight.bold)),
               ],
             ),
             const SizedBox(height: 16),
@@ -344,8 +345,8 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
         children: <Widget>[
-          Text("$label: ", style: TextStyle(color: Colors.grey.shade600)),
-          Flexible(child: Text(value, style: const TextStyle(fontWeight: FontWeight.w500,fontSize: 12))),
+          Text("$label: ", style: Font.montserratFont(color: Colors.grey.shade600)),
+          Flexible(child: Text(value, style: Font.montserratFont(fontWeight: FontWeight.w500,fontSize: 12))),
         ],
       ),
     );
@@ -397,7 +398,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
                 child: Text(
                   '$_numberOfPassengers',
                   key: ValueKey(_numberOfPassengers),
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: Font.montserratFont(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -467,14 +468,14 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
         children: <Widget>[
           Text(
             label,
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: isTotal ? 16 : 14,
               fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
             ),
           ),
           AnimatedDefaultTextStyle(
             duration: const Duration(milliseconds: 300),
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: isTotal ? 18 : 14,
               fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
               color: isTotal ? Colors.green.shade600 : null,
@@ -531,7 +532,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
     if (cards.isEmpty) {
       return Container(
         width: double.infinity,
-        height: 60,
+        height: 80,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey.shade300),
@@ -553,9 +554,9 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
       children: <Widget>[
         _buildCardItem(_selectedCard!, true, () => _showCardSelection(cards)),
         const SizedBox(height: 8),
-        const Text(
+        Text(
           'Tap to change card',
-          style: TextStyle(fontSize: 10, color: Colors.grey),
+          style: Font.montserratFont(fontSize: 10, color: Colors.grey),
         ),
       ],
     );
@@ -576,14 +577,14 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
         children: <Widget>[
           Text(
             'Error: $message',
-            style: const TextStyle(color: Colors.red, fontSize: 12),
+            style: Font.montserratFont(color: Colors.red, fontSize: 12),
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
           TextButton(
             onPressed: () => context.read<CardBloc>().add(LoadCards()),
-            child: const Text('Retry', style: TextStyle(fontSize: 10)),
+            child: Text('Retry', style: Font.montserratFont(fontSize: 10)),
           ),
         ],
       ),
@@ -635,12 +636,12 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
                 children: <Widget>[
                   Text(
                     card.cardEnding,
-                    style: const TextStyle(fontWeight: FontWeight.w500),
+                    style: Font.montserratFont(fontWeight: FontWeight.w500),
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
                     'Exp: ${card.formattedExpiry}${card.isDefault ? ' • Default' : ''}',
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                    style: Font.montserratFont(fontSize: 12, color: Colors.grey.shade600),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
@@ -689,9 +690,9 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            const Text(
+            Text(
               'Select Card',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: Font.montserratFont(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Flexible(
