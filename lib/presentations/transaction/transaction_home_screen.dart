@@ -8,6 +8,7 @@ import 'package:payfussion/core/constants/image_url.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/constants/fonts.dart';
 import '../../data/models/Transactions_Modals/transaction_modal.dart';
 import '../widgets/background_theme.dart';
 import '../widgets/home_widgets/transaction_item.dart';
@@ -459,7 +460,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
           child: Text(
             title,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: Font.montserratFont(
               fontSize: 10.sp,
               fontWeight: FontWeight.w600,
               color: isSelected ? Colors.white : Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,
@@ -470,8 +471,9 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
     );
   }
 
-  // ENHANCED SHIMMER LOADING WIDGETS WITH ANIMATIONS
-  Widget _buildShimmerLoading() {
+  Widget _buildShimmerLoading(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return AnimationLimiter(
       child: ListView(
         padding: EdgeInsets.symmetric(vertical: 10.h),
@@ -482,18 +484,18 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
             child: FadeInAnimation(child: widget),
           ),
           children: <Widget>[
-            _buildShimmerSection(),
+            _buildShimmerSection(context),
             SizedBox(height: 20.h),
-            _buildShimmerSection(),
+            _buildShimmerSection(context),
             SizedBox(height: 20.h),
-            _buildShimmerSection(),
+            _buildShimmerSection(context),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildShimmerSection() {
+  Widget _buildShimmerSection(BuildContext context) {
     return AnimatedContainer(
       duration: AppDurations.quickAnimation,
       child: Column(
@@ -502,29 +504,31 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
           // Header shimmer
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            child: _buildShimmerBox(width: 120.w, height: 20.h),
+            child: _buildShimmerBox(context, width: 120.w, height: 20.h),
           ),
           // Transaction items shimmer
-          ...List.generate(3, (int index) => _buildTransactionShimmer()),
+          ...List.generate(3, (int index) => _buildTransactionShimmer(context)),
         ],
       ),
     );
   }
 
-  Widget _buildTransactionShimmer() {
+  Widget _buildTransactionShimmer(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       child: AnimatedContainer(
         duration: AppDurations.quickAnimation,
         padding: EdgeInsets.all(16.r),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
           borderRadius: BorderRadius.circular(12.r),
         ),
         child: Row(
           children: <Widget>[
             // Icon shimmer
-            _buildShimmerBox(width: 48.w, height: 48.h, borderRadius: 24.r),
+            _buildShimmerBox(context, width: 48.w, height: 48.h, borderRadius: 24.r),
             SizedBox(width: 12.w),
             // Content shimmer
             Expanded(
@@ -534,20 +538,20 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      _buildShimmerBox(width: 140.w, height: 18.h),
-                      _buildShimmerBox(width: 80.w, height: 18.h),
+                      _buildShimmerBox(context, width: 140.w, height: 18.h),
+                      _buildShimmerBox(context, width: 80.w, height: 18.h),
                     ],
                   ),
                   SizedBox(height: 8.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      _buildShimmerBox(width: 100.w, height: 14.h),
-                      _buildShimmerBox(width: 70.w, height: 24.h, borderRadius: 12.r),
+                      _buildShimmerBox(context, width: 100.w, height: 14.h),
+                      _buildShimmerBox(context, width: 70.w, height: 24.h, borderRadius: 12.r),
                     ],
                   ),
                   SizedBox(height: 4.h),
-                  _buildShimmerBox(width: 80.w, height: 12.h),
+                  _buildShimmerBox(context, width: 80.w, height: 12.h),
                 ],
               ),
             ),
@@ -557,11 +561,14 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
     );
   }
 
-  Widget _buildShimmerBox({
-    required double width,
-    required double height,
-    double borderRadius = 6.0,
-  }) {
+  Widget _buildShimmerBox(
+      BuildContext context, {
+        required double width,
+        required double height,
+        double borderRadius = 6.0,
+      }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       width: width,
       height: height,
@@ -570,10 +577,16 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
         gradient: LinearGradient(
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
-          colors: <Color>[
+          colors: isDark
+              ? [
+            Colors.grey.shade800,
+            Colors.grey.shade700,
+            Colors.grey.shade800,
+          ]
+              : [
+            Colors.grey.shade300,
             Colors.grey.shade100,
-            Colors.grey.shade50,
-            Colors.grey.shade100,
+            Colors.grey.shade300,
           ],
           stops: const <double>[0.0, 0.5, 1.0],
         ),
@@ -581,13 +594,14 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
       child: _ShimmerAnimation(
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDark ? Colors.grey.shade900 : Colors.white,
             borderRadius: BorderRadius.circular(borderRadius),
           ),
         ),
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -621,7 +635,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
                   builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
                     // SHIMMER LOADING STATE
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return _buildShimmerLoading();
+                      return _buildShimmerLoading(context);
                     }
 
                     if (snapshot.hasError) {
@@ -776,8 +790,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
                 children: <Widget>[
                   Text(
                     'No ${_getCategoryTitle()}',
-                    style: TextStyle(
-                      fontFamily: 'Montserrat',
+                    style: Font.montserratFont(
                       fontSize: 20.sp,
                       fontWeight: FontWeight.bold,
                     ),
@@ -786,8 +799,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
                   Text(
                     'You haven\'t completed any\n${_getCategoryTitle().toLowerCase()} yet',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Montserrat',
+                    style: Font.montserratFont(
                       fontSize: 16.sp,
                       color: const Color(0xff757575),
                       fontWeight: FontWeight.w400,
@@ -1001,7 +1013,7 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text('Filter Transactions', style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
+                  Text('Filter Transactions', style: Font.montserratFont(fontSize: 18.sp, fontWeight: FontWeight.bold)),
                   IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close)),
                 ],
               ),
@@ -1010,7 +1022,7 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
               SizedBox(height: 10.h),
 
               // Period
-              Text('Period', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
+              Text('Period', style: Font.montserratFont(fontSize: 16.sp, fontWeight: FontWeight.bold)),
               SizedBox(height: 10.h),
               Wrap(
                 spacing: 10.w,
@@ -1020,7 +1032,7 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
                     duration: const Duration(milliseconds: 200),
                     child: ChoiceChip(
                       label: Text(
-                        option, style: TextStyle(
+                        option, style: Font.montserratFont(
                         color: isSelected ? Colors.white : Colors.black,
                       ),
                       ),
@@ -1041,7 +1053,7 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
               SizedBox(height: 20.h),
 
               // Custom Range
-              Text('Custom Date Range', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
+              Text('Custom Date Range', style: Font.montserratFont(fontSize: 16.sp, fontWeight: FontWeight.bold)),
               SizedBox(height: 10.h),
               GestureDetector(
                 onTap: () async {
@@ -1086,9 +1098,9 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
                           ? Text(
                         '${DateFormat('MMM d, yyyy').format(filters['dateRange'].start)} - '
                             '${DateFormat('MMM d, yyyy').format(filters['dateRange'].end)}',
-                        style: TextStyle(fontSize: 14.sp),
+                        style: Font.montserratFont(fontSize: 14.sp),
                       )
-                          : Text('Select date range', style: TextStyle(fontSize: 14.sp, color: Colors.grey)),
+                          : Text('Select date range', style: Font.montserratFont(fontSize: 14.sp, color: Colors.grey)),
                     ],
                   ),
                 ),
@@ -1096,7 +1108,7 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
               SizedBox(height: 20.h),
 
               // Status
-              Text('Status', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
+              Text('Status', style: Font.montserratFont(fontSize: 16.sp, fontWeight: FontWeight.bold)),
               SizedBox(height: 10.h),
               Wrap(
                 spacing: 10.w,
@@ -1105,7 +1117,7 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
                   return AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     child: FilterChip(
-                      label: Text(status, style: TextStyle(color: isSelected ? Colors.white : Colors.black)),
+                      label: Text(status, style: Font.montserratFont(color: isSelected ? Colors.white : Colors.black)),
                       selected: isSelected,
                       selectedColor:  MyTheme.primaryColor,
                       onSelected: (bool selected) {
@@ -1147,7 +1159,7 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                         ),
-                        child: Text('Reset', style: TextStyle(fontSize: 16.sp, color: MyTheme.primaryColor)),
+                        child: Text('Reset', style: Font.montserratFont(fontSize: 16.sp, color: MyTheme.primaryColor)),
                       ),
                     ),
                   ),
@@ -1165,7 +1177,7 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
                           backgroundColor: MyTheme.primaryColor,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
                         ),
-                        child: Text('Apply Filters', style: TextStyle(fontSize: 16.sp, color: Colors.white)),
+                        child: Text('Apply Filters', style: Font.montserratFont(fontSize: 16.sp, color: Colors.white)),
                       ),
                     ),
                   ),
