@@ -661,91 +661,57 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
     required TextInputType keyboardType,
     String? Function(String?)? validator,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5.r),
-        border: Border.all(color: MyTheme.primaryColor),
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      cursorColor: _getBrandColor(),
+      style: TextStyle(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w500,
+        color: isDark ? Colors.white : Colors.black,
       ),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        cursorColor: _getBrandColor(),
-        style: TextStyle(
-          fontSize: 16.sp,
+      validator: validator,
+      inputFormatters: keyboardType == TextInputType.phone
+          ? <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(11)]
+          : keyboardType == TextInputType.number
+          ? <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(12)]
+          : <TextInputFormatter>[],
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
+        labelText: label,
+        hintText: hint,
+        labelStyle: TextStyle(
+          fontSize: 14.sp,
+          color: _getBrandColor(),
           fontWeight: FontWeight.w500,
-          color: isDark ? Colors.white : Colors.black,
         ),
-        validator: validator,
-        inputFormatters: keyboardType == TextInputType.phone
-            ? <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(11)]
-            : keyboardType == TextInputType.number
-            ? <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(12)]
-            : <TextInputFormatter>[],
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
-          labelText: label,
-          hintText: hint,
-          labelStyle: TextStyle(
-            fontSize: 14.sp,
-            color: _getBrandColor(),
-            fontWeight: FontWeight.w500,
-          ),
-          hintStyle: TextStyle(
-            fontSize: 14.sp,
-            color: Colors.grey[500],
-          ),
-          prefixIcon: Container(
-            margin: EdgeInsets.all(12.w),
-            padding: EdgeInsets.all(8.w),
-            decoration: BoxDecoration(
-              color: _getBrandColor().withOpacity(0.1),
-              borderRadius: BorderRadius.circular(5.r),
-            ),
-            child: Icon(
-              icon,
-              color: _getBrandColor(),
-              size: 20.sp,
-            ),
-          ),
-          suffixIcon: ValueListenableBuilder<TextEditingValue>(
-            valueListenable: controller,
-            builder: (BuildContext context, TextEditingValue value, Widget? child) {
-              if (value.text.isEmpty) return const SizedBox();
-              if (keyboardType == TextInputType.emailAddress) {
-                final bool isValid = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}'
-                ).hasMatch(value.text);
-                return Icon(
-                  isValid ? Icons.check_circle : Icons.error_outline,
-                  color: isValid ? Colors.green : Colors.red,
-                  size: 20.sp,
-                );
-              }
-              return IconButton(
-                icon: Icon(Icons.clear, size: 18.sp, color: Colors.grey[600]),
-                onPressed: () => controller.clear(),
+        hintStyle: TextStyle(
+          fontSize: 14.sp,
+          color: Colors.grey[500],
+        ),
+        prefixIcon: Icon(
+          icon,
+          color: _getBrandColor(),
+          size: 20.sp,
+        ),
+        suffixIcon: ValueListenableBuilder<TextEditingValue>(
+          valueListenable: controller,
+          builder: (BuildContext context, TextEditingValue value, Widget? child) {
+            if (value.text.isEmpty) return const SizedBox();
+            if (keyboardType == TextInputType.emailAddress) {
+              final bool isValid = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}'
+              ).hasMatch(value.text);
+              return Icon(
+                isValid ? Icons.check_circle : Icons.error_outline,
+                color: isValid ? Colors.green : Colors.red,
+                size: 20.sp,
               );
-            },
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5.r),
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5.r),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5.r),
-            borderSide: BorderSide(color: _getBrandColor(), width: 1),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5.r),
-            borderSide: const BorderSide(color: Colors.red, width: 1),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5.r),
-            borderSide: const BorderSide(color: Colors.red, width: 1),
-          ),
+            }
+            return IconButton(
+              icon: Icon(Icons.clear, size: 18.sp, color: Colors.grey[600]),
+              onPressed: () => controller.clear(),
+            );
+          },
         ),
       ),
     );
@@ -769,12 +735,20 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
               height: 80.h,
               padding: EdgeInsets.all(20.w),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(16.r),
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: BorderRadius.circular(5.r),
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                    blurRadius: 5,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Center(
                 child: Text(
                   'No cards available. Please add a card first.',
+                  textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.grey, fontSize: 14.sp),
                 ),
               ),
