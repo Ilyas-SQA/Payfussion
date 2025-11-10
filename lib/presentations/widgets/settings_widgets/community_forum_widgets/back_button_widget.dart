@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/fonts.dart';
+
 Widget createBackButton(String path, BuildContext context){
   return InkWell(
     onTap: (){
@@ -15,8 +17,7 @@ Widget createBackButton(String path, BuildContext context){
         SizedBox(width: 2.w),
         Text(
           'Back',
-          style: TextStyle(
-            fontFamily: 'Montserrat',
+          style: Font.montserratFont(
             fontSize: 20.sp,
             color: const Color(0xff2D9CDB),
             fontWeight: FontWeight.w600,
