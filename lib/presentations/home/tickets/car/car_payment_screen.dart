@@ -7,6 +7,7 @@ import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'package:payfussion/services/payment_service.dart';
 import 'package:uuid/uuid.dart';
+import '../../../../core/constants/fonts.dart';
 import '../../../../core/constants/tax.dart';
 import '../../../../data/models/card/card_model.dart';
 import '../../../../data/models/notification/notification_model.dart';
@@ -217,9 +218,9 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text(
+             Text(
               "Ride Summary",
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -232,7 +233,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
                   backgroundColor: _getServiceColor(widget.ride.serviceType),
                   child: Text(
                     widget.ride.driverName.substring(0, 2).toUpperCase(),
-                    style: const TextStyle(
+                    style:  Font.montserratFont(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
@@ -245,7 +246,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
                     children: <Widget>[
                       Text(
                         widget.ride.driverName,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style:  Font.montserratFont(fontWeight: FontWeight.bold),
                       ),
                       Text("${widget.ride.carMake} ${widget.ride.carModel}"),
                       Text("${widget.ride.serviceType} • ★${widget.ride.rating}"),
@@ -278,9 +279,9 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text(
+             Text(
               "Trip Details",
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -335,7 +336,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
                       ),
                       Text(
                         "${_estimatedDistance.toStringAsFixed(1)} miles",
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style:  Font.montserratFont(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -366,9 +367,9 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text(
+             Text(
               "Ride Options",
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -465,9 +466,9 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text(
+            Text(
               "Passenger Details",
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -526,9 +527,9 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               spacing: 10,
               children: <Widget>[
-                const Text(
+                Text(
                   "Payment Method",
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -536,7 +537,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
                 Flexible(
                   child: CustomButton(
                     height: 35.h,
-                    width: 100.w,
+                    width: 110,
                     backgroundColor: MyTheme.secondaryColor,
                     onPressed: () {
                       PaymentService().saveCard(context);
@@ -572,9 +573,9 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text(
+            Text(
               "Fare Estimate",
-              style: TextStyle(
+              style: Font.montserratFont(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -617,16 +618,16 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                const Text(
+                 Text(
                   "Estimated Total",
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
                   "\$${_estimatedFare.toStringAsFixed(2)}",
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.green.shade600,
@@ -637,7 +638,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
             const SizedBox(height: 8),
             Text(
               "* Final fare may vary based on actual distance, time, and traffic conditions",
-              style: TextStyle(
+              style: Font.montserratFont(
                 color: Colors.grey.shade600,
                 fontSize: 12,
                 fontStyle: FontStyle.italic,
@@ -724,10 +725,11 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
                 border: Border.all(color: Colors.grey.shade300),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
                   'No cards available. Please add a card first.',
-                  style: TextStyle(
+                  textAlign: TextAlign.center,
+                  style: Font.montserratFont(
                     color: Colors.grey,
                     fontSize: 14,
                   ),
@@ -755,9 +757,9 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
               ),
               if (_selectedCard != null) ...<Widget>[
                 const SizedBox(height: 8),
-                const Text(
+                 Text(
                   'Tap to change card',
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 10,
                     color: Colors.grey,
                     fontStyle: FontStyle.italic,
@@ -778,15 +780,15 @@ class _RideBookingScreenState extends State<RideBookingScreen> with TickerProvid
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const Text(
+                  Text(
                     'Error loading cards',
-                    style: TextStyle(color: Colors.red, fontSize: 12),
+                    style: Font.montserratFont(color: Colors.red, fontSize: 12),
                   ),
                   TextButton(
                     onPressed: () {
                       context.read<CardBloc>().add(LoadCards());
                     },
-                    child: const Text('Retry', style: TextStyle(fontSize: 10)),
+                    child: Text('Retry', style: Font.montserratFont(fontSize: 10)),
                   ),
                 ],
               ),
