@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import '../../../core/constants/fonts.dart';
 import '../../../logic/blocs/currency/currency_bloc.dart';
 import '../../../logic/blocs/currency/currency_state.dart';
 import '../../../logic/blocs/currency/currency_event.dart';
@@ -96,9 +97,7 @@ class _SettingTileState extends State<SettingTile>
               padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 4.w),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12.r),
-                color: _animationController.isAnimating
-                    ? Colors.grey.withOpacity(0.1)
-                    : Colors.transparent,
+                color: _animationController.isAnimating ? Colors.grey.withOpacity(0.1) : Colors.transparent,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -143,24 +142,18 @@ class _SettingTileState extends State<SettingTile>
                         children: <Widget>[
                           AnimatedDefaultTextStyle(
                             duration: const Duration(milliseconds: 200),
-                            style: TextStyle(
-                              fontFamily: 'Montserrat',
+                            style: Font.montserratFont(
                               fontSize: 14.sp,
                               fontWeight: FontWeight.bold,
-                              color: _animationController.isAnimating
-                                  ? MyTheme.primaryColor
-                                  : Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,
+                              color: _animationController.isAnimating ? MyTheme.primaryColor : Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,
                             ),
                             child: Text(widget.title),
                           ),
                           AnimatedDefaultTextStyle(
                             duration: const Duration(milliseconds: 200),
-                            style: TextStyle(
-                              fontFamily: 'Roboto',
+                            style: Font.montserratFont(
                               fontSize: 12.sp,
-                              color: _animationController.isAnimating
-                                  ? Colors.grey[600]
-                                  : Colors.grey,
+                              color: _animationController.isAnimating ? Colors.grey[600] : Colors.grey,
                             ),
                             child: Text(widget.subtitle),
                           ),
@@ -284,8 +277,7 @@ Widget currencyPicker({required BuildContext context}) =>
                     child: Text(
                       currencyName,
                       key: ValueKey(currencyName),
-                      style: TextStyle(
-                        fontFamily: 'Roboto',
+                      style: Font.montserratFont(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
                       ),
