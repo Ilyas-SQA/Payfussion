@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../core/constants/fonts.dart';
+
 class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
@@ -92,12 +94,11 @@ class CustomButton extends StatelessWidget {
                 Flexible(
                   child: Text(
                     text,
-                    style: TextStyle(
+                    textAlign: TextAlign.center,
+                    style: Font.montserratFont(
                       color: textColor ?? Colors.white,
                       fontSize: fontSize ?? 16.sp,
                       fontWeight: fontWeight ?? FontWeight.w500,
-                      overflow: TextOverflow.ellipsis,
-                      fontFamily: "Roboto",
                     ),
                   ),
                 ),
