@@ -4,8 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:payfussion/core/circular_indicator.dart';
 import 'package:payfussion/core/theme/theme.dart';
-import 'package:shimmer/shimmer.dart';
-
 import '../../core/constants/fonts.dart';
 import '../widgets/background_theme.dart';
 
