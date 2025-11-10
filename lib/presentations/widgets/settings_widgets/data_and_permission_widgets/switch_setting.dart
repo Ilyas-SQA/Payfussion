@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
+import '../../../../core/constants/fonts.dart';
 import '../../../../core/utils/setting_utils/data_and_permission_utils/app_styles.dart';
 
 class SwitchSetting extends StatefulWidget {
@@ -50,7 +51,7 @@ class _SwitchSettingState extends State<SwitchSetting> {
                 ),
                 Text(
                   widget.description,
-                  style: TextStyle(
+                  style: Font.montserratFont(
                     fontSize: 14.sp,
                     color: Theme.of(context).textTheme.bodySmall?.color,
                   ),
