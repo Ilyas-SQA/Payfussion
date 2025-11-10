@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/data/models/tickets/car_model.dart';
 
+import '../../../../core/constants/fonts.dart';
 import '../../../../logic/blocs/tickets/car/car_bloc.dart';
 import '../../../../logic/blocs/tickets/car/car_event.dart';
 import '../../../../logic/blocs/tickets/car/car_state.dart';
@@ -311,7 +312,7 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                                   color: Colors.transparent,
                                   child: Text(
                                     widget.ride.driverName,
-                                    style: const TextStyle(
+                                    style: Font.montserratFont(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14,
                                     ),
@@ -321,7 +322,7 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                               const SizedBox(height: 4),
                               Text(
                                 "${widget.ride.carMake} ${widget.ride.carModel}",
-                                style: TextStyle(
+                                style: Font.montserratFont(
                                   color: Colors.grey.shade600,
                                   fontSize: 12,
                                 ),
@@ -344,7 +345,7 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                                     ),
                                     child: Text(
                                       widget.ride.serviceType,
-                                      style: const TextStyle(
+                                      style: Font.montserratFont(
                                         fontSize: 10,
                                         fontWeight: FontWeight.w500,
                                       ),
@@ -364,19 +365,19 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                                   const SizedBox(width: 2),
                                   Text(
                                     "${widget.ride.rating}",
-                                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                                    style: Font.montserratFont(color: Colors.grey.shade600, fontSize: 12),
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
                                     "${widget.ride.totalRides} rides",
-                                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                                    style: Font.montserratFont(color: Colors.grey.shade600, fontSize: 12),
                                   ),
                                 ],
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 "Available in: ${widget.ride.serviceAreas.take(2).join(', ')}",
-                                style: const TextStyle(color: MyTheme.secondaryColor, fontSize: 11),
+                                style: Font.montserratFont(color: MyTheme.secondaryColor, fontSize: 11),
                               ),
                             ],
                           ),
@@ -388,7 +389,7 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                               tag: 'price_${widget.index}',
                               child: Text(
                                 "\$${widget.ride.baseRate.toStringAsFixed(2)}",
-                                style: const TextStyle(
+                                style: Font.montserratFont(
                                   fontWeight: FontWeight.bold,
                                   color: MyTheme.secondaryColor,
                                   fontSize: 18,
@@ -398,7 +399,7 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                             const SizedBox(height: 4),
                             Text(
                               "per mile",
-                              style: TextStyle(color: Colors.grey.shade300, fontSize: 10),
+                              style: Font.montserratFont(color: Colors.grey.shade300, fontSize: 10),
                             ),
                             const SizedBox(height: 4),
                             Container(
@@ -409,7 +410,7 @@ class _AnimatedRideCardState extends State<AnimatedRideCard>
                               ),
                               child: Text(
                                 widget.ride.isAvailable ? "Available" : "Busy",
-                                style: const TextStyle(color: Colors.white, fontSize: 8),
+                                style: Font.montserratFont(color: Colors.white, fontSize: 8),
                               ),
                             ),
                           ],
