@@ -94,8 +94,7 @@ class _EditableCardState extends State<EditableCard> {
     final Color hintTextColor = theme.hintColor;
 
     return Card(
-      elevation: 2, // Reduced from default (usually 1-4) to 2
-      shadowColor: Colors.black.withOpacity(0.1), // Lighter shadow
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: Padding(
         padding: EdgeInsets.all(12.sp),
         child: _isEditing ?
