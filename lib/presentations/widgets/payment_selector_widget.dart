@@ -1,50 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:payfussion/data/models/card/card_model.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../core/constants/image_url.dart';
 import '../../core/theme/theme.dart';
 
-class PaymentCard {
-  final String id;
-  final String brand;
-  final String last4;
-  final String expMonth;
-  final String expYear;
-  final DateTime createDate;
-  final String paymentMethodId;
-  final String stripeCustomerId;
-
-  PaymentCard({
-    required this.id,
-    required this.brand,
-    required this.last4,
-    required this.expMonth,
-    required this.expYear,
-    required this.createDate,
-    required this.paymentMethodId,
-    required this.stripeCustomerId,
-  });
-
-  factory PaymentCard.fromFirestore(DocumentSnapshot doc) {
-    final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    return PaymentCard(
-      id: doc.id,
-      brand: data['brand'] ?? '',
-      last4: data['last4'] ?? '',
-      expMonth: data['exp_month'] ?? '',
-      expYear: data['exp_year'] ?? '',
-      createDate: (data['create_date'] as Timestamp).toDate(),
-      paymentMethodId: data['payment_method_id'] ?? '',
-      stripeCustomerId: data['stripe_customer_id'] ?? '',
-    );
-  }
-}
 
 class PaymentCardSelector extends StatefulWidget {
   final String userId;
-  final Function(PaymentCard) onCardSelect;
+  final Function(CardModel) onCardSelect;
 
   const PaymentCardSelector({
     super.key,
@@ -57,11 +23,11 @@ class PaymentCardSelector extends StatefulWidget {
 }
 
 class _PaymentCardSelectorState extends State<PaymentCardSelector> {
-  PaymentCard? selectedCard;
+  CardModel? selectedCard;
   bool isExpanded = false;
 
   /// Stream to get user's payment cards
-  Stream<List<PaymentCard>> getPaymentCardsStream() {
+  Stream<List<CardModel>> getPaymentCardsStream() {
     return FirebaseFirestore.instance
         .collection('users')
         .doc(widget.userId)
@@ -69,7 +35,8 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
         .orderBy('create_date', descending: true)
         .snapshots()
         .map((QuerySnapshot<Map<String, dynamic>> snapshot) => snapshot.docs
-        .map((QueryDocumentSnapshot<Map<String, dynamic>> doc) => PaymentCard.fromFirestore(doc))
+        .map((QueryDocumentSnapshot<Map<String, dynamic>> doc) =>
+        CardModel.fromFirestore(doc.data(), doc.id))
         .toList());
   }
 
@@ -79,7 +46,7 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
     });
   }
 
-  void _selectCard(PaymentCard card) {
+  void _selectCard(CardModel card) {
     setState(() {
       selectedCard = card;
       isExpanded = false;
@@ -91,9 +58,9 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
 
-    return StreamBuilder<List<PaymentCard>>(
+    return StreamBuilder<List<CardModel>>(
       stream: getPaymentCardsStream(),
-      builder: (BuildContext context, AsyncSnapshot<List<PaymentCard>> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<List<CardModel>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return _buildShimmerCard(theme);
         }
@@ -106,7 +73,7 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
           return _buildEmptyCard(theme);
         }
 
-        final List<PaymentCard> cards = snapshot.data!;
+        final List<CardModel> cards = snapshot.data!;
 
         // Set selected card to first card if not already selected
         if (selectedCard == null && cards.isNotEmpty) {
@@ -123,7 +90,7 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
     );
   }
 
-  Widget _buildMainCard(ThemeData theme, PaymentCard card, List<PaymentCard> allCards) {
+  Widget _buildMainCard(ThemeData theme, CardModel card, List<CardModel> allCards) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10.w),
       child: Container(
@@ -185,7 +152,7 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
     );
   }
 
-  Widget _buildCardsList(ThemeData theme, List<PaymentCard> cards) {
+  Widget _buildCardsList(ThemeData theme, List<CardModel> cards) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
@@ -206,7 +173,7 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
             ],
           ),
           child: Column(
-            children: cards.map((PaymentCard card) {
+            children: cards.map((CardModel card) {
               final bool isSelected = selectedCard?.id == card.id;
               return _buildCardItem(theme, card, isSelected);
             }).toList(),
@@ -216,7 +183,7 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
     );
   }
 
-  Widget _buildCardItem(ThemeData theme, PaymentCard card, bool isSelected) {
+  Widget _buildCardItem(ThemeData theme, CardModel card, bool isSelected) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
