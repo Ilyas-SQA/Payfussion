@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:nfc_manager/nfc_manager.dart';
+import 'package:payfussion/data/models/card/card_model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wave/config.dart';
 import 'dart:async';
@@ -721,7 +722,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
   Widget _buildCreditCardIndicator() {
     return PaymentCardSelector(
       userId: FirebaseAuth.instance.currentUser?.uid ?? '',
-      onCardSelect: (PaymentCard card) {
+      onCardSelect: (CardModel card) {
         debugPrint('Selected: ${card.last4}');
         debugPrint('Selected: ${card.expYear}');
         debugPrint('Selected: ${card.expMonth}');
