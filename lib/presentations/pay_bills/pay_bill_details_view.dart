@@ -79,8 +79,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
     _fingerprintController = AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
     _pulseController = AnimationController(duration: const Duration(milliseconds: 1500), vsync: this);
 
-    _slideAnimation = Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
-        CurvedAnimation(parent: _slideController, curve: Curves.easeOutBack));
+    _slideAnimation = Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(CurvedAnimation(parent: _slideController, curve: Curves.easeOutBack));
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(parent: _fadeController, curve: Curves.easeIn));
     _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
@@ -356,7 +355,6 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
                 title: Text(
                   _companyName, // Display actual company name
                   style: TextStyle(
-                    color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 16.sp,
                   ),
@@ -602,7 +600,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
           child: Column(
             children: <Widget>[
               Text(
-                'Enter Amount for $_companyName', // Show company name in amount section
+                'Enter Amount for $_companyName',
                 style: TextStyle(
                   fontSize: 14.sp,
                   color: Colors.grey[600],
@@ -637,7 +635,6 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
                     color: Colors.grey[400],
                   ),
                   hintText: '\$ 0.00',
-                  prefixText: '\$ ',
                   prefixStyle: TextStyle(
                     fontSize: 36.sp,
                     fontWeight: FontWeight.bold,
@@ -755,8 +752,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
             );
           }
           if (_selectedCard == null) {
-            _selectedCard = state.cards.firstWhere(
-                  (CardModel card) => card.isDefault,
+            _selectedCard = state.cards.firstWhere((CardModel card) => card.isDefault,
               orElse: () => state.cards.first,
             );
           }
@@ -828,7 +824,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
                   'Select Payment Card for $_companyName',
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                    fontSize: 14,
                   ),
                 ),
                 20.verticalSpace,
@@ -1114,13 +1110,21 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
               card.brandIconPath,
               height: 30.h,
               width: 40.w,
-              color: Colors.white,
+              color: Theme.of(context).brightness == ThemeMode.light ? Colors.black : Colors.white,
             ),
             16.horizontalSpace,
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                  Text(
+                    card.cardholderName,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
+                  ),
                   Text(
                     card.cardEnding,
                     style: TextStyle(
