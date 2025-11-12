@@ -9,14 +9,50 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import '../logic/blocs/add_card/card_bloc.dart';
 import '../logic/blocs/add_card/card_event.dart';
 
-
 class PaymentService {
   Dio dio = Dio();
 
-  /// Create Stripe Customer and store in Firestore
+  /// Get current user's details from Firebase
+  Future<Map<String, String>> _getCurrentUserDetails() async {
+    try {
+      final User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        return <String, String>{
+          'name': 'Guest User',
+          'email': 'guest@example.com',
+          'phone': '',
+        };
+      }
+
+      // Try to get additional details from Firestore
+      final DocumentSnapshot<Map<String, dynamic>> userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .get();
+
+      final Map<String, dynamic>? userData = userDoc.data();
+
+      return <String, String>{
+        'name': userData?['name'] ?? userData?['displayName'] ?? currentUser.displayName ?? 'User',
+        'email': userData?['email'] ?? currentUser.email ?? 'user@example.com',
+        'phone': userData?['phone'] ?? userData?['phoneNumber'] ?? currentUser.phoneNumber ?? '',
+      };
+    } catch (e) {
+      print('Error getting user details: $e');
+      return <String, String>{
+        'name': 'User',
+        'email': 'user@example.com',
+        'phone': '',
+      };
+    }
+  }
+
+  /// Create Stripe Customer with user details and store in Firestore
   Future<String?> createCustomerIfNotExists() async {
     try {
-      final Response response = await dio.post(
+      final Map<String, String> userDetails = await _getCurrentUserDetails();
+
+      final Response<dynamic> response = await dio.post(
         'https://api.stripe.com/v1/customers',
         options: Options(
           headers: <String, dynamic>{
@@ -24,16 +60,20 @@ class PaymentService {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
         ),
+        data: <String, String>{
+          'name': userDetails['name']!,
+          'email': userDetails['email']!,
+          if (userDetails['phone']!.isNotEmpty) 'phone': userDetails['phone']!,
+        },
       );
 
       if (response.statusCode == 200) {
-        // Dio already parses JSON, so directly access response.data
         final String customerId = response.data['id'] as String;
-        print("Customer created: $customerId");
+        print("✅ Customer created: $customerId with name: ${userDetails['name']}");
         return customerId;
       }
     } catch (e) {
-      print("Error creating customer: $e");
+      print("❌ Error creating customer: $e");
     }
 
     return null;
@@ -42,7 +82,7 @@ class PaymentService {
   /// Create SetupIntent for saving card
   Future<Map<String, dynamic>?> createSetupIntent(String customerId) async {
     try {
-      final Response response = await dio.post(
+      final Response<dynamic> response = await dio.post(
         'https://api.stripe.com/v1/setup_intents',
         options: Options(
           headers: <String, dynamic>{
@@ -56,68 +96,254 @@ class PaymentService {
       );
 
       if (response.statusCode == 200) {
-        // Return response.data directly (already parsed)
         return response.data as Map<String, dynamic>;
       }
     } catch (e) {
-      print("Error creating setup intent: $e");
+      print("❌ Error creating setup intent: $e");
     }
 
     return null;
   }
 
-  /// Save card using SetupIntent and store it in Firestore
+  /// Create Ephemeral Key for customer
+  Future<Map<String, dynamic>?> createEphemeralKey(String customerId) async {
+    try {
+      final Response<dynamic> response = await dio.post(
+        'https://api.stripe.com/v1/ephemeral_keys',
+        options: Options(
+          headers: <String, dynamic>{
+            'Authorization': 'Bearer ${dotenv.env['STRIPE_SECRET_KEY']}',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Stripe-Version': '2023-10-16', // Important: Stripe API version
+          },
+        ),
+        data: <String, String>{
+          'customer': customerId,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return response.data as Map<String, dynamic>;
+      }
+    } catch (e) {
+      print("❌ Error creating ephemeral key: $e");
+    }
+
+    return null;
+  }
+
+  /// Save card using SetupIntent with cardholder name and store it in Firestore
   Future<void> saveCard(BuildContext context) async {
     try {
+      // Get user details
+      final Map<String, String> userDetails = await _getCurrentUserDetails();
+      print('👤 User details: ${userDetails['name']} - ${userDetails['email']}');
+
+      // Create customer
       final String? customerId = await createCustomerIfNotExists();
       if (customerId == null) {
-        print("Failed to create customer");
+        print("❌ Failed to create customer");
         return;
       }
 
+      // Create setup intent
       final Map<String, dynamic>? setupIntent = await createSetupIntent(customerId);
       if (setupIntent == null) {
-        print("Failed to create setup intent");
+        print("❌ Failed to create setup intent");
         return;
       }
 
+      // Create ephemeral key
+      final Map<String, dynamic>? ephemeralKey = await createEphemeralKey(customerId);
+      if (ephemeralKey == null) {
+        print("❌ Failed to create ephemeral key");
+        return;
+      }
+
+      print('🔑 Initializing payment sheet with billing details...');
+
+      // Initialize payment sheet with billing details
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           setupIntentClientSecret: setupIntent['client_secret'],
-          merchantDisplayName: 'Evo Coffee',
+          merchantDisplayName: 'PayFussion',
+
+          // Customer info for pre-filling
+          customerId: customerId,
+          customerEphemeralKeySecret: ephemeralKey['secret'],
+
+          // ✅ IMPORTANT: Billing Details Collection Configuration
+          billingDetailsCollectionConfiguration: const BillingDetailsCollectionConfiguration(
+            name: CollectionMode.always,  // Always show cardholder name field
+            email: CollectionMode.always, // Always show email field
+            phone: CollectionMode.always, // Always show phone field
+            address: AddressCollectionMode.full, // Full address collection
+            attachDefaultsToPaymentMethod: true, // Attach billing details to card
+          ),
+
+          // ✅ Pre-fill user's information
+          billingDetails: BillingDetails(
+            name: userDetails['name'],
+            email: userDetails['email'],
+            phone: userDetails['phone']!.isNotEmpty ? userDetails['phone'] : null,
+            address: const Address(
+              country: 'PK', // Pakistan
+              city: null,
+              line1: null,
+              line2: null,
+              postalCode: null,
+              state: null,
+            ),
+          ),
+
+          // Appearance customization
+          appearance: const PaymentSheetAppearance(
+            colors: PaymentSheetAppearanceColors(
+              primary: Color(0xFF0066FF),
+            ),
+            primaryButton: PaymentSheetPrimaryButtonAppearance(
+              colors: PaymentSheetPrimaryButtonTheme(
+                light: PaymentSheetPrimaryButtonThemeColors(
+                  background: Color(0xFF0066FF),
+                  text: Colors.white,
+                  border: Color(0xFF0066FF),
+                ),
+              ),
+            ),
+          ),
+
+          // Google Pay configuration
           googlePay: const PaymentSheetGooglePay(
             testEnv: true,
-            currencyCode: "INR",
-            merchantCountryCode: "IN",
+            currencyCode: "PKR", // Pakistani Rupee
+            merchantCountryCode: "PK",
           ),
         ),
       );
 
+      print('📱 Presenting payment sheet...');
       await Stripe.instance.presentPaymentSheet();
+      print('✅ Payment sheet completed!');
 
       /// Fetch saved cards from Stripe
-      final List cards = await listSavedCards(customerId);
+      final List<dynamic> cards = await listSavedCards(customerId);
+      print('💳 Found ${cards.length} saved cards');
 
-      // Use BLoC to add each card with duplicate check
-      for (final card in cards) {
-        context.read<CardBloc>().add(
-          AddCardWithDuplicateCheck(
-            cardData: card,
-            customerId: customerId,
-          ),
+      // Save cards to Firebase with cardholder name
+      for (final dynamic card in cards) {
+        await _saveCardToFirestore(
+          cardData: card,
+          customerId: customerId,
+          cardholderName: userDetails['name']!,
+          cardholderEmail: userDetails['email']!,
         );
       }
 
+      // Use BLoC to reload cards
+      context.read<CardBloc>().add(LoadCards());
+
+      print('✅ Card saved successfully!');
+    } on StripeException catch (e) {
+      print("❌ Stripe Error: ${e.error.localizedMessage}");
+
+      if (e.error.code == FailureCode.Canceled) {
+        print('User canceled the payment sheet');
+      } else if (e.error.code == FailureCode.Failed) {
+        print('Payment sheet failed: ${e.error.localizedMessage}');
+      }
+
+      context.read<CardBloc>().add(LoadCards()); // Refresh cards on error
     } catch (e) {
-      print("Error in saveCard: $e");
-      // You can emit an error state here if needed
+      print("❌ Error in saveCard: $e");
       context.read<CardBloc>().add(LoadCards()); // Refresh cards on error
     }
   }
+
+  /// Save card details to Firestore with cardholder name
+  Future<void> _saveCardToFirestore({
+    required dynamic cardData,
+    required String customerId,
+    required String cardholderName,
+    required String cardholderEmail,
+  }) async {
+    try {
+      final User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        print('❌ No user logged in');
+        return;
+      }
+
+      final String paymentMethodId = cardData['id'] as String;
+      final Map<String, dynamic> card = cardData['card'] as Map<String, dynamic>;
+
+      // Check if card already exists in Firestore
+      final QuerySnapshot<Map<String, dynamic>> existingCards = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .collection('card')
+          .where('payment_method_id', isEqualTo: paymentMethodId)
+          .limit(1)
+          .get();
+
+      if (existingCards.docs.isNotEmpty) {
+        print('⚠️ Card already exists in Firestore');
+        return;
+      }
+
+      // Get billing details if available
+      final Map<String, dynamic>? billingDetails = cardData['billing_details'] as Map<String, dynamic>?;
+
+      // Prepare card data for Firestore
+      final Map<String, dynamic> cardDataToSave = <String, dynamic>{
+        // Card details
+        'payment_method_id': paymentMethodId,
+        'customer_id': customerId,
+        'brand': card['brand'] ?? 'unknown', // visa, mastercard, amex, etc.
+        'last4': card['last4'] ?? '****',
+        'exp_month': card['exp_month'] ?? 0,
+        'exp_year': card['exp_year'] ?? 0,
+        'country': card['country'] ?? '',
+        'funding': card['funding'] ?? 'unknown', // credit, debit, prepaid
+
+        // ✅ Cardholder information
+        'cardholder_name': billingDetails?['name'] ?? cardholderName,
+        'cardholder_email': billingDetails?['email'] ?? cardholderEmail,
+        'cardholder_phone': billingDetails?['phone'] ?? '',
+
+        // ✅ Billing address (if provided)
+        'billing_address': billingDetails?['address'] != null ? <String, dynamic>{
+          'city': billingDetails!['address']['city'] ?? '',
+          'country': billingDetails['address']['country'] ?? '',
+          'line1': billingDetails['address']['line1'] ?? '',
+          'line2': billingDetails['address']['line2'] ?? '',
+          'postal_code': billingDetails['address']['postal_code'] ?? '',
+          'state': billingDetails['address']['state'] ?? '',
+        } : <String, dynamic>{},
+
+        // Metadata
+        'is_default': true,
+        'create_date': FieldValue.serverTimestamp(),
+        'updated_at': FieldValue.serverTimestamp(),
+        'created_by': currentUser.uid,
+      };
+
+      // Save to Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .collection('card')
+          .add(cardDataToSave);
+
+      print('✅ Card saved to Firestore with cardholder name: $cardholderName');
+    } catch (e) {
+      print('❌ Error saving card to Firestore: $e');
+    }
+  }
+
   /// List saved payment methods (cards)
   Future<List<dynamic>> listSavedCards(String customerId) async {
     try {
-      final Response response = await dio.get(
+      final Response<dynamic> response = await dio.get(
         'https://api.stripe.com/v1/payment_methods?customer=$customerId&type=card',
         options: Options(
           headers: <String, dynamic>{
@@ -128,11 +354,10 @@ class PaymentService {
       );
 
       if (response.statusCode == 200) {
-        // Return response.data['data'] directly
         return response.data['data'] as List<dynamic>;
       }
     } catch (e) {
-      print("Error listing saved cards: $e");
+      print("❌ Error listing saved cards: $e");
     }
 
     return <dynamic>[];
@@ -145,7 +370,7 @@ class PaymentService {
     required int amount,
   }) async {
     try {
-      final Response response = await dio.post(
+      final Response<dynamic> response = await dio.post(
         'https://api.stripe.com/v1/payment_intents',
         options: Options(
           headers: <String, dynamic>{
@@ -155,7 +380,7 @@ class PaymentService {
         ),
         data: <String, String>{
           'amount': amount.toString(),
-          'currency': 'inr',
+          'currency': 'pkr', // Pakistani Rupee
           'customer': customerId,
           'payment_method': paymentMethodId,
           'off_session': 'true',
@@ -163,18 +388,17 @@ class PaymentService {
         },
       );
 
-      // Access response.data directly
       final Map<String, dynamic> data = response.data as Map<String, dynamic>;
 
       if (data['status'] == 'succeeded') {
-        print("Payment succeeded!");
+        print("✅ Payment succeeded!");
         return true;
       } else {
-        print("Payment failed: ${data['error'] ?? 'Unknown error'}");
+        print("❌ Payment failed: ${data['error'] ?? 'Unknown error'}");
         return false;
       }
     } catch (e) {
-      print("Error in payment: $e");
+      print("❌ Error in payment: $e");
       return false;
     }
   }
@@ -182,9 +406,15 @@ class PaymentService {
   /// Get saved cards from Firestore for current user
   Future<List<Map<String, dynamic>>> getSavedCardsFromFirestore() async {
     try {
+      final User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        print('❌ No user logged in');
+        return <Map<String, dynamic>>[];
+      }
+
       final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
           .collection("users")
-          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .doc(currentUser.uid)
           .collection("card")
           .orderBy("create_date", descending: true)
           .get();
@@ -194,130 +424,53 @@ class PaymentService {
         ...doc.data(),
       }).toList();
     } catch (e) {
-      print("Error getting saved cards: $e");
+      print("❌ Error getting saved cards: $e");
       return <Map<String, dynamic>>[];
     }
   }
+
+  /// Delete card from both Stripe and Firestore
+  Future<bool> deleteCard({
+    required String paymentMethodId,
+    required String firestoreDocId,
+  }) async {
+    try {
+      // Delete from Stripe
+      final Response<dynamic> response = await dio.post(
+        'https://api.stripe.com/v1/payment_methods/$paymentMethodId/detach',
+        options: Options(
+          headers: <String, dynamic>{
+            'Authorization': 'Bearer ${dotenv.env['STRIPE_SECRET_KEY']}',
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        // Delete from Firestore
+        final User? currentUser = FirebaseAuth.instance.currentUser;
+        if (currentUser != null) {
+          await FirebaseFirestore.instance
+              .collection("users")
+              .doc(currentUser.uid)
+              .collection("card")
+              .doc(firestoreDocId)
+              .delete();
+
+          print("✅ Card deleted successfully");
+          return true;
+        }
+      }
+
+      return false;
+    } catch (e) {
+      print("❌ Error deleting card: $e");
+      return false;
+    }
+  }
 }
-// // Initialize Stripe with the publishable key
-// static Future<void> initializeStripe() async {
-//   if (kIsWeb) {
-//     // Skip Stripe initialization for the web as flutter_stripe doesn't support web
-//     print('Stripe is not supported for Web. Initialization skipped.');
-//     return;
-//   }
-//
-//   try {
-//     final publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'];
-//
-//     if (publishableKey == null || publishableKey.isEmpty) {
-//       print("Stripe Publishable Key not found in .env");
-//       throw Exception("Stripe Publishable Key not found in .env");
-//     }
-//
-//     // Initialize Stripe with the publishable key
-//     Stripe.publishableKey = publishableKey;
-//
-//     // Ensure Stripe is properly configured
-//     await Stripe.instance.applySettings();
-//
-//     print(
-//       "Stripe initialized successfully with publishable key: ${publishableKey.substring(0, 12)}...",
-//     );
-//   } catch (e) {
-//     print('Error initializing Stripe: $e');
-//     rethrow; // Re-throw to ensure app fails fast if Stripe can't be initialized
-//   }
-// }
-//
-// // Create a Payment Intent
-// Future<Map<String, dynamic>?> createPaymentIntent(
-//   String amount,
-//   String currency,
-// ) async {
-//   try {
-//     final body = {
-//       'amount': calculateAmount(amount),
-//       'currency': currency,
-//       'payment_method_types[]': 'card',
-//     };
-//
-//     final response = await _dio.post(
-//       'https://api.stripe.com/v1/payment_intents',
-//       options: Options(
-//         headers: {
-//           'Authorization': 'Bearer ${dotenv.env['STRIPE_SECRET_KEY']}',
-//           'Content-Type': 'application/x-www-form-urlencoded',
-//         },
-//       ),
-//       data: body,
-//     );
-//
-//     if (response.statusCode == 200) {
-//       print('Payment intent created successfully: ${response.data}');
-//       return response.data;
-//     } else {
-//       print('Failed to create payment intent: ${response.data}');
-//       return null;
-//     }
-//   } catch (err) {
-//     print('Error creating payment intent: $err');
-//     return null;
-//   }
-// }
-//
-// // Calculate the amount to be charged (in cents)
-// String calculateAmount(String amount) {
-//   try {
-//     return (int.parse(amount) * 100).toString();
-//   } catch (e) {
-//     print("Error calculating amount: $e");
-//     throw Exception("Invalid amount provided.");
-//   }
-// }
-//
-// // Handle payment sheet
-// Future<String?> displayPaymentSheet(
-//   BuildContext context,
-//   String clientSecret,
-// ) async {
-//   try {
-//     print(
-//       'Initializing payment sheet with client secret: ${clientSecret.substring(0, 20)}...',
-//     );
-//
-//     await Stripe.instance.initPaymentSheet(
-//       paymentSheetParameters: SetupPaymentSheetParameters(
-//         paymentIntentClientSecret: clientSecret,
-//         style: ThemeMode.light,
-//         merchantDisplayName: 'Ashtra Salon',
-//       ),
-//     );
-//     print('Payment sheet initialized successfully');
-//
-//     print('Presenting payment sheet...');
-//     await Stripe.instance.presentPaymentSheet();
-//     print('Payment sheet completed successfully');
-//
-//     // Retrieve payment intent and get paymentMethodId
-//     final paymentIntent = await Stripe.instance.retrievePaymentIntent(
-//       clientSecret,
-//     );
-//     final paymentMethodId = paymentIntent.paymentMethodId;
-//     print('Stripe Payment Method ID: $paymentMethodId');
-//
-//     return paymentMethodId;
-//   } catch (e) {
-//     print('Error in displayPaymentSheet: $e');
-//     return null;
-//   }
-// }
 
-// Removed displaySaveCardSheet. Use the clientSecret from backend setup intent only.
-
-// Removed _createSetupIntent. Always use the clientSecret from backend setup intent only.
-
-
-class StripePaymentService{
-
+class StripePaymentService {
+  // This class can be used for additional payment-related functionality
+  // For example, creating payment intents, handling subscriptions, etc.
 }
