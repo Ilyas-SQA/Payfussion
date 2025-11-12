@@ -148,6 +148,8 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     Theme.of(context);
@@ -274,9 +276,9 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
               backgroundColor: Theme.of(context).primaryColor,
               child: IconButton(
                 icon: Icon(
-                  Icons.edit,
-                  size: 15.r,
-                  color: MyTheme.primaryColor
+                    Icons.edit,
+                    size: 15.r,
+                    color: MyTheme.primaryColor
                 ),
                 onPressed: _pickAndUploadProfileImage,
               ),
@@ -318,35 +320,6 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
   }
 
   Widget _buildEditableCards() {
-    final List<Map<String, Object>> cards = <Map<String, Object>>[
-      <String, Object>{
-        'title': 'First Name',
-        'value': _userFirstName,
-        'icon': Icons.person_outline,
-        'onSave': (String newValue) async => _updateFirstName(newValue),
-      },
-      <String, Object>{
-        'title': 'Last Name',
-        'value': _userLastName,
-        'icon': Icons.person_outline,
-        'onSave': (String newValue) async => _updateLastName(newValue),
-      },
-      <String, Object>{
-        'title': 'Phone Number',
-        'value': _phoneNumber,
-        'icon': Icons.phone_outlined,
-        'keyboardType': TextInputType.phone,
-        'onSave': (String newValue) async {},
-      },
-      <String, Object>{
-        'title': 'Email',
-        'value': _userEmail,
-        'icon': Icons.email_outlined,
-        'keyboardType': TextInputType.emailAddress,
-        'onSave': (String newValue) async {},
-      },
-    ];
-
     return AnimationLimiter(
       child: Column(
         children: AnimationConfiguration.toStaggeredList(
@@ -355,21 +328,98 @@ class _ProfileHomeScreenState extends State<ProfileHomeScreen> with TickerProvid
             verticalOffset: 20.0,
             child: FadeInAnimation(child: widget),
           ),
-          children: cards.map((Map<String, Object> card) {
-            return Column(
-              children: <Widget>[
-                EditableCard(
-                  title: card['title'] as String,
-                  initialValue: card['value'] as String,
-                  leadingIcon: card['icon'] as IconData,
-                  keyboardType: card['keyboardType'] as TextInputType? ?? TextInputType.text,
-                  onSave: card['onSave'] as Future<void> Function(String),
-                ),
-                SizedBox(height: 8.h),
-              ],
-            );
-          }).toList(),
+          children: <Widget>[
+            // Editable First Name
+            EditableCard(
+              title: 'First Name',
+              initialValue: _userFirstName,
+              leadingIcon: Icons.person_outline,
+              keyboardType: TextInputType.text,
+              onSave: (String newValue) async => _updateFirstName(newValue),
+            ),
+            SizedBox(height: 8.h),
+
+            // Editable Last Name
+            EditableCard(
+              title: 'Last Name',
+              initialValue: _userLastName,
+              leadingIcon: Icons.person_outline,
+              keyboardType: TextInputType.text,
+              onSave: (String newValue) async => _updateLastName(newValue),
+            ),
+            SizedBox(height: 8.h),
+
+            // Read-only Phone Number
+            _buildReadOnlyCard(
+              title: 'Phone Number',
+              value: _phoneNumber,
+              icon: Icons.phone_outlined,
+            ),
+            SizedBox(height: 8.h),
+
+            // Read-only Email
+            _buildReadOnlyCard(
+              title: 'Email',
+              value: _userEmail,
+              icon: Icons.email_outlined,
+            ),
+            SizedBox(height: 8.h),
+          ],
         ),
+      ),
+    );
+  }
+
+  // Read-only card widget for non-editable fields
+  Widget _buildReadOnlyCard({
+    required String title,
+    required String value,
+    required IconData icon,
+  }) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(12.r),
+      ),
+      child: Row(
+        children: <Widget>[
+          Icon(
+            icon,
+            size: 24.r,
+            color: Colors.grey,
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  title,
+                  style: Font.montserratFont(
+                    fontSize: 12.sp,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  value.isNotEmpty ? value : 'Not provided',
+                  style: Font.montserratFont(
+                    fontSize: 16.sp,
+                    color: Theme.of(context).secondaryHeaderColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Icon(
+            Icons.lock_outline,
+            size: 20.r,
+            color: Colors.grey.withOpacity(0.5),
+          ),
+        ],
       ),
     );
   }
