@@ -38,7 +38,7 @@ class SettingProfile extends StatelessWidget {
           children: <Widget>[
             // Profile image
             CircleAvatar(
-              radius: 28.r,
+              radius: 24.r,
               backgroundColor: Colors.grey,
               child:
                   user.profileImageUrl != null &&
@@ -73,7 +73,7 @@ class SettingProfile extends StatelessWidget {
                 Text(
                   user.fullName ?? 'Guest User',
                   style: Font.montserratFont(
-                    fontSize: 16.sp,
+                    fontSize: 14.sp,
                     color: theme.secondaryHeaderColor,
                     fontWeight: FontWeight.bold,
                   ),
@@ -82,7 +82,7 @@ class SettingProfile extends StatelessWidget {
                   user.email ?? 'Not signed in',
                   style: Font.montserratFont(
                     color: theme.secondaryHeaderColor,
-                    fontSize: 13.sp,
+                    fontSize: 14.sp,
                   ),
                 ),
                 Text(
