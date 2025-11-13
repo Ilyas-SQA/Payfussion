@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/core/widget/appbutton/app_button.dart';
+import '../../../../core/constants/fonts.dart';
 import '../../../../data/models/tickets/car_model.dart';
 import '../../../widgets/background_theme.dart';
 import 'car_payment_screen.dart';
@@ -208,7 +209,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
                             backgroundColor: _getServiceColor(widget.ride.serviceType),
                             child: Text(
                               widget.ride.driverName.substring(0, 2).toUpperCase(),
-                              style: const TextStyle(
+                              style: Font.montserratFont(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                                 fontSize: 18,
@@ -237,7 +238,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
                             offset: offset * 50,
                             child: Text(
                               widget.ride.driverName,
-                              style: const TextStyle(
+                              style: Font.montserratFont(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -263,7 +264,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
                                 opacity: clampedValue,
                                 child: Text(
                                   "${widget.ride.rating} (${widget.ride.totalRides} rides)",
-                                  style: TextStyle(
+                                  style: Font.montserratFont(
                                     fontSize: 12,
                                     color: Colors.grey.shade600,
                                   ),
@@ -293,7 +294,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
                                   ),
                                   child: Text(
                                     widget.ride.serviceType,
-                                    style: const TextStyle(
+                                    style: Font.montserratFont(
                                       color: Colors.white,
                                       fontSize: 12,
                                       fontWeight: FontWeight.w500,
@@ -323,9 +324,9 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
                                         ),
                                       ],
                                     ),
-                                    child: const Text(
+                                    child: Text(
                                       "Available Now",
-                                      style: TextStyle(
+                                      style: Font.montserratFont(
                                         color: Colors.white,
                                         fontSize: 12,
                                         fontWeight: FontWeight.w500,
@@ -407,9 +408,9 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
               builder: (BuildContext context, Offset offset, Widget? child) {
                 return Transform.translate(
                   offset: offset * 30,
-                  child: const Text(
+                  child: Text(
                     "Service Areas",
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -439,7 +440,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
                         ),
                         child: Text(
                           area,
-                          style: const TextStyle(
+                          style: Font.montserratFont(
                             color: MyTheme.secondaryColor,
                             fontWeight: FontWeight.w500,
                           ),
@@ -483,9 +484,9 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
               builder: (BuildContext context, Offset offset, Widget? child) {
                 return Transform.translate(
                   offset: offset * 30,
-                  child: const Text(
+                  child: Text(
                     "Special Services",
-                    style: TextStyle(
+                    style: Font.montserratFont(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -590,12 +591,12 @@ class _RideDetailScreenState extends State<RideDetailScreen> with TickerProvider
               children: <Widget>[
                 Text(
                   label,
-                  style: const TextStyle(
+                  style: Font.montserratFont(
                     fontWeight: FontWeight.bold,
                     fontSize: 14
                   ),
                 ),
-                Text(value, style: const TextStyle(fontSize: 12)),
+                Text(value, style:  Font.montserratFont(fontSize: 12)),
               ],
             ),
           ),
