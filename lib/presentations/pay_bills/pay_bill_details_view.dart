@@ -1110,7 +1110,7 @@ class _PayBillDetailsViewState extends State<PayBillDetailsView> with TickerProv
               card.brandIconPath,
               height: 30.h,
               width: 40.w,
-              color: Theme.of(context).brightness == ThemeMode.light ? Colors.black : Colors.white,
+              color: isDark ? Colors.white : Colors.black,
             ),
             16.horizontalSpace,
             Expanded(
