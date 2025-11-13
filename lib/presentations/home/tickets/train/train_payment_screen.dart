@@ -635,6 +635,11 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
+                    card.cardholderName,
+                    style: Font.montserratFont(fontWeight: FontWeight.w500),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
                     card.cardEnding,
                     style: Font.montserratFont(fontWeight: FontWeight.w500),
                     overflow: TextOverflow.ellipsis,
