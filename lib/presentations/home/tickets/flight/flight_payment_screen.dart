@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -739,21 +740,16 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
     );
   }
 
-  Widget _buildAccountItem({
-    required BuildContext context,
-    required CardModel card,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildAccountItem({required BuildContext context, required CardModel card, required bool isSelected, required VoidCallback onTap,}) {
     final ThemeData theme = Theme.of(context);
     final bool isDark = theme.brightness == Brightness.dark;
 
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         width: double.infinity,
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+        padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
@@ -765,60 +761,64 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
             ),
           ],
         ),
-        child: ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: Image.asset(
-            card.brandIconPath,
-            height: 24,
-            width: 40,
-            color: isDark ? Colors.white : Colors.black,
-            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-              return Image.asset(
-                'assets/icons/mastercard.png',
-                height: 24,
-                width: 40,
-              );
-            },
-          ),
-          title: Text(
-            card.cardEnding,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontFamily: 'Roboto',
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
+        child: Row(
+          children: <Widget>[
+            Image.asset(
+              card.brandIconPath,
+              height: 24.h,
+              width: 32.w,
               color: isDark ? Colors.white : Colors.black,
             ),
-          ),
-          subtitle: Text(
-            'Exp: ${card.formattedExpiry}${card.isDefault ? ' • Default' : ''}',
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontFamily: 'Roboto',
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey,
-            ),
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              if (isSelected)
-                const Icon(
-                  Icons.check_circle,
-                  size: 16,
-                  color: MyTheme.secondaryColor,
-                ),
-              const SizedBox(width: 8),
-              Icon(
-                Icons.keyboard_arrow_down,
-                size: 16,
-                color: isDark ? Colors.white : Colors.black,
+            16.horizontalSpace,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    card.cardholderName,
+                    style: Font.montserratFont(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
+                  ),
+                  Text(
+                    card.cardEnding,
+                    style: Font.montserratFont(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
+                  ),
+                  4.verticalSpace,
+                  Text(
+                    'Exp: ${card.formattedExpiry}${card.isDefault ? ' • Default' : ''}',
+                    style: Font.montserratFont(
+                      fontSize: 12.sp,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            if (isSelected)
+              Icon(
+                Icons.check_circle,
+                color: Colors.green,
+                size: 20.sp,
+              ),
+            8.horizontalSpace,
+            Icon(
+              CupertinoIcons.chevron_down,
+              size: 16.sp,
+              color: Colors.grey[600],
+            ),
+          ],
         ),
       ),
     );
   }
+
 
   void _showCardSelectionBottomSheet(BuildContext context, List<CardModel> cards) {
     showModalBottomSheet(
