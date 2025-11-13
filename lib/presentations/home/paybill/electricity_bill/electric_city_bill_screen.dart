@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
-
 import '../../../core/constants/routes_name.dart';
 import '../../widgets/background_theme.dart';
 
