@@ -147,6 +147,9 @@ flutter:
     - assets/images/movies/
     - assets/images/paybill/mobile_recharge/
     - assets/images/paybill/electric_city/
+    - assets/images/paybill/internet/
+    - assets/images/paybill/gas_bill/
+    - assets/images/paybill/rent_payment/
     - assets/temps/
     - assets/icons/
     - assets/icons/setting_icons/
