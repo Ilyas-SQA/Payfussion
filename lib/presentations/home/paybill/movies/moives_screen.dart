@@ -30,7 +30,7 @@ class _MoviesScreenState extends State<MoviesScreen>
     <String, dynamic>{
       "name": "Netflix",
       "description": "The world's leading streaming service",
-      "icon": Icons.play_circle_filled,
+      "icon": "assets/images/paybill/movies/netflix.jpeg",
       "color": MyTheme.primaryColor,
       "category": "Movies & TV",
       "monthlyPrice": "\$15.49/month",
@@ -39,7 +39,7 @@ class _MoviesScreenState extends State<MoviesScreen>
     <String, dynamic>{
       "name": "Amazon Prime Video",
       "description": "Stream with Prime membership",
-      "icon": Icons.shopping_cart,
+      "icon": "assets/images/paybill/movies/amazon_prime.png",
       "color": MyTheme.primaryColor,
       "category": "Movies & TV",
       "monthlyPrice": "\$14.98/month",
@@ -48,7 +48,7 @@ class _MoviesScreenState extends State<MoviesScreen>
     <String, dynamic>{
       "name": "Disney+",
       "description": "The streaming home of Disney",
-      "icon": Icons.castle,
+      "icon": "assets/images/paybill/movies/disney.png",
       "color": MyTheme.primaryColor,
       "category": "Family Content",
       "monthlyPrice": "\$7.99/month",
@@ -57,7 +57,7 @@ class _MoviesScreenState extends State<MoviesScreen>
     <String, dynamic>{
       "name": "Hulu",
       "description": "Stream current TV and classic hits",
-      "icon": Icons.tv,
+      "icon": "assets/images/paybill/movies/hulu.jpeg",
       "color": MyTheme.primaryColor,
       "category": "TV Shows",
       "monthlyPrice": "\$7.99/month",
@@ -66,7 +66,7 @@ class _MoviesScreenState extends State<MoviesScreen>
     <String, dynamic>{
       "name": "HBO Max",
       "description": "Where HBO meets so much more",
-      "icon": Icons.theaters,
+      "icon": "assets/images/paybill/movies/hbo_max.jpeg",
       "color": MyTheme.primaryColor,
       "category": "Premium Content",
       "monthlyPrice": "\$15.99/month",
@@ -75,7 +75,7 @@ class _MoviesScreenState extends State<MoviesScreen>
     <String, dynamic>{
       "name": "Apple TV+",
       "description": "Apple's streaming service",
-      "icon": Icons.apple,
+      "icon": "assets/images/paybill/movies/apple_tv.png",
       "color": MyTheme.primaryColor,
       "category": "Originals",
       "monthlyPrice": "\$6.99/month",
@@ -84,7 +84,7 @@ class _MoviesScreenState extends State<MoviesScreen>
     <String, dynamic>{
       "name": "Peacock",
       "description": "NBCUniversal's streaming service",
-      "icon": Icons.pets,
+      "icon": "assets/images/paybill/movies/peacock.png",
       "color": MyTheme.primaryColor,
       "category": "TV & Movies",
       "monthlyPrice": "\$5.99/month",
@@ -93,7 +93,7 @@ class _MoviesScreenState extends State<MoviesScreen>
     <String, dynamic>{
       "name": "Paramount+",
       "description": "A mountain of entertainment",
-      "icon": Icons.landscape,
+      "icon": "assets/images/paybill/movies/paramount.png",
       "color": MyTheme.primaryColor,
       "category": "Movies & TV",
       "monthlyPrice": "\$5.99/month",
@@ -102,7 +102,7 @@ class _MoviesScreenState extends State<MoviesScreen>
     <String, dynamic>{
       "name": "YouTube Premium",
       "description": "Ad-free YouTube with extras",
-      "icon": Icons.play_arrow,
+      "icon": "assets/images/paybill/movies/youtube_premium.png",
       "color": MyTheme.primaryColor,
       "category": "Video Platform",
       "monthlyPrice": "\$11.99/month",
@@ -111,7 +111,7 @@ class _MoviesScreenState extends State<MoviesScreen>
     <String, dynamic>{
       "name": "Sling TV",
       "description": "Live TV streaming service",
-      "icon": Icons.live_tv,
+      "icon": "assets/images/paybill/movies/sling.png",
       "color": MyTheme.primaryColor,
       "category": "Live TV",
       "monthlyPrice": "\$40/month",
@@ -120,7 +120,7 @@ class _MoviesScreenState extends State<MoviesScreen>
     <String, dynamic>{
       "name": "ESPN+",
       "description": "The ultimate sports streaming",
-      "icon": Icons.sports_football,
+      "icon": "assets/images/paybill/movies/espn.png",
       "color": MyTheme.primaryColor,
       "category": "Sports",
       "monthlyPrice": "\$9.99/month",
@@ -129,7 +129,7 @@ class _MoviesScreenState extends State<MoviesScreen>
     <String, dynamic>{
       "name": "Showtime",
       "description": "Premium entertainment network",
-      "icon": Icons.star,
+      "icon": "assets/images/paybill/movies/show_time.png",
       "color": MyTheme.primaryColor,
       "category": "Premium TV",
       "monthlyPrice": "\$10.99/month",
@@ -138,7 +138,7 @@ class _MoviesScreenState extends State<MoviesScreen>
     <String, dynamic>{
       "name": "Starz",
       "description": "Premium movies and series",
-      "icon": Icons.auto_awesome,
+      "icon": "assets/images/paybill/movies/starz.png",
       "color": MyTheme.primaryColor,
       "category": "Premium Movies",
       "monthlyPrice": "\$9.99/month",
@@ -147,7 +147,7 @@ class _MoviesScreenState extends State<MoviesScreen>
     <String, dynamic>{
       "name": "Discovery+",
       "description": "Real life entertainment",
-      "icon": Icons.explore,
+      "icon": "assets/images/paybill/movies/discovery.png",
       "color": MyTheme.primaryColor,
       "category": "Documentary",
       "monthlyPrice": "\$4.99/month",
@@ -156,7 +156,7 @@ class _MoviesScreenState extends State<MoviesScreen>
     <String, dynamic>{
       "name": "Crunchyroll",
       "description": "The ultimate anime experience",
-      "icon": Icons.animation,
+      "icon": "assets/images/paybill/movies/crunchyroll.png",
       "color": MyTheme.primaryColor,
       "category": "Anime",
       "monthlyPrice": "\$7.99/month",
@@ -363,13 +363,19 @@ class _MoviesScreenState extends State<MoviesScreen>
               children: <Widget>[
                 // Icon Container
                 Hero(
-                  tag: 'movies_icon_${service['name']}',
-                  child: Icon(
-                    service['icon'] as IconData,
-                    size: 28.sp,
-                    color: service['color'] as Color,
+                  tag: 'mobile_icon_${service['name']}',
+                  child: CircleAvatar(
+                    radius: 24.r,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Image.asset(
+                        service['icon'] as String,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
                 ),
+
 
                 SizedBox(width: 16.w),
 

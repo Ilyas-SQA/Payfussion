@@ -1,4 +1,5 @@
 // Updated BankTransactionBloc to fetch from Firebase
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/fonts.dart';
 import '../../../core/constants/routes_name.dart';
@@ -92,17 +93,24 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> with Ticker
             padding: EdgeInsets.all(16.w),
             child: Row(
               children: <Widget>[
-                Container(
-                  width: 50.w,
-                  height: 50.w,
-                  decoration: BoxDecoration(
-                    color: MyTheme.primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(25.r),
-                  ),
-                  child: Icon(
-                    Icons.account_balance,
-                    color: MyTheme.primaryColor,
-                    size: 24.sp,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: CachedNetworkImage(
+                    imageUrl: bank.image,
+                    fit: BoxFit.fill,
+                    height: 50,
+                    width: 50,
+                    placeholder: (BuildContext context, String url) => const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    errorWidget: (BuildContext context, String url, Object error) {
+                      print('Image load error for ${bank.name}: $error');
+                      return Icon(
+                        Icons.account_balance,
+                        color: MyTheme.primaryColor,
+                        size: 20.sp,
+                      );
+                    },
                   ),
                 ),
                 SizedBox(width: 16.w),
