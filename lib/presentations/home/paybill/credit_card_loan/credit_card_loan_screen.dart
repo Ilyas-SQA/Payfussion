@@ -1,18 +1,18 @@
 // Updated BankTransactionBloc to fetch from Firebase
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/constants/fonts.dart';
-import '../../../core/constants/routes_name.dart';
-import '../../../data/models/recipient/recipient_model.dart';
+import '../../../../core/constants/fonts.dart';
+import '../../../../core/constants/routes_name.dart';
+import '../../../../data/models/recipient/recipient_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/theme/theme.dart';
-import '../../../logic/blocs/bank_transaction/bank_transaction_bloc.dart';
-import '../../../logic/blocs/bank_transaction/bank_transaction_event.dart';
-import '../../../logic/blocs/bank_transaction/bank_transaction_state.dart';
-import '../../widgets/background_theme.dart';
+import '../../../../core/theme/theme.dart';
+import '../../../../logic/blocs/bank_transaction/bank_transaction_bloc.dart';
+import '../../../../logic/blocs/bank_transaction/bank_transaction_event.dart';
+import '../../../../logic/blocs/bank_transaction/bank_transaction_state.dart';
+import '../../../widgets/background_theme.dart';
 
 class CreditCardLoanScreen extends StatefulWidget {
   const CreditCardLoanScreen({Key? key}) : super(key: key);
