@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
-import 'mobile_recharge_bloc.dart';
-import 'mobile_recharge_event.dart';
-import 'mobile_recharge_state.dart';
+import '../../../../logic/blocs/pay_bill/mobile_recharge/mobile_recharge_bloc.dart';
+import '../../../../logic/blocs/pay_bill/mobile_recharge/mobile_recharge_event.dart';
+import '../../../../logic/blocs/pay_bill/mobile_recharge/mobile_recharge_state.dart';
 
 class RechargeSummaryScreen extends StatelessWidget {
   const RechargeSummaryScreen({super.key});
