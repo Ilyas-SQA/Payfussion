@@ -99,6 +99,7 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
   late Animation<double> _pulseAnimation;
+  final _key = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -166,12 +167,21 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
       _pulseController.repeat(reverse: true);
 
       print('Initializing payment for recipient: ${widget.recipient.name}');
+
+      // IMPORTANT: Reset state first, then start new payment
+      context.read<TransactionBloc>().add(const PaymentReset());
       context.read<TransactionBloc>().add(PaymentStarted(widget.recipient));
+
+      // Clear the text field
+      _amountController.clear();
     });
   }
 
   @override
   void dispose() {
+    // Reset the transaction state when leaving the screen
+    context.read<TransactionBloc>().add(const PaymentReset());
+
     _amountController.dispose();
     _amountFocusNode.dispose();
     _slideController.dispose();
@@ -475,7 +485,6 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                         style: Font.montserratFont(
                           fontSize: 24.sp,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
                         ),
                       ),
                     ),
@@ -555,12 +564,10 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                             style: ElevatedButton.styleFrom(
                               backgroundColor: MyTheme.primaryColor,
                               padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 16.h),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.r)),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
                             ),
                             icon: const Icon(Icons.home),
-                            label: Text('Back to Home',
-                                style: Font.montserratFont(fontSize: 16.sp, fontWeight: FontWeight.w600)),
+                            label: Text('Back to Home', style: Font.montserratFont(fontSize: 16.sp, fontWeight: FontWeight.w600)),
                           ),
                           SizedBox(height: 16.h),
                           TextButton(
@@ -708,75 +715,57 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
   }
 
   Widget _buildAmountInput(TransactionState state) {
-    return Column(
-      children: <Widget>[
-        TweenAnimationBuilder<double>(
-          duration: const Duration(milliseconds: 400),
-          tween: Tween(begin: 0.0, end: 1.0),
-          builder: (BuildContext context, double value, Widget? child) {
-            return Transform.scale(
-              scale: 0.9 + (0.1 * value),
-              child: TextField(
-                controller: _amountController,
-                focusNode: _amountFocusNode,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                textAlign: TextAlign.center,
-                style: Font.montserratFont(
-                  fontSize: 42.sp,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
-                ),
-                decoration: InputDecoration(
-                  hintText: PaymentStrings.enterAmount,
-                  hintStyle: Font.montserratFont(
-                    fontSize: 30.sp,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  prefixIcon: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    child: Text(
-                      '\$',
-                      style: Font.montserratFont(
-                        fontSize: 40.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  prefixIconConstraints: BoxConstraints(minWidth: 30.w, minHeight: 0),
-                ),
-                onChanged: (String value) {
-                  final String plain = value.replaceAll(RegExp(r'[^0-9.]'), '');
-                  context.read<TransactionBloc>().add(PaymentAmountChanged(plain));
-                },
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 400),
+      tween: Tween(begin: 0.0, end: 1.0),
+      builder: (BuildContext context, double value, Widget? child) {
+        return Transform.scale(
+          scale: 0.9 + (0.1 * value),
+          child: Form(
+            key: _key,
+            child: TextFormField(
+              controller: _amountController,
+              focusNode: _amountFocusNode,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              textAlign: TextAlign.center,
+              style: Font.montserratFont(
+                fontSize: 42.sp,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
               ),
-            );
-          },
-        ),
-
-        if (state.amountError != null)
-          TweenAnimationBuilder<double>(
-            duration: const Duration(milliseconds: 400),
-            tween: Tween(begin: 0.0, end: 1.0),
-            builder: (BuildContext context, double value, Widget? child) {
-              return Transform.translate(
-                offset: Offset(0, -10 * (1 - value)),
-                child: Opacity(
-                  opacity: value,
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 8.h),
-                    child: Text(
-                      state.amountError!,
-                      style: Font.montserratFont(color: AppColors.errorRed, fontSize: 14.sp),
+              cursorHeight: 35,
+              decoration: InputDecoration(
+                hintText: PaymentStrings.enterAmount,
+                hintStyle: Font.montserratFont(
+                  fontSize: 30.sp,
+                  fontWeight: FontWeight.w400,
+                ),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                prefixIcon: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  child: Text(
+                    '\$',
+                    style: Font.montserratFont(
+                      fontSize: 40.sp,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-              );
-            },
+                prefixIconConstraints: BoxConstraints(minWidth: 30.w, minHeight: 0),
+              ),
+              validator: (String? value){
+                return value!.isEmpty ? 'Amount cannot be empty' : null;
+              },
+              onChanged: (String value) {
+                final String plain = value.replaceAll(RegExp(r'[^0-9.]'), '');
+                context.read<TransactionBloc>().add(PaymentAmountChanged(plain));
+              },
+            ),
           ),
-      ],
+        );
+      },
     );
   }
 
@@ -917,108 +906,91 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
     print('   Selected card: ${state.selectedCard?.brand}');
     print('   Recipient: ${state.recipient?.name}');
 
-    final bool isValid = state.amount > 0 &&
-        state.amountError == null &&
-        state.selectedCard != null &&
-        state.recipient != null;
-
-    return TweenAnimationBuilder<double>(
-      duration: const Duration(milliseconds: 600),
-      tween: Tween(begin: 0.0, end: 1.0),
-      builder: (BuildContext context, double value, Widget? child) {
-        return Transform.translate(
-          offset: Offset(0, 30 * (1 - value)),
-          child: Opacity(
-            opacity: value,
-            child: SizedBox(
-              width: double.infinity,
-              height: 56.h,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.r),
-                  boxShadow: isValid && !state.isProcessing
-                      ? <BoxShadow>[
-                    BoxShadow(
-                      color: MyTheme.primaryColor.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
-                      : <BoxShadow>[],
-                ),
-                child: ElevatedButton(
-                  onPressed: (!isValid || state.isProcessing)
-                      ? null
-                      : () {
-                    HapticFeedback.mediumImpact();
-                    FocusScope.of(context).unfocus();
-                    context.read<TransactionBloc>().add(const PaymentSubmit());
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: MyTheme.primaryColor,
-                    disabledBackgroundColor: MyTheme.primaryColor.withOpacity(0.6),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    child: state.isProcessing
-                        ? Row(
-                      key: const ValueKey('processing'),
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        SizedBox(
-                          width: 24.w,
-                          height: 24.h,
-                          child: const CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2.5,
-                          ),
-                        ),
-                        SizedBox(width: 12.w),
-                        Text(
-                          "Processing...",
-                          style: Font.montserratFont(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    )
-                        : Column(
-                      key: const ValueKey('send'),
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          '${PaymentStrings.send} \$${totalAmount.toStringAsFixed(2)}',
-                          style: Font.montserratFont(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                        if (state.amount > 0)
-                          Text(
-                            'Includes \$${Taxes.transactionFee.toStringAsFixed(2)} fee',
-                            style: Font.montserratFont(
-                              fontSize: 12.sp,
-                              color: Colors.white.withOpacity(0.9),
-                            ),
-                          ),
-                      ],
-                    ),
+    final bool isValid = state.amount > 0 && state.amountError == null && state.selectedCard != null && state.recipient != null;
+    return SizedBox(
+      width: double.infinity,
+      height: 56.h,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12.r),
+          boxShadow: isValid && !state.isProcessing
+              ? <BoxShadow>[
+            BoxShadow(
+              color: MyTheme.primaryColor.withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ]
+              : <BoxShadow>[],
+        ),
+        child: ElevatedButton(
+          onPressed: () {
+            if(_key.currentState!.validate()){
+              HapticFeedback.mediumImpact();
+              FocusScope.of(context).unfocus();
+              context.read<TransactionBloc>().add(const PaymentSubmit());
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: MyTheme.primaryColor,
+            disabledBackgroundColor: MyTheme.primaryColor.withOpacity(0.6),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            elevation: 0,
+          ),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: state.isProcessing ? Row(
+              key: const ValueKey('processing'),
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SizedBox(
+                  width: 24.w,
+                  height: 24.h,
+                  child: const CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2.5,
                   ),
                 ),
-              ),
+                SizedBox(width: 12.w),
+                Text(
+                  "Processing...",
+                  style: Font.montserratFont(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            )
+                : Column(
+              key: const ValueKey('send'),
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  '${PaymentStrings.send} \$${totalAmount.toStringAsFixed(2)}',
+                  style: Font.montserratFont(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                if (state.amount > 0)
+                  Text(
+                    'Includes \$${Taxes.transactionFee.toStringAsFixed(2)} fee',
+                    style: Font.montserratFont(
+                      fontSize: 12.sp,
+                      color: Colors.white.withOpacity(0.9),
+                    ),
+                  ),
+              ],
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -1030,8 +1002,7 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
     return cards.isNotEmpty ? cards.first : null;
   }
 
-  Widget _cardTile(CardModel card,
-      {required bool isSelected, VoidCallback? onTap}) {
+  Widget _cardTile(CardModel card, {required bool isSelected, VoidCallback? onTap}) {
     final String brand = (card.brand ?? 'Card').toString();
     final String last4 = (card.last4 ?? '****').toString();
     final String holder = '';
@@ -1056,9 +1027,7 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                 ),
               ],
               border: Border.all(
-                color: isSelected
-                    ? MyTheme.primaryColor.withOpacity(0.3)
-                    : Colors.transparent,
+                color: isSelected ? MyTheme.primaryColor.withOpacity(0.3) : Colors.transparent,
                 width: 1.5,
               ),
             ),
@@ -1085,7 +1054,7 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          holder.isEmpty ? brand : holder,
+                          card.cardholderName,
                           style: Font.montserratFont(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w600,
@@ -1185,9 +1154,7 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                                   card,
                                   isSelected: isSel,
                                   onTap: () {
-                                    context
-                                        .read<TransactionBloc>()
-                                        .add(PaymentSelectCard(card));
+                                    context.read<TransactionBloc>().add(PaymentSelectCard(card));
                                     HapticFeedback.selectionClick();
                                     Navigator.pop(context);
                                   },
@@ -1345,17 +1312,8 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                   duration: const Duration(milliseconds: 400),
                   padding: EdgeInsets.all(8.r),
                   decoration: BoxDecoration(
-                    color: isHighlight
-                        ? MyTheme.primaryColor.withOpacity(0.1)
-                        : Colors.white,
+                    color: Theme.of(context).scaffoldBackgroundColor,
                     shape: BoxShape.circle,
-                    boxShadow: isHighlight ? <BoxShadow>[
-                      BoxShadow(
-                        color: MyTheme.primaryColor.withOpacity(0.2),
-                        blurRadius: 4,
-                        spreadRadius: 1,
-                      ),
-                    ] : <BoxShadow>[],
                   ),
                   child: Icon(
                     icon,
@@ -1372,7 +1330,6 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                         label,
                         style: Font.montserratFont(
                           fontSize: 12.sp,
-                          color: AppColors.textSecondary,
                         ),
                       ),
                       Text(
@@ -1380,7 +1337,6 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: isHighlight ? FontWeight.bold : FontWeight.w600,
-                          color: isHighlight ? MyTheme.primaryColor : AppColors.textPrimary,
                         ),
                       ),
                     ],
