@@ -207,17 +207,17 @@ class _RecipientsListState extends State<RecipientsList> {
   }
 
   Widget _buildLoadingState(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    final baseColor = isDarkMode
+    final Color baseColor = isDarkMode
         ? Colors.grey[800]! // darker shimmer base for dark mode
         : Colors.grey[300]!; // lighter shimmer base for light mode
 
-    final highlightColor = isDarkMode
+    final Color highlightColor = isDarkMode
         ? Colors.grey[700]! // darker highlight for dark mode
         : Colors.grey[100]!; // lighter highlight for light mode
 
-    final containerColor = isDarkMode
+    final Color containerColor = isDarkMode
         ? Colors.grey[850]! // container color for dark mode
         : Colors.white; // container color for light mode
 
@@ -311,10 +311,9 @@ class _RecipientsListState extends State<RecipientsList> {
             SizedBox(height: 20.h),
             Text(AppStrings.noRecipientsYet, style: AppStyles.subtitle),
             SizedBox(height: 12.h),
-            Text(
+            const Text(
               AppStrings.addRecipientPrompt,
               textAlign: TextAlign.center,
-              style: AppStyles.caption,
             ),
             SizedBox(height: 30.h),
             ElevatedButton(
