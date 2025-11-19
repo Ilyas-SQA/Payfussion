@@ -6,13 +6,13 @@ import 'package:payfussion/presentations/currency-exchange/calculator_view.dart'
 import 'package:payfussion/presentations/currency-exchange/currency_exchange_history_view.dart';
 import 'package:payfussion/presentations/currency-exchange/currency_exchange_view.dart';
 import 'package:payfussion/presentations/debug/auth_test_screen.dart';
-import 'package:payfussion/presentations/home/paybill/dth_recharge_screen.dart';
-import 'package:payfussion/presentations/home/paybill/electric_city_bill_screen.dart';
-import 'package:payfussion/presentations/home/paybill/gas_bill_screen.dart';
-import 'package:payfussion/presentations/home/paybill/internet_bill_screen.dart';
-import 'package:payfussion/presentations/home/paybill/moives_screen.dart';
-import 'package:payfussion/presentations/home/paybill/postpaid_bill_screen.dart';
-import 'package:payfussion/presentations/home/paybill/rent_payment_screen.dart';
+import 'package:payfussion/presentations/home/paybill/dth_recharge/dth_recharge_screen.dart';
+import 'package:payfussion/presentations/home/paybill/electricity_bill/electric_city_bill_screen.dart';
+import 'package:payfussion/presentations/home/paybill/gas_bill/gas_bill_screen.dart';
+import 'package:payfussion/presentations/home/paybill/internet_bill/internet_bill_screen.dart';
+import 'package:payfussion/presentations/home/paybill/movies/moives_screen.dart';
+import 'package:payfussion/presentations/home/paybill/postpaid_bill/postpaid_bill_screen.dart';
+import 'package:payfussion/presentations/home/paybill/rent_payment/rent_payment_screen.dart';
 import 'package:payfussion/presentations/pay_bills/pay_bill_details_view.dart';
 import 'package:payfussion/presentations/pay_bills/receipt_view.dart';
 import 'package:payfussion/presentations/setting/community_forum/community_forum_screen.dart';
@@ -31,8 +31,9 @@ import '../../presentations/add_card/add_card_homescreen.dart';
 import '../../presentations/auth/forget_password/forget_password_screen.dart';
 import '../../presentations/auth/sign_in/sign_in.dart';
 import '../../presentations/auth/sign_up/sign_up_screen.dart';
-import '../../presentations/home/paybill/credit_card_loan_screen.dart';
-import '../../presentations/home/paybill/mobile_recharge_screen.dart';
+import '../../presentations/home/paybill/bill_split/bill_split_screen.dart';
+import '../../presentations/home/paybill/credit_card_loan/credit_card_loan_screen.dart';
+import '../../presentations/home/paybill/mobile_recharge/mobile_recharge_screen.dart';
 import '../../presentations/home/receive_money/receive_money_screen.dart';
 import '../../presentations/home/send_money/send_money_home.dart';
 import '../../presentations/home/tickets/train/train_list_screen.dart';
@@ -314,7 +315,17 @@ final GoRouter appRouter = GoRouter(
         pageBuilder: (BuildContext context, GoRouterState state) {
           return CustomFadeTransitionPage(
             key: state.pageKey,
-            child: const DTHRechargeScreen(),
+            child:  DTHRechargeScreen(),
+          );
+        }
+    ),
+
+    GoRoute(
+        path: RouteNames.splitBill,
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          return CustomFadeTransitionPage(
+            key: state.pageKey,
+            child: BillSplitScreen(),
           );
         }
     ),
