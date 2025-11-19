@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -316,7 +317,7 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
             children: <Widget>[
               _buildModalHeader(),
               _buildSearchField(),
-              _buildBankList(scrollController),
+              Expanded(child: _buildBankList(scrollController)),
             ],
           ),
         );
@@ -344,15 +345,15 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
               ),
             ),
           ),
-          IconButton(
-            onPressed: () => _showAddBankModal(context),
-            icon: Icon(
-              Icons.add_business,
-              color: MyTheme.primaryColor,
-              size: 24.sp,
-            ),
-            tooltip: 'Add New Bank',
-          ),
+          // IconButton(
+          //   onPressed: () => _showAddBankModal(context),
+          //   icon: Icon(
+          //     Icons.add_business,
+          //     color: MyTheme.primaryColor,
+          //     size: 24.sp,
+          //   ),
+          //   tooltip: 'Add New Bank',
+          // ),
         ],
       ),
     );
@@ -379,108 +380,129 @@ class _BankSelectionModalState extends State<BankSelectionModal> {
   }
 
   Widget _buildBankList(ScrollController scrollController) {
-    return Expanded(
-      child: BlocBuilder<RecipientBloc, AddRecipientState>(
-        builder: (BuildContext context, AddRecipientState state) {
-          if (state.banksLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: MyTheme.primaryColor),
-            );
-          }
-
-          if (state.filteredBanks.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(
-                    Icons.search_off,
-                    size: 48.sp,
-                    color: AppColors.textSecondary,
-                  ),
-                  SizedBox(height: 16.h),
-                  Text(
-                    'No banks found',
-                    style: Font.montserratFont(
-                      fontSize: 16.sp,
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  TextButton(
-                    onPressed: () => _showAddBankModal(context),
-                    child: Text(
-                      'Add New Bank',
-                      style: Font.montserratFont(color: MyTheme.primaryColor),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return ListView.builder(
-            controller: scrollController,
-            itemCount: state.filteredBanks.length,
-            itemBuilder: (BuildContext context, int index) {
-              final Bank bank = state.filteredBanks[index];
-              final bool isSelected = widget.selectedBank?.id == bank.id;
-
-              return ListTile(
-                onTap: () => widget.onBankSelected(bank),
-                leading: Container(
-                  padding: EdgeInsets.all(8.w),
-                  decoration: BoxDecoration(
-                    color: MyTheme.primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  child: Icon(
-                    Icons.account_balance,
-                    color: MyTheme.primaryColor,
-                    size: 20.sp,
-                  ),
-                ),
-                title: Text(
-                  bank.name,
-                  style: Font.montserratFont(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                subtitle: bank.code.isNotEmpty
-                    ? Text(
-                  'Code: ${bank.code}',
-                  style: Font.montserratFont(
-                    fontSize: 12.sp,
-                  ),
-                )
-                    : null,
-                trailing: isSelected
-                    ? Icon(
-                  Icons.check_circle,
-                  color: Colors.green,
-                  size: 20.sp,
-                )
-                    : null,
-              );
-            },
+    return BlocBuilder<RecipientBloc, AddRecipientState>(
+      builder: (BuildContext context, AddRecipientState state) {
+        if (state.banksLoading) {
+          return const Center(
+            child: CircularProgressIndicator(color: MyTheme.primaryColor),
           );
-        },
-      ),
+        }
+
+        if (state.filteredBanks.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  Icons.search_off,
+                  size: 48.sp,
+                  color: AppColors.textSecondary,
+                ),
+                SizedBox(height: 16.h),
+                Text(
+                  'No banks found',
+                  style: Font.montserratFont(
+                    fontSize: 16.sp,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                TextButton(
+                  onPressed: () => _showAddBankModal(context),
+                  child: Text(
+                    'Add New Bank',
+                    style: Font.montserratFont(color: MyTheme.primaryColor),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // Removed outer Expanded widget here
+        return ListView.builder(
+          controller: scrollController,  // Important: use the scrollController
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          itemCount: state.filteredBanks.length,
+          itemBuilder: (BuildContext context, int index) {
+            final Bank bank = state.filteredBanks[index];
+            final bool isSelected = widget.selectedBank?.id == bank.id;
+            final bool hasImage = bank.image.isNotEmpty;
+
+            print('Image URL: ${bank.image}');
+            print('Bank Code: ${bank.code}');
+            print('Bank Name: ${bank.name}');
+
+            return ListTile(
+              onTap: () => widget.onBankSelected(bank),
+              leading: SizedBox(
+                width: 40.w,
+                height: 40.h,
+                child: hasImage ?
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: CachedNetworkImage(
+                    imageUrl: bank.image,
+                    fit: BoxFit.fill,
+                    placeholder: (BuildContext context, String url) => const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    errorWidget: (BuildContext context, String url, Object error) {
+                      print('Image load error for ${bank.name}: $error');
+                      return Icon(
+                        Icons.account_balance,
+                        color: MyTheme.primaryColor,
+                        size: 20.sp,
+                      );
+                    },
+                  ),
+                )
+                    : Icon(
+                  Icons.account_balance,
+                  color: MyTheme.primaryColor,
+                  size: 20.sp,
+                ),
+              ),
+              title: Text(
+                bank.name,
+                style: Font.montserratFont(
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              subtitle: bank.code.isNotEmpty
+                  ? Text(
+                'Code: ${bank.code}',
+                style: Font.montserratFont(
+                  fontSize: 12.sp,
+                ),
+              )
+                  : null,
+              trailing: isSelected
+                  ? Icon(
+                Icons.check_circle,
+                color: Colors.green,
+                size: 20.sp,
+              )
+                  : null,
+            );
+          },
+        );
+      },
     );
   }
 
   void _showAddBankModal(BuildContext context) {
-    Navigator.of(context).pop(); // Close bank selection modal
+    Navigator.of(context).pop();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      // backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       builder: (BuildContext context) => BlocProvider.value(
         value: context.read<RecipientBloc>(),
         child: const AddBankModal(),
       ),
     );
   }
+
 }
 
 class AddBankModal extends StatefulWidget {
@@ -665,8 +687,7 @@ class _AddBankModalState extends State<AddBankModal> {
           borderSide: const BorderSide(color: MyTheme.primaryColor, width: 2),
         ),
       ),
-      validator: isRequired
-          ? (String? value) {
+      validator: isRequired ? (String? value) {
         if (value == null || value.trim().isEmpty) {
           return '$label is required';
         }
@@ -716,15 +737,12 @@ class _AddBankModalState extends State<AddBankModal> {
           child: ElevatedButton(
             onPressed: state.isAddingBank ? null : _handleSubmit,
             style: ElevatedButton.styleFrom(
-              backgroundColor: state.isAddingBank
-                  ? AppColors.textSecondary
-                  : MyTheme.primaryColor,
+              backgroundColor: state.isAddingBank ? AppColors.textSecondary : MyTheme.primaryColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.r),
               ),
             ),
-            child: state.isAddingBank
-                ? Row(
+            child: state.isAddingBank ? Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 SizedBox(
