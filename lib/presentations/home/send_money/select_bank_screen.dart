@@ -110,7 +110,7 @@ class _SelectBankScreenState extends State<SelectBankScreen> with TickerProvider
                   children: <Widget>[
                     Text(
                       bank.name,
-                      style: TextStyle(
+                      style: Font.montserratFont(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w600,
                       ),
@@ -119,14 +119,14 @@ class _SelectBankScreenState extends State<SelectBankScreen> with TickerProvider
                     if (bank.branchName.isNotEmpty)
                       Text(
                         bank.branchName,
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           fontSize: 12.sp,
                         ),
                       ),
                     if (bank.city.isNotEmpty)
                       Text(
                         bank.city,
-                        style: TextStyle(
+                        style: Font.montserratFont(
                           fontSize: 11.sp,
                         ),
                       ),
@@ -572,22 +572,12 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
                                 DropdownButtonFormField<String>(
                                   initialValue: _selectedPurpose,
                                   validator: _validatePaymentPurpose,
+                                  dropdownColor: Theme.of(context).scaffoldBackgroundColor,
                                   decoration: InputDecoration(
                                     hintText: 'Select payment purpose',
                                     hintStyle: Font.montserratFont(color: Colors.white),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12.r),
-                                      borderSide: const BorderSide(color: MyTheme.primaryColor, width: 2),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12.r),
-                                      borderSide: const BorderSide(color: MyTheme.primaryColor, width: 2),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12.r),
-                                      borderSide: const BorderSide(color: MyTheme.primaryColor, width: 2),
-                                    ),
                                   ),
+
                                   items: _paymentPurposes.map((String purpose) {
                                     return DropdownMenuItem<String>(
                                       value: purpose,
