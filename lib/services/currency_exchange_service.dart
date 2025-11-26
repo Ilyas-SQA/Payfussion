@@ -12,7 +12,7 @@ class CurrencyApiService {
   /// Get exchange rates for a specific base currency
   Future<Map<String, dynamic>> getExchangeRates(String baseCurrency) async {
     try {
-      final response = await http.get(
+      final http.Response response = await http.get(
         Uri.parse('$_baseUrl/$baseCurrency'),
       );
 
@@ -33,11 +33,11 @@ class CurrencyApiService {
     required double amount,
   }) async {
     try {
-      final data = await getExchangeRates(from);
-      final rates = data['rates'] as Map<String, dynamic>;
+      final Map<String, dynamic> data = await getExchangeRates(from);
+      final Map<String, dynamic> rates = data['rates'] as Map<String, dynamic>;
 
       if (rates.containsKey(to)) {
-        final rate = rates[to] as num;
+        final num rate = rates[to] as num;
         return amount * rate.toDouble();
       } else {
         throw Exception('Currency $to not found');
@@ -50,8 +50,8 @@ class CurrencyApiService {
   /// Get last update time
   Future<DateTime> getLastUpdateTime(String baseCurrency) async {
     try {
-      final data = await getExchangeRates(baseCurrency);
-      final timestamp = data['time_last_updated'] as int;
+      final Map<String, dynamic> data = await getExchangeRates(baseCurrency);
+      final int timestamp = data['time_last_updated'] as int;
       return DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
     } catch (e) {
       return DateTime.now();
