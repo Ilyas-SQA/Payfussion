@@ -1,18 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/constants/routes_name.dart';
-import 'package:payfussion/presentations/pay_bills/widgets/quick_access_avatar.dart';
-import 'package:shimmer/shimmer.dart';
-import '../../../core/constants/fonts.dart';
-import '../../../core/constants/image_url.dart';
-import '../../../core/theme/theme.dart';
-import '../../../data/models/recipient/recipient_model.dart';
-import '../../widgets/background_theme.dart';
+import '../../../../core/constants/image_url.dart';
+import '../../../../core/theme/theme.dart';
+import '../../../../data/models/recipient/recipient_model.dart';
+import '../../../widgets/background_theme.dart';
 
 class PayBillScreen extends StatefulWidget {
   const PayBillScreen({super.key});
@@ -111,7 +106,7 @@ class _PayBillScreenState extends State<PayBillScreen> with TickerProviderStateM
       type: "bill_split",
       gradient: MyTheme.primaryColor,
       iconColor: Colors.white,
-      route: RouteNames.payBillsDetailView,
+      route: RouteNames.splitBill,
     ),
   ];
 

@@ -37,14 +37,14 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   // Handles success and failure from an Either result
   void _handleEither<E, F>(
-    Either<F, E> result,
-    Emitter<ProfileState> emit,
-    Function(F) onFailure,
-    Function(E) onSuccess,
-  ) {
+      Either<F, E> result,
+      Emitter<ProfileState> emit,
+      Function(F) onFailure,
+      Function(E) onSuccess,
+      ) {
     result.fold(
-      (failure) => onFailure(failure),
-      (success) => onSuccess(success),
+          (failure) => onFailure(failure),
+          (success) => onSuccess(success),
     );
   }
 
@@ -107,18 +107,18 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
 
   Future<void> _handleUpdateFirstName(
-    UpdateFirstName event,
-    Emitter<ProfileState> emit,
-  ) async {
+      UpdateFirstName event,
+      Emitter<ProfileState> emit,
+      ) async {
     _emitLoading(emit);
     try {
       final Either<Failure, Unit> result = await authRepository.updateUserFirstName(event.firstName);
       _handleEither(
         result,
         emit,
-        (Failure failure) =>
+            (Failure failure) =>
             _emitError(emit, "Failed to update first name: ${failure.message}"),
-        (_) => emit(ProfileSucess()),
+            (_) => emit(ProfileSucess()),
       );
     } catch (e) {
       _emitError(emit, "Error updating first name: ${e.toString()}");
@@ -126,28 +126,48 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   }
 
   Future<void> _handleUpdateLastName(
-    UpdateLastName event,
-    Emitter<ProfileState> emit,
-  ) async {
+      UpdateLastName event,
+      Emitter<ProfileState> emit,
+      ) async {
     _emitLoading(emit);
     try {
       final Either<Failure, Unit> result = await authRepository.updateUserLastName(event.lastName);
       _handleEither(
         result,
         emit,
-        (Failure failure) =>
+            (Failure failure) =>
             _emitError(emit, "Failed to update last name: ${failure.message}"),
-        (_) => emit(ProfileSucess()),
+            (_) => emit(ProfileSucess()),
       );
     } catch (e) {
       _emitError(emit, "Error updating last name: ${e.toString()}");
     }
   }
 
+  // // 👇 NAYA HANDLER FOR PHONE NUMBER
+  // Future<void> _handleUpdatePhoneNumber(
+  //     UpdatePhoneNumber event,
+  //     Emitter<ProfileState> emit,
+  //     ) async {
+  //   _emitLoading(emit);
+  //   try {
+  //     final Either<Failure, Unit> result = await authRepository.updateUserPhoneNumber(event.phoneNumber);
+  //     _handleEither(
+  //       result,
+  //       emit,
+  //           (Failure failure) =>
+  //           _emitError(emit, "Failed to update phone number: ${failure.message}"),
+  //           (_) => emit(ProfileSucess()),
+  //     );
+  //   } catch (e) {
+  //     _emitError(emit, "Error updating phone number: ${e.toString()}");
+  //   }
+  // }
+
   Future<void> _handleUpdateProfileImage(
-    UpdateProfileImage event,
-    Emitter<ProfileState> emit,
-  ) async {
+      UpdateProfileImage event,
+      Emitter<ProfileState> emit,
+      ) async {
     _emitLoading(emit);
     try {
       final Either<Failure, Unit> result = await authRepository.updateUserProfileUrl(
@@ -156,11 +176,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       _handleEither(
         result,
         emit,
-        (Failure failure) => _emitError(
+            (Failure failure) => _emitError(
           emit,
           "Failed to update profile image: ${failure.message}",
         ),
-        (_) => emit(ProfileSucess()),
+            (_) => emit(ProfileSucess()),
       );
     } catch (e) {
       _emitError(emit, "Error updating profile image: ${e.toString()}");

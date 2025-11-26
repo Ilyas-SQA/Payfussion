@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
-import '../../../core/constants/routes_name.dart';
-import '../../widgets/background_theme.dart';
+import '../../../widgets/background_theme.dart';
+import 'electricity_bill_form_screen.dart';
 
 class ElectricCityBillScreen extends StatefulWidget {
   const ElectricCityBillScreen({super.key});
@@ -13,22 +12,22 @@ class ElectricCityBillScreen extends StatefulWidget {
   State<ElectricCityBillScreen> createState() => _ElectricCityBillScreenState();
 }
 
-class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
-    with TickerProviderStateMixin {
-
-  // Animation controllers
+class _ElectricCityBillScreenState extends State<ElectricCityBillScreen> with TickerProviderStateMixin {
+  /// Animation controllers
   late AnimationController _headerController;
   late AnimationController _listController;
   late AnimationController _backgroundAnimationController;
+
   late Animation<double> _headerFade;
   late Animation<Offset> _headerSlide;
   late Animation<double> _listFade;
 
-  final List<Map<String, dynamic>> electricityProviders = <Map<String, dynamic>>[
+  final List<Map<String, dynamic>> electricityProviders =
+  <Map<String, dynamic>>[
     <String, dynamic>{
       "name": "Pacific Gas & Electric (PG&E)",
       "description": "California's largest utility provider",
-      "icon": Icons.flash_on,
+      "icon": "assets/images/paybill/electric_city/pacific_gas_electric.png",
       "color": MyTheme.primaryColor,
       "region": "California",
       "averageRate": "\$0.28/kWh",
@@ -37,7 +36,8 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
     <String, dynamic>{
       "name": "Southern California Edison (SCE)",
       "description": "Serving Southern California communities",
-      "icon": Icons.electrical_services,
+      "icon":
+      "assets/images/paybill/electric_city/southern_california_edison.png",
       "color": MyTheme.primaryColor,
       "region": "Southern California",
       "averageRate": "\$0.25/kWh",
@@ -46,7 +46,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
     <String, dynamic>{
       "name": "Con Edison (ConEd)",
       "description": "New York's primary energy provider",
-      "icon": Icons.power,
+      "icon": "assets/images/paybill/electric_city/con_edison.png",
       "color": MyTheme.primaryColor,
       "region": "New York",
       "averageRate": "\$0.22/kWh",
@@ -55,7 +55,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
     <String, dynamic>{
       "name": "Florida Power & Light (FPL)",
       "description": "Florida's largest electric utility",
-      "icon": Icons.wb_sunny,
+      "icon": "assets/images/paybill/electric_city/florida_power_light.jpeg",
       "color": MyTheme.primaryColor,
       "region": "Florida",
       "averageRate": "\$0.12/kWh",
@@ -64,7 +64,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
     <String, dynamic>{
       "name": "Duke Energy",
       "description": "Multi-state energy corporation",
-      "icon": Icons.business,
+      "icon": "assets/images/paybill/electric_city/duke_energy.png",
       "color": MyTheme.primaryColor,
       "region": "Southeast US",
       "averageRate": "\$0.11/kWh",
@@ -73,7 +73,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
     <String, dynamic>{
       "name": "Commonwealth Edison (ComEd)",
       "description": "Northern Illinois electric utility",
-      "icon": Icons.location_city,
+      "icon": "assets/images/paybill/electric_city/commonwealth_edison.png",
       "color": MyTheme.primaryColor,
       "region": "Illinois",
       "averageRate": "\$0.13/kWh",
@@ -82,7 +82,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
     <String, dynamic>{
       "name": "National Grid",
       "description": "Northeast electricity & gas utility",
-      "icon": Icons.grid_on,
+      "icon": "assets/images/paybill/electric_city/national_grid.png",
       "color": MyTheme.primaryColor,
       "region": "Northeast US",
       "averageRate": "\$0.20/kWh",
@@ -91,7 +91,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
     <String, dynamic>{
       "name": "Xcel Energy",
       "description": "Multi-state utility company",
-      "icon": Icons.wind_power,
+      "icon": "assets/images/paybill/electric_city/xcel_energy.png",
       "color": MyTheme.primaryColor,
       "region": "Midwest US",
       "averageRate": "\$0.12/kWh",
@@ -100,7 +100,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
     <String, dynamic>{
       "name": "PPL Electric Utilities",
       "description": "Pennsylvania electric utility",
-      "icon": Icons.energy_savings_leaf,
+      "icon": "assets/images/paybill/electric_city/electric_utilities.jpeg",
       "color": MyTheme.primaryColor,
       "region": "Pennsylvania",
       "averageRate": "\$0.14/kWh",
@@ -109,7 +109,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
     <String, dynamic>{
       "name": "Entergy",
       "description": "Southern US energy provider",
-      "icon": Icons.eco,
+      "icon": "assets/images/paybill/electric_city/entergy.png",
       "color": MyTheme.primaryColor,
       "region": "Southern US",
       "averageRate": "\$0.10/kWh",
@@ -118,7 +118,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
     <String, dynamic>{
       "name": "Eversource Energy",
       "description": "New England's largest utility",
-      "icon": Icons.cottage,
+      "icon": "assets/images/paybill/electric_city/eversource_energy.png",
       "color": MyTheme.primaryColor,
       "region": "New England",
       "averageRate": "\$0.23/kWh",
@@ -127,7 +127,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
     <String, dynamic>{
       "name": "OG&E (Oklahoma Gas & Electric)",
       "description": "Oklahoma's primary utility",
-      "icon": Icons.local_gas_station,
+      "icon": "assets/images/paybill/electric_city/OG&E.png",
       "color": MyTheme.primaryColor,
       "region": "Oklahoma",
       "averageRate": "\$0.11/kWh",
@@ -136,7 +136,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
     <String, dynamic>{
       "name": "Evergy",
       "description": "Kansas & Missouri energy provider",
-      "icon": Icons.wb_incandescent,
+      "icon": "assets/images/paybill/electric_city/evergy.png",
       "color": MyTheme.primaryColor,
       "region": "Kansas & Missouri",
       "averageRate": "\$0.13/kWh",
@@ -145,7 +145,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
     <String, dynamic>{
       "name": "Oncor",
       "description": "Texas electric delivery company",
-      "icon": Icons.electrical_services,
+      "icon": "assets/images/paybill/electric_city/oncor.jpeg",
       "color": MyTheme.primaryColor,
       "region": "Texas",
       "averageRate": "\$0.12/kWh",
@@ -154,7 +154,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
     <String, dynamic>{
       "name": "Avista Utilities",
       "description": "Pacific Northwest utility",
-      "icon": Icons.water_drop,
+      "icon": "assets/images/paybill/electric_city/avista_utilities.png",
       "color": MyTheme.primaryColor,
       "region": "Pacific Northwest",
       "averageRate": "\$0.10/kWh",
@@ -167,6 +167,7 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
     super.initState();
     _initAnimations();
     _startAnimationSequence();
+
     _backgroundAnimationController = AnimationController(
       duration: const Duration(seconds: 20),
       vsync: this,
@@ -201,7 +202,6 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
   void _startAnimationSequence() async {
     await Future.delayed(const Duration(milliseconds: 200));
     _headerController.forward();
-
     await Future.delayed(const Duration(milliseconds: 300));
     _listController.forward();
   }
@@ -225,12 +225,8 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
           opacity: _headerFade,
           child: SlideTransition(
             position: _headerSlide,
-            child: Text(
+            child: const Text(
               "Electricity Bill",
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
-              ),
             ),
           ),
         ),
@@ -255,7 +251,9 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
                         "Pay Your",
                         style: theme.textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.w300,
-                          color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.8) : const Color(0xff718096),
+                          color: theme.primaryColor != Colors.white
+                              ? Colors.white.withOpacity(0.8)
+                              : const Color(0xff718096),
                           fontSize: 18,
                         ),
                       ),
@@ -263,7 +261,9 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
                         "Electricity Bill",
                         style: theme.textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+                          color: theme.primaryColor != Colors.white
+                              ? Colors.white
+                              : const Color(0xff2D3748),
                           fontSize: 16,
                         ),
                       ),
@@ -271,7 +271,9 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
                       Text(
                         "Select your electricity provider to pay bills instantly",
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.7) : const Color(0xff718096),
+                          color: theme.primaryColor != Colors.white
+                              ? Colors.white.withOpacity(0.7)
+                              : const Color(0xff718096),
                           fontSize: 12,
                         ),
                       ),
@@ -316,16 +318,19 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
     );
   }
 
-  Widget _buildProviderCard(Map<String, dynamic> provider, ThemeData theme, int index) {
+  Widget _buildProviderCard(
+      Map<String, dynamic> provider, ThemeData theme, int index) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Colors.grey.withOpacity(0.3)
+                  : Colors.black.withOpacity(0.3),
               blurRadius: 5,
               offset: const Offset(0, 4),
             ),
@@ -333,15 +338,16 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
         ),
         child: InkWell(
           onTap: () {
-            context.push(
-              RouteNames.payBillsDetailView,
-              extra: <String, dynamic>{
-                'billType': "electricity",
-                'companyName': provider['name'],
-                'region': provider['region'],
-                'averageRate': provider['averageRate'],
-                'customers': provider['customers'],
-              },
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => ElectricityBillFormScreen(
+                  providerName: provider['name'] as String,
+                  region: provider['region'] as String,
+                  averageRate: provider['averageRate'] as String,
+                  customers: provider['customers'] as String,
+                ),
+              ),
             );
           },
           borderRadius: BorderRadius.circular(20.r),
@@ -351,14 +357,18 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
               children: <Widget>[
                 // Icon Container
                 Hero(
-                  tag: 'electricity_icon_${provider['name']}',
-                  child: Icon(
-                    provider['icon'] as IconData,
-                    size: 28.sp,
-                    color: provider['color'] as Color,
+                  tag: 'provider_icon_${provider['name']}',
+                  child: CircleAvatar(
+                    radius: 24.r,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Image.asset(
+                        provider['icon'] as String,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
                 ),
-
                 SizedBox(width: 16.w),
 
                 // Content
@@ -375,13 +385,15 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 14,
-                                color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+                                color: theme.primaryColor != Colors.white
+                                    ? Colors.white
+                                    : const Color(0xff2D3748),
                               ),
                             ),
                           ),
-
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8.w, vertical: 4.h),
                             decoration: BoxDecoration(
                               color: MyTheme.primaryColor,
                               borderRadius: BorderRadius.circular(12.r),
@@ -390,21 +402,21 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
                               provider['averageRate'] as String,
                               style: theme.textTheme.labelSmall?.copyWith(
                                 fontWeight: FontWeight.w600,
+                                color: Colors.white,
                               ),
                             ),
                           ),
                         ],
                       ),
-
                       SizedBox(height: 4.h),
-
                       Text(
                         provider['description'] as String,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.7) : const Color(0xff718096),
+                          color: theme.primaryColor != Colors.white
+                              ? Colors.white.withOpacity(0.7)
+                              : const Color(0xff718096),
                         ),
                       ),
-
                       SizedBox(height: 8.h),
 
                       /// Region and customers info
@@ -413,13 +425,18 @@ class _ElectricCityBillScreenState extends State<ElectricCityBillScreen>
                           Icon(
                             Icons.location_on,
                             size: 14.sp,
+                            color: theme.primaryColor != Colors.white
+                                ? Colors.white.withOpacity(0.7)
+                                : const Color(0xff718096),
                           ),
                           SizedBox(width: 4.w),
                           Expanded(
                             child: Text(
                               "${provider['region']} • ${provider['customers']} customers",
                               style: theme.textTheme.labelSmall?.copyWith(
-                                color: Colors.white,
+                                color: theme.primaryColor != Colors.white
+                                    ? Colors.white.withOpacity(0.7)
+                                    : const Color(0xff718096),
                               ),
                             ),
                           ),

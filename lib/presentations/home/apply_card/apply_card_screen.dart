@@ -40,7 +40,7 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> with TickerProviderSt
         elevation: 0,
         title: Text(
           _getAppBarTitle(),
-          style:  Font.montserratFont(
+          style: Font.montserratFont(
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -292,7 +292,7 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> with TickerProviderSt
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(6)),
-                                  child: Text('VISA', style: Font.montserratFont(color: Color(0xFF1A1F71), fontSize: 14, fontWeight: FontWeight.bold)),
+                                  child: Text('VISA', style: Font.montserratFont(color: const Color(0xFF1A1F71), fontSize: 14, fontWeight: FontWeight.bold)),
                                 ),
                             ],
                           ),
@@ -747,6 +747,7 @@ class _ApplyCardScreenState extends State<ApplyCardScreen> with TickerProviderSt
     showDialog(
       context: context,
       builder: (BuildContext c) => AlertDialog(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         contentPadding: const EdgeInsets.all(24),
         content: Column(

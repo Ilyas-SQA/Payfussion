@@ -122,7 +122,7 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
                 children: <Widget>[
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10.w),
-                    child: TImageUrl.getCardBrandLogo(card.brand),
+                    child: TImageUrl.getCardBrandLogo(card.brand,context),
                   ),
                   Text(
                     "**** **** **** ${card.last4}",
@@ -198,7 +198,7 @@ class _PaymentCardSelectorState extends State<PaymentCardSelector> {
           ),
           child: Row(
             children: <Widget>[
-              TImageUrl.getCardBrandLogo(card.brand),
+              TImageUrl.getCardBrandLogo(card.brand,context),
               SizedBox(width: 12.w),
               Expanded(
                 child: Text(

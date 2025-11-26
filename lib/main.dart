@@ -12,8 +12,16 @@ import 'package:payfussion/logic/blocs/add_card/card_bloc.dart';
 import 'package:payfussion/logic/blocs/auth/auth_bloc.dart';
 import 'package:payfussion/logic/blocs/bank_transaction/bank_transaction_bloc.dart';
 import 'package:payfussion/logic/blocs/currency/currency_bloc.dart';
+import 'package:payfussion/logic/blocs/donation/donation_bloc.dart';
 import 'package:payfussion/logic/blocs/insurance/insurance_bloc.dart';
 import 'package:payfussion/logic/blocs/notification/notification_bloc.dart';
+import 'package:payfussion/logic/blocs/pay_bill/bill_split/bill_split_bloc.dart';
+import 'package:payfussion/logic/blocs/pay_bill/electricity_bill/electricity_bill_bloc.dart';
+import 'package:payfussion/logic/blocs/pay_bill/gas_bill/gas_bill_bloc.dart';
+import 'package:payfussion/logic/blocs/pay_bill/internet_bill/internet_bill_bloc.dart';
+import 'package:payfussion/logic/blocs/pay_bill/mobile_recharge/mobile_recharge_bloc.dart';
+import 'package:payfussion/logic/blocs/pay_bill/postpaid_bill/postpaid_bill_bloc.dart';
+import 'package:payfussion/logic/blocs/pay_bill/rent_payment/rent_payment_bloc.dart';
 import 'package:payfussion/logic/blocs/setting/community_forum/community_form_bloc.dart';
 import 'package:payfussion/logic/blocs/setting/user_profile/profile_bloc.dart';
 import 'package:payfussion/logic/blocs/theme/theme_bloc.dart';
@@ -45,6 +53,9 @@ import 'domain/repository/auth/auth_repository.dart';
 import 'logic/blocs/currency_convert/currency_convert_bloc.dart';
 import 'logic/blocs/graph_currency/graph_currency_bloc.dart';
 import 'logic/blocs/graph_currency/graph_currency_event.dart';
+import 'logic/blocs/pay_bill/credit_card_loan/credit_card_loan_bloc.dart';
+import 'logic/blocs/pay_bill/dth_bill/dth_bill_bloc.dart';
+import 'logic/blocs/pay_bill/movies/movies_bloc.dart';
 import 'logic/blocs/pay_bill/pay_bill_bloc.dart';
 import 'logic/blocs/payment_request/payment_request_bloc.dart';
 import 'logic/blocs/recipient/recipient_bloc.dart';
@@ -212,6 +223,18 @@ class MyApp extends StatelessWidget {
             InsurancePaymentRepository(),
           ),
         ),
+        BlocProvider(create: (BuildContext context) => ElectricityBillBloc(NotificationBloc(NotificationRepository())),),
+        BlocProvider(create: (BuildContext context) => MobileRechargeBloc(NotificationBloc(NotificationRepository()),)),
+        BlocProvider(create: (BuildContext context) => GasBillBloc(NotificationBloc(NotificationRepository()),)),
+        BlocProvider(create: (BuildContext context) => MoviesBloc(context.read<NotificationBloc>()),),
+        BlocProvider(create: (BuildContext context) => RentPaymentBloc(PayBillRepository(), NotificationBloc(NotificationRepository()),),),
+        BlocProvider(create: (BuildContext context) => PostpaidBillBloc(context.read<NotificationBloc>())),
+        BlocProvider(create: (BuildContext context) => CreditCardLoanBloc(context.read<NotificationBloc>(),),),
+        BlocProvider(create: (BuildContext context) => DthRechargeBloc(context.read<NotificationBloc>())),
+        BlocProvider(create: (BuildContext context) => BillSplitBloc(context.read<NotificationBloc>())),
+        BlocProvider(create: (BuildContext context) => InternetBillBloc(context.read<NotificationBloc>())),
+        BlocProvider(create: (BuildContext context) => DonationBloc(context.read<NotificationBloc>())),
+
       ],
       child: ScreenUtilInit(
         designSize: const Size(375, 812),
@@ -226,7 +249,7 @@ class MyApp extends StatelessWidget {
                 routerConfig: appRouter,
                 theme: MyTheme.lightTheme(context),
                 darkTheme: MyTheme.darkTheme(context),
-                themeMode: ThemeMode.system,
+                themeMode: themeState.themeMode,
               );
             },
           );

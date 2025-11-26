@@ -1,11 +1,12 @@
+// lib/presentations/currency-exchange/widget/convert_widget.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/presentations/currency-exchange/widget/convert_button.dart';
-
-import '../../../logic/blocs/calculator/calculator_bloc.dart';
-import '../../../logic/blocs/calculator/calculator_event.dart';
-import '../../../logic/blocs/calculator/calculator_state.dart';
+import '../../../logic/blocs/exchange_currency/exchange_currency_bloc.dart';
+import '../../../logic/blocs/exchange_currency/exchange_currency_event.dart';
+import '../../../logic/blocs/exchange_currency/exchange_currency_state.dart';
 
 List<ConvertButton> convertButton = const <ConvertButton>[
   ConvertButton('7', canBeFirst: false, isColored: false),
@@ -49,144 +50,236 @@ class ConvertWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              BlocBuilder<CalculatorBloc, CalculatorState>(
-                builder: (BuildContext context, CalculatorState state) =>
-                    Column(
+              BlocBuilder<ExchangeCurrencyBloc, ExchangeCurrencyState>(
+                builder: (BuildContext context, ExchangeCurrencyState state) {
+                  // Show loading indicator
+                  if (state.status == ExchangeStatus.loading && state.exchangeRates == null) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+
+                  // Show error message
+                  if (state.status == ExchangeStatus.error) {
+                    return Column(
                       children: <Widget>[
-                        // Currency Selector Dropdowns
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            // Source Currency Dropdown
-                            DropdownButton<String>(
-                              value: state.sourceCurrency,
-                              iconSize: 20.sp,
-                              menuWidth: 80.w,
-                              underline: Container(height: 0),
-                              icon: Icon(
-                                Icons.arrow_forward_ios,
-                                color: isDarkMode ? Colors.white70 : Colors.black87,
-                              ),
-                              dropdownColor: isDarkMode
-                                  ? Colors.grey[850]
-                                  : Colors.white,
-                              onChanged: (String? value) {
-                                BlocProvider.of<CalculatorBloc>(
-                                  context,
-                                ).add(SourceCurrencyChanged(currency: value!));
-                              },
-                              items: <String>['USD', 'EUR', 'INR', 'GBP'].map((
-                                  String currency,
-                                  ) {
-                                return DropdownMenuItem<String>(
-                                  value: currency,
-                                  child: Text(
-                                    currency,
-                                    style: Theme.of(context).textTheme.bodyLarge
-                                        ?.copyWith(
-                                      fontSize: 20.sp,
-                                      color: isDarkMode
-                                          ? Colors.white
-                                          : Colors.black87,
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-
-                            Text(
-                              state.amount.toStringAsFixed(0),
-                              style: Theme.of(context).textTheme.bodyLarge
-                                  ?.copyWith(
-                                fontSize: 25.sp,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
-                          ],
+                        Icon(
+                          Icons.error_outline,
+                          color: Colors.red,
+                          size: 40.sp,
                         ),
-
-                        12.verticalSpace,
-                        // Target Currency Dropdown
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            // target Currency Dropdown
-                            DropdownButton<String>(
-                              value: state.targetCurrency,
-                              iconSize: 20.sp,
-                              menuWidth: 80.w,
-                              underline: Container(height: 0),
-                              icon: Icon(
-                                Icons.arrow_forward_ios,
-                                color: isDarkMode ? Colors.white70 : Colors.black87,
-                              ),
-                              dropdownColor: isDarkMode
-                                  ? Colors.grey[850]
-                                  : Colors.white,
-                              onChanged: (String? value) {
-                                BlocProvider.of<CalculatorBloc>(
-                                  context,
-                                ).add(TargetCurrencyChanged(currency: value!));
-                              },
-                              items: <String>['USD', 'EUR', 'INR', 'GBP'].map((
-                                  String currency,
-                                  ) {
-                                return DropdownMenuItem<String>(
-                                  value: currency,
-                                  child: Text(
-                                    currency,
-                                    style: Theme.of(context).textTheme.bodyLarge
-                                        ?.copyWith(
-                                      fontSize: 20.sp,
-                                      color: isDarkMode
-                                          ? Colors.white
-                                          : Colors.black87,
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-
-                            Text(
-                              state.conversionResult.toStringAsFixed(0),
-                              style: Theme.of(context).textTheme.bodyLarge
-                                  ?.copyWith(
-                                fontSize: 25.sp,
-                                fontWeight: FontWeight.bold,
-                                color: isDarkMode
-                                    ? Colors.white
-                                    : Colors.black87,
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        100.verticalSpace,
-                        // last update
+                        8.verticalSpace,
                         Text(
-                          'Last Updated 2 min ago',
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                            fontSize: 12.sp,
-                            color: isDarkMode
-                                ? Colors.white70
-                                : Colors.black54,
-                          ),
+                          'Failed to load exchange rates',
+                          style: TextStyle(color: Colors.red, fontSize: 14.sp),
+                        ),
+                        8.verticalSpace,
+                        ElevatedButton(
+                          onPressed: () {
+                            context.read<ExchangeCurrencyBloc>().add(
+                              const FetchExchangeRates(),
+                            );
+                          },
+                          child: const Text('Retry'),
                         ),
                       ],
-                    ),
-              ),
+                    );
+                  }
 
-              BlocBuilder<CalculatorBloc, CalculatorState>(
-                builder: (BuildContext context, CalculatorState state) => Text(
-                  state.result,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontSize: 25.sp,
-                    fontWeight: FontWeight.bold,
-                    color: isDarkMode ? Colors.white : Colors.black87,
-                  ),
-                ),
+                  return Column(
+                    children: <Widget>[
+                      // Currency Selector Dropdowns
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          // Source Currency Dropdown
+                          DropdownButton<String>(
+                            value: state.sourceCurrency,
+                            iconSize: 20.sp,
+                            menuWidth: 80.w,
+                            underline: Container(height: 0),
+                            icon: Icon(
+                              Icons.arrow_forward_ios,
+                              color: isDarkMode ? Colors.white70 : Colors.black87,
+                            ),
+                            dropdownColor: isDarkMode
+                                ? Colors.grey[850]
+                                : Colors.white,
+                            onChanged: (String? value) {
+                              context.read<ExchangeCurrencyBloc>().add(
+                                SourceCurrencyChanged(currency: value!),
+                              );
+                            },
+                            items: <String>['USD', 'EUR', 'INR', 'GBP', 'PKR', 'AUD', 'CAD', 'JPY'].map((
+                                String currency,
+                                ) {
+                              return DropdownMenuItem<String>(
+                                value: currency,
+                                child: Text(
+                                  currency,
+                                  style: Theme.of(context).textTheme.bodyLarge
+                                      ?.copyWith(
+                                    fontSize: 20.sp,
+                                    color: isDarkMode
+                                        ? Colors.white
+                                        : Colors.black87,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+
+                          Text(
+                            state.amount.toStringAsFixed(2),
+                            style: Theme.of(context).textTheme.bodyLarge
+                                ?.copyWith(
+                              fontSize: 25.sp,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      12.verticalSpace,
+
+                      // Swap Currencies Button
+                      IconButton(
+                        icon: Icon(
+                          Icons.swap_vert,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        onPressed: () {
+                          context.read<ExchangeCurrencyBloc>().add(
+                            const SwapCurrencies(),
+                          );
+                        },
+                      ),
+
+                      12.verticalSpace,
+
+                      // Target Currency Dropdown
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          // Target Currency Dropdown
+                          DropdownButton<String>(
+                            value: state.targetCurrency,
+                            iconSize: 20.sp,
+                            menuWidth: 80.w,
+                            underline: Container(height: 0),
+                            icon: Icon(
+                              Icons.arrow_forward_ios,
+                              color: isDarkMode ? Colors.white70 : Colors.black87,
+                            ),
+                            dropdownColor: isDarkMode
+                                ? Colors.grey[850]
+                                : Colors.white,
+                            onChanged: (String? value) {
+                              context.read<ExchangeCurrencyBloc>().add(
+                                TargetCurrencyChanged(currency: value!),
+                              );
+                            },
+                            items: <String>['USD', 'EUR', 'INR', 'GBP', 'PKR', 'AUD', 'CAD', 'JPY'].map((
+                                String currency,
+                                ) {
+                              return DropdownMenuItem<String>(
+                                value: currency,
+                                child: Text(
+                                  currency,
+                                  style: Theme.of(context).textTheme.bodyLarge
+                                      ?.copyWith(
+                                    fontSize: 20.sp,
+                                    color: isDarkMode
+                                        ? Colors.white
+                                        : Colors.black87,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+
+                          Row(
+                            children: <Widget>[
+                              if (state.status == ExchangeStatus.loading)
+                                Padding(
+                                  padding: EdgeInsets.only(right: 8.w),
+                                  child: SizedBox(
+                                    width: 16.w,
+                                    height: 16.h,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Theme.of(context).colorScheme.primary,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              Text(
+                                state.conversionResult.toStringAsFixed(2),
+                                style: Theme.of(context).textTheme.bodyLarge
+                                    ?.copyWith(
+                                  fontSize: 25.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: isDarkMode
+                                      ? Colors.white
+                                      : Colors.black87,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+
+                      20.verticalSpace,
+
+                      // Exchange Rate Info
+                      if (state.exchangeRates != null &&
+                          state.exchangeRates![state.targetCurrency] != null)
+                        Text(
+                          '1 ${state.sourceCurrency} = ${state.exchangeRates![state.targetCurrency]!.toStringAsFixed(4)} ${state.targetCurrency}',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            fontSize: 11.sp,
+                            color: isDarkMode ? Colors.white60 : Colors.black45,
+                          ),
+                        ),
+
+                      8.verticalSpace,
+
+                      // Last Update with Refresh Button
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            state.getLastUpdatedText(),
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                              fontSize: 12.sp,
+                              color: isDarkMode
+                                  ? Colors.white70
+                                  : Colors.black54,
+                            ),
+                          ),
+                          4.horizontalSpace,
+                          IconButton(
+                            icon: Icon(
+                              Icons.refresh,
+                              size: 18.sp,
+                              color: isDarkMode
+                                  ? Colors.white70
+                                  : Colors.black54,
+                            ),
+                            onPressed: () {
+                              context.read<ExchangeCurrencyBloc>().add(
+                                const RefreshExchangeRates(),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
               ),
             ],
           ),

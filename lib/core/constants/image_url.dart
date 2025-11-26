@@ -74,10 +74,10 @@ class TImageUrl {
 
   static const String iconNoTransaction = "assets/icons/no_transaction_image.png";
 
-  static Widget getCardBrandLogo(String cardBrand) {
+  static Widget getCardBrandLogo(String cardBrand,context) {
     switch (cardBrand.toLowerCase()) {
       case 'visa':
-        return SvgPicture.asset(visa, height: 40.h, width: 40.w,color: Colors.white,);
+        return SvgPicture.asset(visa, height: 40.h, width: 40.w,color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,);
       case 'mastercard':
         return SvgPicture.asset(masterCard, height: 14.h,width: 14.w,);
       case 'amex':
@@ -134,6 +134,7 @@ class TImageUrl {
   static const String insurance = 'assets/images/home/insurance.svg';
   static const String applyCard = 'assets/images/home/apply_card.svg';
   static const String governmentFee = 'assets/images/home/government_fee.svg';
+  static const String donation = 'assets/images/home/donation.svg';
   static const String bankTransfer = 'assets/images/home/bank_transfer.svg';
   static const String scanner = 'assets/images/home/scanner.svg';
   static const String otherWallet = 'assets/images/home/wallet.svg';

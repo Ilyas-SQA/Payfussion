@@ -18,7 +18,7 @@ class RecipientRepositoryFB {
   /// Firestore path pieces
   static const String _usersCol = 'users';
   static const String _userListCol = 'recipients';
-  static const String _banksCol = 'banks'; // Global banks collection
+  static const String _banksCol = 'banks';
 
   // Default banks for initialization
   static const List<Bank> defaultBanks = <Bank>[
@@ -58,7 +58,7 @@ class RecipientRepositoryFB {
         return defaultBanks;
       }
 
-      // Convert Firestore documents to Bank objects with all fields
+      // Convert Firestore documents to Bank objects with all fields INCLUDING IMAGE
       return querySnapshot.docs.map((QueryDocumentSnapshot<Map<String, dynamic>> doc) {
         final Map<String, dynamic> data = doc.data();
         return Bank(
@@ -69,6 +69,7 @@ class RecipientRepositoryFB {
           branchCode: data['branchCode'] ?? '',
           address: data['address'] ?? '',
           city: data['city'] ?? '',
+          image: data['image'] ?? '', // ✅ ADDED IMAGE FIELD
         );
       }).toList();
     } catch (e) {
@@ -149,6 +150,7 @@ class RecipientRepositoryFB {
           branchCode: data['branchCode'] ?? '',
           address: data['address'] ?? '',
           city: data['city'] ?? '',
+          image: data['image'] ?? '', // ✅ ADDED IMAGE FIELD
         );
       }).toList();
     });
@@ -216,6 +218,7 @@ class RecipientRepositoryFB {
         'branchCode': bankData['branchCode']?.trim() ?? '',
         'address': bankData['address']?.trim() ?? '',
         'city': bankData['city']?.trim() ?? '',
+        'image': bankData['image']?.trim() ?? '', // ✅ HANDLE IMAGE IN ADD TOO
         'createdAt': FieldValue.serverTimestamp(),
         'isDefault': false,
       });
@@ -229,6 +232,7 @@ class RecipientRepositoryFB {
         branchCode: bankData['branchCode']?.trim() ?? '',
         address: bankData['address']?.trim() ?? '',
         city: bankData['city']?.trim() ?? '',
+        image: bankData['image']?.trim() ?? '', // ✅ ADDED IMAGE FIELD
       );
     } catch (e) {
       print('Error adding new bank: $e');

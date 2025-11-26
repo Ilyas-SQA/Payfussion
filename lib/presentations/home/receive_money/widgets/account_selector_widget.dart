@@ -225,7 +225,7 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
         ),
         child: Row(
           children: <Widget>[
-            _buildCardIcon(card),
+            _buildCardIcon(context,card),
             SizedBox(width: 16.w),
             _buildCardDetails(card),
             SizedBox(width: 16.w),
@@ -236,8 +236,8 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
     );
   }
 
-  Widget _buildCardIcon(CardModel card) {
-    return TImageUrl.getCardBrandLogo(card.brand,);
+  Widget _buildCardIcon(BuildContext context,CardModel card) {
+    return TImageUrl.getCardBrandLogo(card.brand,context);
   }
 
   Widget _buildCardDetails(CardModel card) {

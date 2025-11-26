@@ -7,7 +7,6 @@ class UpdateFirstName extends ProfileEvent {
   UpdateFirstName({required this.firstName});
 }
 
-// Event for updating the last name
 class UpdateLastName extends ProfileEvent {
   final String lastName;
   UpdateLastName({required this.lastName});

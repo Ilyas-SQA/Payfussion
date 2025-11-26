@@ -604,13 +604,21 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
               height: 80.h,
               padding: EdgeInsets.all(20.w),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(16.r),
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: BorderRadius.circular(5.r),
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                    blurRadius: 5,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Center(
                 child: Text(
                   'No cards available. Please add a card first.',
                   style: Font.montserratFont(color: Colors.grey, fontSize: 14.sp),
+                  textAlign: TextAlign.center,
                 ),
               ),
             );
@@ -967,12 +975,7 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
     );
   }
 
-  Widget _buildAccountItem({
-    required BuildContext context,
-    required CardModel card,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildAccountItem({required BuildContext context, required CardModel card, required bool isSelected, required VoidCallback onTap,}) {
     final ThemeData theme = Theme.of(context);
     final bool isDark = theme.brightness == Brightness.dark;
 
@@ -1006,6 +1009,14 @@ class _InsurancePaymentScreenState extends State<InsurancePaymentScreen> with Ti
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                  Text(
+                    card.cardholderName,
+                    style: Font.montserratFont(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
+                  ),
                   Text(
                     card.cardEnding,
                     style: Font.montserratFont(

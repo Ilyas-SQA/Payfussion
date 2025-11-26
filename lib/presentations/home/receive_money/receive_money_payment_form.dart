@@ -468,7 +468,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
               width: double.infinity,
               padding: EdgeInsets.all(16.w),
               decoration: BoxDecoration(
-                color: MyTheme.primaryColor.withOpacity(0.05),
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(12.r),
                 border: Border.all(
                   color: MyTheme.primaryColor.withOpacity(0.1),
@@ -585,7 +585,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
             margin: EdgeInsets.only(bottom: 8.h),
             padding: EdgeInsets.all(12.w),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(8.r),
               border: Border.all(
                 color: statusColor.withOpacity(0.2 * value),
@@ -782,8 +782,7 @@ class _ReceiveMoneyPaymentFormState extends State<ReceiveMoneyPaymentForm> with 
                   ),
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
-                    child: isLoading
-                        ? Row(
+                    child: isLoading ? Row(
                       key: const ValueKey('loading'),
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[

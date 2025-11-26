@@ -17,19 +17,19 @@ class RechargeSummaryScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
       ),
       body: BlocConsumer<MobileRechargeBloc, MobileRechargeState>(
-        listener: (context, state) {
+        listener: (BuildContext context, MobileRechargeState state) {
           if (state is MobileRechargeSuccess) {
             // Show success dialog
             showDialog(
               context: context,
               barrierDismissible: false,
-              builder: (context) => AlertDialog(
+              builder: (BuildContext context) => AlertDialog(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.r),
                 ),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: [
+                  children: <Widget>[
                     Icon(
                       Icons.check_circle,
                       color: Colors.green,
@@ -63,12 +63,12 @@ class RechargeSummaryScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                actions: [
+                actions: <Widget>[
                   TextButton(
                     onPressed: () {
                       // Reset bloc and navigate back to home
                       context.read<MobileRechargeBloc>().add(const ResetRecharge());
-                      Navigator.of(context).popUntil((route) => route.isFirst);
+                      Navigator.of(context).popUntil((Route route) => route.isFirst);
                     },
                     child: Text(
                       'Done',
@@ -86,13 +86,13 @@ class RechargeSummaryScreen extends StatelessWidget {
             // Show error dialog
             showDialog(
               context: context,
-              builder: (context) => AlertDialog(
+              builder: (BuildContext context) => AlertDialog(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.r),
                 ),
                 title: const Text('Error'),
                 content: Text(state.error),
-                actions: [
+                actions: <Widget>[
                   TextButton(
                     onPressed: () => Navigator.pop(context),
                     child: const Text('OK'),
@@ -102,13 +102,13 @@ class RechargeSummaryScreen extends StatelessWidget {
             );
           }
         },
-        builder: (context, state) {
+        builder: (BuildContext context, MobileRechargeState state) {
           if (state is MobileRechargeProcessing) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(
+                children: <Widget>[
+                  const CircularProgressIndicator(
                     color: MyTheme.primaryColor,
                   ),
                   SizedBox(height: 20.h),
@@ -132,7 +132,7 @@ class RechargeSummaryScreen extends StatelessWidget {
             padding: EdgeInsets.all(24.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 // Header
                 Text(
                   'Review Your Recharge',
@@ -156,7 +156,7 @@ class RechargeSummaryScreen extends StatelessWidget {
                   context,
                   title: 'Mobile Carrier',
                   icon: Icons.network_cell,
-                  children: [
+                  children: <Widget>[
                     _buildInfoRow('Company', state.companyName),
                     _buildInfoRow('Network', state.network),
                   ],
@@ -168,7 +168,7 @@ class RechargeSummaryScreen extends StatelessWidget {
                   context,
                   title: 'Phone Number',
                   icon: Icons.phone_android,
-                  children: [
+                  children: <Widget>[
                     _buildInfoRow('Number', state.phoneNumber),
                   ],
                 ),
@@ -180,7 +180,7 @@ class RechargeSummaryScreen extends StatelessWidget {
                     context,
                     title: 'Package Details',
                     icon: Icons.card_giftcard,
-                    children: [
+                    children: <Widget>[
                       _buildInfoRow('Package', state.packageName!),
                       _buildInfoRow('Data', state.packageData ?? 'N/A'),
                       _buildInfoRow('Validity', state.packageValidity ?? 'N/A'),
@@ -191,7 +191,7 @@ class RechargeSummaryScreen extends StatelessWidget {
                     context,
                     title: 'Recharge Amount',
                     icon: Icons.attach_money,
-                    children: [
+                    children: <Widget>[
                       _buildInfoRow('Amount', '\$${state.amount.toStringAsFixed(2)}'),
                     ],
                   ),
@@ -203,7 +203,7 @@ class RechargeSummaryScreen extends StatelessWidget {
                     context,
                     title: 'Payment Method',
                     icon: Icons.credit_card,
-                    children: [
+                    children: <Widget>[
                       _buildInfoRow('Card Holder', state.cardHolderName!),
                       _buildInfoRow('Card Number', '****${state.cardEnding}'),
                     ],
@@ -257,20 +257,20 @@ class RechargeSummaryScreen extends StatelessWidget {
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: <BoxShadow>[
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            blurRadius: 10,
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Row(
-            children: [
+            children: <Widget>[
               Icon(icon, color: MyTheme.primaryColor, size: 24.sp),
               SizedBox(width: 12.w),
               Text(
@@ -294,7 +294,7 @@ class RechargeSummaryScreen extends StatelessWidget {
       padding: EdgeInsets.only(bottom: 12.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
+        children: <Widget>[
           Text(
             label,
             style: TextStyle(
@@ -322,12 +322,12 @@ class RechargeSummaryScreen extends StatelessWidget {
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [MyTheme.primaryColor, MyTheme.primaryColor.withOpacity(0.8)],
+          colors: <Color>[MyTheme.primaryColor, MyTheme.primaryColor.withOpacity(0.8)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: MyTheme.primaryColor.withOpacity(0.3),
             blurRadius: 15,
@@ -336,7 +336,7 @@ class RechargeSummaryScreen extends StatelessWidget {
         ],
       ),
       child: Column(
-        children: [
+        children: <Widget>[
           _buildAmountRow('Amount', '\$${state.amount.toStringAsFixed(2)}', isWhite: true),
           Divider(color: Colors.white.withOpacity(0.3), height: 24.h),
           _buildAmountRow('Tax', '\$${state.taxAmount.toStringAsFixed(2)}', isWhite: true),
@@ -362,7 +362,7 @@ class RechargeSummaryScreen extends StatelessWidget {
       }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
+      children: <Widget>[
         Text(
           label,
           style: TextStyle(

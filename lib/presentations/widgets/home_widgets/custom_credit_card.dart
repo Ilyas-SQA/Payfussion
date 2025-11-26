@@ -62,7 +62,7 @@ class CustomCreditCard extends StatelessWidget {
                         width: 40.w,
                       ),
                       // Card brand logo (VISA)
-                      TImageUrl.getCardBrandLogo(cardBrand),
+                      TImageUrl.getCardBrandLogo(cardBrand,context),
                     ],
                   ),
 

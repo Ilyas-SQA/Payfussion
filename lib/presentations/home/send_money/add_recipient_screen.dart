@@ -571,113 +571,81 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
               ),
             ),
           ),
-          Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              borderRadius: BorderRadius.circular(12.r),
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                    color: AppColors.secondaryBlue.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2)
-                )
-              ],
-              border: verified ? Border.all(color: Colors.green, width: 1) : Border.all(color: Colors.white, width: 1),
-            ),
-            child: TextField(
-              controller: _accCtrl,
-              focusNode: _accFocus,
-              onChanged: (String v) => bloc.add(AccountNumberChanged(v)),
-              keyboardType: TextInputType.number,
-              textInputAction: TextInputAction.done,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(16),
-              ],
-              onEditingComplete: () {
-                if (state.accountError == null && state.accountNumber.isNotEmpty && state.verifyStatus != VerifyStatus.verified) {
+          TextField(
+            controller: _accCtrl,
+            focusNode: _accFocus,
+            onChanged: (String v) => bloc.add(AccountNumberChanged(v)),
+            keyboardType: TextInputType.number,
+            textInputAction: TextInputAction.done,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(16),
+            ],
+            onEditingComplete: () {
+              if (state.accountError == null && state.accountNumber.isNotEmpty && state.verifyStatus != VerifyStatus.verified) {
+                bloc.add(VerifyAccountRequested());
+              }
+              FocusScope.of(context).unfocus();
+            },
+            decoration: InputDecoration(
+              hintText: RecipientStrings.enterAccountNumber,
+              hintStyle: Font.montserratFont(
+                fontSize: 14,
+              ),
+              errorText: state.accountError,
+              prefixIcon: Icon(Icons.credit_card_outlined, color: MyTheme.primaryColor, size: 22.sp),
+              suffixIcon: verifying ?
+              Padding(
+                padding: EdgeInsets.all(12.r),
+                child: SizedBox(
+                  width: 20.w,
+                  height: 20.h,
+                  child: const CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: MyTheme.primaryColor
+                  ),
+                ),
+              ) :
+              verified ?
+              Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Icon(Icons.check_circle, color: Colors.green, size: 18.sp),
+                    SizedBox(width: 6.w),
+                    Text(
+                        'Verified',
+                        style: Font.montserratFont(
+                            color: Colors.green,
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w500
+                        )
+                    ),
+                    SizedBox(width: 8.w),
+                  ]
+              ) :
+              (state.accountNumber.isNotEmpty && state.accountError == null) ?
+              InkWell(
+                onTap: () {
                   bloc.add(VerifyAccountRequested());
-                }
-                FocusScope.of(context).unfocus();
-              },
-              decoration: InputDecoration(
-                hintText: RecipientStrings.enterAccountNumber,
-                hintStyle: Font.montserratFont(
-                  fontSize: 14,
-                ),
-                errorText: state.accountError,
-                prefixIcon: Icon(Icons.credit_card_outlined, color: MyTheme.primaryColor, size: 22.sp),
-                suffixIcon: verifying ?
-                Padding(
-                  padding: EdgeInsets.all(12.r),
-                  child: SizedBox(
-                    width: 20.w,
-                    height: 20.h,
-                    child: const CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: MyTheme.primaryColor
+                  HapticFeedback.mediumImpact();
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Text(
+                    'Verify',
+                    style: Font.montserratFont(
+                      color: MyTheme.primaryColor,
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                ) :
-                verified ?
-                Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Icon(Icons.check_circle, color: Colors.green, size: 18.sp),
-                      SizedBox(width: 6.w),
-                      Text(
-                          'Verified',
-                          style: Font.montserratFont(
-                              color: Colors.green,
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w500
-                          )
-                      ),
-                      SizedBox(width: 8.w),
-                    ]
-                ) :
-                (state.accountNumber.isNotEmpty && state.accountError == null) ?
-                InkWell(
-                  onTap: () {
-                    bloc.add(VerifyAccountRequested());
-                    HapticFeedback.mediumImpact();
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.w),
-                    child: Text(
-                      'Verify',
-                      style: Font.montserratFont(
-                        color: MyTheme.primaryColor,
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ) : null,
-                contentPadding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                  borderSide: BorderSide.none,
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                  borderSide: BorderSide(
-                    color: MyTheme.primaryColor.withOpacity(0.3),
-                    width: 1.2,
-                  ),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                  borderSide: BorderSide(
-                      color: AppColors.errorRed.withOpacity(0.5),
-                      width: 1.2
-                  ),
-                ),
-              ),
-              style: Font.montserratFont(
-                  fontSize: 14,
-                  letterSpacing: 1.2,
-              ),
+              ) : null,
+              contentPadding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
+            ),
+            style: Font.montserratFont(
+                fontSize: 14,
+                letterSpacing: 1.2,
             ),
           ),
         ],
@@ -699,10 +667,10 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
             Icon(Icons.error_outline, color: AppColors.errorRed, size: 20.sp),
             SizedBox(width: 12.w),
             Expanded(
-                child: Text(
-                    message,
-                    style: Font.montserratFont(color: AppColors.errorRed, fontSize: 14.sp)
-                )
+              child: Text(
+                message,
+                style: Font.montserratFont(color: AppColors.errorRed, fontSize: 14.sp),
+              ),
             ),
           ]
       ),

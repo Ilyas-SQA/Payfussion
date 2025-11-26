@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/core/widget/card_screen.dart';
+import '../../../../logic/blocs/pay_bill/gas_bill/gas_bill_bloc.dart';
+import '../../../../logic/blocs/pay_bill/gas_bill/gas_bill_state.dart';
 
 class GasBillFormScreen extends StatefulWidget {
   final String companyName;
@@ -60,7 +65,7 @@ class _GasBillFormScreenState extends State<GasBillFormScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => GasBillDetailsScreen(
+        builder: (BuildContext context) => GasBillDetailsScreen(
           accountNumber: _accountController.text,
           companyName: widget.companyName,
           region: widget.region,
@@ -70,91 +75,63 @@ class _GasBillFormScreenState extends State<GasBillFormScreen> {
     );
   }
 
-  void _scanBill() {
-    // Show coming soon dialog
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.r),
-        ),
-        title: Row(
-          children: [
-            Icon(
-              Icons.qr_code_scanner,
-              color: Theme.of(context).primaryColor,
-            ),
-            SizedBox(width: 12.w),
-            Text(
-              'QR Scanner',
-              style: TextStyle(
-                color: Theme.of(context).primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
-              ),
-            ),
-          ],
-        ),
-        content: Text(
-          'QR code scanning feature will be available soon. Please enter your account number manually.',
-          style: TextStyle(
-            color: Theme.of(context).primaryColor != Colors.white
-                ? Colors.white.withOpacity(0.8)
-                : const Color(0xff718096),
+  void _scanBill() async {
+    try {
+      final String? result = await Navigator.push<String>(
+        context,
+        MaterialPageRoute(builder: (_) => const ScannerScreen()),
+      );
+
+      if (result != null && mounted) {
+        setState(() {
+          _accountController.text = result;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Scanned: $result"),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'OK',
-              style: TextStyle(color: Theme.of(context).primaryColor),
-            ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Scanner error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
-        ],
-      ),
-    );
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: theme.primaryColor != Colors.white
-                ? Colors.white
-                : const Color(0xff2D3748),
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
         title: Text(
           widget.companyName,
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: theme.primaryColor != Colors.white
-                ? Colors.white
-                : const Color(0xff2D3748),
-            fontWeight: FontWeight.w600,
-          ),
         ),
-        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(24.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             // Company Info Card
             Container(
               padding: EdgeInsets.all(20.w),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
+                  colors: <Color>[
                     theme.primaryColor.withOpacity(0.1),
                     theme.primaryColor.withOpacity(0.05),
                   ],
@@ -169,9 +146,9 @@ class _GasBillFormScreenState extends State<GasBillFormScreen> {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Row(
-                    children: [
+                    children: <Widget>[
                       Icon(
                         Icons.local_fire_department,
                         size: 24.sp,
@@ -213,7 +190,19 @@ class _GasBillFormScreenState extends State<GasBillFormScreen> {
             TextField(
               controller: _accountController,
               keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+              style: TextStyle(
+                color: theme.primaryColor != Colors.white ? Colors.white : Colors.black,
+              ),
+              decoration: InputDecoration(
+                hintText: 'Enter your account number',
+                hintStyle: TextStyle(
+                  color: theme.primaryColor != Colors.white
+                      ? Colors.white.withOpacity(0.5)
+                      : Colors.grey[400],
+                ),
+                prefixIcon: const Icon(Icons.account_balance, color: MyTheme.primaryColor),
+              ),
             ),
             SizedBox(height: 8.h),
             Text(
@@ -230,7 +219,7 @@ class _GasBillFormScreenState extends State<GasBillFormScreen> {
 
             // OR Divider
             Row(
-              children: [
+              children: <Widget>[
                 Expanded(
                   child: Divider(
                     color: theme.primaryColor != Colors.white
@@ -262,31 +251,34 @@ class _GasBillFormScreenState extends State<GasBillFormScreen> {
 
             SizedBox(height: 32.h),
 
-            // Scan Bill Button (Disabled)
-            Opacity(
-              opacity: 0.5,
+            // Scan Bill Button
+            InkWell(
+              onTap: _scanBill,
               child: Container(
                 padding: EdgeInsets.all(20.w),
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: theme.primaryColor.withOpacity(0.3),
-                    width: 2,
+                    color: MyTheme.primaryColor,
+                    width: 1,
                   ),
                   borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+                  children: <Widget>[
                     Icon(
                       Icons.qr_code_scanner,
-                      color: theme.primaryColor,
+                      color: MyTheme.primaryColor,
                       size: 28.sp,
                     ),
                     SizedBox(width: 12.w),
                     Text(
-                      'Scan Your Bill (Coming Soon)',
+                      'Or Tap here to scan your Bill',
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
+                        color: theme.primaryColor != Colors.white
+                            ? Colors.white
+                            : Colors.black,
                       ),
                     ),
                   ],
@@ -303,8 +295,10 @@ class _GasBillFormScreenState extends State<GasBillFormScreen> {
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _fetchBillDetails,
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: MyTheme.primaryColor,
+                  disabledBackgroundColor: Colors.grey[300],
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.r),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                   elevation: 4,
                 ),
@@ -333,7 +327,7 @@ class _GasBillFormScreenState extends State<GasBillFormScreen> {
 
   Widget _buildInfoRow(IconData icon, String text, ThemeData theme) {
     return Row(
-      children: [
+      children: <Widget>[
         Icon(
           icon,
           size: 16.sp,
@@ -355,7 +349,113 @@ class _GasBillFormScreenState extends State<GasBillFormScreen> {
   }
 }
 
-// Gas Bill Details Screen
+// Scanner Screen - Same as Electricity Bill Scanner
+class ScannerScreen extends StatefulWidget {
+  const ScannerScreen({super.key});
+
+  @override
+  State<ScannerScreen> createState() => _ScannerScreenState();
+}
+
+class _ScannerScreenState extends State<ScannerScreen> {
+  MobileScannerController cameraController = MobileScannerController(
+    detectionSpeed: DetectionSpeed.normal,
+    facing: CameraFacing.back,
+  );
+
+  @override
+  void dispose() {
+    cameraController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Scan Bill / QR"),
+        actions: <Widget>[
+          IconButton(
+            icon: ValueListenableBuilder(
+              valueListenable: cameraController.torchState,
+              builder: (BuildContext context, TorchState state, Widget? child) {
+                switch (state) {
+                  case TorchState.off:
+                    return const Icon(Icons.flash_off, color: Colors.grey);
+                  case TorchState.on:
+                    return const Icon(Icons.flash_on, color: Colors.yellow);
+                }
+              },
+            ),
+            onPressed: () => cameraController.toggleTorch(),
+          ),
+          IconButton(
+            icon: ValueListenableBuilder(
+              valueListenable: cameraController.cameraFacingState,
+              builder: (BuildContext context, CameraFacing state, Widget? child) {
+                return const Icon(Icons.cameraswitch);
+              },
+            ),
+            onPressed: () => cameraController.switchCamera(),
+          ),
+        ],
+      ),
+      body: Stack(
+        children: <Widget>[
+          MobileScanner(
+            controller: cameraController,
+            onDetect: (BarcodeCapture capture) {
+              final List<Barcode> barcodes = capture.barcodes;
+
+              if (barcodes.isEmpty) return;
+
+              final Barcode barcode = barcodes.first;
+              final String? code = barcode.rawValue;
+
+              if (code != null && code.isNotEmpty) {
+                // Stop the camera before popping
+                cameraController.stop();
+                Navigator.pop(context, code);
+              }
+            },
+          ),
+          // Overlay with scanning area
+          Center(
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.white, width: 2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 40,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text(
+                  'Align QR code or barcode within the frame',
+                  style: TextStyle(color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Gas Bill Details Screen (unchanged)
 class GasBillDetailsScreen extends StatelessWidget {
   final String accountNumber;
   final String companyName;
@@ -370,19 +470,55 @@ class GasBillDetailsScreen extends StatelessWidget {
     required this.averageRate,
   });
 
+  void _proceedToCardSelection(BuildContext context) {
+    // Sample data - replace with actual API data
+    final double billAmount = 245.80;
+    final String dueDate = '25 Nov 2025';
+    final String billMonth = 'October 2025';
+    final String consumerName = 'John Anderson';
+    final String address = '123 Main Street, California';
+    final String gasUsage = '85 therms';
+    final String previousReading = '12,450';
+    final String currentReading = '12,535';
+
+    // Set gas bill data in bloc
+    context.read<GasBillBloc>().add(SetGasBillData(
+      companyName: companyName,
+      region: region,
+      averageRate: averageRate,
+      accountNumber: accountNumber,
+      consumerName: consumerName,
+      address: address,
+      billMonth: billMonth,
+      amount: billAmount,
+      gasUsage: gasUsage,
+      previousReading: previousReading,
+      currentReading: currentReading,
+      dueDate: dueDate,
+    ));
+
+    // Navigate to card selection
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => const CardsScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     // Sample data - replace with actual API data
-    final billAmount = '245.80';
-    final dueDate = '25 Nov 2025';
-    final billMonth = 'October 2025';
-    final consumerName = 'John Anderson';
-    final address = '123 Main Street, California';
-    final gasUsage = '85 therms';
-    final previousReading = '12,450';
-    final currentReading = '12,535';
+    final String billAmount = '245.80';
+    final String dueDate = '25 Nov 2025';
+    final String billMonth = 'October 2025';
+    final String consumerName = 'John Anderson';
+    final String address = '123 Main Street, California';
+    final String gasUsage = '85 therms';
+    final String previousReading = '12,450';
+    final String currentReading = '12,535';
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -411,33 +547,27 @@ class GasBillDetailsScreen extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Column(
-          children: [
+          children: <Widget>[
             // Bill Card
             Container(
               margin: EdgeInsets.all(16.w),
               padding: EdgeInsets.all(20.w),
               decoration: BoxDecoration(
-                color: theme.primaryColor != Colors.white
-                    ? Colors.white.withOpacity(0.05)
-                    : Colors.white,
-                borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(
-                  color: theme.primaryColor.withOpacity(0.2),
-                  width: 1,
-                ),
-                boxShadow: [
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: BorderRadius.circular(5.r),
+                boxShadow: <BoxShadow>[
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
+                    color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                    blurRadius: 5,
                     offset: const Offset(0, 4),
                   ),
                 ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Row(
-                    children: [
+                    children: <Widget>[
                       Container(
                         padding: EdgeInsets.all(12.w),
                         decoration: BoxDecoration(
@@ -446,7 +576,7 @@ class GasBillDetailsScreen extends StatelessWidget {
                         ),
                         child: Icon(
                           Icons.local_fire_department,
-                          color: theme.primaryColor,
+                          color: MyTheme.primaryColor,
                           size: 28.sp,
                         ),
                       ),
@@ -487,10 +617,10 @@ class GasBillDetailsScreen extends StatelessWidget {
                   SizedBox(height: 20.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
+                    children: <Widget>[
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                        children: <Widget>[
                           Text(
                             'Amount Due',
                             style: theme.textTheme.bodyMedium?.copyWith(
@@ -504,7 +634,7 @@ class GasBillDetailsScreen extends StatelessWidget {
                             '\$$billAmount',
                             style: theme.textTheme.headlineLarge?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: theme.primaryColor,
+                              color: MyTheme.primaryColor,
                             ),
                           ),
                         ],
@@ -523,7 +653,7 @@ class GasBillDetailsScreen extends StatelessWidget {
                           ),
                         ),
                         child: Column(
-                          children: [
+                          children: <Widget>[
                             Text(
                               'Due Date',
                               style: theme.textTheme.bodySmall?.copyWith(
@@ -556,25 +686,16 @@ class GasBillDetailsScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 56.h,
                 child: ElevatedButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Processing payment...'),
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.r),
-                        ),
-                      ),
-                    );
-                  },
+                  onPressed: () => _proceedToCardSelection(context),
                   style: ElevatedButton.styleFrom(
+                    backgroundColor: MyTheme.primaryColor,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.r),
+                      borderRadius: BorderRadius.circular(12.r),
                     ),
                     elevation: 4,
                   ),
                   child: Text(
-                    'Pay Now',
+                    'Continue to Card Selection',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
@@ -592,7 +713,7 @@ class GasBillDetailsScreen extends StatelessWidget {
   Widget _buildInfoRow(String label, String value, ThemeData theme) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         SizedBox(
           width: 130.w,
           child: Text(

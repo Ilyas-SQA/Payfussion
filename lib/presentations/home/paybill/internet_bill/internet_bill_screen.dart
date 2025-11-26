@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
-import '../../../core/constants/fonts.dart';
-import '../../../core/constants/routes_name.dart';
-import '../../widgets/background_theme.dart';
+import '../../../../core/constants/fonts.dart';
+import '../../../widgets/background_theme.dart';
+import 'internet_form_screen.dart';
 
 class InternetBillScreen extends StatefulWidget {
   const InternetBillScreen({super.key});
@@ -30,7 +29,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
     <String, dynamic>{
       "name": "Xfinity (Comcast)",
       "description": "America's largest cable internet provider",
-      "icon": Icons.router,
+      "icon": "assets/images/paybill/internet/xfinity.png",
       "color": MyTheme.primaryColor,
       "connectionType": "Cable & Fiber",
       "maxSpeed": "Up to 1200 Mbps",
@@ -39,7 +38,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
     <String, dynamic>{
       "name": "AT&T Internet",
       "description": "Fiber and DSL internet services",
-      "icon": Icons.fiber_smart_record,
+      "icon": "assets/images/paybill/internet/att_Internet.png",
       "color": MyTheme.primaryColor,
       "connectionType": "Fiber & DSL",
       "maxSpeed": "Up to 5000 Mbps",
@@ -48,7 +47,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
     <String, dynamic>{
       "name": "Verizon Fios",
       "description": "100% fiber-optic network",
-      "icon": Icons.cable,
+      "icon": "assets/images/paybill/internet/verizon_fios.png",
       "color": MyTheme.primaryColor,
       "connectionType": "Fiber",
       "maxSpeed": "Up to 940 Mbps",
@@ -57,7 +56,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
     <String, dynamic>{
       "name": "Spectrum (Charter Communications)",
       "description": "Cable internet without contracts",
-      "icon": Icons.wifi_tethering,
+      "icon": "assets/images/paybill/internet/spectrum_charter_communications.png",
       "color": MyTheme.primaryColor,
       "connectionType": "Cable",
       "maxSpeed": "Up to 940 Mbps",
@@ -66,7 +65,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
     <String, dynamic>{
       "name": "Cox Communications",
       "description": "Cable and fiber internet services",
-      "icon": Icons.hub,
+      "icon": "assets/images/paybill/internet/cox.jpeg",
       "color": MyTheme.primaryColor,
       "connectionType": "Cable & Fiber",
       "maxSpeed": "Up to 940 Mbps",
@@ -75,7 +74,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
     <String, dynamic>{
       "name": "CenturyLink",
       "description": "DSL and fiber internet provider",
-      "icon": Icons.device_hub,
+      "icon": "assets/images/paybill/internet/centuryLink.jpeg",
       "color": MyTheme.primaryColor,
       "connectionType": "DSL & Fiber",
       "maxSpeed": "Up to 940 Mbps",
@@ -84,7 +83,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
     <String, dynamic>{
       "name": "Frontier Communications",
       "description": "Rural internet specialist",
-      "icon": Icons.landscape,
+      "icon": "assets/images/paybill/internet/frontier_communications.png",
       "color": MyTheme.primaryColor,
       "connectionType": "DSL & Fiber",
       "maxSpeed": "Up to 940 Mbps",
@@ -93,7 +92,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
     <String, dynamic>{
       "name": "Optimum (Altice USA)",
       "description": "Northeast cable internet provider",
-      "icon": Icons.settings_ethernet,
+      "icon": "assets/images/paybill/internet/optimum.png",
       "color": MyTheme.primaryColor,
       "connectionType": "Cable",
       "maxSpeed": "Up to 940 Mbps",
@@ -102,7 +101,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
     <String, dynamic>{
       "name": "Windstream",
       "description": "Rural and business internet",
-      "icon": Icons.air,
+      "icon": "assets/images/paybill/internet/windstream.png",
       "color": MyTheme.primaryColor,
       "connectionType": "DSL & Fiber",
       "maxSpeed": "Up to 1000 Mbps",
@@ -111,7 +110,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
     <String, dynamic>{
       "name": "HughesNet",
       "description": "Satellite internet nationwide",
-      "icon": Icons.satellite_alt,
+      "icon": "assets/images/paybill/internet/hughesNet.png",
       "color": MyTheme.primaryColor,
       "connectionType": "Satellite",
       "maxSpeed": "Up to 25 Mbps",
@@ -120,7 +119,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
     <String, dynamic>{
       "name": "Viasat",
       "description": "High-speed satellite internet",
-      "icon": Icons.satellite,
+      "icon": "assets/images/paybill/internet/viasat.jpeg",
       "color": MyTheme.primaryColor,
       "connectionType": "Satellite",
       "maxSpeed": "Up to 100 Mbps",
@@ -129,7 +128,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
     <String, dynamic>{
       "name": "Google Fiber",
       "description": "Ultra-fast fiber internet",
-      "icon": Icons.flash_on,
+      "icon": "assets/images/paybill/internet/google_fiber.jpeg",
       "color": MyTheme.primaryColor,
       "connectionType": "Fiber",
       "maxSpeed": "Up to 2000 Mbps",
@@ -138,7 +137,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
     <String, dynamic>{
       "name": "RCN",
       "description": "Regional cable internet provider",
-      "icon": Icons.wifi,
+      "icon": "assets/images/paybill/internet/rcn.jpeg",
       "color": MyTheme.primaryColor,
       "connectionType": "Cable",
       "maxSpeed": "Up to 940 Mbps",
@@ -147,7 +146,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
     <String, dynamic>{
       "name": "Mediacom",
       "description": "Midwest cable internet provider",
-      "icon": Icons.cast_connected,
+      "icon": "assets/images/paybill/internet/mediacom.jpeg",
       "color": MyTheme.primaryColor,
       "connectionType": "Cable",
       "maxSpeed": "Up to 1000 Mbps",
@@ -156,7 +155,7 @@ class _InternetBillScreenState extends State<InternetBillScreen>
     <String, dynamic>{
       "name": "Suddenlink",
       "description": "Regional cable internet service",
-      "icon": Icons.link,
+      "icon": "assets/images/paybill/internet/suddenlink.jpeg",
       "color": MyTheme.primaryColor,
       "connectionType": "Cable",
       "maxSpeed": "Up to 940 Mbps",
@@ -343,15 +342,16 @@ class _InternetBillScreenState extends State<InternetBillScreen>
         ),
         child: InkWell(
           onTap: () {
-            context.push(
-              RouteNames.payBillsDetailView,
-              extra: <String, dynamic>{
-                'billType': "internetBill",
-                'companyName': provider['name'],
-                'connectionType': provider['connectionType'],
-                'maxSpeed': provider['maxSpeed'],
-                'coverage': provider['coverage'],
-              },
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => InternetBillFormScreen(
+                  companyName: provider['name'],
+                  connectionType: provider['connectionType'],
+                  maxSpeed: provider['maxSpeed'],
+                  coverage: provider['coverage'],
+                ),
+              ),
             );
           },
           borderRadius: BorderRadius.circular(20.r),
@@ -361,11 +361,16 @@ class _InternetBillScreenState extends State<InternetBillScreen>
               children: <Widget>[
                 // Icon Container
                 Hero(
-                  tag: 'internet_icon_${provider['name']}',
-                  child: Icon(
-                    provider['icon'] as IconData,
-                    size: 28.sp,
-                    color: provider['color'] as Color,
+                  tag: 'mobile_icon_${provider['name']}',
+                  child: CircleAvatar(
+                    radius: 24.r,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Image.asset(
+                        provider['icon'] as String,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
                 ),
 

@@ -73,7 +73,7 @@ class SettingProfile extends StatelessWidget {
                 Text(
                   user.fullName ?? 'Guest User',
                   style: Font.montserratFont(
-                    fontSize: 14.sp,
+                    fontSize: 13.sp,
                     color: theme.secondaryHeaderColor,
                     fontWeight: FontWeight.bold,
                   ),
@@ -82,14 +82,14 @@ class SettingProfile extends StatelessWidget {
                   user.email ?? 'Not signed in',
                   style: Font.montserratFont(
                     color: theme.secondaryHeaderColor,
-                    fontSize: 14.sp,
+                    fontSize: 12.sp,
                   ),
                 ),
                 Text(
                   user.phoneNumber ?? '',
                   style: Font.montserratFont(
                     color: theme.secondaryHeaderColor,
-                    fontSize: 14.sp,
+                    fontSize: 12.sp,
                   ),
                 ),
               ],

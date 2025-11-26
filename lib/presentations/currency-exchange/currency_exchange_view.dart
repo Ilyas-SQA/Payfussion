@@ -9,6 +9,7 @@ import '../../core/constants/fonts.dart';
 import '../../core/constants/image_url.dart';
 import '../../core/constants/routes_name.dart';
 import '../../core/theme/theme.dart';
+import '../../data/models/card/card_model.dart';
 import '../../data/models/currency_model.dart';
 import '../../logic/blocs/currency_convert/currency_convert_bloc.dart';
 import '../../logic/blocs/currency_convert/currency_convert_event.dart';
@@ -164,7 +165,7 @@ class _CurrencyExchangeViewState extends State<CurrencyExchangeView> with Ticker
                 const SizedBox(height: 15),
                 PaymentCardSelector(
                   userId: FirebaseAuth.instance.currentUser?.uid ?? '',
-                  onCardSelect: (PaymentCard card) {
+                  onCardSelect: (CardModel card) {
                     print('Selected: ${card.last4}');
                     print('Selected: ${card.expYear}');
                     print('Selected: ${card.expMonth}');

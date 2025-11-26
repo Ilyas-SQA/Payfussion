@@ -12,8 +12,9 @@ import 'package:payfussion/core/constants/app_colors.dart';
 import 'package:payfussion/core/constants/image_url.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/data/models/card/card_model.dart';
+import 'package:payfussion/presentations/home/donation/donation_screen.dart';
 import 'package:payfussion/presentations/home/government_fees/government_fees_screen.dart';
-import 'package:payfussion/presentations/home/paybill/pay_bill_screen.dart';
+import 'package:payfussion/presentations/home/paybill/pay_bill/pay_bill_screen.dart';
 import 'package:payfussion/presentations/home/send_money/select_bank_screen.dart';
 import 'package:payfussion/presentations/home/send_money/select_local_bank_screen.dart';
 import 'package:payfussion/presentations/home/tickets/ticket_booking_screen.dart';
@@ -331,7 +332,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                           cvc: "${card.expMonth}/${card.expYear}",
                                           cardColor: AppColors.cardColor[index % AppColors.cardColor.length],
                                           cardBrand: card.brand,
-                                          cardHolder: 'Ilyas Khan',
+                                          cardHolder: card.cardholderName,
                                           expiryDate: "${card.expMonth}/${card.expYear}",
                                           balance: '\$ 10000',
                                           imageUrl: imageUrl[index % imageUrl.length],
@@ -373,7 +374,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             child: FadeInAnimation(
                                               child: Padding(
                                                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                                                child: _buildShimmerCard(),
+                                                child: _buildShimmerCard(context),
                                               ),
                                             ),
                                           ),
@@ -519,8 +520,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             ],
                           ),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            spacing: 25,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               BoxWidget(
                                 title: "Apply Card",
@@ -536,6 +536,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 imageURL: TImageUrl.governmentFee,
                                 onTap: (){
                                   Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const GovernmentFeesScreen()));
+                                },
+                              ),
+                              BoxWidget(
+                                title: "Donation",
+                                backgroundColor: MyTheme.secondaryColor,
+                                imageURL: TImageUrl.donation,
+                                onTap: (){
+                                  Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const DonateListScreen()));
                                 },
                               ),
                             ],
@@ -554,15 +562,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildShimmerCard() {
+  Widget _buildShimmerCard(BuildContext context) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+      baseColor: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!,
+      highlightColor: isDarkMode ? Colors.grey[500]! : Colors.grey[100]!,
       child: Container(
         width: 300,
         height: 180,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDarkMode ? Colors.grey[800]! : Colors.white,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
@@ -574,7 +584,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 width: 50,
                 height: 30,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDarkMode ? Colors.grey[700]! : Colors.white,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -583,7 +593,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 width: double.infinity,
                 height: 20,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDarkMode ? Colors.grey[700]! : Colors.white,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -592,7 +602,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 width: 80,
                 height: 16,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDarkMode ? Colors.grey[700]! : Colors.white,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),

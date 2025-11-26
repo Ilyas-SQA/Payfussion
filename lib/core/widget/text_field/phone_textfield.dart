@@ -37,6 +37,40 @@ class PhoneCredentialsField extends StatelessWidget {
           vertical: 16.h,
           horizontal: 19.w,
         ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(5.r)),
+          borderSide: const BorderSide(
+            color: MyTheme.primaryColor,
+            width: 1,
+          ),
+        ),
+
+        /// Focused Border
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(5.r)),
+          borderSide: const BorderSide(
+            width: 1,
+            color: MyTheme.primaryColor,
+          ),
+        ),
+
+        /// Error Border
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(5.r)),
+          borderSide: const BorderSide(
+            color: Colors.red,
+            width: 1,
+          ),
+        ),
+
+        /// Focused Error Border
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(5.r)),
+          borderSide: const BorderSide(
+            color: Colors.red,
+            width: 1,
+          ),
+        ),
       ),
       style: TextStyle(
         fontSize: 14.sp,

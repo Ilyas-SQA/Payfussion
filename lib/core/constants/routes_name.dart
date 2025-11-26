@@ -38,5 +38,6 @@ class RouteNames {
   static const String gasBillScreen = '/gasBillScreen';
   static const String trainListScreen = '/trainListScreen';
   static const String creditCardLoanScreen = '/creditCardLoanScreen';
+  static const String splitBill = '/splitBillScreen';
 
 }

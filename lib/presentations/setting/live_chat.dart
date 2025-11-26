@@ -470,41 +470,34 @@ class _LiveChatScreenState extends State<LiveChatScreen> with TickerProviderStat
       child: Row(
         children: <Widget>[
           Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: isDark ? const Color(0xff2A2A2A) : const Color(0xffF5F5F5),
-                borderRadius: BorderRadius.circular(25.r),
-                border: _isComposing ? Border.all(color: const Color(0xff2D9CDB), width: 2) : null,
-              ),
-              child: TextField(
-                controller: _messageController,
-                decoration: InputDecoration(
-                  hintText: 'Type your message...',
-                  hintStyle: Font.montserratFont(
-                    color: Colors.grey[500],
-                    fontSize: 12.sp,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 20.w,
-                    vertical: 14.h,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.message_outlined,
-                    color: MyTheme.primaryColor,
-                    size: 20.r,
-                  ),
+            child: TextField(
+              controller: _messageController,
+              decoration: InputDecoration(
+                hintText: 'Type your message...',
+                hintStyle: Font.montserratFont(
+                  color: Colors.grey[500],
+                  fontSize: 12.sp,
                 ),
-                style: Font.montserratFont(
-                  color: theme.textTheme.bodyLarge?.color,
-                  fontSize: 16.sp,
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 20.w,
+                  vertical: 14.h,
                 ),
-                cursorColor: MyTheme.primaryColor,
-                onSubmitted: (_) => _sendMessage(),
-                textInputAction: TextInputAction.send,
-                maxLines: 4,
-                minLines: 1,
+                prefixIcon: Icon(
+                  Icons.message_outlined,
+                  color: MyTheme.primaryColor,
+                  size: 20.r,
+                ),
               ),
+              style: Font.montserratFont(
+                color: theme.textTheme.bodyLarge?.color,
+                fontSize: 16.sp,
+              ),
+              cursorColor: MyTheme.primaryColor,
+              onSubmitted: (_) => _sendMessage(),
+              textInputAction: TextInputAction.send,
+              maxLines: 4,
+              minLines: 1,
             ),
           ),
           SizedBox(width: 12.w),

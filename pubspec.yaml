@@ -150,7 +150,11 @@ flutter:
     - assets/images/paybill/internet/
     - assets/images/paybill/gas_bill/
     - assets/images/paybill/rent_payment/
+    - assets/images/paybill/dth_recharge/
+    - assets/images/paybill/movies/
+    - assets/images/paybill/postpaid_bill/
     - assets/temps/
+    - assets/images/home/donation/
     - assets/icons/
     - assets/icons/setting_icons/
     - assets/icons/transaction_screen_icons/

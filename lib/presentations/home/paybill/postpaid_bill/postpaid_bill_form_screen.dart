@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/core/widget/card_screen.dart';
+import '../../../../logic/blocs/pay_bill/postpaid_bill/postpaid_bill_bloc.dart';
+import '../../../../logic/blocs/pay_bill/postpaid_bill/postpaid_bill_event.dart';
 
 class PostpaidBillFormScreen extends StatefulWidget {
   final String providerName;
@@ -35,7 +39,6 @@ class _PostpaidBillFormScreenState extends State<PostpaidBillFormScreen>
   late Animation<Offset> _slideAnimation;
 
   String _selectedBillCycle = 'Current Month';
-  bool _isLoading = false;
   bool _saveForFuture = false;
 
   final List<String> _billCycles = <String>[
@@ -79,58 +82,33 @@ class _PostpaidBillFormScreenState extends State<PostpaidBillFormScreen>
     super.dispose();
   }
 
-  void _submitForm() {
+  void _proceedToCardSelection() {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+      final double amount = double.parse(_amountController.text);
 
-      // Simulate API call
-      Future.delayed(const Duration(seconds: 2), () {
-        setState(() {
-          _isLoading = false;
-        });
+      // Set postpaid bill data in bloc
+      context.read<PostpaidBillBloc>().add(SetPostpaidBillData(
+        providerName: widget.providerName,
+        planType: widget.planType,
+        startingPrice: widget.startingPrice,
+        features: widget.features,
+        mobileNumber: _mobileNumberController.text,
+        billNumber: _billNumberController.text,
+        accountHolderName: _accountHolderController.text,
+        billCycle: _selectedBillCycle,
+        amount: amount,
+        email: _emailController.text.isEmpty ? null : _emailController.text,
+        saveForFuture: _saveForFuture,
+      ));
 
-        _showSuccessDialog();
-      });
+      // Navigate to card selection
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) => const CardsScreen(),
+        ),
+      );
     }
-  }
-
-  void _showSuccessDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.r),
-          ),
-          title: Column(
-            children: <Widget>[
-              Icon(
-                Icons.check_circle,
-                color: Colors.green,
-                size: 60.sp,
-              ),
-              SizedBox(height: 16.h),
-              const Text('Payment Successful!'),
-            ],
-          ),
-          content: Text(
-            'Your ${widget.providerName} postpaid bill has been paid successfully.',
-            textAlign: TextAlign.center,
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              },
-              child: const Text('Done'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -191,7 +169,6 @@ class _PostpaidBillFormScreenState extends State<PostpaidBillFormScreen>
   }
 
   Widget _buildProviderInfoCard(ThemeData theme) {
-    // Use proper color based on theme
     final Color cardColor = theme.primaryColor != Colors.white
         ? theme.primaryColor
         : MyTheme.primaryColor;
@@ -209,7 +186,7 @@ class _PostpaidBillFormScreenState extends State<PostpaidBillFormScreen>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(5.r),
         boxShadow: <BoxShadow>[
           BoxShadow(
             color: cardColor.withOpacity(0.3),
@@ -299,10 +276,6 @@ class _PostpaidBillFormScreenState extends State<PostpaidBillFormScreen>
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
             ),
-            filled: true,
-            fillColor: theme.brightness == Brightness.dark
-                ? Colors.grey[800]
-                : Colors.grey[100],
           ),
           validator: (String? value) {
             if (value == null || value.isEmpty) {
@@ -338,10 +311,6 @@ class _PostpaidBillFormScreenState extends State<PostpaidBillFormScreen>
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
             ),
-            filled: true,
-            fillColor: theme.brightness == Brightness.dark
-                ? Colors.grey[800]
-                : Colors.grey[100],
           ),
           validator: (String? value) {
             if (value == null || value.isEmpty) {
@@ -376,10 +345,6 @@ class _PostpaidBillFormScreenState extends State<PostpaidBillFormScreen>
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
             ),
-            filled: true,
-            fillColor: theme.brightness == Brightness.dark
-                ? Colors.grey[800]
-                : Colors.grey[100],
           ),
           validator: (String? value) {
             if (value == null || value.isEmpty) {
@@ -403,16 +368,12 @@ class _PostpaidBillFormScreenState extends State<PostpaidBillFormScreen>
         ),
         SizedBox(height: 8.h),
         DropdownButtonFormField<String>(
-          value: _selectedBillCycle,
+          initialValue: _selectedBillCycle,
           decoration: InputDecoration(
             prefixIcon: const Icon(Icons.calendar_today),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
             ),
-            filled: true,
-            fillColor: theme.brightness == Brightness.dark
-                ? Colors.grey[800]
-                : Colors.grey[100],
           ),
           items: _billCycles.map((String cycle) {
             return DropdownMenuItem<String>(
@@ -452,10 +413,6 @@ class _PostpaidBillFormScreenState extends State<PostpaidBillFormScreen>
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
             ),
-            filled: true,
-            fillColor: theme.brightness == Brightness.dark
-                ? Colors.grey[800]
-                : Colors.grey[100],
           ),
           validator: (String? value) {
             if (value == null || value.isEmpty) {
@@ -491,10 +448,6 @@ class _PostpaidBillFormScreenState extends State<PostpaidBillFormScreen>
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
             ),
-            filled: true,
-            fillColor: theme.brightness == Brightness.dark
-                ? Colors.grey[800]
-                : Colors.grey[100],
           ),
         ),
 
@@ -589,7 +542,7 @@ class _PostpaidBillFormScreenState extends State<PostpaidBillFormScreen>
       width: double.infinity,
       height: 56.h,
       child: ElevatedButton(
-        onPressed: _isLoading ? null : _submitForm,
+        onPressed: _proceedToCardSelection,
         style: ElevatedButton.styleFrom(
           backgroundColor: theme.primaryColor != Colors.white
               ? theme.primaryColor
@@ -599,12 +552,8 @@ class _PostpaidBillFormScreenState extends State<PostpaidBillFormScreen>
           ),
           elevation: 4,
         ),
-        child: _isLoading
-            ? const CircularProgressIndicator(
-          color: Colors.white,
-        )
-            : Text(
-          'Pay Bill Now',
+        child: Text(
+          'Continue to Card Selection',
           style: theme.textTheme.titleMedium?.copyWith(
             color: Colors.white,
             fontWeight: FontWeight.bold,

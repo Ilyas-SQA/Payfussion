@@ -297,7 +297,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> with Ticker
                           },
                           text: 'Send Reset Link',
                           isIcon: true,
-                          color: MyTheme.secondaryColor,
+                          color: MyTheme.primaryColor,
                           icon: Icons.email,
                         ),
                       ),

@@ -456,8 +456,8 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                     value: 'delete',
                     child: Row(
                       children: <Widget>[
-                        Icon(Icons.delete_outline, size: 18, color: Colors.red),
-                        SizedBox(width: 8),
+                        const Icon(Icons.delete_outline, size: 18, color: Colors.red),
+                        const SizedBox(width: 8),
                         Text('Delete', style: Font.montserratFont(color: Colors.red)),
                       ],
                     ),

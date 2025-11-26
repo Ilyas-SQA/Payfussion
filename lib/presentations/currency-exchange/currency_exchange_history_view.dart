@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import '../../core/constants/image_url.dart';
 import '../../core/theme/theme.dart';
+import '../../data/models/card/card_model.dart';
 import '../widgets/background_theme.dart';
 import '../widgets/payment_selector_widget.dart';
 
@@ -64,7 +65,7 @@ class _CurrencyExchangeHistoryViewState extends State<CurrencyExchangeHistoryVie
                       Expanded(
                         child: PaymentCardSelector(
                           userId: FirebaseAuth.instance.currentUser?.uid ?? '',
-                          onCardSelect: (PaymentCard card) {},
+                          onCardSelect: (CardModel card) {},
                         ),
                       ),
                       _buildIcon(TImageUrl.iconSearch, isDark),

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/core/widget/card_screen.dart';
+import '../../../../logic/blocs/pay_bill/internet_bill/internet_bill_bloc.dart';
+import '../../../../logic/blocs/pay_bill/internet_bill/internet_bill_event.dart';
 
 class InternetBillFormScreen extends StatefulWidget {
   final String companyName;
@@ -60,66 +64,20 @@ class _InternetBillFormScreenState extends State<InternetBillFormScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => InternetBillDetailsScreen(
+        builder: (BuildContext context) => InternetBillDetailsScreen(
           accountNumber: _accountController.text,
           companyName: widget.companyName,
           connectionType: widget.connectionType,
           maxSpeed: widget.maxSpeed,
+          coverage: widget.coverage,
         ),
-      ),
-    );
-  }
-
-  void _scanBill() {
-    // Show coming soon dialog
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.r),
-        ),
-        title: Row(
-          children: [
-            Icon(
-              Icons.qr_code_scanner,
-              color: MyTheme.primaryColor,
-            ),
-            SizedBox(width: 12.w),
-            Text(
-              'QR Scanner',
-              style: TextStyle(
-                color: Theme.of(context).primaryColor != Colors.white
-                    ? Colors.white
-                    : const Color(0xff2D3748),
-              ),
-            ),
-          ],
-        ),
-        content: Text(
-          'QR code scanning feature will be available soon. Please enter your account number manually.',
-          style: TextStyle(
-            color: Theme.of(context).primaryColor != Colors.white
-                ? Colors.white.withOpacity(0.8)
-                : const Color(0xff718096),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'OK',
-              style: TextStyle(color: MyTheme.primaryColor),
-            ),
-          ),
-        ],
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -150,13 +108,13 @@ class _InternetBillFormScreenState extends State<InternetBillFormScreen> {
         padding: EdgeInsets.all(24.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             // Company Info Card
             Container(
               padding: EdgeInsets.all(20.w),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
+                  colors: <Color>[
                     MyTheme.primaryColor.withOpacity(0.1),
                     MyTheme.primaryColor.withOpacity(0.05),
                   ],
@@ -171,9 +129,9 @@ class _InternetBillFormScreenState extends State<InternetBillFormScreen> {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Row(
-                    children: [
+                    children: <Widget>[
                       Icon(
                         Icons.wifi,
                         size: 24.sp,
@@ -207,7 +165,7 @@ class _InternetBillFormScreenState extends State<InternetBillFormScreen> {
 
             // Account Number Input
             Text(
-              '13 Digit Account Number',
+              'Account Number',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: theme.primaryColor != Colors.white
@@ -219,173 +177,28 @@ class _InternetBillFormScreenState extends State<InternetBillFormScreen> {
             TextField(
               controller: _accountController,
               keyboardType: TextInputType.number,
-              maxLength: 13,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
               style: TextStyle(
                 color: theme.primaryColor != Colors.white
                     ? Colors.white
                     : const Color(0xff2D3748),
               ),
               decoration: InputDecoration(
-                hintText: '1234567890123',
+                hintText: 'Enter your account number',
                 hintStyle: TextStyle(
                   color: theme.primaryColor != Colors.white
                       ? Colors.white.withOpacity(0.3)
                       : Colors.grey[400],
                 ),
-                filled: true,
-                fillColor: theme.primaryColor != Colors.white
-                    ? Colors.white.withOpacity(0.05)
-                    : Colors.grey[100],
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                  borderSide: BorderSide(
-                    color: MyTheme.primaryColor.withOpacity(0.2),
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                  borderSide: BorderSide(
-                    color: MyTheme.primaryColor.withOpacity(0.2),
-                    width: 1.5,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                  borderSide: BorderSide(
-                    color: MyTheme.primaryColor,
-                    width: 2,
-                  ),
-                ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    Icons.info_outline,
-                    color: MyTheme.primaryColor,
-                  ),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.r),
-                        ),
-                        title: Text(
-                          'Finding Account Number',
-                          style: TextStyle(
-                            color: theme.primaryColor != Colors.white
-                                ? Colors.white
-                                : const Color(0xff2D3748),
-                          ),
-                        ),
-                        content: Text(
-                          'Your 13-digit account number can be found on your internet bill or "Bill Reference Number" on your monthly statement.',
-                          style: TextStyle(
-                            color: theme.primaryColor != Colors.white
-                                ? Colors.white.withOpacity(0.8)
-                                : const Color(0xff718096),
-                          ),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text(
-                              'OK',
-                              style: TextStyle(color: MyTheme.primaryColor),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-                counterStyle: TextStyle(
-                  color: theme.primaryColor != Colors.white
-                      ? Colors.white.withOpacity(0.6)
-                      : Colors.grey[600],
-                ),
+                prefixIcon: const Icon(Icons.account_balance, color: MyTheme.primaryColor),
               ),
             ),
             SizedBox(height: 8.h),
             Text(
-              'Tap on information icon for tutorial on how to see your "Bill Reference Number"',
+              'Tap on information icon for details on finding your account number',
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.primaryColor != Colors.white
-                    ? Colors.white.withOpacity(0.6)
-                    : Colors.grey[600],
+                color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.6) : Colors.grey[600],
                 fontSize: 11.sp,
-              ),
-            ),
-
-            SizedBox(height: 32.h),
-
-            // OR Divider
-            Row(
-              children: [
-                Expanded(
-                  child: Divider(
-                    color: theme.primaryColor != Colors.white
-                        ? Colors.white.withOpacity(0.2)
-                        : Colors.grey[300],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: Text(
-                    'OR',
-                    style: TextStyle(
-                      color: theme.primaryColor != Colors.white
-                          ? Colors.white.withOpacity(0.6)
-                          : Colors.grey[600],
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Divider(
-                    color: theme.primaryColor != Colors.white
-                        ? Colors.white.withOpacity(0.2)
-                        : Colors.grey[300],
-                  ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: 32.h),
-
-            // Scan Bill Button
-            InkWell(
-              onTap: _scanBill,
-              borderRadius: BorderRadius.circular(12.r),
-              child: Container(
-                padding: EdgeInsets.all(20.w),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: MyTheme.primaryColor.withOpacity(0.3),
-                    width: 2,
-                  ),
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.qr_code_scanner,
-                      color: MyTheme.primaryColor,
-                      size: 28.sp,
-                    ),
-                    SizedBox(width: 12.w),
-                    Text(
-                      'Or Tap here to scan your Bill',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: theme.primaryColor != Colors.white
-                            ? Colors.white
-                            : const Color(0xff2D3748),
-                      ),
-                    ),
-                  ],
-                ),
               ),
             ),
 
@@ -399,14 +212,13 @@ class _InternetBillFormScreenState extends State<InternetBillFormScreen> {
                 onPressed: _isLoading ? null : _fetchBillDetails,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: MyTheme.primaryColor,
+                  disabledBackgroundColor: Colors.grey[300],
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.r),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                   elevation: 4,
-                  disabledBackgroundColor: Colors.grey[400],
                 ),
-                child: _isLoading
-                    ? SizedBox(
+                child: _isLoading ? SizedBox(
                   height: 24.h,
                   width: 24.w,
                   child: const CircularProgressIndicator(
@@ -415,7 +227,7 @@ class _InternetBillFormScreenState extends State<InternetBillFormScreen> {
                   ),
                 )
                     : Text(
-                  'Next',
+                  'Continue',
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
@@ -431,7 +243,7 @@ class _InternetBillFormScreenState extends State<InternetBillFormScreen> {
 
   Widget _buildInfoRow(IconData icon, String text, ThemeData theme) {
     return Row(
-      children: [
+      children: <Widget>[
         Icon(
           icon,
           size: 16.sp,
@@ -459,6 +271,7 @@ class InternetBillDetailsScreen extends StatelessWidget {
   final String companyName;
   final String connectionType;
   final String maxSpeed;
+  final String coverage;
 
   const InternetBillDetailsScreen({
     super.key,
@@ -466,22 +279,62 @@ class InternetBillDetailsScreen extends StatelessWidget {
     required this.companyName,
     required this.connectionType,
     required this.maxSpeed,
+    required this.coverage,
   });
+
+  void _proceedToCardSelection(BuildContext context) {
+    // Sample data - replace with actual API data
+    final double billAmount = 89.99;
+    final String dueDate = '25 Nov 2025';
+    final String billMonth = 'November 2025';
+    final String consumerName = 'Sarah Johnson';
+    final String address = '456 Oak Avenue, New York';
+    final String planName = 'Premium Unlimited';
+    final String dataUsage = '850 GB';
+    final String downloadSpeed = '500 Mbps';
+    final String uploadSpeed = '100 Mbps';
+
+    // Set internet bill data in bloc
+    context.read<InternetBillBloc>().add(SetInternetBillData(
+      companyName: companyName,
+      connectionType: connectionType,
+      maxSpeed: maxSpeed,
+      coverage: coverage,
+      accountNumber: accountNumber,
+      consumerName: consumerName,
+      address: address,
+      billMonth: billMonth,
+      amount: billAmount,
+      planName: planName,
+      dataUsage: dataUsage,
+      downloadSpeed: downloadSpeed,
+      uploadSpeed: uploadSpeed,
+      dueDate: dueDate,
+    ));
+
+    // Navigate to card selection
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => const CardsScreen(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     // Sample data - replace with actual API data
-    final billAmount = '89.99';
-    final dueDate = '25 Nov 2025';
-    final billMonth = 'November 2025';
-    final consumerName = 'Sarah Johnson';
-    final address = '456 Oak Avenue, New York';
-    final planName = 'Premium Unlimited';
-    final dataUsage = '850 GB';
-    final downloadSpeed = '500 Mbps';
-    final uploadSpeed = '100 Mbps';
+    final String billAmount = '89.99';
+    final String dueDate = '25 Nov 2025';
+    final String billMonth = 'November 2025';
+    final String consumerName = 'Sarah Johnson';
+    final String address = '456 Oak Avenue, New York';
+    final String planName = 'Premium Unlimited';
+    final String dataUsage = '850 GB';
+    final String downloadSpeed = '500 Mbps';
+    final String uploadSpeed = '100 Mbps';
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -510,23 +363,21 @@ class InternetBillDetailsScreen extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Column(
-          children: [
+          children: <Widget>[
             // Bill Card
             Container(
               margin: EdgeInsets.all(16.w),
               padding: EdgeInsets.all(20.w),
               decoration: BoxDecoration(
-                color: theme.primaryColor != Colors.white
-                    ? Colors.white.withOpacity(0.05)
-                    : Colors.white,
+                color: theme.scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(16.r),
                 border: Border.all(
-                  color: MyTheme.primaryColor.withOpacity(0.2),
+                  color: theme.primaryColor.withOpacity(0.2),
                   width: 1,
                 ),
-                boxShadow: [
+                boxShadow: <BoxShadow>[
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: theme.brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -534,13 +385,13 @@ class InternetBillDetailsScreen extends StatelessWidget {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Row(
-                    children: [
+                    children: <Widget>[
                       Container(
                         padding: EdgeInsets.all(12.w),
                         decoration: BoxDecoration(
-                          color: MyTheme.primaryColor.withOpacity(0.1),
+                          color: theme.primaryColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12.r),
                         ),
                         child: Icon(
@@ -574,8 +425,6 @@ class InternetBillDetailsScreen extends StatelessWidget {
                   SizedBox(height: 12.h),
                   _buildInfoRow('Plan', planName, theme),
                   SizedBox(height: 12.h),
-                  _buildInfoRow('Connection Type', connectionType, theme),
-                  SizedBox(height: 12.h),
                   _buildInfoRow('Data Usage', dataUsage, theme),
                   SizedBox(height: 12.h),
                   _buildInfoRow('Download Speed', downloadSpeed, theme),
@@ -590,10 +439,10 @@ class InternetBillDetailsScreen extends StatelessWidget {
                   SizedBox(height: 20.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
+                    children: <Widget>[
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                        children: <Widget>[
                           Text(
                             'Amount Due',
                             style: theme.textTheme.bodyMedium?.copyWith(
@@ -626,7 +475,7 @@ class InternetBillDetailsScreen extends StatelessWidget {
                           ),
                         ),
                         child: Column(
-                          children: [
+                          children: <Widget>[
                             Text(
                               'Due Date',
                               style: theme.textTheme.bodySmall?.copyWith(
@@ -659,27 +508,16 @@ class InternetBillDetailsScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 56.h,
                 child: ElevatedButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Processing payment...'),
-                        backgroundColor: MyTheme.primaryColor,
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.r),
-                        ),
-                      ),
-                    );
-                  },
+                  onPressed: () => _proceedToCardSelection(context),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: MyTheme.primaryColor,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.r),
+                      borderRadius: BorderRadius.circular(12.r),
                     ),
                     elevation: 4,
                   ),
                   child: Text(
-                    'Pay Now',
+                    'Continue to Card Selection',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
@@ -697,7 +535,7 @@ class InternetBillDetailsScreen extends StatelessWidget {
   Widget _buildInfoRow(String label, String value, ThemeData theme) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         SizedBox(
           width: 130.w,
           child: Text(

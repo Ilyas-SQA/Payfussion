@@ -472,7 +472,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
   }
 
   Widget _buildShimmerLoading(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return AnimationLimiter(
       child: ListView(
@@ -514,7 +514,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
   }
 
   Widget _buildTransactionShimmer(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
@@ -567,7 +567,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
         required double height,
         double borderRadius = 6.0,
       }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       width: width,
@@ -578,12 +578,12 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
           colors: isDark
-              ? [
+              ? <Color>[
             Colors.grey.shade800,
             Colors.grey.shade700,
             Colors.grey.shade800,
           ]
-              : [
+              : <Color>[
             Colors.grey.shade300,
             Colors.grey.shade100,
             Colors.grey.shade300,

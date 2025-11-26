@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
-import '../../../core/constants/fonts.dart';
-import '../../../core/constants/routes_name.dart';
-import '../../widgets/background_theme.dart';
+import '../../../../core/constants/fonts.dart';
+import '../../../widgets/background_theme.dart';
+import 'gas_bill_form_screen.dart';
 
 class GasBillScreen extends StatefulWidget {
   const GasBillScreen({super.key});
@@ -30,7 +29,7 @@ class _GasBillScreenState extends State<GasBillScreen>
     <String, dynamic>{
       "name": "PG&E (Pacific Gas & Electric)",
       "description": "California's largest gas & electric utility",
-      "icon": Icons.local_gas_station,
+      "icon": "assets/images/paybill/gas_bill/pg&e.png",
       "color": MyTheme.primaryColor,
       "region": "Northern California",
       "averageRate": "\$1.15/therm",
@@ -39,7 +38,7 @@ class _GasBillScreenState extends State<GasBillScreen>
     <String, dynamic>{
       "name": "Southern California Gas Company (SoCalGas)",
       "description": "Largest natural gas utility in US",
-      "icon": Icons.whatshot,
+      "icon": "assets/images/paybill/gas_bill/socal.png",
       "color": MyTheme.primaryColor,
       "region": "Southern California",
       "averageRate": "\$1.20/therm",
@@ -48,7 +47,7 @@ class _GasBillScreenState extends State<GasBillScreen>
     <String, dynamic>{
       "name": "Con Edison",
       "description": "New York's primary gas utility",
-      "icon": Icons.fireplace,
+      "icon": "assets/images/paybill/gas_bill/conEdison.png",
       "color": MyTheme.primaryColor,
       "region": "New York",
       "averageRate": "\$1.35/therm",
@@ -57,7 +56,7 @@ class _GasBillScreenState extends State<GasBillScreen>
     <String, dynamic>{
       "name": "Dominion Energy",
       "description": "Multi-state energy provider",
-      "icon": Icons.factory,
+      "icon": "assets/images/paybill/gas_bill/dominion.png",
       "color": MyTheme.primaryColor,
       "region": "Virginia & Ohio",
       "averageRate": "\$1.05/therm",
@@ -66,7 +65,7 @@ class _GasBillScreenState extends State<GasBillScreen>
     <String, dynamic>{
       "name": "National Grid",
       "description": "Northeast gas & electric utility",
-      "icon": Icons.grid_on,
+      "icon": "assets/images/paybill/gas_bill/national.png",
       "color": MyTheme.primaryColor,
       "region": "Northeast US",
       "averageRate": "\$1.28/therm",
@@ -75,7 +74,7 @@ class _GasBillScreenState extends State<GasBillScreen>
     <String, dynamic>{
       "name": "Atmos Energy",
       "description": "Nation's largest gas-only distributor",
-      "icon": Icons.cloud,
+      "icon": "assets/images/paybill/gas_bill/atmos.png",
       "color": MyTheme.primaryColor,
       "region": "Texas & Midwest",
       "averageRate": "\$0.95/therm",
@@ -84,7 +83,7 @@ class _GasBillScreenState extends State<GasBillScreen>
     <String, dynamic>{
       "name": "CenterPoint Energy",
       "description": "Texas & Minnesota gas provider",
-      "icon": Icons.center_focus_strong,
+      "icon": "assets/images/paybill/gas_bill/centerPoint.jpeg",
       "color": MyTheme.primaryColor,
       "region": "Texas & Minnesota",
       "averageRate": "\$1.08/therm",
@@ -93,7 +92,7 @@ class _GasBillScreenState extends State<GasBillScreen>
     <String, dynamic>{
       "name": "Xcel Energy",
       "description": "Multi-state utility company",
-      "icon": Icons.wind_power,
+      "icon": "assets/images/paybill/gas_bill/xcel.png",
       "color": MyTheme.primaryColor,
       "region": "Midwest US",
       "averageRate": "\$1.02/therm",
@@ -102,7 +101,7 @@ class _GasBillScreenState extends State<GasBillScreen>
     <String, dynamic>{
       "name": "Duke Energy",
       "description": "Southeast energy corporation",
-      "icon": Icons.business,
+      "icon": "assets/images/paybill/gas_bill/duke.png",
       "color": MyTheme.primaryColor,
       "region": "Southeast US",
       "averageRate": "\$1.12/therm",
@@ -111,7 +110,7 @@ class _GasBillScreenState extends State<GasBillScreen>
     <String, dynamic>{
       "name": "NiSource (Columbia Gas)",
       "description": "Midwest natural gas distributor",
-      "icon": Icons.propane_tank,
+      "icon": "assets/images/paybill/gas_bill/nisource.png",
       "color": MyTheme.primaryColor,
       "region": "Midwest US",
       "averageRate": "\$1.18/therm",
@@ -120,7 +119,7 @@ class _GasBillScreenState extends State<GasBillScreen>
     <String, dynamic>{
       "name": "PPL Gas Utilities",
       "description": "Pennsylvania gas services",
-      "icon": Icons.energy_savings_leaf,
+      "icon": "assets/images/paybill/gas_bill/ppl.png",
       "color": MyTheme.primaryColor,
       "region": "Pennsylvania",
       "averageRate": "\$1.22/therm",
@@ -129,7 +128,7 @@ class _GasBillScreenState extends State<GasBillScreen>
     <String, dynamic>{
       "name": "Eversource Energy",
       "description": "New England's gas utility",
-      "icon": Icons.cottage,
+      "icon": "assets/images/paybill/gas_bill/eversource.png",
       "color": MyTheme.primaryColor,
       "region": "New England",
       "averageRate": "\$1.32/therm",
@@ -138,7 +137,7 @@ class _GasBillScreenState extends State<GasBillScreen>
     <String, dynamic>{
       "name": "Washington Gas",
       "description": "DC metro area gas provider",
-      "icon": Icons.account_balance,
+      "icon": "assets/images/paybill/gas_bill/washington_gas.png",
       "color": MyTheme.primaryColor,
       "region": "DC Metro",
       "averageRate": "\$1.24/therm",
@@ -147,7 +146,7 @@ class _GasBillScreenState extends State<GasBillScreen>
     <String, dynamic>{
       "name": "AVISTA Utilities",
       "description": "Pacific Northwest gas utility",
-      "icon": Icons.water_drop,
+      "icon": "assets/images/paybill/gas_bill/avista.png",
       "color": MyTheme.primaryColor,
       "region": "Pacific Northwest",
       "averageRate": "\$1.08/therm",
@@ -156,7 +155,7 @@ class _GasBillScreenState extends State<GasBillScreen>
     <String, dynamic>{
       "name": "Vectren (CenterPoint Energy)",
       "description": "Indiana & Ohio gas services",
-      "icon": Icons.science,
+      "icon": "assets/images/paybill/gas_bill/vectren.jpeg",
       "color": MyTheme.primaryColor,
       "region": "Indiana & Ohio",
       "averageRate": "\$1.14/therm",
@@ -341,16 +340,12 @@ class _GasBillScreenState extends State<GasBillScreen>
         ),
         child: InkWell(
           onTap: () {
-            context.push(
-              RouteNames.payBillsDetailView,
-              extra: <String, dynamic>{
-                'billType': "gasBill",
-                'companyName': provider['name'],
-                'region': provider['region'],
-                'averageRate': provider['averageRate'],
-                'customers': provider['customers'],
-              },
-            );
+            Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) =>  GasBillFormScreen(
+              companyName: provider['name'],
+              region: provider['region'],
+              averageRate: provider['averageRate'],
+              customers:  provider['customers'],
+            ),),);
           },
           borderRadius: BorderRadius.circular(20.r),
           child: Padding(
@@ -359,11 +354,16 @@ class _GasBillScreenState extends State<GasBillScreen>
               children: <Widget>[
                 // Icon Container
                 Hero(
-                  tag: 'gas_icon_${provider['name']}',
-                  child: Icon(
-                    provider['icon'] as IconData,
-                    size: 28.sp,
-                    color: provider['color'] as Color,
+                  tag: 'mobile_icon_${provider['name']}',
+                  child: CircleAvatar(
+                    radius: 24.r,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Image.asset(
+                        provider['icon'] as String,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
                 ),
 

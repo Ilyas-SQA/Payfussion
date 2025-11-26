@@ -121,7 +121,7 @@ class BillSplitBloc extends Bloc<BillSplitEvent, BillSplitState> {
       };
 
       // Save to Firestore transactions collection
-      await _firestore
+      await _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
           .collection('transactions')
           .doc(transactionId)
           .set(transactionData);
@@ -191,15 +191,15 @@ class BillSplitBloc extends Bloc<BillSplitEvent, BillSplitState> {
 
     final String message = '''Bill Split Payment completed successfully!
 
-📋 Bill Name: ${state.billName}
-💵 Total Amount: USD ${state.totalAmount.toStringAsFixed(2)}
-👥 Split Among: ${state.numberOfPeople} people
-💰 Your Share: USD ${state.amountPerPerson.toStringAsFixed(2)}
-📊 Split Type: ${state.splitType == 'equal' ? 'Equal Split' : 'Custom Split'}
-💳 Tax: USD ${state.taxAmount.toStringAsFixed(2)}
-💳 Total Paid: USD ${state.totalWithTax.toStringAsFixed(2)}
-💳 Card Ending: ****${state.cardEnding}
-🕐 Completed at: ${now.toString().substring(0, 19)}
+Bill Name: ${state.billName}
+Total Amount: USD ${state.totalAmount.toStringAsFixed(2)}
+Split Among: ${state.numberOfPeople} people
+Your Share: USD ${state.amountPerPerson.toStringAsFixed(2)}
+Split Type: ${state.splitType == 'equal' ? 'Equal Split' : 'Custom Split'}
+Tax: USD ${state.taxAmount.toStringAsFixed(2)}
+Total Paid: USD ${state.totalWithTax.toStringAsFixed(2)}
+Card Ending: ****${state.cardEnding}
+Completed at: ${now.toString().substring(0, 19)}
 
 Participants: ${state.participantNames.join(', ')}
 

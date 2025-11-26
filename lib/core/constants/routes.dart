@@ -315,7 +315,7 @@ final GoRouter appRouter = GoRouter(
         pageBuilder: (BuildContext context, GoRouterState state) {
           return CustomFadeTransitionPage(
             key: state.pageKey,
-            child:  DTHRechargeScreen(),
+            child:  const DTHRechargeScreen(),
           );
         }
     ),
@@ -325,7 +325,7 @@ final GoRouter appRouter = GoRouter(
         pageBuilder: (BuildContext context, GoRouterState state) {
           return CustomFadeTransitionPage(
             key: state.pageKey,
-            child: BillSplitScreen(),
+            child: const BillSplitScreen(),
           );
         }
     ),

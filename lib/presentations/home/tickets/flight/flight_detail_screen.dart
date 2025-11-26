@@ -283,7 +283,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> with TickerProv
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
-                                      delay: Duration(milliseconds: 700),
+                                      delay: const Duration(milliseconds: 700),
                                     ),
                                     const SizedBox(height: 8),
                                     ...widget.flight.amenities.asMap().entries.map(

@@ -51,7 +51,7 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
       Emitter<MoviesState> emit,
       ) async {
     if (state is MoviesDataSet) {
-      final currentState = state as MoviesDataSet;
+      final MoviesDataSet currentState = state as MoviesDataSet;
       emit(currentState.copyWith(
         cardId: event.cardId,
         cardHolderName: event.cardHolderName,
@@ -69,7 +69,7 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
       return;
     }
 
-    final currentState = state as MoviesDataSet;
+    final MoviesDataSet currentState = state as MoviesDataSet;
 
     if (currentState.cardId == null) {
       emit(const MoviesError('Please select a card'));
@@ -93,7 +93,7 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
       final DateTime subscriptionEndDate = _calculateEndDate(now, currentState.planDuration);
 
       // Create transaction data
-      final Map<String, dynamic> transactionData = {
+      final Map<String, dynamic> transactionData = <String, dynamic>{
         'id': transactionId,
         'userId': user.uid,
         'type': 'streaming_subscription',
@@ -120,7 +120,7 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
       };
 
       // Save to Firestore transactions collection
-      await _firestore
+      await _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
           .collection('transactions')
           .doc(transactionId)
           .set(transactionData);
@@ -139,7 +139,7 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
         title: 'Subscription Active - ${currentState.serviceName}',
         message: notificationMessage,
         type: 'streaming_subscription_success',
-        data: {
+        data: <String, dynamic>{
           'transactionId': transactionId,
           'serviceName': currentState.serviceName,
           'category': currentState.category,
@@ -173,7 +173,7 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
         title: 'Subscription Failed',
         message: 'Subscription failed: ${e.toString()}',
         type: 'streaming_subscription_failed',
-        data: {
+        data: <String, dynamic>{
           'error': e.toString(),
           'timestamp': DateTime.now().toIso8601String(),
         },
@@ -192,7 +192,7 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
 
   DateTime _calculateEndDate(DateTime startDate, String duration) {
     if (duration.contains('Month')) {
-      final months = int.parse(duration.split(' ')[0]);
+      final int months = int.parse(duration.split(' ')[0]);
       return DateTime(startDate.year, startDate.month + months, startDate.day);
     } else if (duration.contains('Year')) {
       return DateTime(startDate.year + 1, startDate.month, startDate.day);
@@ -204,22 +204,22 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
     final DateTime now = DateTime.now();
     final DateTime endDate = _calculateEndDate(now, state.planDuration);
 
-    String message = '''Subscription activated successfully!
+    final String message = '''Subscription activated successfully!
 
-🎬 Service: ${state.serviceName}
-📺 Category: ${state.category}
-📧 Email: ${state.email}
-📦 Plan: ${state.planName}
-⏱️ Duration: ${state.planDuration}
-${state.autoRenew ? '🔄 Auto-Renew: Enabled' : '🔄 Auto-Renew: Disabled'}
+Service: ${state.serviceName}
+Category: ${state.category}
+Email: ${state.email}
+Plan: ${state.planName}
+ Duration: ${state.planDuration}
+${state.autoRenew ? 'Auto-Renew: Enabled' : 'Auto-Renew: Disabled'}
 
-💵 Plan Price: USD ${state.planPrice.toStringAsFixed(2)}
-💰 Tax: USD ${state.taxAmount.toStringAsFixed(2)}
-💳 Total Paid: USD ${state.totalAmount.toStringAsFixed(2)}
-💳 Card Ending: ****${state.cardEnding}
+Plan Price: USD ${state.planPrice.toStringAsFixed(2)}
+Tax: USD ${state.taxAmount.toStringAsFixed(2)}
+Total Paid: USD ${state.totalAmount.toStringAsFixed(2)}
+Card Ending: ****${state.cardEnding}
 
-📅 Subscription Start: ${now.toString().substring(0, 19)}
-📅 Subscription End: ${endDate.toString().substring(0, 19)}
+Subscription Start: ${now.toString().substring(0, 19)}
+Subscription End: ${endDate.toString().substring(0, 19)}
 
 Thank you for subscribing to ${state.serviceName}!''';
 

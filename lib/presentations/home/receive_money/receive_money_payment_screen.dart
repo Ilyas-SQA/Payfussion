@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:payfussion/presentations/home/receive_money/receive_money_payment_form.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/image_url.dart';
-import '../../../core/theme/theme.dart';
 import '../../../data/models/payment/contact_modal.dart';
 import '../../../data/models/payment/payment_account_modal.dart';
 import '../../../services/biometric_service.dart';
@@ -324,14 +323,6 @@ class _ReceiveMoneyPaymentScreenState extends State<ReceiveMoneyPaymentScreen> w
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
           centerTitle: true,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: MyTheme.primaryColor),
-            tooltip: 'Go back',
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
           title: const Text(
             ReceiveMoneyPaymentStrings.paymentScreen,
             semanticsLabel: 'Request Payment Screen',

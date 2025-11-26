@@ -1,18 +1,16 @@
-// Updated BankTransactionBloc to fetch from Firebase
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/fonts.dart';
-import '../../../../core/constants/routes_name.dart';
 import '../../../../data/models/recipient/recipient_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../logic/blocs/bank_transaction/bank_transaction_bloc.dart';
 import '../../../../logic/blocs/bank_transaction/bank_transaction_event.dart';
 import '../../../../logic/blocs/bank_transaction/bank_transaction_state.dart';
 import '../../../widgets/background_theme.dart';
+import 'credit_card_loan_form_screen.dart';
 
 class CreditCardLoanScreen extends StatefulWidget {
   const CreditCardLoanScreen({Key? key}) : super(key: key);
@@ -25,7 +23,6 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> with Ticker
 
   late AnimationController _backgroundAnimationController;
 
-
   @override
   void initState() {
     super.initState();
@@ -37,18 +34,17 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> with Ticker
   }
 
   void _navigateToBankDetails(Bank bank) {
-    // Selected bank ko bloc mein set karein
-    context.read<BankTransactionBloc>().add(BankSelected(bank));
-
-    // Next screen par navigate karein
-    context.push(
-      RouteNames.payBillsDetailView,
-      extra: <String, Object>{
-        'billType': "creditcardloan",
-        'companyName': bank.name,
-        'plans': bank.branchName.isNotEmpty ? <String>[bank.branchName] : <dynamic>[],
-        'rating': 4.5,
-      },
+    // Navigate to form screen instead of generic detail view
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => CreditCardLoanFormScreen(
+          bankName: bank.name,
+          branchName: bank.branchName,
+          city: bank.city,
+          branchCode: bank.branchCode,
+        ),
+      ),
     );
   }
 
@@ -157,6 +153,7 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> with Ticker
       ),
     );
   }
+
   @override
   void dispose() {
     _backgroundAnimationController.dispose();
@@ -208,7 +205,7 @@ class _CreditCardLoanScreenState extends State<CreditCardLoanScreen> with Ticker
                         Text(
                           state.isLoadingBanks
                               ? 'Loading banks...'
-                              : 'Tap on any bank to continue',
+                              : 'Tap on any bank to make credit card/loan payment',
                           style: Font.montserratFont(
                             fontSize: 12.sp,
                             color: Colors.grey.shade600,

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
-import '../../../core/constants/fonts.dart';
-import '../../../core/constants/routes_name.dart';
-import '../../widgets/background_theme.dart';
+import '../../../../core/constants/fonts.dart';
+import '../../../widgets/background_theme.dart';
+import 'movies_form_screen.dart';
 
 class MoviesScreen extends StatefulWidget {
   const MoviesScreen({super.key});
@@ -345,15 +344,17 @@ class _MoviesScreenState extends State<MoviesScreen>
         ),
         child: InkWell(
           onTap: () {
-            context.push(
-              RouteNames.payBillsDetailView,
-              extra: <String, dynamic>{
-                'billType': "movies",
-                'companyName': service['name'],
-                'category': service['category'],
-                'monthlyPrice': service['monthlyPrice'],
-                'content': service['content'],
-              },
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => MoviesFormScreen(
+                  serviceName: service['name'],
+                  category: service['category'],
+                  monthlyPrice: service['monthlyPrice'],
+                  content: service['content'],
+                  icon: service['icon'],
+                ),
+              ),
             );
           },
           borderRadius: BorderRadius.circular(20.r),

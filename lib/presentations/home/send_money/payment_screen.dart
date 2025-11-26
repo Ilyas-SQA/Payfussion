@@ -99,7 +99,7 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
   late Animation<double> _pulseAnimation;
-  final _key = GlobalKey<FormState>();
+  final GlobalKey<FormState> _key = GlobalKey<FormState>();
 
   @override
   void initState() {

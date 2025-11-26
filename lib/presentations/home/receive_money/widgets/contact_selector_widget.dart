@@ -441,9 +441,6 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                                         recipient.name,
                                         style: Font.montserratFont(
                                           fontWeight: FontWeight.w600,
-                                          color: isSelected
-                                              ? MyTheme.primaryColor
-                                              : AppColors.textPrimary,
                                           fontSize: 16.sp,
                                         ),
                                       ),

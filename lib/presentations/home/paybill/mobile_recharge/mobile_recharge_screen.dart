@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
-
-import '../../../core/constants/fonts.dart';
-import '../../../core/constants/routes_name.dart';
-import '../../widgets/background_theme.dart';
+import '../../../../core/constants/fonts.dart';
+import '../../../widgets/background_theme.dart';
+import 'mobile_recharge_form_screen.dart';
 
 class MobileRechargeScreen extends StatefulWidget {
   const MobileRechargeScreen({super.key});
@@ -29,7 +27,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
     <String, dynamic>{
       "name": "Verizon Wireless",
       "description": "America's most reliable network",
-      "icon": Icons.signal_cellular_4_bar,
+      "icon": "assets/images/paybill/mobile_recharge/verizon_wireless.webp",
       "color": MyTheme.primaryColor,
       "network": "5G Nationwide",
       "customers": "94M+",
@@ -38,7 +36,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
     <String, dynamic>{
       "name": "AT&T Mobility",
       "description": "Connect to your world",
-      "icon": Icons.wifi_tethering,
+      "icon": "assets/images/paybill/mobile_recharge/att_mobility.png",
       "color": MyTheme.primaryColor,
       "network": "5G+",
       "customers": "80M+",
@@ -47,7 +45,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
     <String, dynamic>{
       "name": "T-Mobile US",
       "description": "The Un-carrier",
-      "icon": Icons.cell_tower,
+      "icon": "assets/images/paybill/mobile_recharge/t_mobile.png",
       "color": MyTheme.primaryColor,
       "network": "5G Ultra Capacity",
       "customers": "109M+",
@@ -56,7 +54,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
     <String, dynamic>{
       "name": "Metro by T-Mobile",
       "description": "Prepaid wireless service",
-      "icon": Icons.smartphone,
+      "icon": "assets/images/paybill/mobile_recharge/t-mobile.png",
       "color": MyTheme.primaryColor,
       "network": "T-Mobile 5G",
       "customers": "20M+",
@@ -65,7 +63,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
     <String, dynamic>{
       "name": "Cricket Wireless",
       "description": "AT&T network coverage",
-      "icon": Icons.sports_cricket,
+      "icon": "assets/images/paybill/mobile_recharge/cricket_wireless.png",
       "color": MyTheme.primaryColor,
       "network": "AT&T 5G",
       "customers": "10M+",
@@ -74,7 +72,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
     <String, dynamic>{
       "name": "Boost Mobile",
       "description": "Where you at?",
-      "icon": Icons.rocket_launch,
+      "icon": "assets/images/paybill/mobile_recharge/boost_mobile.png",
       "color": MyTheme.primaryColor,
       "network": "T-Mobile 5G",
       "customers": "8M+",
@@ -83,7 +81,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
     <String, dynamic>{
       "name": "Mint Mobile",
       "description": "Premium wireless for less",
-      "icon": Icons.eco,
+      "icon": "assets/images/paybill/mobile_recharge/mint_mobile.png",
       "color": MyTheme.primaryColor,
       "network": "T-Mobile 5G",
       "customers": "5M+",
@@ -92,7 +90,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
     <String, dynamic>{
       "name": "Google Fi Wireless",
       "description": "Flexible wireless service",
-      "icon": Icons.cloud,
+      "icon": "assets/images/paybill/mobile_recharge/google_fl_wireless.webp",
       "color": MyTheme.primaryColor,
       "network": "Multi-carrier",
       "customers": "2M+",
@@ -101,7 +99,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
     <String, dynamic>{
       "name": "Straight Talk Wireless",
       "description": "No contract wireless",
-      "icon": Icons.straighten,
+      "icon": "assets/images/paybill/mobile_recharge/images.png",
       "color": MyTheme.primaryColor,
       "network": "Verizon 5G",
       "customers": "25M+",
@@ -110,7 +108,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
     <String, dynamic>{
       "name": "TracFone Wireless",
       "description": "America's #1 prepaid wireless",
-      "icon": Icons.track_changes,
+      "icon": "assets/images/paybill/mobile_recharge/tracfone_wireless_inc_logo.jpeg",
       "color": MyTheme.primaryColor,
       "network": "Multi-carrier",
       "customers": "21M+",
@@ -119,7 +117,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
     <String, dynamic>{
       "name": "US Mobile",
       "description": "Built for you",
-      "icon": Icons.flag,
+      "icon": "assets/images/paybill/mobile_recharge/download.jpeg",
       "color": MyTheme.primaryColor,
       "network": "Verizon/T-Mobile",
       "customers": "1M+",
@@ -128,7 +126,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
     <String, dynamic>{
       "name": "Visible",
       "description": "Wireless that gets better",
-      "icon": Icons.visibility,
+      "icon": "assets/images/paybill/mobile_recharge/visible.jpeg",
       "color": MyTheme.primaryColor,
       "network": "Verizon 5G",
       "customers": "3M+",
@@ -137,7 +135,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
     <String, dynamic>{
       "name": "Ultra Mobile",
       "description": "International calling plans",
-      "icon": Icons.public,
+      "icon": "assets/images/paybill/mobile_recharge/ultra_mobile.png",
       "color": MyTheme.primaryColor,
       "network": "T-Mobile 5G",
       "customers": "2M+",
@@ -146,7 +144,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
     <String, dynamic>{
       "name": "Lycamobile USA",
       "description": "World in your hands",
-      "icon": Icons.language,
+      "icon": "assets/images/paybill/mobile_recharge/lyca_mobile.png",
       "color": MyTheme.primaryColor,
       "network": "T-Mobile",
       "customers": "1.5M+",
@@ -155,7 +153,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
     <String, dynamic>{
       "name": "H2O Wireless",
       "description": "Affordable wireless plans",
-      "icon": Icons.water_drop,
+      "icon": "assets/images/paybill/mobile_recharge/h2o_wireless.png",
       "color": MyTheme.primaryColor,
       "network": "AT&T",
       "customers": "1M+",
@@ -337,16 +335,12 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
         ),
         child: InkWell(
           onTap: () {
-            context.push(
-              RouteNames.payBillsDetailView,
-              extra: <String, dynamic>{
-                'billType': "mobileRecharge",
-                'companyName': carrier['name'],
-                'network': carrier['network'],
-                'customers': carrier['customers'],
-                'coverage': carrier['coverage'],
-              },
-            );
+            Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => MobileRechargeFormScreen(
+              companyName: carrier['name'],
+              network: carrier['network'],
+              customers: carrier['customers'],
+              coverage: carrier['coverage'],
+            )));
           },
           borderRadius: BorderRadius.circular(20.r),
           child: Padding(
@@ -356,13 +350,17 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> with Ticker
                 // Icon Container
                 Hero(
                   tag: 'mobile_icon_${carrier['name']}',
-                  child: Icon(
-                    carrier['icon'] as IconData,
-                    size: 28.sp,
-                    color: carrier['color'] as Color,
+                  child: CircleAvatar(
+                    radius: 24.r,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Image.asset(
+                        carrier['icon'] as String,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
                 ),
-
                 SizedBox(width: 16.w),
 
                 // Content

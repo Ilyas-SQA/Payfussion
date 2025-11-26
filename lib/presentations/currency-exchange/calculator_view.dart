@@ -51,13 +51,13 @@ class CalculatorView extends StatelessWidget {
                       const Tab(
                         child: Padding(
                           padding: EdgeInsets.all(10),
-                          child: Text('Calculator'),
+                          child: Text('Calculator',style: TextStyle(fontSize: 12),),
                         ),
                       ),
                       const Tab(
                         child: Padding(
                           padding: EdgeInsets.all(10),
-                          child: Text('Exchange Rate'),
+                          child: Text('Exchange Rate',style: TextStyle(fontSize: 12),),
                         ),
                       ),
                     ],

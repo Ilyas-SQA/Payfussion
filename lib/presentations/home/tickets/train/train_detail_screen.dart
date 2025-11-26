@@ -337,8 +337,8 @@ class _TrainDetailScreenState extends State<TrainDetailScreen> with TickerProvid
         children: <Widget>[
           Row(
             children: <Widget>[
-              Icon(Icons.description, color: MyTheme.secondaryColor),
-              SizedBox(width: 8),
+              const Icon(Icons.description, color: MyTheme.secondaryColor),
+              const SizedBox(width: 8),
               Text(
                 "Description",
                 style: Font.montserratFont(

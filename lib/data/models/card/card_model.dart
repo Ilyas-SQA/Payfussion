@@ -67,7 +67,7 @@ class CardModel {
 
   // ✅ Convert to Firestore map
   Map<String, dynamic> toFirestore() {
-    return {
+    return <String, dynamic>{
       'brand': brand,
       'last4': last4,
       'exp_month': expMonth,
@@ -173,7 +173,7 @@ class BillingAddress {
   }
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'city': city,
       'country': country,
       'line1': line1,

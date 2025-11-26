@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
 
-import '../../../core/constants/fonts.dart';
-import '../../../core/constants/routes_name.dart';
-import '../../widgets/background_theme.dart';
+import '../../../../core/constants/fonts.dart';
+import '../../../widgets/background_theme.dart';
+import 'dth_recharge_form_screen.dart';
 
 class DTHRechargeScreen extends StatefulWidget {
   const DTHRechargeScreen({super.key});
@@ -30,7 +29,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
     <String, dynamic>{
       "name": "DISH Network",
       "description": "America's top-rated TV provider",
-      "icon": Icons.satellite_alt,
+      "icon": "assets/images/paybill/dth_recharge/dish_network.png",
       "color": MyTheme.primaryColor,
       "plans": <String>["Basic HD - \$60/month", "Top 200 - \$85/month", "Top 250 - \$95/month"],
       "rating": 4.2,
@@ -38,7 +37,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
     <String, dynamic>{
       "name": "DIRECTV (AT&T)",
       "description": "Premium entertainment experience",
-      "icon": Icons.settings_input_antenna,
+      "icon": "assets/images/paybill/dth_recharge/directv.png",
       "color": MyTheme.primaryColor,
       "plans": <String>["Entertainment - \$70/month", "Choice - \$90/month", "Ultimate - \$105/month"],
       "rating": 4.0,
@@ -46,7 +45,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
     <String, dynamic>{
       "name": "Sky Angel",
       "description": "Family-friendly programming",
-      "icon": Icons.family_restroom,
+      "icon": "assets/images/paybill/dth_recharge/sky_angell.jpeg",
       "color": MyTheme.primaryColor,
       "plans": <String>["Family Pack - \$25/month", "Premium Pack - \$40/month"],
       "rating": 3.8,
@@ -54,7 +53,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
     <String, dynamic>{
       "name": "C band Satellite Providers",
       "description": "Professional satellite solutions",
-      "icon": Icons.radar,
+      "icon": "assets/images/paybill/dth_recharge/dish_network.png",
       "color": MyTheme.primaryColor,
       "plans": <String>["Basic Package - \$45/month", "Professional - \$80/month"],
       "rating": 3.5,
@@ -62,7 +61,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
     <String, dynamic>{
       "name": "Viasat Satellite TV",
       "description": "Bundled internet & TV services",
-      "icon": Icons.wifi_tethering,
+      "icon": "assets/images/paybill/dth_recharge/viaset.png",
       "color": MyTheme.primaryColor,
       "plans": <String>["TV + Internet Bundle - \$120/month", "Premium Bundle - \$150/month"],
       "rating": 3.9,
@@ -70,7 +69,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
     <String, dynamic>{
       "name": "Bell TV",
       "description": "Cross-border satellite service",
-      "icon": Icons.public,
+      "icon": "assets/images/paybill/dth_recharge/bell.jpeg",
       "color": MyTheme.primaryColor,
       "plans": <String>["Basic Plan - \$55/month", "Premium Plan - \$75/month"],
       "rating": 3.7,
@@ -78,7 +77,7 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
     <String, dynamic>{
       "name": "HughesNet TV Bundles",
       "description": "Satellite internet with TV",
-      "icon": Icons.router,
+      "icon": "assets/images/paybill/dth_recharge/hughestnet.png",
       "color": MyTheme.primaryColor,
       "plans": <String>["Bundle 50GB - \$100/month", "Bundle 100GB - \$130/month"],
       "rating": 3.6,
@@ -244,14 +243,16 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
 
   Widget _buildProviderCard(Map<String, dynamic> provider, ThemeData theme, int index) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Colors.grey.withOpacity(0.3)
+                  : Colors.black.withOpacity(0.3),
               blurRadius: 5,
               offset: const Offset(0, 4),
             ),
@@ -259,14 +260,15 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
         ),
         child: InkWell(
           onTap: () {
-            context.push(
-              RouteNames.payBillsDetailView,
-              extra: <String, dynamic>{
-                'billType': "dthRecharge",
-                'companyName': provider['name'],
-                'plans': provider['plans'],
-                'rating': provider['rating'],
-              },
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => DthRechargeFormScreen(
+                  providerName: provider['name'] as String, // Updated
+                  plans: List<String>.from(provider['plans']), // Updated
+                  rating: provider['rating'] as double, // Updated
+                ),
+              ),
             );
           },
           borderRadius: BorderRadius.circular(20.r),
@@ -277,10 +279,15 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
                 // Icon Container
                 Hero(
                   tag: 'dth_icon_${provider['name']}',
-                  child: Icon(
-                    provider['icon'] as IconData,
-                    size: 28.sp,
-                    color: provider['color'] as Color,
+                  child: CircleAvatar(
+                    radius: 24.r,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Image.asset(
+                        provider['icon'] as String,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
                 ),
 
@@ -299,7 +306,9 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
                               provider['name'] as String,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w700,
-                                color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+                                color: theme.primaryColor != Colors.white
+                                    ? Colors.white
+                                    : const Color(0xff2D3748),
                               ),
                             ),
                           ),
@@ -336,7 +345,9 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
                       Text(
                         provider['description'] as String,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.7) : const Color(0xff718096),
+                          color: theme.primaryColor != Colors.white
+                              ? Colors.white.withOpacity(0.7)
+                              : const Color(0xff718096),
                         ),
                       ),
 

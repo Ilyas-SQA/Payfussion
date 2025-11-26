@@ -61,6 +61,50 @@ class AppTextFormField extends StatelessWidget {
                   color: useGreenColor ? MyTheme.secondaryColor : MyTheme.primaryColor,
                 ),
               ) : const SizedBox(),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(5.r),
+                ),
+                borderSide: BorderSide(
+                  color: useGreenColor ? MyTheme.secondaryColor : MyTheme.primaryColor,
+                  width: 1,
+                ),
+              ),
+
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(5.r)),
+                borderSide: BorderSide(
+                  color: useGreenColor ? MyTheme.secondaryColor : MyTheme.primaryColor,
+                  width: 1,
+                ),
+              ),
+
+              /// Focused Border
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(5.r)),
+                borderSide: BorderSide(
+                  width: 1,
+                  color: useGreenColor ? MyTheme.secondaryColor : MyTheme.primaryColor,
+                ),
+              ),
+
+              /// Error Border
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(5.r)),
+                borderSide: const BorderSide(
+                  color: Colors.red,
+                  width: 1,
+                ),
+              ),
+
+              /// Focused Error Border
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(5.r)),
+                borderSide: const BorderSide(
+                  color: Colors.red,
+                  width: 1,
+                ),
+              ),
             ),
             onChanged: onChanged,
             validator: validator,

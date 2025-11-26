@@ -1,37 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/core/widget/card_screen.dart';
+import '../../../../logic/blocs/pay_bill/rent_payment/rent_payment_bloc.dart';
+import '../../../../logic/blocs/pay_bill/rent_payment/rent_payment_event.dart';
 
 class RentPaymentForm extends StatefulWidget {
   final String? companyName;
   final String? category;
+  final String? feeRange;
+  final String? properties;
 
   const RentPaymentForm({
     super.key,
     this.companyName,
     this.category,
+    this.feeRange,
+    this.properties,
   });
 
   @override
   State<RentPaymentForm> createState() => _RentPaymentFormState();
 }
 
-class _RentPaymentFormState extends State<RentPaymentForm> with SingleTickerProviderStateMixin {
-  final _formKey = GlobalKey<FormState>();
+class _RentPaymentFormState extends State<RentPaymentForm>
+    with SingleTickerProviderStateMixin {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
   // Form Controllers
-  final TextEditingController _propertyAddressController = TextEditingController();
-  final TextEditingController _landlordNameController = TextEditingController();
-  final TextEditingController _landlordEmailController = TextEditingController();
-  final TextEditingController _landlordPhoneController = TextEditingController();
+  final TextEditingController _propertyAddressController =
+  TextEditingController();
+  final TextEditingController _landlordNameController =
+  TextEditingController();
+  final TextEditingController _landlordEmailController =
+  TextEditingController();
+  final TextEditingController _landlordPhoneController =
+  TextEditingController();
   final TextEditingController _rentAmountController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
 
-  String _selectedPaymentMethod = 'Credit Card';
   bool _saveForFuture = false;
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -58,69 +70,43 @@ class _RentPaymentFormState extends State<RentPaymentForm> with SingleTickerProv
     super.dispose();
   }
 
-  void _processPayment() async {
+  void _proceedToCardSelection() {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
+      final double amount = double.parse(_rentAmountController.text);
 
-      // Simulate payment processing
-      await Future.delayed(const Duration(seconds: 2));
+      // Set rent payment data in bloc
+      context.read<RentPaymentBloc>().add(SetRentPaymentData(
+        companyName: widget.companyName ?? 'Rent Payment',
+        category: widget.category ?? 'Rental',
+        propertyAddress: _propertyAddressController.text,
+        landlordName: _landlordNameController.text,
+        landlordEmail: _landlordEmailController.text,
+        landlordPhone: _landlordPhoneController.text,
+        amount: amount,
+        notes: _notesController.text.isNotEmpty
+            ? _notesController.text
+            : null,
+      ));
 
-      setState(() => _isLoading = false);
-
-      if (mounted) {
-        _showSuccessDialog();
-      }
+      // Navigate to card selection
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) => const CardsScreen(),
+        ),
+      );
     }
-  }
-
-  void _showSuccessDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Column(
-          children: [
-            Icon(Icons.check_circle, color: Colors.green, size: 60.sp),
-            SizedBox(height: 16.h),
-            const Text('Payment Successful!'),
-          ],
-        ),
-        content: Text(
-          'Your rent payment of PKR ${_rentAmountController.text} has been sent to ${_landlordNameController.text}',
-          textAlign: TextAlign.center,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-            child: const Text('Done'),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
         title: Text(
           'Pay Rent',
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
         ),
       ),
       body: FadeTransition(
@@ -129,50 +115,9 @@ class _RentPaymentFormState extends State<RentPaymentForm> with SingleTickerProv
           key: _formKey,
           child: ListView(
             padding: EdgeInsets.all(20.w),
-            children: [
+            children: <Widget>[
               // Company Info Card
-              if (widget.companyName != null)
-                Container(
-                  padding: EdgeInsets.all(16.w),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        theme.primaryColor.withOpacity(0.8),
-                        theme.primaryColor,
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(15.r),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.business, color: Colors.white, size: 30.sp),
-                      SizedBox(width: 12.w),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.companyName!,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            if (widget.category != null)
-                              Text(
-                                widget.category!,
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
-                                  fontSize: 12,
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              if (widget.companyName != null) _buildCompanyInfoCard(theme),
 
               SizedBox(height: 24.h),
 
@@ -186,7 +131,8 @@ class _RentPaymentFormState extends State<RentPaymentForm> with SingleTickerProv
                 label: 'Property Address',
                 hint: 'Enter full property address',
                 icon: Icons.location_on,
-                validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
+                validator: (String? value) =>
+                value?.isEmpty ?? true ? 'Required' : null,
               ),
 
               SizedBox(height: 24.h),
@@ -200,7 +146,8 @@ class _RentPaymentFormState extends State<RentPaymentForm> with SingleTickerProv
                 label: 'Landlord Name',
                 hint: 'Enter landlord full name',
                 icon: Icons.person_outline,
-                validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
+                validator: (String? value) =>
+                value?.isEmpty ?? true ? 'Required' : null,
               ),
 
               SizedBox(height: 16.h),
@@ -211,7 +158,7 @@ class _RentPaymentFormState extends State<RentPaymentForm> with SingleTickerProv
                 hint: 'landlord@example.com',
                 icon: Icons.email_outlined,
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) {
+                validator: (String? value) {
                   if (value?.isEmpty ?? true) return 'Required';
                   if (!value!.contains('@')) return 'Invalid email';
                   return null;
@@ -223,10 +170,11 @@ class _RentPaymentFormState extends State<RentPaymentForm> with SingleTickerProv
               _buildTextField(
                 controller: _landlordPhoneController,
                 label: 'Landlord Phone',
-                hint: '+92 XXX XXXXXXX',
+                hint: '+1 XXX XXX XXXX',
                 icon: Icons.phone_outlined,
                 keyboardType: TextInputType.phone,
-                validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
+                validator: (String? value) =>
+                value?.isEmpty ?? true ? 'Required' : null,
               ),
 
               SizedBox(height: 24.h),
@@ -237,22 +185,24 @@ class _RentPaymentFormState extends State<RentPaymentForm> with SingleTickerProv
 
               _buildTextField(
                 controller: _rentAmountController,
-                label: 'Rent Amount (PKR)',
+                label: 'Rent Amount (\$)',
                 hint: '0.00',
-                icon: Icons.currency_rupee,
+                icon: Icons.attach_money,
                 keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                validator: (value) {
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))
+                ],
+                validator: (String? value) {
                   if (value?.isEmpty ?? true) return 'Required';
-                  if (double.tryParse(value!) == null) return 'Invalid amount';
+                  if (double.tryParse(value!) == null) {
+                    return 'Invalid amount';
+                  }
+                  if (double.parse(value) < 100) {
+                    return 'Minimum amount is \$100';
+                  }
                   return null;
                 },
               ),
-
-              SizedBox(height: 16.h),
-
-              // Payment Method Selector
-              _buildPaymentMethodSelector(theme),
 
               SizedBox(height: 16.h),
 
@@ -275,18 +225,21 @@ class _RentPaymentFormState extends State<RentPaymentForm> with SingleTickerProv
                   border: Border.all(color: Colors.grey.withOpacity(0.2)),
                 ),
                 child: CheckboxListTile(
-                  title: const Text('Save landlord details for future payments'),
-                  subtitle: const Text('Quick payment next time', style: TextStyle(fontSize: 12)),
+                  title: const Text(
+                      'Save landlord details for future payments'),
+                  subtitle: const Text('Quick payment next time',
+                      style: TextStyle(fontSize: 12)),
                   value: _saveForFuture,
-                  onChanged: (value) => setState(() => _saveForFuture = value!),
-                  activeColor: theme.primaryColor,
+                  onChanged: (bool? value) =>
+                      setState(() => _saveForFuture = value!),
+                  activeColor: MyTheme.primaryColor,
                 ),
               ),
 
               SizedBox(height: 32.h),
 
-              // Payment Button
-              _buildPaymentButton(theme),
+              // Continue Button
+              _buildContinueButton(theme),
 
               SizedBox(height: 20.h),
             ],
@@ -296,10 +249,97 @@ class _RentPaymentFormState extends State<RentPaymentForm> with SingleTickerProv
     );
   }
 
+  Widget _buildCompanyInfoCard(ThemeData theme) {
+    return Container(
+      padding: EdgeInsets.all(20.w),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Icon(Icons.business,
+                  color: MyTheme.primaryColor, size: 30.sp),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      widget.companyName!,
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
+                        color: theme.primaryColor != Colors.white
+                            ? Colors.white
+                            : const Color(0xff2D3748),
+                      ),
+                    ),
+                    if (widget.category != null)
+                      Text(
+                        widget.category!,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: theme.primaryColor != Colors.white
+                              ? Colors.white.withOpacity(0.7)
+                              : Colors.grey[600],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (widget.properties != null || widget.feeRange != null) ...<Widget>[
+            SizedBox(height: 12.h),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                if (widget.properties != null)
+                  Row(
+                    children: <Widget>[
+                      Icon(Icons.home,
+                          size: 16.sp, color: Colors.grey[600]),
+                      SizedBox(width: 4.w),
+                      Text(
+                        widget.properties!,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                if (widget.feeRange != null)
+                  Text(
+                    widget.feeRange!,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   Widget _buildSectionTitle(String title, IconData icon) {
     return Row(
-      children: [
-        Icon(icon, size: 22.sp,),
+      children: <Widget>[
+        Icon(icon, size: 22.sp),
         SizedBox(width: 8.w),
         Text(
           title,
@@ -329,105 +369,36 @@ class _RentPaymentFormState extends State<RentPaymentForm> with SingleTickerProv
       inputFormatters: inputFormatters,
       maxLines: maxLines,
       decoration: InputDecoration(
-        // labelText: label,
         hintText: hint,
-        prefixIcon: Icon(icon),
+        prefixIcon: Icon(icon, color: MyTheme.primaryColor),
         filled: true,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+        ),
       ),
     );
   }
 
-  Widget _buildPaymentMethodSelector(ThemeData theme) {
-    final methods = [
-      {'name': 'Credit Card', 'icon': Icons.credit_card},
-      {'name': 'Debit Card', 'icon': Icons.payment},
-      {'name': 'Bank Transfer', 'icon': Icons.account_balance},
-      {'name': 'Mobile Wallet', 'icon': Icons.wallet},
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Payment Method',
-          style: TextStyle(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey[700],
-          ),
-        ),
-        SizedBox(height: 12.h),
-        Wrap(
-          spacing: 12.w,
-          runSpacing: 12.h,
-          children: methods.map((method) {
-            final isSelected = _selectedPaymentMethod == method['name'];
-            return InkWell(
-              onTap: () => setState(() => _selectedPaymentMethod = method['name'] as String),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                decoration: BoxDecoration(
-                  color: isSelected ? theme.primaryColor : theme.cardColor,
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(
-                    color: isSelected ? theme.primaryColor : Colors.grey.withOpacity(0.3),
-                    width: isSelected ? 2 : 1,
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      method['icon'] as IconData,
-                      color: isSelected ? Colors.white : Colors.grey[700],
-                      size: 20.sp,
-                    ),
-                    SizedBox(width: 8.w),
-                    Text(
-                      method['name'] as String,
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.grey[700],
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPaymentButton(ThemeData theme) {
+  Widget _buildContinueButton(ThemeData theme) {
     return SizedBox(
       width: double.infinity,
-      height: 56.h,
       child: ElevatedButton(
-        onPressed: _isLoading ? null : _processPayment,
+        onPressed: _proceedToCardSelection,
         style: ElevatedButton.styleFrom(
+          backgroundColor: MyTheme.primaryColor,
+          padding: EdgeInsets.symmetric(vertical: 16.h),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.r),
+            borderRadius: BorderRadius.circular(12.r),
           ),
           elevation: 4,
         ),
-        child: _isLoading
-            ? const CircularProgressIndicator(color: Colors.white)
-            : Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.lock_outline, color: Colors.white),
-            SizedBox(width: 8.w),
-            Text(
-              'Pay Securely',
-              style: TextStyle(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ],
+        child: Text(
+          'Continue to Card Selection',
+          style: TextStyle(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ),
     );

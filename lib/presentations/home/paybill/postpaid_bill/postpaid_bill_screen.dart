@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/presentations/home/paybill/postpaid_bill/postpaid_bill_form_screen.dart';
 
-import '../../../core/constants/fonts.dart';
-import '../../../core/constants/routes_name.dart';
-import '../../widgets/background_theme.dart';
+import '../../../../core/constants/fonts.dart';
+import '../../../widgets/background_theme.dart';
 
 class PostpaidBillScreen extends StatefulWidget {
   const PostpaidBillScreen({super.key});
@@ -29,7 +28,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
     <String, dynamic>{
       "name": "Verizon Wireless",
       "description": "Premium postpaid plans with 5G",
-      "icon": Icons.signal_cellular_4_bar,
+      "icon": "assets/images/paybill/postpaid_bill/verizon.png",
       "color": MyTheme.primaryColor,
       "planType": "Unlimited Plans",
       "startingPrice": "\$70/month",
@@ -38,7 +37,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
     <String, dynamic>{
       "name": "AT&T Mobility",
       "description": "Reliable nationwide coverage",
-      "icon": Icons.wifi_tethering,
+      "icon": "assets/images/paybill/postpaid_bill/at_t_mobility.png",
       "color": MyTheme.primaryColor,
       "planType": "Unlimited Plans",
       "startingPrice": "\$65/month",
@@ -47,7 +46,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
     <String, dynamic>{
       "name": "T-Mobile US",
       "description": "Un-carrier benefits included",
-      "icon": Icons.cell_tower,
+      "icon": "assets/images/paybill/postpaid_bill/t_mobile.png",
       "color": MyTheme.primaryColor,
       "planType": "Magenta Plans",
       "startingPrice": "\$70/month",
@@ -56,7 +55,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
     <String, dynamic>{
       "name": "US Cellular",
       "description": "Rural coverage specialist",
-      "icon": Icons.landscape,
+      "icon": "assets/images/paybill/postpaid_bill/us_cellular.png",
       "color": MyTheme.primaryColor,
       "planType": "Unlimited Plans",
       "startingPrice": "\$60/month",
@@ -65,7 +64,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
     <String, dynamic>{
       "name": "Google Fi Wireless",
       "description": "Flexible data plans",
-      "icon": Icons.cloud,
+      "icon": "assets/images/paybill/postpaid_bill/google_fi_wireless.png",
       "color": MyTheme.primaryColor,
       "planType": "Flexible & Unlimited",
       "startingPrice": "\$50/month",
@@ -74,7 +73,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
     <String, dynamic>{
       "name": "Visible",
       "description": "All-in-one unlimited plan",
-      "icon": Icons.visibility,
+      "icon": "assets/images/paybill/postpaid_bill/visible.png",
       "color": MyTheme.primaryColor,
       "planType": "Single Plan",
       "startingPrice": "\$40/month",
@@ -83,7 +82,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
     <String, dynamic>{
       "name": "Cricket Wireless",
       "description": "AT&T network coverage",
-      "icon": Icons.sports_cricket,
+      "icon": "assets/images/paybill/postpaid_bill/cricket_wireless.png",
       "color": MyTheme.primaryColor,
       "planType": "Unlimited Plans",
       "startingPrice": "\$55/month",
@@ -92,7 +91,7 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
     <String, dynamic>{
       "name": "Boost Mobile",
       "description": "Shrinking payments plan",
-      "icon": Icons.rocket_launch,
+      "icon": "assets/images/paybill/postpaid_bill/boost_mobile.png",
       "color": MyTheme.primaryColor,
       "planType": "Shrinking Plans",
       "startingPrice": "\$50/month",
@@ -257,17 +256,18 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
       ),
     );
   }
-
   Widget _buildProviderCard(Map<String, dynamic> provider, ThemeData theme, int index) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(5.r),
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Colors.grey.withOpacity(0.3)
+                  : Colors.black.withOpacity(0.3),
               blurRadius: 5,
               offset: const Offset(0, 4),
             ),
@@ -275,15 +275,17 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
         ),
         child: InkWell(
           onTap: () {
-            context.push(
-              RouteNames.payBillsDetailView,
-              extra: <String, dynamic>{
-                'billType': "postpaidBill",
-                'companyName': provider['name'],
-                'planType': provider['planType'],
-                'startingPrice': provider['startingPrice'],
-                'features': provider['features'],
-              },
+            // Pass the actual provider data instead of hardcoded values
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => PostpaidBillFormScreen(
+                  providerName: provider['name'] as String,
+                  planType: provider['planType'] as String,
+                  startingPrice: provider['startingPrice'] as String,
+                  features: List<String>.from(provider['features'] as List),
+                ),
+              ),
             );
           },
           borderRadius: BorderRadius.circular(20.r),
@@ -293,11 +295,16 @@ class _PostpaidBillScreenState extends State<PostpaidBillScreen> with TickerProv
               children: <Widget>[
                 // Icon Container
                 Hero(
-                  tag: 'postpaid_icon_${provider['name']}',
-                  child: Icon(
-                    provider['icon'] as IconData,
-                    size: 28.sp,
-                    color: provider['color'] as Color,
+                  tag: 'mobile_icon_${provider['name']}',
+                  child: CircleAvatar(
+                    radius: 24.r,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Image.asset(
+                        provider['icon'] as String,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
                 ),
 

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/core/widget/card_screen.dart';
+
+import '../../../../logic/blocs/pay_bill/dth_bill/dth_bill_bloc.dart';
+import '../../../../logic/blocs/pay_bill/dth_bill/dth_bill_event.dart';
 
 class DthRechargeFormScreen extends StatefulWidget {
   final String providerName;
@@ -31,7 +36,6 @@ class _DthRechargeFormScreenState extends State<DthRechargeFormScreen>
   late Animation<Offset> _slideAnimation;
 
   String? _selectedPlan;
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -66,59 +70,56 @@ class _DthRechargeFormScreenState extends State<DthRechargeFormScreen>
     super.dispose();
   }
 
-  void _submitForm() {
+  void _proceedToCardSelection() {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-
-      // Simulate API call
-      Future.delayed(const Duration(seconds: 2), () {
-        setState(() {
-          _isLoading = false;
-        });
-
-        // Show success dialog
-        _showSuccessDialog();
-      });
-    }
-  }
-
-  void _showSuccessDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.r),
-          ),
-          title: Column(
-            children: <Widget>[
-              Icon(
-                Icons.check_circle,
-                color: Colors.green,
-                size: 60.sp,
-              ),
-              SizedBox(height: 16.h),
-              const Text('Recharge Successful!'),
-            ],
-          ),
-          content: Text(
-            'Your DTH recharge for ${widget.providerName} has been processed successfully.',
-            textAlign: TextAlign.center,
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              },
-              child: const Text('Done'),
-            ),
-          ],
+      if (_subscriberIdController.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter subscriber ID')),
         );
-      },
-    );
+        return;
+      }
+
+      if (_customerNameController.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter customer name')),
+        );
+        return;
+      }
+
+      if (_selectedPlan == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please select a plan')),
+        );
+        return;
+      }
+
+      if (_amountController.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter amount')),
+        );
+        return;
+      }
+
+      final double amount = double.parse(_amountController.text);
+
+      // Set DTH recharge data in bloc
+      context.read<DthRechargeBloc>().add(SetDthRechargeData(
+        providerName: widget.providerName,
+        subscriberId: _subscriberIdController.text,
+        customerName: _customerNameController.text,
+        selectedPlan: _selectedPlan!,
+        amount: amount,
+        rating: widget.rating,
+      ));
+
+      // Navigate to card selection
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) => const CardsScreen(),
+        ),
+      );
+    }
   }
 
   @override
@@ -128,16 +129,8 @@ class _DthRechargeFormScreenState extends State<DthRechargeFormScreen>
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        title: Text(
+        title: const Text(
           'DTH Recharge',
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: theme.primaryColor != Colors.white
-                ? Colors.white
-                : const Color(0xff2D3748),
-          ),
         ),
       ),
       body: FadeTransition(
@@ -185,7 +178,7 @@ class _DthRechargeFormScreenState extends State<DthRechargeFormScreen>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(5.r),
         boxShadow: <BoxShadow>[
           BoxShadow(
             color: MyTheme.primaryColor.withOpacity(0.3),
@@ -267,10 +260,6 @@ class _DthRechargeFormScreenState extends State<DthRechargeFormScreen>
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
             ),
-            filled: true,
-            fillColor: theme.brightness == Brightness.dark
-                ? Colors.grey[800]
-                : Colors.grey[100],
           ),
           validator: (String? value) {
             if (value == null || value.isEmpty) {
@@ -305,10 +294,6 @@ class _DthRechargeFormScreenState extends State<DthRechargeFormScreen>
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
             ),
-            filled: true,
-            fillColor: theme.brightness == Brightness.dark
-                ? Colors.grey[800]
-                : Colors.grey[100],
           ),
           validator: (String? value) {
             if (value == null || value.isEmpty) {
@@ -332,17 +317,13 @@ class _DthRechargeFormScreenState extends State<DthRechargeFormScreen>
         ),
         SizedBox(height: 8.h),
         DropdownButtonFormField<String>(
-          value: _selectedPlan,
+          initialValue: _selectedPlan,
           decoration: InputDecoration(
             hintText: 'Choose a plan',
             prefixIcon: const Icon(Icons.list_alt),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
             ),
-            filled: true,
-            fillColor: theme.brightness == Brightness.dark
-                ? Colors.grey[800]
-                : Colors.grey[100],
           ),
           items: widget.plans.map((String plan) {
             return DropdownMenuItem<String>(
@@ -394,10 +375,6 @@ class _DthRechargeFormScreenState extends State<DthRechargeFormScreen>
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
             ),
-            filled: true,
-            fillColor: theme.brightness == Brightness.dark
-                ? Colors.grey[800]
-                : Colors.grey[100],
           ),
           validator: (String? value) {
             if (value == null || value.isEmpty) {
@@ -419,19 +396,16 @@ class _DthRechargeFormScreenState extends State<DthRechargeFormScreen>
       width: double.infinity,
       height: 56.h,
       child: ElevatedButton(
-        onPressed: _isLoading ? null : _submitForm,
+        onPressed: _proceedToCardSelection,
         style: ElevatedButton.styleFrom(
+          backgroundColor: MyTheme.primaryColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.r),
           ),
           elevation: 4,
         ),
-        child: _isLoading
-            ? const CircularProgressIndicator(
-          color: Colors.white,
-        )
-            : Text(
-          'Proceed to Recharge',
+        child: Text(
+          'Continue to Card Selection',
           style: theme.textTheme.titleMedium?.copyWith(
             color: Colors.white,
             fontWeight: FontWeight.bold,
