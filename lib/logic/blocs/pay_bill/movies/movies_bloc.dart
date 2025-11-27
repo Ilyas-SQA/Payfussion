@@ -96,7 +96,7 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
       final Map<String, dynamic> transactionData = <String, dynamic>{
         'id': transactionId,
         'userId': user.uid,
-        'type': 'streaming_subscription',
+        'billType': 'Streaming Subscription',
         'serviceName': currentState.serviceName,
         'category': currentState.category,
         'email': currentState.email,
@@ -105,9 +105,9 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
         'planDuration': currentState.planDuration,
         'planDescription': currentState.planDescription,
         'autoRenew': currentState.autoRenew,
-        'amount': currentState.planPrice,
+        // 'amount': currentState.planPrice,
         'taxAmount': currentState.taxAmount,
-        'totalAmount': currentState.totalAmount,
+        'amount': currentState.totalAmount,
         'currency': 'USD',
         'cardId': currentState.cardId!,
         'cardHolderName': currentState.cardHolderName!,
@@ -121,7 +121,7 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
 
       // Save to Firestore transactions collection
       await _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
-          .collection('transactions')
+          .collection('payBills')
           .doc(transactionId)
           .set(transactionData);
 
