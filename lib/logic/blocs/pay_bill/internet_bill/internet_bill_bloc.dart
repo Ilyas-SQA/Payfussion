@@ -99,7 +99,7 @@ class InternetBillBloc extends Bloc<InternetBillEvent, InternetBillState> {
       final Map<String, dynamic> transactionData = <String, dynamic>{
         'id': transactionId,
         'userId': user.uid,
-        'type': 'internet_bill',
+        'billType': 'Internet Bill',
         'companyName': currentState.companyName,
         'connectionType': currentState.connectionType,
         'maxSpeed': currentState.maxSpeed,
@@ -108,9 +108,9 @@ class InternetBillBloc extends Bloc<InternetBillEvent, InternetBillState> {
         'consumerName': currentState.consumerName,
         'address': currentState.address,
         'billMonth': currentState.billMonth,
-        'amount': currentState.amount,
+        // 'amount': currentState.amount,
         'taxAmount': currentState.taxAmount,
-        'totalAmount': currentState.totalAmount,
+        'amount': currentState.totalAmount,
         'currency': 'USD',
         'planName': currentState.planName,
         'dataUsage': currentState.dataUsage,
@@ -127,7 +127,7 @@ class InternetBillBloc extends Bloc<InternetBillEvent, InternetBillState> {
 
       // Save to Firestore transactions collection
       await _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
-          .collection('transactions')
+          .collection('payBills')
           .doc(transactionId)
           .set(transactionData);
 
