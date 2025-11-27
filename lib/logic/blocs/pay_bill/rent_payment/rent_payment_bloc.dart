@@ -98,7 +98,7 @@ class RentPaymentBloc extends Bloc<RentPaymentEvent, RentPaymentState> {
       final PayBillModel rentBill = PayBillModel(
         id: transactionId,
         companyName: currentState.companyName,
-        billType: 'rent',
+        billType: 'Rent',
         billNumber: currentState.propertyAddress,
         amount: currentState.totalAmount,
         feeAmount: currentState.taxAmount,
