@@ -96,7 +96,7 @@ class PostpaidBillBloc extends Bloc<PostpaidBillEvent, PostpaidBillState> {
       final Map<String, dynamic> transactionData = <String, dynamic>{
         'id': transactionId,
         'userId': user.uid,
-        'type': 'postpaid_bill',
+        'billType': 'Postpaid Bill',
         'providerName': currentState.providerName,
         'planType': currentState.planType,
         'startingPrice': currentState.startingPrice,
@@ -105,9 +105,9 @@ class PostpaidBillBloc extends Bloc<PostpaidBillEvent, PostpaidBillState> {
         'billNumber': currentState.billNumber,
         'accountHolderName': currentState.accountHolderName,
         'billCycle': currentState.billCycle,
-        'amount': currentState.amount,
+        // 'amount': currentState.amount,
         'taxAmount': currentState.taxAmount,
-        'totalAmount': currentState.totalAmount,
+        'amount': currentState.totalAmount,
         'currency': 'USD',
         'email': currentState.email,
         'saveForFuture': currentState.saveForFuture,
@@ -121,7 +121,7 @@ class PostpaidBillBloc extends Bloc<PostpaidBillEvent, PostpaidBillState> {
 
       // Save to Firestore transactions collection
       await _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
-          .collection('transactions')
+          .collection('payBills')
           .doc(transactionId)
           .set(transactionData);
 
