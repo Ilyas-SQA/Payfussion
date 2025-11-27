@@ -91,20 +91,20 @@ class MobileRechargeBloc extends Bloc<MobileRechargeEvent, MobileRechargeState> 
 
       // Determine transaction type
       final String transactionType = currentState.packageName != null
-          ? 'package'
-          : 'mobile_recharge';
+          ? 'Package'
+          : 'Mobile Recharge';
 
       // Create transaction data
       final Map<String, dynamic> transactionData = <String, dynamic>{
         'id': transactionId,
         'userId': user.uid,
-        'type': transactionType,
+        'billType': transactionType,
         'companyName': currentState.companyName,
         'network': currentState.network,
         'phoneNumber': currentState.phoneNumber,
-        'amount': currentState.amount,
+        // 'amount': currentState.amount,
         'taxAmount': currentState.taxAmount,
-        'totalAmount': currentState.totalAmount,
+        'amount': currentState.totalAmount,
         'currency': 'USD',
         'packageName': currentState.packageName,
         'packageData': currentState.packageData,
@@ -119,7 +119,7 @@ class MobileRechargeBloc extends Bloc<MobileRechargeEvent, MobileRechargeState> 
 
       // Save to Firestore transactions collection
       await _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
-          .collection('transactions')
+          .collection('payBills')
           .doc(transactionId)
           .set(transactionData);
 
