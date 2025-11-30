@@ -87,12 +87,19 @@ class AddRecipientState extends Equatable {
     List<RecipientModel>? allRecipients,
     List<RecipientModel>? filteredRecipients,
     String? searchQuery,
+
+    // 👇 نیا flag
+    bool removeImageFile = false,
   }) {
     return AddRecipientState(
       name: name ?? this.name,
       selectedBank: selectedBank ?? this.selectedBank,
       accountNumber: accountNumber ?? this.accountNumber,
-      imageFile: imageFile ?? this.imageFile,
+
+      imageFile: removeImageFile
+          ? null
+          : (imageFile ?? this.imageFile),
+
       nameError: nameError,
       bankError: bankError,
       accountError: accountError,

@@ -22,6 +22,9 @@ import '../../logic/blocs/add_card/card_state.dart';
 import '../../logic/blocs/donation/donation_bloc.dart';
 import '../../logic/blocs/donation/donation_event.dart';
 import '../../logic/blocs/donation/donation_status.dart';
+import '../../logic/blocs/governement_fee/governement_fee_bloc.dart';
+import '../../logic/blocs/governement_fee/governement_fee_event.dart';
+import '../../logic/blocs/governement_fee/governement_fee_state.dart';
 import '../../logic/blocs/pay_bill/bill_split/bill_split_bloc.dart';
 import '../../logic/blocs/pay_bill/bill_split/bill_split_event.dart';
 import '../../logic/blocs/pay_bill/bill_split/bill_split_state.dart';
@@ -41,6 +44,7 @@ import '../../logic/blocs/pay_bill/credit_card_loan/credit_card_loan_bloc.dart';
 import '../../logic/blocs/pay_bill/credit_card_loan/credit_card_loan_event.dart';
 import '../../logic/blocs/pay_bill/credit_card_loan/credit_card_loan_state.dart';
 import '../../logic/blocs/pay_bill/rent_payment/rent_payment_event.dart';
+import '../../presentations/home/government_fees/governement_fees_summary_screen.dart';
 import '../../presentations/home/paybill/bill_split/bill_split_summary_screen.dart';
 import '../../presentations/home/paybill/dth_recharge/dth_recharge_summary_screen.dart';
 import '../../presentations/home/paybill/mobile_recharge/mobile_recharge_summary_screen.dart';
@@ -82,6 +86,7 @@ class _CardsScreenState extends State<CardsScreen> {
     final MoviesState moviesState = context.read<MoviesBloc>().state;
     final BillSplitState billSplitState = context.read<BillSplitBloc>().state;
     final DonationState donationState = context.read<DonationBloc>().state;
+    final GovernmentFeeState governmentFeeState = context.read<GovernmentFeeBloc>().state;
 
     if (donationState is DonationDataSet) {
       // Donation flow
@@ -95,6 +100,20 @@ class _CardsScreenState extends State<CardsScreen> {
         context,
         MaterialPageRoute(
           builder: (BuildContext context) => const DonationSummaryScreen(),
+        ),
+      );
+    }else if (governmentFeeState is GovernmentFeeDataSet) {
+      // Government fee flow
+      context.read<GovernmentFeeBloc>().add(SetSelectedCardForGovernmentFee(
+        cardId: _selectedCard!.id,
+        cardHolderName: _selectedCard!.cardholderName,
+        cardEnding: _selectedCard!.cardEnding,
+      ));
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) => const GovernmentFeeSummaryScreen(),
         ),
       );
     } else if (mobileRechargeState is MobileRechargeDataSet) {

@@ -268,8 +268,11 @@ class RecipientBloc extends Bloc<AddRecipientEvent, AddRecipientState> {
     emit(state.copyWith(imageFile: e.file));
   }
 
-  void _onRemovePhoto(RemovePhotoRequested e, Emitter<AddRecipientState> emit) {
-    emit(state.copyWith(imageFile: null));
+  void _onRemovePhoto(
+      RemovePhotoRequested e,
+      Emitter<AddRecipientState> emit,
+      ) {
+    emit(state.copyWith(removeImageFile: true));
   }
 
   Future<void> _onVerify(

@@ -369,18 +369,30 @@ class _DonateListScreenState extends State<DonateListScreen> {
   }
 
   List<Foundation> get filteredFoundations {
-    return foundations.where((foundation) {
-      final matchesSearch = _searchQuery.isEmpty ||
-          foundation.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          foundation.category.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          foundation.description.toLowerCase().contains(_searchQuery.toLowerCase());
+    final String query = _searchQuery.trim().toLowerCase();
+    final String selectedCategory = _selectedCategory;
 
-      final matchesCategory = _selectedCategory == 'All' ||
-          foundation.category == _selectedCategory;
+    return foundations.where((Foundation foundation) {
+      final String name = foundation.name.toLowerCase();
+      final String category = foundation.category.toLowerCase();
+      final String description = foundation.description.toLowerCase();
+      final String website = foundation.website.toLowerCase();
+
+      final bool matchesSearch =
+          query.isEmpty ||
+              name.contains(query) ||
+              category.contains(query) ||
+              description.contains(query) ||
+              website.contains(query);
+
+      final bool matchesCategory =
+          selectedCategory == 'All' ||
+              foundation.category.toLowerCase() == selectedCategory.toLowerCase();
 
       return matchesSearch && matchesCategory;
     }).toList();
   }
+
 
   @override
   Widget build(BuildContext context) {

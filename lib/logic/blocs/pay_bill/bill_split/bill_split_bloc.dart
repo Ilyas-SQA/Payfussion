@@ -103,14 +103,14 @@ class BillSplitBloc extends Bloc<BillSplitEvent, BillSplitState> {
         'userId': user.uid,
         'type': 'bill_split',
         'billName': currentState.billName,
+        "billType": "Bill Split",
         'totalAmount': currentState.totalAmount,
         'numberOfPeople': currentState.numberOfPeople,
         'participantNames': currentState.participantNames,
-        'splitType': currentState.splitType,
         'customAmounts': currentState.customAmounts,
         'amountPerPerson': currentState.amountPerPerson,
         'taxAmount': currentState.taxAmount,
-        'totalWithTax': currentState.totalWithTax,
+        'amount': currentState.totalWithTax,
         'currency': 'USD',
         'cardId': currentState.cardId!,
         'cardHolderName': currentState.cardHolderName!,
@@ -122,7 +122,7 @@ class BillSplitBloc extends Bloc<BillSplitEvent, BillSplitState> {
 
       // Save to Firestore transactions collection
       await _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
-          .collection('transactions')
+          .collection('payBills')
           .doc(transactionId)
           .set(transactionData);
 

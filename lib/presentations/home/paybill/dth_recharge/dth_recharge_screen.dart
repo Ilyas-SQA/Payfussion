@@ -264,9 +264,9 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
               context,
               MaterialPageRoute(
                 builder: (BuildContext context) => DthRechargeFormScreen(
-                  providerName: provider['name'] as String, // Updated
-                  plans: List<String>.from(provider['plans']), // Updated
-                  rating: provider['rating'] as double, // Updated
+                  providerName: provider['name'] as String,
+                  plans: List<String>.from(provider['plans']),
+                  rating: provider['rating'] as double,
                 ),
               ),
             );
@@ -276,24 +276,41 @@ class _DTHRechargeScreenState extends State<DTHRechargeScreen>
             padding: EdgeInsets.all(20.w),
             child: Row(
               children: <Widget>[
-                // Icon Container
+                // Icon Container - UPDATED
                 Hero(
                   tag: 'dth_icon_${provider['name']}',
-                  child: CircleAvatar(
-                    radius: 24.r,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: Image.asset(
-                        provider['icon'] as String,
-                        fit: BoxFit.contain,
-                      ),
+                  child: Container(
+                    width: 48.r,
+                    height: 48.r,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    padding: EdgeInsets.all(8.r),
+                    child: Image.asset(
+                      provider['icon'] as String,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(
+                          Icons.tv,
+                          color: MyTheme.primaryColor,
+                          size: 24.r,
+                        );
+                      },
                     ),
                   ),
                 ),
 
                 SizedBox(width: 16.w),
 
-                // Content
+                // Content (baaki sab same rahega)
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

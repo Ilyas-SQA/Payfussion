@@ -3,54 +3,53 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../core/constants/tax.dart';
 import '../../../../services/notification_service.dart';
-import '../../notification/notification_bloc.dart';
-import '../../notification/notification_event.dart';
-import 'dth_bill_event.dart';
-import 'dth_bill_state.dart';
+import '../notification/notification_bloc.dart';
+import '../notification/notification_event.dart';
+import 'governement_fee_event.dart';
+import 'governement_fee_state.dart';
 
 
-class DthRechargeBloc extends Bloc<DthRechargeEvent, DthRechargeState> {
+class GovernmentFeeBloc extends Bloc<GovernmentFeeEvent, GovernmentFeeState> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final NotificationBloc _notificationBloc;
 
-  DthRechargeBloc(this._notificationBloc) : super(DthRechargeInitial()) {
-    on<SetDthRechargeData>(_onSetDthRechargeData);
-    on<SetSelectedCardForDth>(_onSetSelectedCardForDth);
-    on<ProcessDthPayment>(_onProcessDthPayment);
-    on<ResetDthRecharge>(_onResetDthRecharge);
+  GovernmentFeeBloc(this._notificationBloc) : super(GovernmentFeeInitial()) {
+    on<SetGovernmentFeeData>(_onSetGovernmentFeeData);
+    on<SetSelectedCardForGovernmentFee>(_onSetSelectedCard);
+    on<ProcessGovernmentFeePayment>(_onProcessGovernmentFeePayment);
+    on<ResetGovernmentFee>(_onResetGovernmentFee);
   }
 
-  Future<void> _onSetDthRechargeData(
-      SetDthRechargeData event,
-      Emitter<DthRechargeState> emit,
+  Future<void> _onSetGovernmentFeeData(
+      SetGovernmentFeeData event,
+      Emitter<GovernmentFeeState> emit,
       ) async {
     try {
       // Calculate tax
       final double taxAmount = double.parse(Taxes.billTax.toString());
       final double totalAmount = event.amount + taxAmount;
 
-      emit(DthRechargeDataSet(
-        providerName: event.providerName,
-        subscriberId: event.subscriberId,
-        customerName: event.customerName,
-        selectedPlan: event.selectedPlan,
+      emit(GovernmentFeeDataSet(
+        serviceName: event.serviceName,
+        agency: event.agency,
+        inputLabel: event.inputLabel,
+        inputValue: event.inputValue,
         amount: event.amount,
         taxAmount: taxAmount,
         totalAmount: totalAmount,
-        rating: event.rating,
       ));
     } catch (e) {
-      emit(DthRechargeError(e.toString()));
+      emit(GovernmentFeeError(e.toString()));
     }
   }
 
-  Future<void> _onSetSelectedCardForDth(
-      SetSelectedCardForDth event,
-      Emitter<DthRechargeState> emit,
+  Future<void> _onSetSelectedCard(
+      SetSelectedCardForGovernmentFee event,
+      Emitter<GovernmentFeeState> emit,
       ) async {
-    if (state is DthRechargeDataSet) {
-      final DthRechargeDataSet currentState = state as DthRechargeDataSet;
+    if (state is GovernmentFeeDataSet) {
+      final GovernmentFeeDataSet currentState = state as GovernmentFeeDataSet;
       emit(currentState.copyWith(
         cardId: event.cardId,
         cardHolderName: event.cardHolderName,
@@ -59,28 +58,28 @@ class DthRechargeBloc extends Bloc<DthRechargeEvent, DthRechargeState> {
     }
   }
 
-  Future<void> _onProcessDthPayment(
-      ProcessDthPayment event,
-      Emitter<DthRechargeState> emit,
+  Future<void> _onProcessGovernmentFeePayment(
+      ProcessGovernmentFeePayment event,
+      Emitter<GovernmentFeeState> emit,
       ) async {
-    if (state is! DthRechargeDataSet) {
-      emit(const DthRechargeError('Invalid state for payment processing'));
+    if (state is! GovernmentFeeDataSet) {
+      emit(const GovernmentFeeError('Invalid state for payment processing'));
       return;
     }
 
-    final DthRechargeDataSet currentState = state as DthRechargeDataSet;
+    final GovernmentFeeDataSet currentState = state as GovernmentFeeDataSet;
 
     if (currentState.cardId == null) {
-      emit(const DthRechargeError('Please select a card'));
+      emit(const GovernmentFeeError('Please select a card'));
       return;
     }
 
-    emit(DthRechargeProcessing());
+    emit(GovernmentFeeProcessing());
 
     try {
       final User? user = _auth.currentUser;
       if (user == null) {
-        emit(const DthRechargeError('User not authenticated'));
+        emit(const GovernmentFeeError('User not authenticated'));
         return;
       }
 
@@ -92,15 +91,14 @@ class DthRechargeBloc extends Bloc<DthRechargeEvent, DthRechargeState> {
       final Map<String, dynamic> transactionData = <String, dynamic>{
         'id': transactionId,
         'userId': user.uid,
-        'billType': 'DTH Recharge',
-        'providerName': currentState.providerName,
-        'subscriberId': currentState.subscriberId,
-        'customerName': currentState.customerName,
-        'selectedPlan': currentState.selectedPlan,
+        'billType': 'Government Fee',
+        'serviceName': currentState.serviceName,
+        'agency': currentState.agency,
+        'inputLabel': currentState.inputLabel,
+        'inputValue': currentState.inputValue,
         'taxAmount': currentState.taxAmount,
         'amount': currentState.totalAmount,
         'currency': 'USD',
-        'rating': currentState.rating,
         'cardId': currentState.cardId!,
         'cardHolderName': currentState.cardHolderName!,
         'cardEnding': currentState.cardEnding!,
@@ -110,7 +108,9 @@ class DthRechargeBloc extends Bloc<DthRechargeEvent, DthRechargeState> {
       };
 
       // Save to Firestore transactions collection
-      await _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
+      await _firestore
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser?.uid)
           .collection('payBills')
           .doc(transactionId)
           .set(transactionData);
@@ -126,74 +126,71 @@ class DthRechargeBloc extends Bloc<DthRechargeEvent, DthRechargeState> {
       final String notificationMessage = _buildNotificationMessage(currentState);
 
       _notificationBloc.add(AddNotification(
-        title: 'DTH Recharge Successful - ${currentState.providerName}',
+        title: 'Government Fee Payment Successful - ${currentState.serviceName}',
         message: notificationMessage,
-        type: 'dth_recharge_success',
+        type: 'government_fee_success',
         data: <String, dynamic>{
           'transactionId': transactionId,
-          'providerName': currentState.providerName,
-          'subscriberId': currentState.subscriberId,
-          'customerName': currentState.customerName,
-          'selectedPlan': currentState.selectedPlan,
+          'serviceName': currentState.serviceName,
+          'agency': currentState.agency,
+          'inputLabel': currentState.inputLabel,
+          'inputValue': currentState.inputValue,
           'amount': currentState.amount,
           'taxAmount': currentState.taxAmount,
           'totalAmount': currentState.totalAmount,
-          'rating': currentState.rating,
           'cardEnding': currentState.cardEnding,
           'timestamp': now.toIso8601String(),
         },
       ));
 
-      emit(DthRechargeSuccess(
+      emit(GovernmentFeeSuccess(
         transactionId: transactionId,
-        message: 'DTH recharge completed successfully!',
+        message: 'Government fee payment completed successfully!',
       ));
     } catch (e) {
       // Error notification
       await LocalNotificationService.showCustomNotification(
-        title: 'DTH Recharge Failed',
-        body: 'DTH recharge failed: ${e.toString()}',
-        payload: 'dth_recharge_failed',
+        title: 'Payment Failed',
+        body: 'Government fee payment failed: ${e.toString()}',
+        payload: 'payment_failed',
       );
 
       _notificationBloc.add(AddNotification(
-        title: 'DTH Recharge Failed',
-        message: 'DTH recharge failed: ${e.toString()}',
-        type: 'dth_recharge_failed',
+        title: 'Payment Failed',
+        message: 'Government fee payment failed: ${e.toString()}',
+        type: 'government_fee_failed',
         data: <String, dynamic>{
           'error': e.toString(),
           'timestamp': DateTime.now().toIso8601String(),
         },
       ));
 
-      emit(DthRechargeError(e.toString()));
+      emit(GovernmentFeeError(e.toString()));
     }
   }
 
-  Future<void> _onResetDthRecharge(
-      ResetDthRecharge event,
-      Emitter<DthRechargeState> emit,
+  Future<void> _onResetGovernmentFee(
+      ResetGovernmentFee event,
+      Emitter<GovernmentFeeState> emit,
       ) async {
-    emit(DthRechargeInitial());
+    emit(GovernmentFeeInitial());
   }
 
-  String _buildNotificationMessage(DthRechargeDataSet state) {
+  String _buildNotificationMessage(GovernmentFeeDataSet state) {
     final DateTime now = DateTime.now();
 
-    final String message = '''DTH Recharge completed successfully!
+    String message = '''Government Fee Payment completed successfully!
 
-Provider: ${state.providerName}
-Subscriber ID: ${state.subscriberId}
-Customer: ${state.customerName}
-Plan: ${state.selectedPlan}
-Rating: ${state.rating}
+Service: ${state.serviceName}
+Agency: ${state.agency}
+${state.inputLabel}: ${state.inputValue}
 Amount: USD ${state.amount.toStringAsFixed(2)}
 Tax: USD ${state.taxAmount.toStringAsFixed(2)}
 Total Paid: USD ${state.totalAmount.toStringAsFixed(2)}
 Card Ending: ****${state.cardEnding}
 Completed at: ${now.toString().substring(0, 19)}
 
-Thank you for using our service for your ${state.providerName} recharge!''';
+Thank you for using our service for your government fee payment!''';
 
     return message;
   }

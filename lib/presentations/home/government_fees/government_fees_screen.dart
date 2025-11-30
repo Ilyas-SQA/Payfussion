@@ -1,626 +1,262 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:payfussion/core/theme/theme.dart';
-import '../../widgets/background_theme.dart';
+import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
 import 'governement_pay_fee_screen.dart';
 
+
+class GovtService {
+  final String name;
+  final String agency;
+  final String emoji;
+  final Color backgroundColor;
+  final String inputLabel;
+  final String inputHint;
+  final bool hasInfoIcon;
+  final String? infoText;
+
+  GovtService({
+    required this.name,
+    required this.agency,
+    required this.emoji,
+    required this.backgroundColor,
+    required this.inputLabel,
+    required this.inputHint,
+    this.hasInfoIcon = false,
+    this.infoText,
+  });
+}
+
 class GovernmentFeesScreen extends StatefulWidget {
-  const GovernmentFeesScreen({super.key});
+  const GovernmentFeesScreen({Key? key}) : super(key: key);
 
   @override
   State<GovernmentFeesScreen> createState() => _GovernmentFeesScreenState();
 }
 
-class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> with TickerProviderStateMixin {
-  final List<GovernmentFeeItem> governmentFeeItems = <GovernmentFeeItem>[
-    // Federal Services
-    GovernmentFeeItem(
-      icon: Icons.account_balance,
-      label: "IRS Tax Payment",
-      subtitle: "Federal income tax & penalties",
-      type: "irs",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "Federal",
-    ),
-    GovernmentFeeItem(
-      icon: Icons.security,
-      label: "Social Security",
-      subtitle: "SSA services & benefits",
-      type: "ssa",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "Federal",
-    ),
-    GovernmentFeeItem(
-      icon: Icons.local_hospital,
-      label: "Medicare Services",
-      subtitle: "Healthcare premium payments",
-      type: "medicare",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "Federal",
-    ),
-    GovernmentFeeItem(
-      icon: Icons.flight_takeoff,
-      label: "TSA PreCheck",
-      subtitle: "Airport security services",
-      type: "tsa",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "Federal",
-    ),
-    GovernmentFeeItem(
-      icon: Icons.library_books,
-      label: "Passport Services",
-      subtitle: "US State Department fees",
-      type: "passport",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "Federal",
-    ),
-    GovernmentFeeItem(
-      icon: Icons.business,
-      label: "SBA Loans",
-      subtitle: "Small Business Administration",
-      type: "sba",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "Federal",
-    ),
+class _GovernmentFeesScreenState extends State<GovernmentFeesScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
-    // State Services
-    GovernmentFeeItem(
-      icon: Icons.directions_car,
-      label: "DMV Services",
-      subtitle: "License renewal & registration",
-      type: "dmv",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "State",
+  final List<GovtService> _services = [
+    GovtService(
+      name: 'Passport Fees',
+      agency: 'U.S. Department of State',
+      emoji: '🛂',
+      backgroundColor: Colors.blue.shade50,
+      inputLabel: 'Passport Application Number',
+      inputHint: '123456789',
     ),
-    GovernmentFeeItem(
-      icon: Icons.account_balance_wallet,
-      label: "State Tax Board",
-      subtitle: "State income tax payments",
-      type: "state_tax",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "State",
+    GovtService(
+      name: 'USCIS Application Fees',
+      agency: 'U.S. Citizenship & Immigration',
+      emoji: '🏛️',
+      backgroundColor: Colors.green.shade50,
+      inputLabel: 'Receipt Number',
+      inputHint: 'IOE1234567890',
     ),
-    GovernmentFeeItem(
-      icon: Icons.work,
-      label: "Employment Dept",
-      subtitle: "Unemployment & workforce",
-      type: "employment",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "State",
+    GovtService(
+      name: 'IRS Tax Payment',
+      agency: 'Internal Revenue Service',
+      emoji: '💰',
+      backgroundColor: Colors.red.shade50,
+      inputLabel: 'SSN / Tax ID',
+      inputHint: '123-45-6789',
     ),
-    GovernmentFeeItem(
-      icon: Icons.health_and_safety,
-      label: "Health Department",
-      subtitle: "Permits & health services",
-      type: "health_dept",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "State",
+    GovtService(
+      name: 'DMV Vehicle Registration',
+      agency: 'Department of Motor Vehicles',
+      emoji: '🚗',
+      backgroundColor: Colors.yellow.shade50,
+      inputLabel: 'Vehicle License Plate',
+      inputHint: 'ABC1234',
     ),
-    GovernmentFeeItem(
-      icon: Icons.school,
-      label: "Education Dept",
-      subtitle: "Student loans & services",
-      type: "education",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "State",
+    GovtService(
+      name: 'Traffic Violation Fines',
+      agency: 'Local Traffic Court',
+      emoji: '🚦',
+      backgroundColor: Colors.orange.shade50,
+      inputLabel: 'Citation Number',
+      inputHint: '1234567890123456',
+      hasInfoIcon: true,
+      infoText: 'Tap on information icon for tutorial on how to see your "Citation Number"',
     ),
-
-    // Local Services
-    GovernmentFeeItem(
-      icon: Icons.local_police,
-      label: "Police Department",
-      subtitle: "Fines, permits & services",
-      type: "police",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "Local",
+    GovtService(
+      name: 'National Park Passes',
+      agency: 'National Park Service',
+      emoji: '🏞️',
+      backgroundColor: Colors.teal.shade50,
+      inputLabel: 'Pass ID Number',
+      inputHint: 'NP123456789',
     ),
-    GovernmentFeeItem(
-      icon: Icons.traffic,
-      label: "Traffic Citations",
-      subtitle: "Parking & traffic fines",
-      type: "traffic",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "Local",
+    GovtService(
+      name: 'TSA PreCheck Fee',
+      agency: 'Transportation Security Admin',
+      emoji: '✈️',
+      backgroundColor: Colors.indigo.shade50,
+      inputLabel: 'Known Traveler Number',
+      inputHint: '123456789',
     ),
-    GovernmentFeeItem(
-      icon: Icons.delete,
-      label: "Waste Management",
-      subtitle: "Garbage & recycling fees",
-      type: "waste",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "Local",
+    GovtService(
+      name: 'Social Security Services',
+      agency: 'Social Security Administration',
+      emoji: '👥',
+      backgroundColor: Colors.purple.shade50,
+      inputLabel: 'Social Security Number',
+      inputHint: '123-45-6789',
     ),
-    GovernmentFeeItem(
-      icon: Icons.water_drop,
-      label: "Water Department",
-      subtitle: "Water & sewer services",
-      type: "water",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "Local",
+    GovtService(
+      name: 'FOIA Request Fees',
+      agency: 'Various Federal Agencies',
+      emoji: '📄',
+      backgroundColor: Colors.pink.shade50,
+      inputLabel: 'Request Tracking Number',
+      inputHint: 'FOIA-2024-123456',
     ),
-    GovernmentFeeItem(
-      icon: Icons.home,
-      label: "Property Tax",
-      subtitle: "Real estate tax payments",
-      type: "property_tax",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "Local",
+    GovtService(
+      name: 'Federal Court Filing Fees',
+      agency: 'U.S. Federal Courts',
+      emoji: '⚖️',
+      backgroundColor: Colors.grey.shade50,
+      inputLabel: 'Case Number',
+      inputHint: '1:24-cv-12345',
     ),
-    GovernmentFeeItem(
-      icon: Icons.build,
-      label: "Building Permits",
-      subtitle: "Construction & zoning",
-      type: "permits",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "Local",
+    GovtService(
+      name: 'Medicare Premium Payment',
+      agency: 'Centers for Medicare & Medicaid',
+      emoji: '🏥',
+      backgroundColor: Colors.blue.shade50,
+      inputLabel: 'Medicare Number',
+      inputHint: '1AB2-CD3-EF45',
     ),
-    GovernmentFeeItem(
-      icon: Icons.local_fire_department,
-      label: "Fire Department",
-      subtitle: "Fire safety & permits",
-      type: "fire_dept",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "Local",
-    ),
-    GovernmentFeeItem(
-      icon: Icons.park,
-      label: "Parks & Recreation",
-      subtitle: "Park permits & activities",
-      type: "parks",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "Local",
-    ),
-
-    // Court Services
-    GovernmentFeeItem(
-      icon: Icons.gavel,
-      label: "Court Services",
-      subtitle: "Filing fees & fines",
-      type: "court",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "Judicial",
-    ),
-    GovernmentFeeItem(
-      icon: Icons.balance,
-      label: "Legal Services",
-      subtitle: "Attorney general services",
-      type: "legal",
-      gradient: MyTheme.primaryColor,
-      iconColor: Colors.white,
-      category: "Judicial",
+    GovtService(
+      name: 'Small Business Filing Fees',
+      agency: 'Small Business Administration',
+      emoji: '🏢',
+      backgroundColor: Colors.green.shade50,
+      inputLabel: 'Business EIN',
+      inputHint: '12-3456789',
     ),
   ];
 
-  // Animation controllers
-  late AnimationController _headerController;
-  late AnimationController _feesController;
-
-  late Animation<double> _headerFade;
-  late Animation<Offset> _headerSlide;
-  late Animation<double> _feesFade;
-  late AnimationController _backgroundAnimationController;
-
-  String selectedCategory = "All";
-  final List<String> categories = <String>["All", "Federal", "State", "Local", "Judicial"];
+  List<GovtService> get _filteredServices {
+    if (_searchQuery.isEmpty) {
+      return _services;
+    }
+    return _services.where((service) {
+      return service.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          service.agency.toLowerCase().contains(_searchQuery.toLowerCase());
+    }).toList();
+  }
 
   @override
-  void initState() {
-    super.initState();
-    _initAnimations();
-    _startAnimationSequence();
-    _backgroundAnimationController = AnimationController(
-      duration: const Duration(seconds: 20),
-      vsync: this,
-    )..repeat();
-  }
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Pay Govt. Fees',
+        ),
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          // Search Bar
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: AppTextFormField(
+              controller: _searchController,
+              helpText: 'Search',
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
+              },
 
-  void _initAnimations() {
-    _headerController = AnimationController(
-      duration: const Duration(milliseconds: 400),
-      vsync: this,
+            ),
+          ),
+
+          // Services List
+          Expanded(
+            child: ListView.builder(
+              itemCount: _filteredServices.length,
+              itemBuilder: (BuildContext context, index) {
+                final service = _filteredServices[index];
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => GovernementPayFeeScreen(service: service),
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 12.0,
+                    ),
+                    child: Row(
+                      children: [
+                        // Icon Container
+                        Container(
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            color: service.backgroundColor,
+                            borderRadius: BorderRadius.circular(28),
+                          ),
+                          child: Center(
+                            child: Text(
+                              service.emoji,
+                              style: const TextStyle(fontSize: 28),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+
+                        // Service Details
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                service.name,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                service.agency,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Arrow Icon
+                        Icon(
+                          Icons.chevron_right,
+                          color: Colors.grey[400],
+                          size: 24,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
-
-    _feesController = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    );
-
-    _headerFade = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _headerController, curve: Curves.easeOut),
-    );
-
-    _headerSlide = Tween<Offset>(
-      begin: const Offset(0, -0.3),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _headerController, curve: Curves.easeOut));
-
-    _feesFade = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _feesController, curve: Curves.easeOut),
-    );
-  }
-
-  void _startAnimationSequence() async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    _headerController.forward();
-
-    await Future.delayed(const Duration(milliseconds: 100));
-    _feesController.forward();
   }
 
   @override
   void dispose() {
-    _headerController.dispose();
-    _feesController.dispose();
-    _backgroundAnimationController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
-
-  List<GovernmentFeeItem> get filteredItems {
-    if (selectedCategory == "All") {
-      return governmentFeeItems;
-    }
-    return governmentFeeItems.where((GovernmentFeeItem item) => item.category == selectedCategory).toList();
-  }
-
-  // /// Generate random fee details based on service type
-  // Map<String, dynamic> _generateFeeDetails(String serviceType) {
-  //   final random = DateTime.now().millisecondsSinceEpoch;
-  //
-  //   switch (serviceType) {
-  //     case 'irs':
-  //       return {
-  //         'serviceName': 'Internal Revenue Service',
-  //         'referenceNumber': 'IRS-${random.toString().substring(7)}',
-  //         'amount': 2500.0 + (random % 5000),
-  //       };
-  //     case 'dmv':
-  //       return {
-  //         'serviceName': 'Department of Motor Vehicles',
-  //         'referenceNumber': 'DMV-${random.toString().substring(8)}',
-  //         'amount': 85.0 + (random % 200),
-  //       };
-  //     case 'police':
-  //       return {
-  //         'serviceName': 'Police Department',
-  //         'referenceNumber': 'PD-${random.toString().substring(9)}',
-  //         'amount': 150.0 + (random % 300),
-  //       };
-  //     case 'traffic':
-  //       return {
-  //         'serviceName': 'Traffic Violations Bureau',
-  //         'referenceNumber': 'TVB-${random.toString().substring(8)}',
-  //         'amount': 75.0 + (random % 400),
-  //       };
-  //     case 'property_tax':
-  //       return {
-  //         'serviceName': 'Property Tax Department',
-  //         'referenceNumber': 'PT-${random.toString().substring(7)}',
-  //         'amount': 3500.0 + (random % 8000),
-  //       };
-  //     case 'court':
-  //       return {
-  //         'serviceName': 'Court Administration',
-  //         'referenceNumber': 'CT-${random.toString().substring(9)}',
-  //         'amount': 200.0 + (random % 500),
-  //       };
-  //     default:
-  //       return {
-  //         'serviceName': 'Government Service',
-  //         'referenceNumber': 'GOV-${random.toString().substring(8)}',
-  //         'amount': 100.0 + (random % 1000),
-  //       };
-  //   }
-  // }
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: FadeTransition(
-          opacity: _headerFade,
-          child: SlideTransition(
-            position: _headerSlide,
-            child: Text(
-              "Government Fees",
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.primaryColor != Colors.white
-                    ? Colors.white
-                    : const Color(0xff2D3748),
-              ),
-            ),
-          ),
-        ),
-        iconTheme: const IconThemeData(
-          color: MyTheme.secondaryColor,
-        ),
-      ),
-      body: Stack(
-        children: <Widget>[
-          AnimatedBackground(
-            animationController: _backgroundAnimationController,
-          ),
-          FadeTransition(
-            opacity: _feesFade,
-            child: SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(0, 0.3),
-                end: Offset.zero,
-              ).animate(_feesController),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  // Header Section
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          "US Government",
-                          style: theme.textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.w300,
-                            fontSize: 18,
-                            color: theme.primaryColor != Colors.white
-                                ? Colors.white.withOpacity(0.8)
-                                : const Color(0xff718096),
-                          ),
-                        ),
-                        Text(
-                          "Service Payments",
-                          style: theme.textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: theme.primaryColor != Colors.white
-                                ? Colors.white
-                                : const Color(0xff2D3748),
-                          ),
-                        ),
-                        SizedBox(height: 8.h),
-                        Text(
-                          "Pay federal, state, and local government fees",
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontSize: 12,
-                            color: theme.primaryColor != Colors.white
-                                ? Colors.white.withOpacity(0.7)
-                                : const Color(0xff718096),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Category Filter
-                  _buildCategoryFilter(theme),
-                  SizedBox(height: 16.h),
-
-                  // Government Services List
-                  Expanded(
-                    child: _buildGovernmentServicesList(theme),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCategoryFilter(ThemeData theme) {
-    return SizedBox(
-      height: 40.h,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
-        itemCount: categories.length,
-        itemBuilder: (BuildContext context, int index) {
-          final String category = categories[index];
-          final bool isSelected = selectedCategory == category;
-
-          return AnimationConfiguration.staggeredList(
-            position: index,
-            duration: const Duration(milliseconds: 200),
-            child: SlideAnimation(
-              horizontalOffset: 30.0,
-              child: FadeInAnimation(
-                child: GestureDetector(
-                  onTap: () => setState(() => selectedCategory = category),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-                    decoration: BoxDecoration(
-                      color: isSelected ? MyTheme.secondaryColor : theme.cardColor,
-                      borderRadius: BorderRadius.circular(25.r),
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      category,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: isSelected
-                            ? Colors.white
-                            : (theme.primaryColor != Colors.white
-                            ? Colors.white
-                            : const Color(0xff2D3748)),
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildGovernmentServicesList(ThemeData theme) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: AnimationLimiter(
-        child: GridView.builder(
-          physics: const BouncingScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            mainAxisSpacing: 10.h,
-            crossAxisSpacing: 10.w,
-            childAspectRatio: 9 / 12,
-          ),
-          itemCount: filteredItems.length,
-          itemBuilder: (BuildContext context, int index) {
-            return AnimationConfiguration.staggeredList(
-              position: index,
-              duration: const Duration(milliseconds: 375),
-              child: SlideAnimation(
-                verticalOffset: 50.0,
-                child: FadeInAnimation(
-                  child: _buildGovernmentServiceItem(
-                    filteredItems[index],
-                    theme,
-                    index,
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGovernmentServiceItem(GovernmentFeeItem item, ThemeData theme, int index) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(5.r),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
-            blurRadius: 5,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const GovernmentPayFeeScreen()));
-        },
-        borderRadius: BorderRadius.circular(16.r),
-        child: Padding(
-          padding: EdgeInsets.all(10.w),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              // Icon Container
-              Icon(
-                item.icon,
-                size: 32.sp,
-                color: MyTheme.secondaryColor,
-              ),
-
-              SizedBox(height: 16.w),
-
-              /// Text Content
-              Text(
-                item.label,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 12,
-                  color: theme.primaryColor != Colors.white ? const Color(0xffffffff) : const Color(0xff2D3748),
-                ),
-              ),
-
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showPaymentDialog(BuildContext context, GovernmentFeeItem item, Map<String, dynamic> details) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text(item.label),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text('Service: ${details['serviceName']}'),
-            SizedBox(height: 8.h),
-            Text('Reference: ${details['referenceNumber']}'),
-            SizedBox(height: 8.h),
-            Text('Amount: \$${details['amount'].toStringAsFixed(2)}'),
-          ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // Handle payment process
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Processing payment for ${item.label}...')),
-              );
-            },
-            child: const Text('Pay Now'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class GovernmentFeeItem {
-  final IconData icon;
-  final String label;
-  final String subtitle;
-  final String type;
-  final Color gradient;
-  final Color iconColor;
-  final String category;
-
-  GovernmentFeeItem({
-    required this.icon,
-    required this.label,
-    required this.subtitle,
-    required this.type,
-    required this.gradient,
-    required this.iconColor,
-    required this.category,
-  });
 }

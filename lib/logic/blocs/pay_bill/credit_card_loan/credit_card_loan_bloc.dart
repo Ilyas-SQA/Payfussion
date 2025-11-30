@@ -91,15 +91,15 @@ class CreditCardLoanBloc extends Bloc<CreditCardLoanEvent, CreditCardLoanState> 
       final Map<String, dynamic> transactionData = <String, dynamic>{
         'id': transactionId,
         'userId': user.uid,
-        'type': 'credit_card_loan',
+        'billType': 'Credit Card Loan',
         'bankName': currentState.bankName,
         'branchName': currentState.branchName,
         'accountNumber': currentState.accountNumber,
         'cardNumber': currentState.cardNumber,
-        'amount': currentState.amount,
+        // 'amount': currentState.amount,
         'paymentType': currentState.paymentType,
         'taxAmount': currentState.taxAmount,
-        'totalAmount': currentState.totalAmount,
+        'amount': currentState.totalAmount,
         'currency': 'USD',
         'cardId': currentState.cardId!,
         'cardHolderName': currentState.cardHolderName!,
@@ -111,7 +111,7 @@ class CreditCardLoanBloc extends Bloc<CreditCardLoanEvent, CreditCardLoanState> 
 
       // Save to Firestore transactions collection
       await _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
-          .collection('transactions')
+          .collection('payBills')
           .doc(transactionId)
           .set(transactionData);
 

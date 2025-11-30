@@ -291,6 +291,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
       },
     );
   }
+  bool isSavingCard = false;
 
   Widget _buildLinkedAccountsSection() {
     return Column(
@@ -305,11 +306,17 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                   borderRadius: BorderRadius.circular(8.r),
                 ),
               ),
-              onPressed: () {
-                PaymentService().saveCard(context);
+              onPressed: isSavingCard
+                  ? null   // Disable button while running
+                  : () async {
+                setState(() => isSavingCard = true);
+
+                await PaymentService().saveCard(context);
+
+                setState(() => isSavingCard = false);
               },
               child: Text(
-                "Add New",
+                isSavingCard ? "Waiting..." : "Add New",
                 style: Font.montserratFont(
                   fontSize: 12.sp,
                   color: const Color(0xffffffff),

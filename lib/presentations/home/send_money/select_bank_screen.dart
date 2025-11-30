@@ -470,17 +470,33 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
                         ),
                         child: Row(
                           children: <Widget>[
-                            Container(
-                              width: 50.w,
-                              height: 50.w,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(25.r),
-                              ),
-                              child: Icon(
-                                Icons.account_balance,
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(25.r),
+                              child: Container(
+                                width: 50.w,
+                                height: 50.w,
                                 color: Colors.white,
-                                size: 24.sp,
+                                child: state.selectedBank!.image.isNotEmpty
+                                    ? CachedNetworkImage(
+                                  imageUrl: state.selectedBank!.image,
+                                  fit: BoxFit.cover,
+                                  placeholder: (BuildContext context, String url) => const Center(
+                                    child: CircularProgressIndicator(
+                                      color: MyTheme.primaryColor,
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                  errorWidget: (BuildContext context, String url, Object error) => Icon(
+                                    Icons.account_balance,
+                                    color: MyTheme.primaryColor,
+                                    size: 24.sp,
+                                  ),
+                                )
+                                    : Icon(
+                                  Icons.account_balance,
+                                  color: MyTheme.primaryColor,
+                                  size: 24.sp,
+                                ),
                               ),
                             ),
                             SizedBox(width: 16.w),
@@ -549,6 +565,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
                                 AppTextFormField(
                                   controller: _accountNumberController,
                                   validator: _validateAccountNumber,
+                                  keyboardType: TextInputType.number,
                                   helpText: 'Enter account number',
                                   prefixIcon: const Icon(Icons.account_balance_wallet),
                                 ),
@@ -607,6 +624,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
                                         controller: _paymentPurposeController,
                                         validator: _validatePaymentPurpose,
                                         helpText: 'Enter payment purpose',
+                                        keyboardType: TextInputType.number,
                                         prefixIcon: const Icon(Icons.account_balance_wallet),
                                       ),
                                     ],

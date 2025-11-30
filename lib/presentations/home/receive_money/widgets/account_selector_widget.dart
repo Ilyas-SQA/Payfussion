@@ -246,6 +246,13 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
+            '${card.cardholderName}',
+            style: Font.montserratFont(
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          Text(
             '${card.brand.toUpperCase()} ${card.cardEnding}',
             style: Font.montserratFont(
               fontSize: 12.sp,

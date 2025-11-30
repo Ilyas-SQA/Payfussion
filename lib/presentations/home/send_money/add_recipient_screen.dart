@@ -485,7 +485,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                     onTap: () {
                       Navigator.pop(context);
                       context.read<RecipientBloc>().add(RemovePhotoRequested());
-                      HapticFeedback.selectionClick();
+                      // HapticFeedback.selectionClick();
                     },
                   ),
                 ListTile(

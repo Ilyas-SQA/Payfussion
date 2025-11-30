@@ -65,8 +65,8 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                       MaterialPageRoute(builder: (BuildContext context) => const AddRecipientScreen()),
                     );
                   },
-                  label: Text("Add New",style: Font.montserratFont(color: MyTheme.primaryColor),),
-                  icon: const Icon(Icons.add,color: MyTheme.primaryColor),
+                  label: Text("Add New",style: Font.montserratFont(fontWeight: FontWeight.w600,color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white),),
+                  icon: Icon(Icons.add,color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white),
                 )
               ],
             ),

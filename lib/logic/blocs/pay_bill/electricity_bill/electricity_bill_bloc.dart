@@ -147,7 +147,7 @@ class ElectricityBillBloc extends Bloc<ElectricityBillEvent, ElectricityBillStat
       final Map<String, dynamic> transactionData = <String, dynamic>{
         'id': transactionId,
         'userId': user.uid,
-        'type': 'electricity_bill',
+        'billType': 'Electricity',
         'providerName': currentState.providerName,
         'region': currentState.region,
         'averageRate': currentState.averageRate,
@@ -155,9 +155,8 @@ class ElectricityBillBloc extends Bloc<ElectricityBillEvent, ElectricityBillStat
         'consumerName': currentState.consumerName,
         'address': currentState.address,
         'billMonth': currentState.billMonth,
-        'amount': currentState.amount,
+        'amount': currentState.totalAmount,
         'taxAmount': currentState.taxAmount,
-        'totalAmount': currentState.totalAmount,
         'currency': 'USD',
         'unitsConsumed': currentState.unitsConsumed,
         'previousReading': currentState.previousReading,
@@ -173,7 +172,7 @@ class ElectricityBillBloc extends Bloc<ElectricityBillEvent, ElectricityBillStat
 
       // Save to Firestore transactions collection
       await _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
-          .collection('transactions')
+          .collection('payBills')
           .doc(transactionId)
           .set(transactionData);
 

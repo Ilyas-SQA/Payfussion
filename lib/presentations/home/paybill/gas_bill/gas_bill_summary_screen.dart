@@ -6,83 +6,235 @@ import '../../../../logic/blocs/pay_bill/gas_bill/gas_bill_bloc.dart';
 import '../../../../logic/blocs/pay_bill/gas_bill/gas_bill_event.dart';
 import '../../../../logic/blocs/pay_bill/gas_bill/gas_bill_state.dart';
 
-class GasBillSummaryScreen extends StatelessWidget {
+class GasBillSummaryScreen extends StatefulWidget {
   const GasBillSummaryScreen({super.key});
+
+  @override
+  State<GasBillSummaryScreen> createState() => _GasBillSummaryScreenState();
+}
+
+class _GasBillSummaryScreenState extends State<GasBillSummaryScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _fadeController;
+  late AnimationController _slideController;
+  late AnimationController _scaleController;
+  late AnimationController _pulseController;
+  late AnimationController _successController;
+
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _pulseAnimation;
+  late Animation<double> _successScale;
+  late Animation<double> _successRotation;
+
+  @override
+  void initState() {
+    super.initState();
+    _initAnimations();
+    _startAnimationSequence();
+  }
+
+  void _initAnimations() {
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeOut),
+    );
+
+    _slideController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic));
+
+    _scaleController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _scaleController, curve: Curves.easeOutBack),
+    );
+
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    )..repeat(reverse: true);
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+
+    _successController = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+    _successScale = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _successController, curve: Curves.elasticOut),
+    );
+    _successRotation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _successController, curve: Curves.easeOut),
+    );
+  }
+
+  void _startAnimationSequence() async {
+    await Future.delayed(const Duration(milliseconds: 100));
+    _fadeController.forward();
+
+    await Future.delayed(const Duration(milliseconds: 150));
+    _slideController.forward();
+
+    await Future.delayed(const Duration(milliseconds: 200));
+    _scaleController.forward();
+  }
+
+  @override
+  void dispose() {
+    _fadeController.dispose();
+    _slideController.dispose();
+    _scaleController.dispose();
+    _pulseController.dispose();
+    _successController.dispose();
+    super.dispose();
+  }
+
+  void _showSuccessDialog(GasBillSuccess state) {
+    _successController.forward();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => ScaleTransition(
+        scale: _successScale,
+        child: AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.r),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              RotationTransition(
+                turns: _successRotation,
+                child: ScaleTransition(
+                  scale: _successScale,
+                  child: Icon(
+                    Icons.check_circle,
+                    color: Colors.green,
+                    size: 80.sp,
+                  ),
+                ),
+              ),
+              SizedBox(height: 20.h),
+              TweenAnimationBuilder<double>(
+                duration: const Duration(milliseconds: 800),
+                tween: Tween(begin: 0.0, end: 1.0),
+                curve: Curves.easeOut,
+                builder: (context, value, child) {
+                  return Opacity(
+                    opacity: value,
+                    child: child,
+                  );
+                },
+                child: Text(
+                  'Payment Successful!',
+                  style: TextStyle(
+                    fontSize: 22.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              SizedBox(height: 10.h),
+              TweenAnimationBuilder<double>(
+                duration: const Duration(milliseconds: 1000),
+                tween: Tween(begin: 0.0, end: 1.0),
+                curve: Curves.easeOut,
+                builder: (context, value, child) {
+                  return Opacity(
+                    opacity: value,
+                    child: child,
+                  );
+                },
+                child: Text(
+                  state.message,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ),
+              SizedBox(height: 10.h),
+              TweenAnimationBuilder<double>(
+                duration: const Duration(milliseconds: 1200),
+                tween: Tween(begin: 0.0, end: 1.0),
+                curve: Curves.easeOut,
+                builder: (context, value, child) {
+                  return Opacity(
+                    opacity: value,
+                    child: child,
+                  );
+                },
+                child: Text(
+                  'Transaction ID: ${state.transactionId}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: Colors.grey[500],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TweenAnimationBuilder<double>(
+              duration: const Duration(milliseconds: 1400),
+              tween: Tween(begin: 0.0, end: 1.0),
+              curve: Curves.easeOut,
+              builder: (context, value, child) {
+                return Opacity(
+                  opacity: value,
+                  child: child,
+                );
+              },
+              child: TextButton(
+                onPressed: () {
+                  context.read<GasBillBloc>().add(const ResetGasBill());
+                  Navigator.of(context).popUntil((Route route) => route.isFirst);
+                },
+                child: Text(
+                  'Done',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                    color: MyTheme.primaryColor,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Payment Summary'),
+        title: FadeTransition(
+          opacity: _fadeAnimation,
+          child: const Text('Payment Summary'),
+        ),
       ),
       body: BlocConsumer<GasBillBloc, GasBillState>(
         listener: (BuildContext context, GasBillState state) {
           if (state is GasBillSuccess) {
-            // Show success dialog
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (BuildContext context) => AlertDialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.r),
-                ),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Icon(
-                      Icons.check_circle,
-                      color: Colors.green,
-                      size: 80.sp,
-                    ),
-                    SizedBox(height: 20.h),
-                    Text(
-                      'Payment Successful!',
-                      style: TextStyle(
-                        fontSize: 22.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 10.h),
-                    Text(
-                      state.message,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    SizedBox(height: 10.h),
-                    Text(
-                      'Transaction ID: ${state.transactionId}',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: Colors.grey[500],
-                      ),
-                    ),
-                  ],
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      // Reset bloc and navigate back to home
-                      context.read<GasBillBloc>().add(const ResetGasBill());
-                      Navigator.of(context).popUntil((Route route) => route.isFirst);
-                    },
-                    child: Text(
-                      'Done',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                        color: MyTheme.primaryColor,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
+            _showSuccessDialog(state);
           } else if (state is GasBillError) {
-            // Show error dialog
             showDialog(
               context: context,
               builder: (BuildContext context) => AlertDialog(
@@ -107,15 +259,37 @@ class GasBillSummaryScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const CircularProgressIndicator(
-                    color: MyTheme.primaryColor,
+                  TweenAnimationBuilder<double>(
+                    duration: const Duration(milliseconds: 1500),
+                    tween: Tween(begin: 0.0, end: 1.0),
+                    curve: Curves.easeInOut,
+                    builder: (context, value, child) {
+                      return Transform.rotate(
+                        angle: value * 6.28 * 2,
+                        child: child,
+                      );
+                    },
+                    child: const CircularProgressIndicator(
+                      color: MyTheme.primaryColor,
+                    ),
                   ),
                   SizedBox(height: 20.h),
-                  Text(
-                    'Processing your payment...',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
+                  TweenAnimationBuilder<double>(
+                    duration: const Duration(milliseconds: 800),
+                    tween: Tween(begin: 0.0, end: 1.0),
+                    curve: Curves.easeOut,
+                    builder: (context, value, child) {
+                      return Opacity(
+                        opacity: value,
+                        child: child,
+                      );
+                    },
+                    child: Text(
+                      'Processing your payment...',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],
@@ -127,116 +301,185 @@ class GasBillSummaryScreen extends StatelessWidget {
             return const Center(child: Text('Invalid state'));
           }
 
-          return SingleChildScrollView(
-            padding: EdgeInsets.all(24.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                // Header
-                Text(
-                  'Review Your Payment',
-                  style: TextStyle(
-                    fontSize: 24.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                Text(
-                  'Please review all details before confirming',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                SizedBox(height: 32.h),
-
-                // Company Info Card
-                _buildInfoCard(
-                  context,
-                  title: 'Gas Provider',
-                  icon: Icons.local_fire_department,
+          return FadeTransition(
+            opacity: _fadeAnimation,
+            child: SlideTransition(
+              position: _slideAnimation,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(24.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    _buildInfoRow('Company', state.companyName),
-                    _buildInfoRow('Region', state.region),
-                    _buildInfoRow('Rate', state.averageRate),
-                  ],
-                ),
-                SizedBox(height: 16.h),
-
-                // Account Details Card
-                _buildInfoCard(
-                  context,
-                  title: 'Account Details',
-                  icon: Icons.account_balance,
-                  children: <Widget>[
-                    _buildInfoRow('Account Number', state.accountNumber),
-                    _buildInfoRow('Consumer Name', state.consumerName),
-                    _buildInfoRow('Bill Month', state.billMonth),
-                  ],
-                ),
-                SizedBox(height: 16.h),
-
-                // Usage Details Card
-                _buildInfoCard(
-                  context,
-                  title: 'Usage Details',
-                  icon: Icons.analytics,
-                  children: <Widget>[
-                    _buildInfoRow('Gas Usage', state.gasUsage),
-                    _buildInfoRow('Previous Reading', state.previousReading),
-                    _buildInfoRow('Current Reading', state.currentReading),
-                    _buildInfoRow('Due Date', state.dueDate),
-                  ],
-                ),
-                SizedBox(height: 16.h),
-
-                // Payment Card Info
-                if (state.cardId != null)
-                  _buildInfoCard(
-                    context,
-                    title: 'Payment Method',
-                    icon: Icons.credit_card,
-                    children: <Widget>[
-                      _buildInfoRow('Card Holder', state.cardHolderName!),
-                      _buildInfoRow('Card Number', '****${state.cardEnding}'),
-                    ],
-                  ),
-                SizedBox(height: 16.h),
-
-                // Amount Breakdown Card
-                _buildAmountCard(context, state),
-                SizedBox(height: 32.h),
-
-                // Confirm Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      context.read<GasBillBloc>().add(const ProcessGasBillPayment());
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: MyTheme.primaryColor,
-                      padding: EdgeInsets.symmetric(vertical: 16.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      elevation: 4,
-                    ),
-                    child: Text(
-                      'Confirm Payment',
-                      style: TextStyle(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    // Header
+                    _buildAnimatedSection(
+                      delay: 0,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            'Review Your Payment',
+                            style: TextStyle(
+                              fontSize: 24.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 8.h),
+                          Text(
+                            'Please review all details before confirming',
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
+                    SizedBox(height: 32.h),
+
+                    // Cards with staggered animation
+                    _buildAnimatedSection(
+                      delay: 100,
+                      child: _buildInfoCard(
+                        context,
+                        title: 'Gas Provider',
+                        icon: Icons.local_fire_department,
+                        children: <Widget>[
+                          _buildInfoRow('Company', state.companyName),
+                          _buildInfoRow('Region', state.region),
+                          _buildInfoRow('Rate', state.averageRate),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+
+                    _buildAnimatedSection(
+                      delay: 200,
+                      child: _buildInfoCard(
+                        context,
+                        title: 'Account Details',
+                        icon: Icons.account_balance,
+                        children: <Widget>[
+                          _buildInfoRow('Account Number', state.accountNumber),
+                          _buildInfoRow('Consumer Name', state.consumerName),
+                          _buildInfoRow('Bill Month', state.billMonth),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+
+                    _buildAnimatedSection(
+                      delay: 300,
+                      child: _buildInfoCard(
+                        context,
+                        title: 'Usage Details',
+                        icon: Icons.analytics,
+                        children: <Widget>[
+                          _buildInfoRow('Gas Usage', state.gasUsage),
+                          _buildInfoRow('Previous Reading', state.previousReading),
+                          _buildInfoRow('Current Reading', state.currentReading),
+                          _buildInfoRow('Due Date', state.dueDate),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+
+                    if (state.cardId != null)
+                      _buildAnimatedSection(
+                        delay: 400,
+                        child: _buildInfoCard(
+                          context,
+                          title: 'Payment Method',
+                          icon: Icons.credit_card,
+                          children: <Widget>[
+                            _buildInfoRow('Card Holder', state.cardHolderName!),
+                            _buildInfoRow('Card Number', '****${state.cardEnding}'),
+                          ],
+                        ),
+                      ),
+                    SizedBox(height: 16.h),
+
+                    _buildAnimatedSection(
+                      delay: 500,
+                      child: _buildAmountCard(context, state),
+                    ),
+                    SizedBox(height: 32.h),
+
+                    _buildAnimatedSection(
+                      delay: 600,
+                      child: ScaleTransition(
+                        scale: _pulseAnimation,
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              context.read<GasBillBloc>().add(const ProcessGasBillPayment());
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: MyTheme.primaryColor,
+                              padding: EdgeInsets.symmetric(vertical: 16.h),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                              elevation: 4,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  'Confirm Payment',
+                                  style: TextStyle(
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                SizedBox(width: 8.w),
+                                TweenAnimationBuilder<double>(
+                                  duration: const Duration(milliseconds: 1500),
+                                  tween: Tween(begin: 0.0, end: 1.0),
+                                  curve: Curves.easeInOut,
+                                  builder: (context, value, child) {
+                                    return Transform.translate(
+                                      offset: Offset(5 * value, 0),
+                                      child: child,
+                                    );
+                                  },
+                                  child: const Icon(
+                                    Icons.check_circle,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           );
         },
       ),
+    );
+  }
+
+  Widget _buildAnimatedSection({required int delay, required Widget child}) {
+    return TweenAnimationBuilder<double>(
+      duration: Duration(milliseconds: 600 + delay),
+      tween: Tween(begin: 0.0, end: 1.0),
+      curve: Curves.easeOut,
+      builder: (context, value, widget) {
+        return Transform.translate(
+          offset: Offset(0, 30 * (1 - value)),
+          child: Opacity(
+            opacity: value,
+            child: widget,
+          ),
+        );
+      },
+      child: child,
     );
   }
 
@@ -246,38 +489,57 @@ class GasBillSummaryScreen extends StatelessWidget {
         required IconData icon,
         required List<Widget> children,
       }) {
-    return Container(
-      padding: EdgeInsets.all(20.w),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(5.r),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
-            blurRadius: 5,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Icon(icon, color: MyTheme.primaryColor, size: 24.sp),
-              SizedBox(width: 12.w),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.bold,
+    return ScaleTransition(
+      scale: _scaleAnimation,
+      child: Container(
+        padding: EdgeInsets.all(20.w),
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Colors.grey.withOpacity(0.3)
+                  : Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                TweenAnimationBuilder<double>(
+                  duration: const Duration(milliseconds: 1000),
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  curve: Curves.elasticOut,
+                  builder: (context, value, child) {
+                    return Transform.scale(
+                      scale: value,
+                      child: Transform.rotate(
+                        angle: value * 6.28,
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: Icon(icon, color: MyTheme.primaryColor, size: 24.sp),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16.h),
-          ...children,
-        ],
+                SizedBox(width: 12.w),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16.h),
+            ...children,
+          ],
+        ),
       ),
     );
   }
@@ -311,37 +573,72 @@ class GasBillSummaryScreen extends StatelessWidget {
   }
 
   Widget _buildAmountCard(BuildContext context, GasBillDataSet state) {
-    return Container(
-      padding: EdgeInsets.all(20.w),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: <Color>[MyTheme.primaryColor, MyTheme.primaryColor.withOpacity(0.8)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return ScaleTransition(
+      scale: _scaleAnimation,
+      child: Container(
+        padding: EdgeInsets.all(20.w),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: <Color>[
+              MyTheme.primaryColor,
+              MyTheme.primaryColor.withOpacity(0.8)
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(5.r),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: MyTheme.primaryColor.withOpacity(0.3),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
+            ),
+          ],
         ),
-        borderRadius: BorderRadius.circular(5.r),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: MyTheme.primaryColor.withOpacity(0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        children: <Widget>[
-          _buildAmountRow('Amount', '\$${state.amount.toStringAsFixed(2)}', isWhite: true),
-          Divider(color: Colors.white.withOpacity(0.3), height: 24.h),
-          _buildAmountRow('Tax', '\$${state.taxAmount.toStringAsFixed(2)}', isWhite: true),
-          Divider(color: Colors.white.withOpacity(0.3), height: 24.h),
-          _buildAmountRow(
-            'Total Amount',
-            '\$${state.totalAmount.toStringAsFixed(2)}',
-            isWhite: true,
-            isBold: true,
-            isLarge: true,
-          ),
-        ],
+        child: Column(
+          children: <Widget>[
+            TweenAnimationBuilder<double>(
+              duration: const Duration(milliseconds: 1000),
+              tween: Tween(begin: 0.0, end: state.amount),
+              curve: Curves.easeOut,
+              builder: (context, value, child) {
+                return _buildAmountRow(
+                  'Amount',
+                  '\$${value.toStringAsFixed(2)}',
+                  isWhite: true,
+                );
+              },
+            ),
+            Divider(color: Colors.white.withOpacity(0.3), height: 24.h),
+            TweenAnimationBuilder<double>(
+              duration: const Duration(milliseconds: 1200),
+              tween: Tween(begin: 0.0, end: state.taxAmount),
+              curve: Curves.easeOut,
+              builder: (context, value, child) {
+                return _buildAmountRow(
+                  'Tax',
+                  '\$${value.toStringAsFixed(2)}',
+                  isWhite: true,
+                );
+              },
+            ),
+            Divider(color: Colors.white.withOpacity(0.3), height: 24.h),
+            TweenAnimationBuilder<double>(
+              duration: const Duration(milliseconds: 1400),
+              tween: Tween(begin: 0.0, end: state.totalAmount),
+              curve: Curves.easeOut,
+              builder: (context, value, child) {
+                return _buildAmountRow(
+                  'Total Amount',
+                  '\$${value.toStringAsFixed(2)}',
+                  isWhite: true,
+                  isBold: true,
+                  isLarge: true,
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

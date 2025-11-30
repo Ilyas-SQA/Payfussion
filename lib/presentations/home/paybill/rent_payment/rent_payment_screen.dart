@@ -309,6 +309,7 @@ class _RentPaymentScreenState extends State<RentPaymentScreen>
                   category: service['category'],
                   feeRange: service['feeRange'],
                   properties: service['properties'],
+                  companyIcon: service['icon'],
                 ),
               ),
             );

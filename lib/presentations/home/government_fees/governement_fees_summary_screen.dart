@@ -2,20 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
-import '../../../../logic/blocs/pay_bill/mobile_recharge/mobile_recharge_bloc.dart';
-import '../../../../logic/blocs/pay_bill/mobile_recharge/mobile_recharge_event.dart';
-import '../../../../logic/blocs/pay_bill/mobile_recharge/mobile_recharge_state.dart';
+import '../../../logic/blocs/governement_fee/governement_fee_bloc.dart';
+import '../../../logic/blocs/governement_fee/governement_fee_event.dart';
+import '../../../logic/blocs/governement_fee/governement_fee_state.dart';
 
-class RechargeSummaryScreen extends StatefulWidget {
-  const RechargeSummaryScreen({super.key});
+class GovernmentFeeSummaryScreen extends StatefulWidget {
+  const GovernmentFeeSummaryScreen({super.key});
 
   @override
-  State<RechargeSummaryScreen> createState() => _RechargeSummaryScreenState();
+  State<GovernmentFeeSummaryScreen> createState() => _GovernmentFeeSummaryScreenState();
 }
 
-class _RechargeSummaryScreenState extends State<RechargeSummaryScreen>
-    with TickerProviderStateMixin {
-
+class _GovernmentFeeSummaryScreenState extends State<GovernmentFeeSummaryScreen> with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late AnimationController _slideController;
   late AnimationController _scaleController;
@@ -36,7 +34,6 @@ class _RechargeSummaryScreenState extends State<RechargeSummaryScreen>
   }
 
   void _initAnimations() {
-    // Fade animation
     _fadeController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -45,7 +42,6 @@ class _RechargeSummaryScreenState extends State<RechargeSummaryScreen>
       CurvedAnimation(parent: _fadeController, curve: Curves.easeOut),
     );
 
-    // Slide animation
     _slideController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
@@ -55,7 +51,6 @@ class _RechargeSummaryScreenState extends State<RechargeSummaryScreen>
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic));
 
-    // Scale animation
     _scaleController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
@@ -64,7 +59,6 @@ class _RechargeSummaryScreenState extends State<RechargeSummaryScreen>
       CurvedAnimation(parent: _scaleController, curve: Curves.easeOutBack),
     );
 
-    // Rotation animation for icons
     _rotationController = AnimationController(
       duration: const Duration(milliseconds: 1200),
       vsync: this,
@@ -73,7 +67,6 @@ class _RechargeSummaryScreenState extends State<RechargeSummaryScreen>
       CurvedAnimation(parent: _rotationController, curve: Curves.easeInOut),
     );
 
-    // Success animation
     _successController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
@@ -128,7 +121,7 @@ class _RechargeSummaryScreenState extends State<RechargeSummaryScreen>
                   return Transform.scale(
                     scale: value,
                     child: Transform.rotate(
-                      angle: value * 6.28, // Full rotation
+                      angle: value * 6.28,
                       child: child,
                     ),
                   );
@@ -140,65 +133,29 @@ class _RechargeSummaryScreenState extends State<RechargeSummaryScreen>
                 ),
               ),
               SizedBox(height: 20.h),
-              TweenAnimationBuilder<double>(
-                duration: const Duration(milliseconds: 800),
-                tween: Tween(begin: 0.0, end: 1.0),
-                curve: Curves.easeOut,
-                builder: (context, value, child) {
-                  return Opacity(
-                    opacity: value,
-                    child: Transform.translate(
-                      offset: Offset(0, 20 * (1 - value)),
-                      child: child,
-                    ),
-                  );
-                },
-                child: Text(
-                  'Payment Successful!',
-                  style: TextStyle(
-                    fontSize: 22.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
+              Text(
+                'Payment Successful!',
+                style: TextStyle(
+                  fontSize: 22.sp,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               SizedBox(height: 10.h),
-              TweenAnimationBuilder<double>(
-                duration: const Duration(milliseconds: 1000),
-                tween: Tween(begin: 0.0, end: 1.0),
-                curve: Curves.easeOut,
-                builder: (context, value, child) {
-                  return Opacity(
-                    opacity: value,
-                    child: child,
-                  );
-                },
-                child: Text(
-                  message,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: Colors.grey[600],
-                  ),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: Colors.grey[600],
                 ),
               ),
               SizedBox(height: 10.h),
-              TweenAnimationBuilder<double>(
-                duration: const Duration(milliseconds: 1200),
-                tween: Tween(begin: 0.0, end: 1.0),
-                curve: Curves.easeOut,
-                builder: (context, value, child) {
-                  return Opacity(
-                    opacity: value,
-                    child: child,
-                  );
-                },
-                child: Text(
-                  'Transaction ID: $transactionId',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: Colors.grey[500],
-                  ),
+              Text(
+                'Transaction ID: $transactionId',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: Colors.grey[500],
                 ),
               ),
             ],
@@ -206,7 +163,7 @@ class _RechargeSummaryScreenState extends State<RechargeSummaryScreen>
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                context.read<MobileRechargeBloc>().add(const ResetRecharge());
+                context.read<GovernmentFeeBloc>().add(const ResetGovernmentFee());
                 Navigator.of(context).popUntil((Route route) => route.isFirst);
               },
               child: Text(
@@ -230,15 +187,15 @@ class _RechargeSummaryScreenState extends State<RechargeSummaryScreen>
       appBar: AppBar(
         title: FadeTransition(
           opacity: _fadeAnimation,
-          child: const Text('Recharge Summary'),
+          child: const Text('Payment Summary'),
         ),
         backgroundColor: Colors.transparent,
       ),
-      body: BlocConsumer<MobileRechargeBloc, MobileRechargeState>(
-        listener: (BuildContext context, MobileRechargeState state) {
-          if (state is MobileRechargeSuccess) {
+      body: BlocConsumer<GovernmentFeeBloc, GovernmentFeeState>(
+        listener: (BuildContext context, GovernmentFeeState state) {
+          if (state is GovernmentFeeSuccess) {
             _showSuccessDialog(state.message, state.transactionId);
-          } else if (state is MobileRechargeError) {
+          } else if (state is GovernmentFeeError) {
             showDialog(
               context: context,
               builder: (BuildContext context) => AlertDialog(
@@ -257,47 +214,22 @@ class _RechargeSummaryScreenState extends State<RechargeSummaryScreen>
             );
           }
         },
-        builder: (BuildContext context, MobileRechargeState state) {
-          if (state is MobileRechargeProcessing) {
+        builder: (BuildContext context, GovernmentFeeState state) {
+          if (state is GovernmentFeeProcessing) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  TweenAnimationBuilder<double>(
-                    duration: const Duration(milliseconds: 1500),
-                    tween: Tween(begin: 0.0, end: 1.0),
-                    curve: Curves.easeInOut,
-                    builder: (context, value, child) {
-                      return Transform.scale(
-                        scale: 0.5 + (value * 0.5),
-                        child: Transform.rotate(
-                          angle: value * 6.28 * 2, // Two rotations
-                          child: child,
-                        ),
-                      );
-                    },
-                    child: const CircularProgressIndicator(
-                      color: MyTheme.primaryColor,
-                      strokeWidth: 4,
-                    ),
+                  const CircularProgressIndicator(
+                    color: MyTheme.primaryColor,
+                    strokeWidth: 4,
                   ),
                   SizedBox(height: 20.h),
-                  TweenAnimationBuilder<double>(
-                    duration: const Duration(milliseconds: 2000),
-                    tween: Tween(begin: 0.0, end: 1.0),
-                    curve: Curves.easeOut,
-                    builder: (context, value, child) {
-                      return Opacity(
-                        opacity: value,
-                        child: child,
-                      );
-                    },
-                    child: Text(
-                      'Processing your payment...',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  Text(
+                    'Processing your payment...',
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
@@ -305,7 +237,7 @@ class _RechargeSummaryScreenState extends State<RechargeSummaryScreen>
             );
           }
 
-          if (state is! MobileRechargeDataSet) {
+          if (state is! GovernmentFeeDataSet) {
             return const Center(child: Text('Invalid state'));
           }
 
@@ -318,119 +250,93 @@ class _RechargeSummaryScreenState extends State<RechargeSummaryScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                  // Header
-                  _buildAnimatedSection(
-                  delay: 0,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        'Review Your Recharge',
-                        style: TextStyle(
-                          fontSize: 24.sp,
-                          fontWeight: FontWeight.bold,
+                    // Header
+                    _buildAnimatedSection(
+                      delay: 0,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            'Review Your Payment',
+                            style: TextStyle(
+                              fontSize: 24.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 8.h),
+                          Text(
+                            'Please review all details before confirming',
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 32.h),
+
+                    // Service Info Card
+                    _buildAnimatedSection(
+                      delay: 100,
+                      child: _buildInfoCard(
+                        context,
+                        title: 'Service Information',
+                        icon: Icons.account_balance,
+                        children: <Widget>[
+                          _buildInfoRow('Service', state.serviceName),
+                          _buildInfoRow('Agency', state.agency),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+
+                    // Input Details Card
+                    _buildAnimatedSection(
+                      delay: 200,
+                      child: _buildInfoCard(
+                        context,
+                        title: 'Payment Details',
+                        icon: Icons.receipt_long,
+                        children: <Widget>[
+                          _buildInfoRow(state.inputLabel, state.inputValue),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+
+                    // Payment Card Info
+                    if (state.cardId != null)
+                      _buildAnimatedSection(
+                        delay: 300,
+                        child: _buildInfoCard(
+                          context,
+                          title: 'Payment Method',
+                          icon: Icons.credit_card,
+                          children: <Widget>[
+                            _buildInfoRow('Card Holder', state.cardHolderName!),
+                            _buildInfoRow('Card Number', '****${state.cardEnding}'),
+                          ],
                         ),
                       ),
-                      SizedBox(height: 8.h),
-                      Text(
-                        'Please review all details before confirming',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 32.h),
+                    SizedBox(height: 16.h),
 
-                // Company Info Card
-                _buildAnimatedSection(
-                  delay: 100,
-                  child: _buildInfoCard(
-                    context,
-                    title: 'Mobile Carrier',
-                    icon: Icons.network_cell,
-                    children: <Widget>[
-                      _buildInfoRow('Company', state.companyName),
-                      _buildInfoRow('Network', state.network),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 16.h),
+                    // Amount Breakdown Card
+                    _buildAnimatedSection(
+                      delay: 400,
+                      child: _buildAmountCard(context, state),
+                    ),
+                    SizedBox(height: 32.h),
 
-                // Phone Number Card
-                _buildAnimatedSection(
-                  delay: 200,
-                  child: _buildInfoCard(
-                    context,
-                    title: 'Phone Number',
-                    icon: Icons.phone_android,
-                    children: <Widget>[
-                      _buildInfoRow('Number', state.phoneNumber),
-                    ],
-                  ),
+                    // Confirm Button
+                    _buildAnimatedSection(
+                      delay: 500,
+                      child: _buildConfirmButton(context),
+                    ),
+                  ],
                 ),
-                SizedBox(height: 16.h),
-
-                // Package/Recharge Details Card
-                _buildAnimatedSection(
-                    delay: 300,
-                    child: state.packageName != null ?
-                _buildInfoCard(
-                context,
-                title: 'Package Details',
-                icon: Icons.card_giftcard,
-                children: <Widget>[
-                  _buildInfoRow('Package', state.packageName!),
-                  _buildInfoRow('Data', state.packageData ?? 'N/A'),
-                  _buildInfoRow('Validity', state.packageValidity ?? 'N/A'),
-                ],
-              )
-              :
-              _buildInfoCard(
-              context,
-              title: 'Recharge Amount',
-              icon: Icons.attach_money,
-              children: <Widget>[
-                _buildInfoRow('Amount', '\$${state.amount.toStringAsFixed(2)}'),
-              ],
+              ),
             ),
-          ),
-          SizedBox(height: 16.h),
-
-          // Payment Card Info
-          if (state.cardId != null)
-          _buildAnimatedSection(
-          delay: 400,
-          child: _buildInfoCard(
-          context,
-          title: 'Payment Method',
-          icon: Icons.credit_card,
-          children: <Widget>[
-          _buildInfoRow('Card Holder', state.cardHolderName!),
-          _buildInfoRow('Card Number', '****${state.cardEnding}'),
-          ],
-          ),
-          ),
-          SizedBox(height: 16.h),
-
-          // Amount Breakdown Card
-          _buildAnimatedSection(
-          delay: 500,
-          child: _buildAmountCard(context, state),
-          ),
-          SizedBox(height: 32.h),
-
-          // Confirm Button
-          _buildAnimatedSection(
-          delay: 600,
-          child: _buildConfirmButton(context),
-          ),
-          ],
-          ),
-          ),
-          ),
           );
         },
       ),
@@ -530,7 +436,7 @@ class _RechargeSummaryScreenState extends State<RechargeSummaryScreen>
     );
   }
 
-  Widget _buildAmountCard(BuildContext context, MobileRechargeDataSet state) {
+  Widget _buildAmountCard(BuildContext context, GovernmentFeeDataSet state) {
     return ScaleTransition(
       scale: _scaleAnimation,
       child: Container(
@@ -600,37 +506,26 @@ class _RechargeSummaryScreenState extends State<RechargeSummaryScreen>
   }
 
   Widget _buildConfirmButton(BuildContext context) {
-    return TweenAnimationBuilder<double>(
-      duration: const Duration(milliseconds: 1500),
-      tween: Tween(begin: 1.0, end: 1.05),
-      curve: Curves.easeInOut,
-      builder: (context, value, child) {
-        return Transform.scale(
-          scale: value,
-          child: child,
-        );
-      },
-      child: SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: () {
-            context.read<MobileRechargeBloc>().add(const ProcessRechargePayment());
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: MyTheme.primaryColor,
-            padding: EdgeInsets.symmetric(vertical: 16.h),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            elevation: 4,
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () {
+          context.read<GovernmentFeeBloc>().add(const ProcessGovernmentFeePayment());
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: MyTheme.primaryColor,
+          padding: EdgeInsets.symmetric(vertical: 16.h),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
           ),
-          child: Text(
-            'Confirm Payment',
-            style: TextStyle(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+          elevation: 4,
+        ),
+        child: Text(
+          'Confirm Payment',
+          style: TextStyle(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
       ),

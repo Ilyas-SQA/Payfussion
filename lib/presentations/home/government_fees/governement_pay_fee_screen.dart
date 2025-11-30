@@ -1,543 +1,244 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:payfussion/core/theme/theme.dart';
-import 'package:payfussion/core/widget/appbutton/app_button.dart';
-import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
+import 'package:payfussion/core/widget/card_screen.dart';
+import '../../../logic/blocs/governement_fee/governement_fee_bloc.dart';
+import '../../../logic/blocs/governement_fee/governement_fee_event.dart';
+import '../../widgets/auth_widgets/credential_text_field.dart';
+import 'government_fees_screen.dart';
 
-import '../../../core/constants/fonts.dart';
-import '../../widgets/background_theme.dart';
+class GovernementPayFeeScreen extends StatefulWidget {
+  final GovtService service;
 
-class GovernmentPayFeeScreen extends StatefulWidget {
-  const GovernmentPayFeeScreen({super.key});
+  const GovernementPayFeeScreen({Key? key, required this.service}) : super(key: key);
 
   @override
-  State<GovernmentPayFeeScreen> createState() => _GovernmentPayFeeScreenState();
+  State<GovernementPayFeeScreen> createState() => _GovernementPayFeeScreenState();
 }
 
-class _GovernmentPayFeeScreenState extends State<GovernmentPayFeeScreen>
-    with TickerProviderStateMixin {
-
-  final TextEditingController _textIdController = TextEditingController();
-  final FocusNode _textIdFocusNode = FocusNode();
-
-  // Animation controllers
-  late AnimationController _headerController;
-  late AnimationController _contentController;
-
-  late Animation<double> _headerFade;
-  late Animation<Offset> _headerSlide;
-  late Animation<double> _contentFade;
-  late AnimationController _backgroundAnimationController;
-
-  List<GovernmentServiceSuggestion> filteredSuggestions = <GovernmentServiceSuggestion>[];
-  bool showSuggestions = false;
-
-  // Government services data for suggestions
-  final List<GovernmentServiceSuggestion> governmentServices = <GovernmentServiceSuggestion>[
-    // Federal Services
-    GovernmentServiceSuggestion(
-        id: "irs",
-        name: "IRS Tax Payment",
-        keywords: <String>["irs", "tax", "income", "federal", "revenue"],
-        icon: Icons.account_balance,
-        category: "Federal"
-    ),
-    GovernmentServiceSuggestion(
-        id: "ssa",
-        name: "Social Security",
-        keywords: <String>["ssa", "social", "security", "benefits"],
-        icon: Icons.security,
-        category: "Federal"
-    ),
-    GovernmentServiceSuggestion(
-        id: "medicare",
-        name: "Medicare Services",
-        keywords: <String>["medicare", "health", "medical", "premium"],
-        icon: Icons.local_hospital,
-        category: "Federal"
-    ),
-    GovernmentServiceSuggestion(
-        id: "tsa",
-        name: "TSA PreCheck",
-        keywords: <String>["tsa", "precheck", "airport", "security", "flight"],
-        icon: Icons.flight_takeoff,
-        category: "Federal"
-    ),
-    GovernmentServiceSuggestion(
-        id: "passport",
-        name: "Passport Services",
-        keywords: <String>["passport", "state", "department", "travel"],
-        icon: Icons.library_books,
-        category: "Federal"
-    ),
-
-    // State Services
-    GovernmentServiceSuggestion(
-        id: "dmv",
-        name: "DMV Services",
-        keywords: <String>["dmv", "license", "driving", "vehicle", "registration"],
-        icon: Icons.directions_car,
-        category: "State"
-    ),
-    GovernmentServiceSuggestion(
-        id: "state_tax",
-        name: "State Tax Board",
-        keywords: <String>["state", "tax", "income", "board"],
-        icon: Icons.account_balance_wallet,
-        category: "State"
-    ),
-    GovernmentServiceSuggestion(
-        id: "employment",
-        name: "Employment Department",
-        keywords: <String>["employment", "unemployment", "job", "work"],
-        icon: Icons.work,
-        category: "State"
-    ),
-
-    // Local Services
-    GovernmentServiceSuggestion(
-        id: "police",
-        name: "Police Department",
-        keywords: <String>["police", "fine", "citation", "permit"],
-        icon: Icons.local_police,
-        category: "Local"
-    ),
-    GovernmentServiceSuggestion(
-        id: "traffic",
-        name: "Traffic Citations",
-        keywords: <String>["traffic", "parking", "citation", "fine", "ticket"],
-        icon: Icons.traffic,
-        category: "Local"
-    ),
-    GovernmentServiceSuggestion(
-        id: "property_tax",
-        name: "Property Tax",
-        keywords: <String>["property", "tax", "real", "estate", "home"],
-        icon: Icons.home,
-        category: "Local"
-    ),
-    GovernmentServiceSuggestion(
-        id: "water",
-        name: "Water Department",
-        keywords: <String>["water", "sewer", "utility", "bill"],
-        icon: Icons.water_drop,
-        category: "Local"
-    ),
-
-    // Court Services
-    GovernmentServiceSuggestion(
-        id: "court",
-        name: "Court Services",
-        keywords: <String>["court", "filing", "legal", "case"],
-        icon: Icons.gavel,
-        category: "Judicial"
-    ),
-  ];
+class _GovernementPayFeeScreenState extends State<GovernementPayFeeScreen> {
+  final TextEditingController _inputController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  bool _isButtonEnabled = false;
 
   @override
   void initState() {
     super.initState();
-    _initAnimations();
-    _startAnimationSequence();
-    _textIdController.addListener(_onTextChanged);
-    _backgroundAnimationController = AnimationController(
-      duration: const Duration(seconds: 20),
-      vsync: this,
-    )..repeat();
+    _inputController.addListener(_updateButtonState);
+    _amountController.addListener(_updateButtonState);
   }
 
-  void _initAnimations() {
-    _headerController = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    );
-
-    _contentController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-
-    _headerFade = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _headerController, curve: Curves.easeOut),
-    );
-
-    _headerSlide = Tween<Offset>(
-      begin: const Offset(0, -0.5),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _headerController, curve: Curves.easeOut));
-
-    _contentFade = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _contentController, curve: Curves.easeOut),
-    );
-  }
-
-  void _startAnimationSequence() async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    _headerController.forward();
-
-    await Future.delayed(const Duration(milliseconds: 200));
-    _contentController.forward();
-  }
-
-  void _onTextChanged() {
-    final String query = _textIdController.text.toLowerCase().trim();
-
-    if (query.isEmpty) {
-      setState(() {
-        showSuggestions = false;
-        filteredSuggestions = <GovernmentServiceSuggestion>[];
-      });
-      return;
-    }
-
-    // Filter suggestions based on text input
-    final List<GovernmentServiceSuggestion> suggestions = governmentServices.where((GovernmentServiceSuggestion service) {
-      return service.keywords.any((String keyword) =>
-          keyword.toLowerCase().contains(query)) ||
-          service.name.toLowerCase().contains(query);
-    }).toList();
-
+  void _updateButtonState() {
     setState(() {
-      filteredSuggestions = suggestions;
-      showSuggestions = suggestions.isNotEmpty;
+      _isButtonEnabled = _inputController.text.isNotEmpty &&
+          _amountController.text.isNotEmpty;
     });
   }
 
-  @override
-  void dispose() {
-    _headerController.dispose();
-    _contentController.dispose();
-    _textIdController.dispose();
-    _textIdFocusNode.dispose();
-    _backgroundAnimationController.dispose();
-    super.dispose();
+  void _proceedToCardSelection() {
+    if (_inputController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter ${widget.service.inputLabel}')),
+      );
+      return;
+    }
+
+    if (_amountController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter amount')),
+      );
+      return;
+    }
+
+    final double amount = double.tryParse(_amountController.text) ?? 0.0;
+
+    if (amount <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid amount')),
+      );
+      return;
+    }
+
+    // Set government fee data in bloc
+    context.read<GovernmentFeeBloc>().add(SetGovernmentFeeData(
+      serviceName: widget.service.name,
+      agency: widget.service.agency,
+      inputLabel: widget.service.inputLabel,
+      inputValue: _inputController.text,
+      amount: amount,
+    ));
+
+    // Navigate to card selection
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const CardsScreen(),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: FadeTransition(
-          opacity: _headerFade,
-          child: SlideTransition(
-            position: _headerSlide,
-            child: const Text(
-              "Government Pay Fee",
-            ),
-          ),
-        ),
-        iconTheme: const IconThemeData(
-          color: MyTheme.secondaryColor,
-        ),
+        title: Text(widget.service.name),
+        centerTitle: true,
       ),
-      body: Stack(
-        children: <Widget>[
-          AnimatedBackground(
-            animationController: _backgroundAnimationController,
-          ),
-          FadeTransition(
-            opacity: _contentFade,
-            child: SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(0, 0.3),
-                end: Offset.zero,
-              ).animate(_contentController),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  // Header Section
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.all(16.w),
+              decoration: BoxDecoration(
+                color: MyTheme.primaryColor,
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    widget.service.emoji,
+                    style: TextStyle(fontSize: 40.sp),
+                  ),
+                  SizedBox(width: 16.w),
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
+                      children: [
                         Text(
-                          "Enter Service ID",
-                          style: theme.textTheme.headlineMedium?.copyWith(
+                          widget.service.name,
+                          style: TextStyle(
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
-                            color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
-                            fontSize: 18,
                           ),
                         ),
-                        SizedBox(height: 8.h),
+                        SizedBox(height: 4.h),
                         Text(
-                          "Enter your government service ID or search by service name",
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.primaryColor != Colors.white
-                                ? Colors.white.withOpacity(0.7)
-                                : const Color(0xff718096),
-                            fontSize: 12,
+                          widget.service.agency,
+                          style: TextStyle(
+                            fontSize: 14.sp,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 20.h),
-                  // Text Input Field
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: AppTextFormField(
-                      controller: _textIdController,
-                      prefixIcon: const Icon(Icons.search,color: MyTheme.secondaryColor,),
-                      useGreenColor: true,
-                      helpText: "Enter Text ID or service name...",
-                    ),
-                  ),
-
-                  SizedBox(height: 10.h),
-
-                  // Suggestions List
-                  if (showSuggestions) ...<Widget>[
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 24.w),
-                      child: Text(
-                        "Suggestions",
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: theme.primaryColor != Colors.white
-                              ? Colors.white
-                              : const Color(0xff2D3748),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 16.h),
-                  ],
-
-                  // Suggestions or Continue Button
-                  Expanded(
-                    child: showSuggestions ? _buildSuggestionsList(theme) : _buildContinueSection(theme),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 30,horizontal: 20),
-                    child: AppButton(
-                      text: "Continue",
-                      onTap: _textIdController.text.trim().isEmpty ? null : () => _showComingSoonDialog(context),
-                      color: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.2) : const Color(0xffE2E8F0),
-                    ),
-                  ),
                 ],
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+            SizedBox(height: 32.h),
 
-  Widget _buildSuggestionsList(ThemeData theme) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24.w),
-      child: AnimationLimiter(
-        child: ListView.builder(
-          physics: const BouncingScrollPhysics(),
-          itemCount: filteredSuggestions.length,
-          itemBuilder: (BuildContext context, int index) {
-            return AnimationConfiguration.staggeredList(
-              position: index,
-              duration: const Duration(milliseconds: 375),
-              child: SlideAnimation(
-                verticalOffset: 50.0,
-                child: FadeInAnimation(
-                  child: _buildSuggestionItem(
-                    filteredSuggestions[index],
-                    theme,
-                  ),
-                ),
+            // Input Label
+            Text(
+              widget.service.inputLabel,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
               ),
-            );
-          },
-        ),
-      ),
-    );
-  }
+            ),
+            const SizedBox(height: 12),
 
-  Widget _buildSuggestionItem(GovernmentServiceSuggestion suggestion, ThemeData theme) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 12.h),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(12.r),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            _textIdController.text = suggestion.name;
-            setState(() {
-              showSuggestions = false;
-            });
-            _textIdFocusNode.unfocus();
-          },
-          borderRadius: BorderRadius.circular(12.r),
-          child: Padding(
-            padding: EdgeInsets.all(16.w),
-            child: Row(
-              children: <Widget>[
-                Container(
-                  height: 45.h,
-                  width: 45.w,
-                  decoration: BoxDecoration(
-                    color: MyTheme.secondaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  child: Icon(
-                    suggestion.icon,
-                    size: 24.sp,
-                    color: MyTheme.secondaryColor,
-                  ),
-                ),
-                SizedBox(width: 16.w),
+            // Input Field
+            Row(
+              children: [
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        suggestion.name,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: theme.primaryColor != Colors.white
-                              ? Colors.white
-                              : const Color(0xff2D3748),
-                        ),
-                      ),
-                      Text(
-                        suggestion.category,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.primaryColor != Colors.white
-                              ? Colors.white.withOpacity(0.6)
-                              : const Color(0xff718096),
-                        ),
-                      ),
-                    ],
+                  child: AppTextFormField(
+                    controller: _inputController,
+                    keyboardType: TextInputType.text,
+                    helpText: widget.service.inputHint,
                   ),
                 ),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 14.sp,
-                  color: theme.primaryColor != Colors.white
-                      ? Colors.white.withOpacity(0.4)
-                      : const Color(0xffA0AEC0),
-                ),
+                if (widget.service.hasInfoIcon)
+                  IconButton(
+                    icon: const Icon(
+                      Icons.info_outline,
+                      color: Colors.black87,
+                    ),
+                    onPressed: () {
+                      if (widget.service.infoText != null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(widget.service.infoText!),
+                            duration: const Duration(seconds: 3),
+                          ),
+                        );
+                      }
+                    },
+                  ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
 
-  Widget _buildContinueSection(ThemeData theme) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24.w),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Icon(
-            Icons.account_balance,
-            size: 50.sp,
-            color: theme.primaryColor != Colors.white
-                ? Colors.white.withOpacity(0.3)
-                : const Color(0xffE2E8F0),
-          ),
-          SizedBox(height: 24.h),
-          Text(
-            "Government Services",
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
-              fontSize: 16,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            "Enter your service ID or search for government services above",
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.primaryColor != Colors.white
-                  ? Colors.white.withOpacity(0.7)
-                  : const Color(0xff718096),
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+            // Info text if available
+            if (widget.service.hasInfoIcon && widget.service.infoText != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  widget.service.infoText!,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ),
 
-  void _showComingSoonDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.r),
-        ),
-        title: Row(
-          children: <Widget>[
-            Icon(
-              Icons.construction,
-              color: MyTheme.secondaryColor,
-              size: 28.sp,
-            ),
-            SizedBox(width: 12.w),
-            Text(
-              "Coming Soon",
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: MyTheme.secondaryColor,
+            SizedBox(height: 24.h),
+
+            // Amount Label
+            const Text(
+              'Fee Amount',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
               ),
             ),
+            const SizedBox(height: 12),
+
+            // Amount Input Field
+            AppTextFormField(
+              controller: _amountController,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              helpText: 'Enter amount (USD)',
+              prefixIcon: Icon(Icons.attach_money),
+            ),
+
+            const Spacer(),
+
+            // Next Button
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: _isButtonEnabled ? _proceedToCardSelection : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _isButtonEnabled
+                      ? MyTheme.primaryColor
+                      : Colors.grey[400],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(28),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'Continue to Card Selection',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
           ],
         ),
-        content: Text(
-          "This feature is currently under development. We're working hard to bring you the best government payment experience!",
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: const Color(0xff718096),
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            style: TextButton.styleFrom(
-              foregroundColor: MyTheme.secondaryColor,
-            ),
-            child: Text(
-              "Got it",
-              style: Font.montserratFont(
-                fontWeight: FontWeight.w600,
-                fontSize: 16.sp,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
-}
 
-class GovernmentServiceSuggestion {
-  final String id;
-  final String name;
-  final List<String> keywords;
-  final IconData icon;
-  final String category;
-
-  GovernmentServiceSuggestion({
-    required this.id,
-    required this.name,
-    required this.keywords,
-    required this.icon,
-    required this.category,
-  });
+  @override
+  void dispose() {
+    _inputController.dispose();
+    _amountController.dispose();
+    super.dispose();
+  }
 }

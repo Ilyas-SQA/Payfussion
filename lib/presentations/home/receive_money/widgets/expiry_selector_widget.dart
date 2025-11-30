@@ -64,6 +64,7 @@ class ExpirySelectorWidget extends StatelessWidget {
           ),
           selected: isSelected,
           selectedColor: MyTheme.primaryColor,
+
           backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16.r),

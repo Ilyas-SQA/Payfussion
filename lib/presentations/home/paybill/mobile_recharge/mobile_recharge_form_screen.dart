@@ -32,13 +32,20 @@ class _MobileRechargeFormScreenState extends State<MobileRechargeFormScreen>
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
 
-  // ✅ FIXED: Separate form keys for each tab
   final GlobalKey<FormState> _packagesFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _rechargeFormKey = GlobalKey<FormState>();
 
+  // Enhanced animation controllers
   late AnimationController _backgroundAnimationController;
   late AnimationController _fadeController;
+  late AnimationController _slideController;
+  late AnimationController _scaleController;
+  late AnimationController _buttonPulseController;
+
   late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _buttonPulseAnimation;
 
   String? _selectedAmount;
   Map<String, dynamic>? _selectedPackage;
@@ -88,24 +95,63 @@ class _MobileRechargeFormScreenState extends State<MobileRechargeFormScreen>
   void initState() {
     super.initState();
     _initAnimations();
+    _startAnimationSequence();
   }
 
   void _initAnimations() {
+    // Background animation
     _backgroundAnimationController = AnimationController(
       duration: const Duration(seconds: 20),
       vsync: this,
     )..repeat();
 
+    // Fade animation
     _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
-
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _fadeController, curve: Curves.easeOut),
     );
 
+    // Slide animation
+    _slideController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic));
+
+    // Scale animation
+    _scaleController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _scaleController, curve: Curves.easeOutBack),
+    );
+
+    // Button pulse animation
+    _buttonPulseController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    )..repeat(reverse: true);
+    _buttonPulseAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
+      CurvedAnimation(parent: _buttonPulseController, curve: Curves.easeInOut),
+    );
+  }
+
+  void _startAnimationSequence() async {
+    await Future.delayed(const Duration(milliseconds: 100));
     _fadeController.forward();
+
+    await Future.delayed(const Duration(milliseconds: 200));
+    _slideController.forward();
+
+    await Future.delayed(const Duration(milliseconds: 300));
+    _scaleController.forward();
   }
 
   @override
@@ -114,6 +160,9 @@ class _MobileRechargeFormScreenState extends State<MobileRechargeFormScreen>
     _amountController.dispose();
     _backgroundAnimationController.dispose();
     _fadeController.dispose();
+    _slideController.dispose();
+    _scaleController.dispose();
+    _buttonPulseController.dispose();
     super.dispose();
   }
 
@@ -133,7 +182,6 @@ class _MobileRechargeFormScreenState extends State<MobileRechargeFormScreen>
     });
   }
 
-  // ✅ FIXED: Accept form key as parameter
   void _proceedToCardSelection(GlobalKey<FormState> formKey) {
     if (formKey.currentState!.validate()) {
       if (_phoneController.text.isEmpty) {
@@ -152,7 +200,6 @@ class _MobileRechargeFormScreenState extends State<MobileRechargeFormScreen>
 
       final double amount = double.parse(_amountController.text);
 
-      /// Set recharge data in bloc
       context.read<MobileRechargeBloc>().add(SetRechargeData(
         companyName: widget.companyName,
         network: widget.network,
@@ -163,11 +210,19 @@ class _MobileRechargeFormScreenState extends State<MobileRechargeFormScreen>
         packageValidity: _selectedPackage?['validity'],
       ));
 
-      // Navigate to card selection
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (BuildContext context) => const CardsScreen(),
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => const CardsScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.easeInOutCubic;
+            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            var offsetAnimation = animation.drive(tween);
+            return SlideTransition(position: offsetAnimation, child: child);
+          },
+          transitionDuration: const Duration(milliseconds: 400),
         ),
       );
     }
@@ -183,11 +238,14 @@ class _MobileRechargeFormScreenState extends State<MobileRechargeFormScreen>
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
-          title: Text(
-            widget.companyName,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+          title: FadeTransition(
+            opacity: _fadeAnimation,
+            child: Text(
+              widget.companyName,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+              ),
             ),
           ),
           bottom: TabBar(
@@ -195,14 +253,8 @@ class _MobileRechargeFormScreenState extends State<MobileRechargeFormScreen>
             unselectedLabelColor: theme.primaryColor != Colors.white ? Colors.white.withOpacity(0.6) : Colors.grey,
             indicatorColor: MyTheme.primaryColor,
             indicatorWeight: 3,
-            labelStyle: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.bold,
-            ),
-            unselectedLabelStyle: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.normal,
-            ),
+            labelStyle: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+            unselectedLabelStyle: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.normal),
             tabs: const <Widget>[
               Tab(text: 'Packages'),
               Tab(text: 'Recharge'),
@@ -211,11 +263,14 @@ class _MobileRechargeFormScreenState extends State<MobileRechargeFormScreen>
         ),
         body: FadeTransition(
           opacity: _fadeAnimation,
-          child: TabBarView(
-            children: <Widget>[
-              _buildPackagesTab(theme),
-              _buildRechargeTab(theme),
-            ],
+          child: SlideTransition(
+            position: _slideAnimation,
+            child: TabBarView(
+              children: <Widget>[
+                _buildPackagesTab(theme),
+                _buildRechargeTab(theme),
+              ],
+            ),
           ),
         ),
       ),
@@ -227,17 +282,29 @@ class _MobileRechargeFormScreenState extends State<MobileRechargeFormScreen>
       physics: const BouncingScrollPhysics(),
       padding: EdgeInsets.all(24.w),
       child: Form(
-        key: _packagesFormKey, // ✅ Using separate key
+        key: _packagesFormKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            _buildCarrierInfoCard(theme),
+            ScaleTransition(
+              scale: _scaleAnimation,
+              child: _buildCarrierInfoCard(theme),
+            ),
             SizedBox(height: 32.h),
-            _buildPhoneNumberInput(theme),
+            _buildAnimatedSection(
+              delay: 200,
+              child: _buildPhoneNumberInput(theme),
+            ),
             SizedBox(height: 24.h),
-            _buildPackagesSection(theme),
+            _buildAnimatedSection(
+              delay: 300,
+              child: _buildPackagesSection(theme),
+            ),
             SizedBox(height: 32.h),
-            _buildRechargeButton(theme, _packagesFormKey), // ✅ Passing form key
+            _buildAnimatedSection(
+              delay: 400,
+              child: _buildRechargeButton(theme, _packagesFormKey),
+            ),
           ],
         ),
       ),
@@ -249,22 +316,55 @@ class _MobileRechargeFormScreenState extends State<MobileRechargeFormScreen>
       physics: const BouncingScrollPhysics(),
       padding: EdgeInsets.all(24.w),
       child: Form(
-        key: _rechargeFormKey, // ✅ Using separate key
+        key: _rechargeFormKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            _buildCarrierInfoCard(theme),
+            ScaleTransition(
+              scale: _scaleAnimation,
+              child: _buildCarrierInfoCard(theme),
+            ),
             SizedBox(height: 32.h),
-            _buildPhoneNumberInput(theme),
+            _buildAnimatedSection(
+              delay: 200,
+              child: _buildPhoneNumberInput(theme),
+            ),
             SizedBox(height: 24.h),
-            _buildQuickAmountSelection(theme),
+            _buildAnimatedSection(
+              delay: 300,
+              child: _buildQuickAmountSelection(theme),
+            ),
             SizedBox(height: 24.h),
-            _buildAmountInput(theme),
+            _buildAnimatedSection(
+              delay: 400,
+              child: _buildAmountInput(theme),
+            ),
             SizedBox(height: 32.h),
-            _buildRechargeButton(theme, _rechargeFormKey), // ✅ Passing form key
+            _buildAnimatedSection(
+              delay: 500,
+              child: _buildRechargeButton(theme, _rechargeFormKey),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildAnimatedSection({required int delay, required Widget child}) {
+    return TweenAnimationBuilder<double>(
+      duration: Duration(milliseconds: 600 + delay),
+      tween: Tween(begin: 0.0, end: 1.0),
+      curve: Curves.easeOut,
+      builder: (context, value, child) {
+        return Transform.translate(
+          offset: Offset(0, 30 * (1 - value)),
+          child: Opacity(
+            opacity: value,
+            child: child,
+          ),
+        );
+      },
+      child: child,
     );
   }
 
@@ -287,18 +387,29 @@ class _MobileRechargeFormScreenState extends State<MobileRechargeFormScreen>
         children: <Widget>[
           Row(
             children: <Widget>[
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                decoration: BoxDecoration(
-                  color: MyTheme.primaryColor,
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Text(
-                  widget.network,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w600,
+              TweenAnimationBuilder<double>(
+                duration: const Duration(milliseconds: 800),
+                tween: Tween(begin: 0.0, end: 1.0),
+                curve: Curves.elasticOut,
+                builder: (context, value, child) {
+                  return Transform.scale(
+                    scale: value,
+                    child: child,
+                  );
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                  decoration: BoxDecoration(
+                    color: MyTheme.primaryColor,
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: Text(
+                    widget.network,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -409,91 +520,118 @@ class _MobileRechargeFormScreenState extends State<MobileRechargeFormScreen>
             final Map<String, dynamic> package = packages[index];
             final bool isSelected = _selectedPackage?['name'] == package['name'];
 
-            return Padding(
-              padding: EdgeInsets.only(bottom: 12.h),
-              child: InkWell(
-                onTap: () => _selectPackage(package),
-                borderRadius: BorderRadius.circular(12.r),
-                child: Container(
-                  padding: EdgeInsets.all(16.w),
-                  decoration: BoxDecoration(
-                    color: theme.scaffoldBackgroundColor,
-                    borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(
-                      color: isSelected ? MyTheme.primaryColor : Colors.grey.withOpacity(0.3),
-                      width: isSelected ? 2 : 1,
-                    ),
-                    boxShadow: isSelected ? <BoxShadow>[
-                      BoxShadow(
-                        color: MyTheme.primaryColor.withOpacity(0.2),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ] : null,
+            return TweenAnimationBuilder<double>(
+              duration: Duration(milliseconds: 400 + (index * 100)),
+              tween: Tween(begin: 0.0, end: 1.0),
+              curve: Curves.easeOut,
+              builder: (context, value, child) {
+                return Transform.translate(
+                  offset: Offset(50 * (1 - value), 0),
+                  child: Opacity(
+                    opacity: value,
+                    child: child,
                   ),
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.all(12.w),
-                        decoration: BoxDecoration(
-                          color: MyTheme.primaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8.r),
-                        ),
-                        child: Icon(
-                          Icons.card_giftcard,
-                          color: MyTheme.primaryColor,
-                          size: 24.sp,
-                        ),
+                );
+              },
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 12.h),
+                child: InkWell(
+                  onTap: () => _selectPackage(package),
+                  borderRadius: BorderRadius.circular(12.r),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    padding: EdgeInsets.all(16.w),
+                    decoration: BoxDecoration(
+                      color: theme.scaffoldBackgroundColor,
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: Border.all(
+                        color: isSelected ? MyTheme.primaryColor : Colors.grey.withOpacity(0.3),
+                        width: isSelected ? 2 : 1,
                       ),
-                      SizedBox(width: 16.w),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              package['name'],
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.bold,
-                                color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+                      boxShadow: isSelected ? <BoxShadow>[
+                        BoxShadow(
+                          color: MyTheme.primaryColor.withOpacity(0.2),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ] : null,
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        Container(
+                          padding: EdgeInsets.all(12.w),
+                          decoration: BoxDecoration(
+                            color: MyTheme.primaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Icon(
+                            Icons.card_giftcard,
+                            color: MyTheme.primaryColor,
+                            size: 24.sp,
+                          ),
+                        ),
+                        SizedBox(width: 16.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                package['name'],
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748),
+                                ),
                               ),
-                            ),
-                            SizedBox(height: 4.h),
-                            Row(
-                              children: <Widget>[
-                                Icon(Icons.data_usage, size: 14.sp, color: Colors.grey[600]),
-                                SizedBox(width: 4.w),
-                                Flexible(
-                                  child: Text(
-                                    package['data'],
+                              SizedBox(height: 4.h),
+                              Row(
+                                children: <Widget>[
+                                  Icon(Icons.data_usage, size: 14.sp, color: Colors.grey[600]),
+                                  SizedBox(width: 4.w),
+                                  Flexible(
+                                    child: Text(
+                                      package['data'],
+                                      style: TextStyle(fontSize: 13.sp, color: Colors.grey[600]),
+                                    ),
+                                  ),
+                                  SizedBox(width: 12.w),
+                                  Icon(Icons.calendar_today, size: 14.sp, color: Colors.grey[600]),
+                                  SizedBox(width: 4.w),
+                                  Text(
+                                    package['validity'],
                                     style: TextStyle(fontSize: 13.sp, color: Colors.grey[600]),
                                   ),
-                                ),
-                                SizedBox(width: 12.w),
-                                Icon(Icons.calendar_today, size: 14.sp, color: Colors.grey[600]),
-                                SizedBox(width: 4.w),
-                                Text(
-                                  package['validity'],
-                                  style: TextStyle(fontSize: 13.sp, color: Colors.grey[600]),
-                                ),
-                              ],
-                            ),
-                          ],
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Text(
-                        package['price'],
-                        style: TextStyle(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.bold,
-                          color: MyTheme.primaryColor,
+                        Text(
+                          package['price'],
+                          style: TextStyle(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.bold,
+                            color: MyTheme.primaryColor,
+                          ),
                         ),
-                      ),
-                      if (isSelected) ...<Widget>[
-                        SizedBox(width: 8.w),
-                        Icon(Icons.check_circle, color: MyTheme.primaryColor, size: 24.sp),
+                        if (isSelected) ...<Widget>[
+                          SizedBox(width: 8.w),
+                          TweenAnimationBuilder<double>(
+                            duration: const Duration(milliseconds: 400),
+                            tween: Tween(begin: 0.0, end: 1.0),
+                            curve: Curves.elasticOut,
+                            builder: (context, value, child) {
+                              return Transform.scale(
+                                scale: value,
+                                child: child,
+                              );
+                            },
+                            child: Icon(Icons.check_circle, color: MyTheme.primaryColor, size: 24.sp),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -520,28 +658,44 @@ class _MobileRechargeFormScreenState extends State<MobileRechargeFormScreen>
         Wrap(
           spacing: 12.w,
           runSpacing: 12.h,
-          children: _quickAmounts.map((String amount) {
+          children: _quickAmounts.asMap().entries.map((entry) {
+            final int index = entry.key;
+            final String amount = entry.value;
             final bool isSelected = _selectedAmount == amount;
-            return InkWell(
-              onTap: () => _selectQuickAmount(amount),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
-                decoration: BoxDecoration(
-                  color: isSelected ? MyTheme.primaryColor : theme.scaffoldBackgroundColor,
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(
-                    color: isSelected ? MyTheme.primaryColor : Colors.grey.withOpacity(0.3),
-                    width: 2,
+
+            return TweenAnimationBuilder<double>(
+              duration: Duration(milliseconds: 300 + (index * 80)),
+              tween: Tween(begin: 0.0, end: 1.0),
+              curve: Curves.elasticOut,
+              builder: (context, value, child) {
+                return Transform.scale(
+                  scale: value,
+                  child: child,
+                );
+              },
+              child: InkWell(
+                onTap: () => _selectQuickAmount(amount),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+                  decoration: BoxDecoration(
+                    color: isSelected ? MyTheme.primaryColor : theme.scaffoldBackgroundColor,
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(
+                      color: isSelected ? MyTheme.primaryColor : Colors.grey.withOpacity(0.3),
+                      width: 2,
+                    ),
                   ),
-                ),
-                child: Text(
-                  amount,
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w600,
-                    color: isSelected
-                        ? Colors.white
-                        : (theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748)),
+                  child: Text(
+                    amount,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected
+                          ? Colors.white
+                          : (theme.primaryColor != Colors.white ? Colors.white : const Color(0xff2D3748)),
+                    ),
                   ),
                 ),
               ),
@@ -607,35 +761,37 @@ class _MobileRechargeFormScreenState extends State<MobileRechargeFormScreen>
     );
   }
 
-  // ✅ FIXED: Accept form key as parameter
   Widget _buildRechargeButton(ThemeData theme, GlobalKey<FormState> formKey) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () => _proceedToCardSelection(formKey),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: MyTheme.primaryColor,
-          padding: EdgeInsets.symmetric(vertical: 16.h),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.r),
+    return ScaleTransition(
+      scale: _buttonPulseAnimation,
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: () => _proceedToCardSelection(formKey),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: MyTheme.primaryColor,
+            padding: EdgeInsets.symmetric(vertical: 16.h),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            elevation: 4,
           ),
-          elevation: 4,
-        ),
-        child: _isProcessing
-            ? SizedBox(
-          height: 20.h,
-          width: 20.w,
-          child: const CircularProgressIndicator(
-            color: Colors.white,
-            strokeWidth: 2,
-          ),
-        )
-            : Text(
-          'Continue to Card Selection',
-          style: TextStyle(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+          child: _isProcessing
+              ? SizedBox(
+            height: 20.h,
+            width: 20.w,
+            child: const CircularProgressIndicator(
+              color: Colors.white,
+              strokeWidth: 2,
+            ),
+          )
+              : Text(
+            'Continue to Card Selection',
+            style: TextStyle(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
         ),
       ),

@@ -13,6 +13,7 @@ import 'package:payfussion/logic/blocs/auth/auth_bloc.dart';
 import 'package:payfussion/logic/blocs/bank_transaction/bank_transaction_bloc.dart';
 import 'package:payfussion/logic/blocs/currency/currency_bloc.dart';
 import 'package:payfussion/logic/blocs/donation/donation_bloc.dart';
+import 'package:payfussion/logic/blocs/governement_fee/governement_fee_bloc.dart';
 import 'package:payfussion/logic/blocs/insurance/insurance_bloc.dart';
 import 'package:payfussion/logic/blocs/notification/notification_bloc.dart';
 import 'package:payfussion/logic/blocs/pay_bill/bill_split/bill_split_bloc.dart';
@@ -234,6 +235,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (BuildContext context) => BillSplitBloc(context.read<NotificationBloc>())),
         BlocProvider(create: (BuildContext context) => InternetBillBloc(context.read<NotificationBloc>())),
         BlocProvider(create: (BuildContext context) => DonationBloc(context.read<NotificationBloc>())),
+        BlocProvider(create: (BuildContext context) => GovernmentFeeBloc(context.read<NotificationBloc>())),
 
       ],
       child: ScreenUtilInit(
