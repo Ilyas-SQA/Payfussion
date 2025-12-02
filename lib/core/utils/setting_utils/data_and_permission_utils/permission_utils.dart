@@ -12,19 +12,26 @@ class PermissionUtils {
   ];
 
   static String getPermissionTitle(Permission permission) {
-    switch(permission) {
-      case Permission.camera: return 'Camera';
-      case Permission.contacts: return 'Contacts';
-      case Permission.location: return 'Location';
-      case Permission.notification: return 'Notifications';
-      case Permission.storage: return 'Storage';
-      case Permission.microphone: return 'Microphone';
-      default: return 'Unknown';
+    switch (permission) {
+      case Permission.camera:
+        return 'Camera';
+      case Permission.contacts:
+        return 'Contacts';
+      case Permission.location:
+        return 'Location';
+      case Permission.notification:
+        return 'Notifications';
+      case Permission.storage:
+        return 'Storage';
+      case Permission.microphone:
+        return 'Microphone';
+      default:
+        return 'Unknown';
     }
   }
 
   static String getPermissionDescription(Permission permission) {
-    switch(permission) {
+    switch (permission) {
       case Permission.camera:
         return 'Allows scanning QR codes for payments, document verification, and adding payment cards.';
       case Permission.contacts:
@@ -43,14 +50,45 @@ class PermissionUtils {
   }
 
   static IconData getPermissionIcon(Permission permission) {
-    switch(permission) {
-      case Permission.camera: return Icons.camera_alt_outlined;
-      case Permission.contacts: return Icons.contacts_outlined;
-      case Permission.location: return Icons.location_on_outlined;
-      case Permission.notification: return Icons.notifications_outlined;
-      case Permission.storage: return Icons.folder_outlined;
-      case Permission.microphone: return Icons.mic_outlined;
-      default: return Icons.help_outline;
+    switch (permission) {
+      case Permission.camera:
+        return Icons.camera_alt_outlined;
+      case Permission.contacts:
+        return Icons.contacts_outlined;
+      case Permission.location:
+        return Icons.location_on_outlined;
+      case Permission.notification:
+        return Icons.notifications_outlined;
+      case Permission.storage:
+        return Icons.folder_outlined;
+      case Permission.microphone:
+        return Icons.mic_outlined;
+      default:
+        return Icons.help_outline;
     }
+  }
+
+  /// Check if permission is granted
+  static Future<bool> isPermissionGranted(Permission permission) async {
+    final PermissionStatus status = await permission.status;
+    return status.isGranted;
+  }
+
+  /// Request multiple permissions at once
+  static Future<Map<Permission, PermissionStatus>> requestMultiplePermissions(
+      List<Permission> permissions,
+      ) async {
+    final Map<Permission, PermissionStatus> statuses = <Permission, PermissionStatus>{};
+
+    for (final Permission permission in permissions) {
+      statuses[permission] = await permission.request();
+    }
+
+    return statuses;
+  }
+
+  /// Check if we should show rationale for permission
+  static Future<bool> shouldShowRationale(Permission permission) async {
+    return permission.shouldShowRequestRationale;
   }
 }

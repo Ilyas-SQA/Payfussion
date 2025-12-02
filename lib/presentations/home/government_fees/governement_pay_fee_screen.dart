@@ -77,6 +77,7 @@ class _GovernementPayFeeScreenState extends State<GovernementPayFeeScreen> {
       ),
     );
   }
+  final _key = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -87,149 +88,160 @@ class _GovernementPayFeeScreenState extends State<GovernementPayFeeScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.all(16.w),
-              decoration: BoxDecoration(
-                color: MyTheme.primaryColor,
-                borderRadius: BorderRadius.circular(12.r),
+        child: Form(
+          key: _key,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: EdgeInsets.all(16.w),
+                decoration: BoxDecoration(
+                  color: MyTheme.primaryColor,
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      widget.service.emoji,
+                      style: TextStyle(fontSize: 40.sp),
+                    ),
+                    SizedBox(width: 16.w),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.service.name,
+                            style: TextStyle(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 4.h),
+                          Text(
+                            widget.service.agency,
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              child: Row(
+              SizedBox(height: 20.h),
+
+              // Input Label
+              Text(
+                widget.service.inputLabel,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // Input Field
+              Row(
                 children: [
-                  Text(
-                    widget.service.emoji,
-                    style: TextStyle(fontSize: 40.sp),
-                  ),
-                  SizedBox(width: 16.w),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.service.name,
-                          style: TextStyle(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 4.h),
-                        Text(
-                          widget.service.agency,
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                          ),
-                        ),
-                      ],
+                    child: AppTextFormField(
+                      controller: _inputController,
+                      keyboardType: TextInputType.text,
+                      helpText: widget.service.inputHint,
+                      validator: (value){
+                        return value!.isEmpty ? "Please Enter ${widget.service.inputHint}" : null;
+                      },
                     ),
                   ),
+                  if (widget.service.hasInfoIcon)
+                    IconButton(
+                      icon: const Icon(
+                        Icons.info_outline,
+                        color: Colors.black87,
+                      ),
+                      onPressed: () {
+                        if (widget.service.infoText != null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(widget.service.infoText!),
+                              duration: const Duration(seconds: 3),
+                            ),
+                          );
+                        }
+                      },
+                    ),
                 ],
               ),
-            ),
-            SizedBox(height: 32.h),
 
-            // Input Label
-            Text(
-              widget.service.inputLabel,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Input Field
-            Row(
-              children: [
-                Expanded(
-                  child: AppTextFormField(
-                    controller: _inputController,
-                    keyboardType: TextInputType.text,
-                    helpText: widget.service.inputHint,
-                  ),
-                ),
-                if (widget.service.hasInfoIcon)
-                  IconButton(
-                    icon: const Icon(
-                      Icons.info_outline,
-                      color: Colors.black87,
+              // Info text if available
+              if (widget.service.hasInfoIcon && widget.service.infoText != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
+                    widget.service.infoText!,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
                     ),
-                    onPressed: () {
-                      if (widget.service.infoText != null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(widget.service.infoText!),
-                            duration: const Duration(seconds: 3),
-                          ),
-                        );
-                      }
-                    },
                   ),
-              ],
-            ),
+                ),
 
-            // Info text if available
-            if (widget.service.hasInfoIcon && widget.service.infoText != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  widget.service.infoText!,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
+              SizedBox(height: 20.h),
+
+              // Amount Label
+              const Text(
+                'Fee Amount',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // Amount Input Field
+              AppTextFormField(
+                controller: _amountController,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                helpText: 'Enter amount (USD)',
+                prefixIcon: Icon(Icons.attach_money),
+                validator: (value){
+                  return value!.isEmpty ? "Please Enter Amount" : null;
+                },
+              ),
+
+              const Spacer(),
+
+              // Next Button
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: (){
+                    if(_key.currentState!.validate())
+                     _proceedToCardSelection();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _isButtonEnabled ? MyTheme.primaryColor : Colors.grey[400],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(28),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Continue to Card Selection',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-
-            SizedBox(height: 24.h),
-
-            // Amount Label
-            const Text(
-              'Fee Amount',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Amount Input Field
-            AppTextFormField(
-              controller: _amountController,
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              helpText: 'Enter amount (USD)',
-              prefixIcon: Icon(Icons.attach_money),
-            ),
-
-            const Spacer(),
-
-            // Next Button
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: _isButtonEnabled ? _proceedToCardSelection : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _isButtonEnabled
-                      ? MyTheme.primaryColor
-                      : Colors.grey[400],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Text(
-                  'Continue to Card Selection',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-          ],
+              const SizedBox(height: 10),
+            ],
+          ),
         ),
       ),
     );

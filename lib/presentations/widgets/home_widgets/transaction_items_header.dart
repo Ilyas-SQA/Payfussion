@@ -25,7 +25,7 @@ class TransactionItemHeader extends StatelessWidget {
         children: <Widget>[
           Container(
             // Make width dynamic to accommodate different text lengths
-            constraints: BoxConstraints(minWidth: 90.w, maxWidth: 160.w),
+            constraints: BoxConstraints(minWidth: 120.w, maxWidth: 160.w),
             height: 32.h,
             padding: EdgeInsets.symmetric(horizontal: 12.w),
             alignment: Alignment.center,

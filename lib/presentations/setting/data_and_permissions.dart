@@ -115,8 +115,6 @@ class _DataAndPermissionsScreenState extends State<DataAndPermissionsScreen> wit
           DataManagementTab(colors: colors),
           AppPermissionsTab(
             colors: colors,
-            permissionStatus: _permissionStatus,
-            onPermissionRequested: _handlePermissionRequest,
           ),
           PrivacySettingsTab(colors: colors),
         ],

@@ -22,20 +22,64 @@ class PermissionCard extends StatelessWidget {
     required this.onRequest,
   });
 
+  String _getStatusText() {
+    if (status == null) return 'Unknown';
+
+    if (status!.isGranted) {
+      return 'Currently allowed';
+    } else if (status!.isDenied) {
+      return 'Currently denied';
+    } else if (status!.isPermanentlyDenied) {
+      return 'Permanently denied';
+    } else if (status!.isRestricted) {
+      return 'Restricted';
+    } else if (status!.isLimited) {
+      return 'Limited access';
+    } else {
+      return 'Not determined';
+    }
+  }
+
+  Color _getStatusColor() {
+    if (status == null) return colors.textSecondary;
+
+    if (status!.isGranted) {
+      return colors.success;
+    } else if (status!.isPermanentlyDenied) {
+      return colors.error;
+    } else {
+      return colors.warning;
+    }
+  }
+
+  String _getButtonText() {
+    if (status == null) return 'Request';
+
+    if (status!.isGranted) {
+      return 'Manage';
+    } else if (status!.isPermanentlyDenied) {
+      return 'Settings';
+    } else {
+      return 'Allow';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isGranted = status?.isGranted ?? false;
 
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(5.r),
+        borderRadius: BorderRadius.circular(12.r),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
-            blurRadius: 5,
-            offset: const Offset(0, 4),
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.grey.withOpacity(0.2)
+                : Colors.black.withOpacity(0.4),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -45,18 +89,28 @@ class PermissionCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Icon(
-                PermissionUtils.getPermissionIcon(permission),
-                size: 28,
-                color: MyTheme.primaryColor,
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: MyTheme.primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  PermissionUtils.getPermissionIcon(permission),
+                  size: 24,
+                  color: MyTheme.primaryColor,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(PermissionUtils.getPermissionTitle(permission), style: AppStyles.cardTitleStyle(context)),
-                    const SizedBox(height: 4),
+                    Text(
+                      PermissionUtils.getPermissionTitle(permission),
+                      style: AppStyles.cardTitleStyle(context),
+                    ),
+                    const SizedBox(height: 6),
                     Text(
                       PermissionUtils.getPermissionDescription(permission),
                       style: Font.montserratFont(
@@ -69,37 +123,71 @@ class PermissionCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                isGranted ? 'Currently allowed' : 'Currently denied',
-                style: AppStyles.bodyTextStyle(context).copyWith(
-                  color: isGranted ? colors.success : colors.error,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 12,
-                ),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: _getStatusColor().withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: _getStatusColor().withOpacity(0.3),
+                width: 1,
               ),
-              ElevatedButton(
-                onPressed: () async {
-                  if (isGranted) {
-                    openAppSettings();
-                  } else {
-                    onRequest(permission);
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isGranted ? colors.primary : MyTheme.primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      _getStatusText(),
+                      style: AppStyles.bodyTextStyle(context).copyWith(
+                        color: _getStatusColor(),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (status?.isGranted ?? false) {
+                      await openAppSettings();
+                    } else if (status?.isPermanentlyDenied ?? false) {
+                      await openAppSettings();
+                    } else {
+                      onRequest(permission);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isGranted
+                        ? colors.primary.withOpacity(0.8)
+                        : MyTheme.primaryColor,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  child: Text(
+                    _getButtonText(),
+                    style: AppStyles.buttonTextStyle(context).copyWith(
+                      fontSize: 12,
+                    ),
                   ),
                 ),
-                child: Text(
-                  isGranted ? 'Manage' : 'Allow',
-                  style: AppStyles.buttonTextStyle(context),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
