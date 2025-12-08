@@ -55,7 +55,7 @@ class _SignInScreenState extends State<SignInScreen> with TickerProviderStateMix
             );
           } else if (state is SignInSuccess || state is BiometricAuthSuccess) {
             Navigator.of(context).pop();
-            context.pushReplacement(RouteNames.homeScreen);
+            context.pushReplacement(RouteNames.bottomNavigationBarScreen);
           } else if (state is AuthStateFailure || state is BiometricAuthFailure) {
             Navigator.of(context).pop();
             final String message = state is AuthStateFailure ? state.message : (state as BiometricAuthFailure).message;

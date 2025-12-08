@@ -33,7 +33,7 @@ class SplashServices {
         } else {
           /// Biometric enabled nahi hai, directly home screen par jao
           if (context.mounted) {
-            context.go(RouteNames.homeScreen);
+            context.go(RouteNames.bottomNavigationBarScreen);
           }
         }
       } else {
@@ -68,7 +68,7 @@ class SplashServices {
       if (context.mounted) {
         if (result['success'] == true) {
           /// Authentication successful
-          context.go(RouteNames.homeScreen);
+          context.go(RouteNames.bottomNavigationBarScreen);
         } else {
           /// Authentication failed
           _showAuthenticationFailedDialog(context, result['error'] ?? 'Authentication failed');

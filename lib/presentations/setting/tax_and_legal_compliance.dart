@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:payfussion/presentations/setting/receipts_invoice_screen.dart';
 import '../../core/constants/fonts.dart';
 import '../../core/theme/theme.dart';
 import '../widgets/background_theme.dart';
+import 'annual_tax_screen.dart';
 
 
 class TaxComplianceScreen extends StatefulWidget {
@@ -63,9 +65,11 @@ class _TaxComplianceScreenState extends State<TaxComplianceScreen> with TickerPr
                   'Generate and download annual tax reports for your business or freelance use.',
                   actionText: 'Generate Report',
                   onTap: () {
-                    // TODO: Implement navigation or action for generating report
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Navigate to Generate Report')),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AnnualTaxReportScreen(),
+                      ),
                     );
                   },
                 ),
@@ -79,9 +83,11 @@ class _TaxComplianceScreenState extends State<TaxComplianceScreen> with TickerPr
                       'Access downloadable receipts and invoices for all completed transactions.',
                   actionText: 'View Receipts',
                   onTap: () {
-                    // TODO: Implement navigation or action for viewing receipts
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Navigate to View Receipts')),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ReceiptsScreen(),
+                      ),
                     );
                   },
                 ),

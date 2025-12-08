@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:payfussion/core/theme/theme.dart';
+import 'package:payfussion/core/widget/appbutton/app_button.dart';
 import 'package:payfussion/data/models/card/card_model.dart';
 import 'package:payfussion/presentations/setting/avalible_limit_screen.dart';
 import 'package:payfussion/presentations/setting/community_forum/community_forum_screen.dart';
@@ -231,8 +232,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                           ),
                         ),
                         SizedBox(height: 20.h),
-                        const LimitSettingContainer(),
-
+                        LimitSettingContainer(userId: SessionController.user.uid.toString()),
                         SizedBox(height: 35.h),
                         // Linked Accounts
                         _buildLinkedAccountsSection(),
@@ -299,29 +299,23 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
         SettingItemsHeader(
           itemHeaderSideButton: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            child: TextButton(
-              style: TextButton.styleFrom(
-                backgroundColor: MyTheme.primaryColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-              ),
-              onPressed: isSavingCard
-                  ? null   // Disable button while running
-                  : () async {
+            child: AppButton(
+              onTap: isSavingCard ? null : () async {
                 setState(() => isSavingCard = true);
 
                 await PaymentService().saveCard(context);
 
                 setState(() => isSavingCard = false);
               },
-              child: Text(
-                isSavingCard ? "Waiting..." : "Add New",
-                style: Font.montserratFont(
-                  fontSize: 12.sp,
-                  color: const Color(0xffffffff),
-                  fontWeight: FontWeight.bold,
-                ),
+              text: isSavingCard ? "Waiting..." : "Add New",
+              height: 36.h, // Smaller height for better appearance
+              width: 100.w, // Fixed width instead of infinity
+              color: MyTheme.primaryColor,
+              borderRadius: BorderRadius.circular(20.r), // More rounded
+              textStyle: Font.montserratFont(
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+                fontSize: 13.sp,
               ),
             ),
           ),

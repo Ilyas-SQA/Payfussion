@@ -31,7 +31,6 @@ class SettingItemsHeader extends StatelessWidget {
             height: 30.h,
             width: 84.w,
             decoration: BoxDecoration(
-              color: const Color(0xff2D9CDB),
               borderRadius: BorderRadius.circular(13.r),
             ),
             child: Center(child: itemHeaderSideButton),

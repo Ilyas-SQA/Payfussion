@@ -32,9 +32,9 @@ extension ScanToPayHomeScreenExtension on GlobalKey<State<ScanToPayHomeScreen>> 
 }
 
 class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver
+    implements ScreenVisibilityInterface {
 
-  // Mobile scanner controller instead of manual camera handling
   MobileScannerController? mobileScannerController;
   bool isCameraInitialized = false;
   bool isQRMode = true;
@@ -44,7 +44,9 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
   bool _isProcessingCode = false;
   bool _isNfcSessionActive = false;
   late AnimationController _nfcAnimationController;
-  bool _isScreenVisible = false;
+  bool _isScreenVisible = true;
+  DateTime? _lastScanTime;
+  String? _lastScannedCode;
 
   @override
   void initState() {
@@ -52,52 +54,73 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
     WidgetsBinding.instance.addObserver(this);
     _checkNfcAvailability();
 
-    // Initialize animation controller
     _nfcAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
     );
 
-    // Start with camera initialization
-    _initializeScanner();
+    // Initialize scanner after a small delay to ensure widget is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeScanner();
+    });
   }
 
-  // Initialize mobile scanner
   Future<void> _initializeScanner() async {
+    if (!mounted) return;
+
     try {
-      // Check camera permission first
-      final PermissionStatus status = await Permission.camera.request();
+      // Check and request camera permission
+      final PermissionStatus status = await Permission.camera.status;
+
       if (status.isDenied) {
-        _showErrorSnackBar("Camera permission is required for QR scanning");
-        return;
+        final PermissionStatus newStatus = await Permission.camera.request();
+        if (newStatus.isDenied || newStatus.isPermanentlyDenied) {
+          _showErrorSnackBar("Camera permission is required for QR scanning");
+          return;
+        }
       }
 
-      // Initialize mobile scanner controller
+      // Dispose old controller if exists
+      if (mobileScannerController != null) {
+        mobileScannerController!.dispose();
+      }
+
+      // Initialize new controller
       mobileScannerController = MobileScannerController(
         facing: CameraFacing.back,
         torchEnabled: false,
-        formats: const <BarcodeFormat>[BarcodeFormat.qrCode], // Only QR codes
+        formats: const [BarcodeFormat.qrCode],
         returnImage: false,
+        detectionSpeed: DetectionSpeed.normal,
       );
 
       // Start the scanner
       await mobileScannerController!.start();
 
-      setState(() {
-        isCameraInitialized = true;
-      });
+      if (mounted) {
+        setState(() {
+          isCameraInitialized = true;
+        });
+      }
 
-      debugPrint("Mobile scanner initialized successfully");
+      debugPrint("✅ Mobile scanner initialized successfully");
     } catch (e) {
-      debugPrint('Error initializing scanner: $e');
+      debugPrint('❌ Error initializing scanner: $e');
+      if (mounted) {
+        _showErrorSnackBar("Failed to initialize camera: ${e.toString()}");
+      }
     }
   }
 
   @override
   void onScreenVisible() {
+    debugPrint("📱 Screen became visible");
     _isScreenVisible = true;
+
     if (isQRMode && !isCameraInitialized) {
       _initializeScanner();
+    } else if (isQRMode && mobileScannerController != null) {
+      mobileScannerController!.start();
     } else if (!isQRMode && _nfcAvailable) {
       _nfcAnimationController.repeat();
       _startNfcSession();
@@ -106,18 +129,32 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
 
   @override
   void onScreenInvisible() {
+    debugPrint("📱 Screen became invisible");
     _isScreenVisible = false;
-    if (mobileScannerController != null) {
+
+    if (mobileScannerController != null && isCameraInitialized) {
       mobileScannerController!.stop();
     }
+
     if (_isNfcSessionActive) {
       _stopNfcSession();
     }
+
     _nfcAnimationController.stop();
   }
 
   Future<void> _checkNfcAvailability() async {
-    _nfcAvailable = await NfcManager.instance.isAvailable();
+    try {
+      _nfcAvailable = await NfcManager.instance.isAvailable();
+      debugPrint("NFC Available: $_nfcAvailable");
+
+      if (mounted) {
+        setState(() {});
+      }
+    } catch (e) {
+      debugPrint("Error checking NFC: $e");
+      _nfcAvailable = false;
+    }
   }
 
   Future<void> _startNfcSession() async {
@@ -126,19 +163,29 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
       return;
     }
 
+    if (_isNfcSessionActive) {
+      debugPrint("⚠️ NFC session already active");
+      return;
+    }
+
     try {
-      NfcManager.instance.startSession(
+      debugPrint("🔵 Starting NFC session...");
+
+      await NfcManager.instance.startSession(
         onDiscovered: (NfcTag tag) async {
-          _handleNfcTag(tag);
+          debugPrint("📡 NFC Tag discovered!");
+          await _handleNfcTag(tag);
         },
-        pollingOptions: <NfcPollingOption>{
+        pollingOptions: {
           NfcPollingOption.iso14443,
           NfcPollingOption.iso15693,
-          NfcPollingOption.iso18092,
         },
       );
+
       _isNfcSessionActive = true;
+      debugPrint("✅ NFC session started");
     } catch (e) {
+      debugPrint("❌ Failed to start NFC: $e");
       _showErrorSnackBar("Failed to start NFC: ${e.toString()}");
     }
   }
@@ -147,68 +194,124 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
     if (!_isNfcSessionActive) return;
 
     try {
-      NfcManager.instance.stopSession();
+      debugPrint("🔴 Stopping NFC session...");
+      await NfcManager.instance.stopSession();
       _isNfcSessionActive = false;
+      debugPrint("✅ NFC session stopped");
     } catch (e) {
-      debugPrint("Error stopping NFC session: $e");
+      debugPrint("❌ Error stopping NFC session: $e");
     }
   }
 
   Future<void> _handleNfcTag(NfcTag tag) async {
-    if (_isNfcProcessing) return;
+    if (_isNfcProcessing) {
+      debugPrint("⚠️ Already processing NFC tag");
+      return;
+    }
+
     _isNfcProcessing = true;
 
-    HapticFeedback.mediumImpact();
-
     try {
+      HapticFeedback.mediumImpact();
+      debugPrint("🔍 Processing NFC tag data...");
+
       final Map<String, String>? paymentData = await _extractPaymentDataFromNfc(tag);
 
-      if (paymentData != null) {
+      if (!mounted) return;
+
+      if (paymentData != null && paymentData.isNotEmpty) {
+        debugPrint("✅ Valid payment data found: $paymentData");
+
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("NFC payment detected!"),
+          SnackBar(
+            content: Text("Payment detected! Amount: ${paymentData['amount'] ?? 'N/A'}"),
             backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
           ),
         );
+
+        // Process payment here
+        _processPaymentData(paymentData);
       } else {
+        debugPrint("⚠️ No valid payment data found");
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("Invalid payment information on NFC"),
+            content: Text("No payment information found on this NFC tag"),
             backgroundColor: Colors.orange,
+            duration: Duration(seconds: 2),
           ),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Error reading NFC: ${e.toString()}"),
-          backgroundColor: Colors.red,
-        ),
-      );
+      debugPrint("❌ Error handling NFC tag: $e");
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Error reading NFC: ${e.toString()}"),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
     } finally {
-      _isNfcProcessing = false;
+      // Reset processing flag after delay
+      Future.delayed(const Duration(seconds: 2), () {
+        _isNfcProcessing = false;
+      });
     }
   }
 
   Future<Map<String, String>?> _extractPaymentDataFromNfc(NfcTag tag) async {
     try {
-      final Map<String, dynamic> tagData = tag.data as Map<String, dynamic>;
+      debugPrint("🔍 Extracting NFC data...");
 
-      if (tagData.containsKey('ndef')) {
-        final Map<String, dynamic>? ndefData = tagData['ndef'] as Map<String, dynamic>?;
-        if (ndefData != null && ndefData.containsKey('cachedMessage')) {
-          final Map<String, dynamic>? cachedMessage = ndefData['cachedMessage'] as Map<String, dynamic>?;
-          if (cachedMessage != null && cachedMessage.containsKey('records')) {
-            final List? records = cachedMessage['records'] as List?;
+      // Properly cast tag.data to Map
+      final Map<String, dynamic> tagDataMap = tag.data as Map<String, dynamic>;
+      debugPrint("Tag data keys: ${tagDataMap.keys.toList()}");
 
-            if (records != null && records.isNotEmpty) {
-              for (final record in records) {
-                final Map<String, dynamic> recordMap = record as Map<String, dynamic>;
-                if (recordMap['typeNameFormat'] == 1) {
-                  final List<int>? payload = recordMap['payload'] as List<int>?;
+      // Try NDEF first
+      if (tagDataMap.containsKey('ndef')) {
+        final dynamic ndefData = tagDataMap['ndef'];
+        debugPrint("NDEF data available: $ndefData");
+
+        if (ndefData is Map<String, dynamic>) {
+          final dynamic cachedMessage = ndefData['cachedMessage'];
+
+          if (cachedMessage != null && cachedMessage is Map<String, dynamic>) {
+            final dynamic records = cachedMessage['records'];
+
+            if (records != null && records is List && records.isNotEmpty) {
+              debugPrint("Found ${records.length} NDEF records");
+
+              for (var i = 0; i < records.length; i++) {
+                final dynamic record = records[i];
+                debugPrint("Processing record $i: $record");
+
+                if (record is Map<String, dynamic>) {
+                  final dynamic payload = record['payload'];
+
                   if (payload != null) {
-                    final String payloadString = String.fromCharCodes(payload);
-                    if (payloadString.startsWith('PAY:')) {
+                    String payloadString;
+
+                    if (payload is List<int>) {
+                      payloadString = String.fromCharCodes(payload);
+                    } else if (payload is List) {
+                      // Handle List<dynamic> case
+                      payloadString = String.fromCharCodes(payload.cast<int>());
+                    } else if (payload is String) {
+                      payloadString = payload;
+                    } else {
+                      continue;
+                    }
+
+                    debugPrint("Payload string: $payloadString");
+
+                    // Check for payment data
+                    if (payloadString.contains('PAY:') ||
+                        payloadString.contains('amount=') ||
+                        payloadString.contains('PAYMENT')) {
                       return _parseNfcPayload(payloadString);
                     }
                   }
@@ -218,22 +321,64 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
           }
         }
       }
+
+      // Try NfcA for card emulation
+      if (tagDataMap.containsKey('nfca')) {
+        debugPrint("NfcA data available");
+        final dynamic nfcaData = tagDataMap['nfca'];
+
+        if (nfcaData is Map<String, dynamic>) {
+          // Handle card emulation format if needed
+          final dynamic identifier = nfcaData['identifier'];
+          if (identifier != null) {
+            debugPrint("NfcA identifier: $identifier");
+          }
+        }
+      }
+
+      // Try NfcF (FeliCa)
+      if (tagDataMap.containsKey('nfcf')) {
+        debugPrint("NfcF data available");
+      }
+
+      // Try ISO 15693
+      if (tagDataMap.containsKey('iso15693')) {
+        debugPrint("ISO 15693 data available");
+      }
+
+      debugPrint("⚠️ No payment data found in tag");
       return null;
-    } catch (e) {
-      debugPrint("Error extracting NFC data: $e");
+    } catch (e, stackTrace) {
+      debugPrint("❌ Error extracting NFC data: $e");
+      debugPrint("Stack trace: $stackTrace");
       return null;
     }
   }
 
   Map<String, String> _parseNfcPayload(String payload) {
-    final Map<String, String> data = <String, String>{};
-    final List<String> parts = payload.substring(4).split('&');
-    for (final String part in parts) {
-      final List<String> keyValue = part.split('=');
-      if (keyValue.length == 2) {
-        data[keyValue[0]] = keyValue[1];
+    final Map<String, String> data = {};
+
+    try {
+      // Remove 'PAY:' prefix if exists
+      String cleanPayload = payload;
+      if (cleanPayload.startsWith('PAY:')) {
+        cleanPayload = cleanPayload.substring(4);
       }
+
+      // Parse key=value pairs
+      final parts = cleanPayload.split('&');
+      for (final part in parts) {
+        final keyValue = part.split('=');
+        if (keyValue.length == 2) {
+          data[keyValue[0].trim()] = keyValue[1].trim();
+        }
+      }
+
+      debugPrint("Parsed NFC data: $data");
+    } catch (e) {
+      debugPrint("Error parsing NFC payload: $e");
     }
+
     return data;
   }
 
@@ -244,128 +389,236 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
       SnackBar(
         content: Text(message),
         backgroundColor: Colors.red.shade800,
+        duration: const Duration(seconds: 3),
         action: SnackBarAction(
           label: 'Retry',
           textColor: Colors.white,
-          onPressed: () => _initializeScanner(),
+          onPressed: () {
+            if (isQRMode) {
+              _initializeScanner();
+            } else {
+              _startNfcSession();
+            }
+          },
         ),
       ),
     );
   }
 
-  void toggleFlashlight() async {
-    if (mobileScannerController == null) return;
+  Future<void> toggleFlashlight() async {
+    if (mobileScannerController == null || !isCameraInitialized) return;
 
     try {
       await mobileScannerController!.toggleTorch();
       setState(() {
         isFlashlightOn = !isFlashlightOn;
       });
+      debugPrint("Flashlight: $isFlashlightOn");
     } catch (e) {
       debugPrint('Error toggling flashlight: $e');
     }
   }
 
-  void toggleMode() async {
+  Future<void> toggleMode() async {
     setState(() {
       isQRMode = !isQRMode;
-
-      if (isQRMode) {
-        // Switching to QR mode
-        _initializeScanner();
-        _nfcAnimationController.stop();
-        if (_isNfcSessionActive) {
-          _stopNfcSession();
-        }
-      } else {
-        // Switching to NFC mode
-        if (mobileScannerController != null) {
-          mobileScannerController!.stop();
-          isCameraInitialized = false;
-        }
-        _nfcAnimationController.repeat();
-        _startNfcSession();
-      }
     });
+
+    if (isQRMode) {
+      // Switching to QR mode
+      debugPrint("🔄 Switching to QR mode");
+
+      _nfcAnimationController.stop();
+      if (_isNfcSessionActive) {
+        await _stopNfcSession();
+      }
+
+      if (!isCameraInitialized) {
+        await _initializeScanner();
+      } else if (mobileScannerController != null) {
+        await mobileScannerController!.start();
+      }
+    } else {
+      // Switching to NFC mode
+      debugPrint("🔄 Switching to NFC mode");
+
+      if (mobileScannerController != null && isCameraInitialized) {
+        await mobileScannerController!.stop();
+      }
+
+      if (_nfcAvailable) {
+        _nfcAnimationController.repeat();
+        await _startNfcSession();
+      } else {
+        _showErrorSnackBar("NFC is not available on this device");
+      }
+    }
   }
 
   @override
   void dispose() {
+    debugPrint("🗑️ Disposing ScanToPayHomeScreen");
+
     WidgetsBinding.instance.removeObserver(this);
+
     mobileScannerController?.dispose();
+    mobileScannerController = null;
+
+    if (_isNfcSessionActive) {
+      NfcManager.instance.stopSession();
+    }
+
     _nfcAnimationController.dispose();
+
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (mobileScannerController == null) return;
+    super.didChangeAppLifecycleState(state);
 
-    if (state == AppLifecycleState.inactive) {
-      mobileScannerController!.stop();
-    } else if (state == AppLifecycleState.resumed && isQRMode) {
-      mobileScannerController!.start();
+    debugPrint("App lifecycle: $state");
+
+    if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
+      if (mobileScannerController != null && isCameraInitialized && isQRMode) {
+        mobileScannerController!.stop();
+      }
+
+      if (_isNfcSessionActive) {
+        _stopNfcSession();
+      }
+    } else if (state == AppLifecycleState.resumed && _isScreenVisible) {
+      if (isQRMode && mobileScannerController != null && isCameraInitialized) {
+        mobileScannerController!.start();
+      } else if (!isQRMode && _nfcAvailable) {
+        _startNfcSession();
+      }
     }
   }
 
   void _handleScannedCode(String code) {
-    if (_isProcessingCode) return;
-    _isProcessingCode = true;
+    // Prevent duplicate scans
+    final now = DateTime.now();
+    if (_lastScannedCode == code &&
+        _lastScanTime != null &&
+        now.difference(_lastScanTime!) < const Duration(seconds: 3)) {
+      debugPrint("⚠️ Duplicate scan ignored");
+      return;
+    }
 
-    HapticFeedback.mediumImpact();
+    if (_isProcessingCode) {
+      debugPrint("⚠️ Already processing a code");
+      return;
+    }
+
+    _isProcessingCode = true;
+    _lastScannedCode = code;
+    _lastScanTime = now;
 
     try {
-      debugPrint("Scanned QR Code: $code");
+      HapticFeedback.mediumImpact();
+      debugPrint("📷 Scanned QR Code: $code");
 
-      if (code.startsWith('PAY:') || _isValidPaymentQr(code)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Payment QR detected!"),
-            backgroundColor: Colors.green,
-          ),
-        );
+      if (_isValidPaymentQr(code)) {
+        debugPrint("✅ Valid payment QR detected");
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Payment QR detected!"),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+
         _processPaymentQr(code);
       } else {
+        debugPrint("⚠️ Invalid payment QR");
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Invalid payment QR code"),
+              backgroundColor: Colors.orange,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint("❌ Error processing QR: $e");
+
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Invalid payment QR code"),
-            backgroundColor: Colors.orange,
+          SnackBar(
+            content: Text("Error: ${e.toString()}"),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 2),
           ),
         );
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Error processing QR: ${e.toString()}"),
-          backgroundColor: Colors.red,
-        ),
-      );
     } finally {
-      Future.delayed(const Duration(seconds: 2), () {
+      // Reset after 3 seconds
+      Future.delayed(const Duration(seconds: 3), () {
         _isProcessingCode = false;
       });
     }
   }
 
   bool _isValidPaymentQr(String code) {
-    return code.contains('amount=') && code.contains('recipient=');
+    // Check for common payment QR patterns
+    return code.startsWith('PAY:') ||
+        code.startsWith('PAYMENT:') ||
+        (code.contains('amount=') && code.contains('recipient=')) ||
+        code.contains('payment://');
   }
 
   void _processPaymentQr(String code) {
-    final Map<String, String> paymentData = _parseQrData(code);
-    debugPrint("Payment Data: $paymentData");
+    final paymentData = _parseQrData(code);
+    debugPrint("💰 Payment Data: $paymentData");
+
+    _processPaymentData(paymentData);
+  }
+
+  void _processPaymentData(Map<String, String> paymentData) {
     // Navigate to payment confirmation screen
+    // Example:
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => PaymentConfirmationScreen(
+    //       amount: paymentData['amount'] ?? '0',
+    //       recipient: paymentData['recipient'] ?? 'Unknown',
+    //     ),
+    //   ),
+    // );
+
+    debugPrint("Would navigate to payment confirmation with: $paymentData");
   }
 
   Map<String, String> _parseQrData(String code) {
-    final Map<String, String> data = <String, String>{};
-    final List<String> parts = code.split('&');
-    for (final String part in parts) {
-      final List<String> keyValue = part.split('=');
-      if (keyValue.length == 2) {
-        data[keyValue[0]] = keyValue[1];
+    final Map<String, String> data = {};
+
+    try {
+      // Remove prefix if exists
+      String cleanCode = code;
+      if (cleanCode.startsWith('PAY:') || cleanCode.startsWith('PAYMENT:')) {
+        cleanCode = cleanCode.split(':').skip(1).join(':');
       }
+
+      // Parse parameters
+      final parts = cleanCode.split('&');
+      for (final part in parts) {
+        final keyValue = part.split('=');
+        if (keyValue.length == 2) {
+          data[keyValue[0].trim()] = keyValue[1].trim();
+        }
+      }
+    } catch (e) {
+      debugPrint("Error parsing QR data: $e");
     }
+
     return data;
   }
 
@@ -374,8 +627,8 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
-        children: <Widget>[
-          /// Camera preview or NFC screen
+        children: [
+          // Camera preview or NFC screen
           isQRMode ? _buildCameraPreview() : _buildNFCScreen(),
 
           // Credit card indicator at the top
@@ -392,7 +645,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
             left: 0,
             right: 0,
             child: Column(
-              children: <Widget>[
+              children: [
                 if (isQRMode) _buildFlashlightButton(),
                 SizedBox(height: 20.h),
                 _buildModeSwitcher(),
@@ -406,13 +659,13 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
 
   Widget _buildCameraPreview() {
     return Stack(
-      children: <Widget>[
-        // Show loading until camera is ready
+      children: [
+        // Loading indicator
         if (!isCameraInitialized)
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
+              children: [
                 const CircularProgressIndicator(color: Colors.white),
                 const SizedBox(height: 16),
                 Text(
@@ -428,29 +681,28 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
           MobileScanner(
             controller: mobileScannerController,
             onDetect: (BarcodeCapture capture) {
-              final List<Barcode> barcodes = capture.barcodes;
-              if (barcodes.isNotEmpty && mounted) {
-                final String code = barcodes.first.rawValue ?? '';
+              final barcodes = capture.barcodes;
+              if (barcodes.isNotEmpty && mounted && !_isProcessingCode) {
+                final code = barcodes.first.rawValue ?? '';
                 if (code.isNotEmpty) {
                   _handleScannedCode(code);
                 }
               }
             },
-            errorBuilder: (BuildContext context, MobileScannerException error, Widget? child) {
+            errorBuilder: (context, error, child) {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    const Icon(
-                      Icons.error,
-                      color: Colors.red,
-                      size: 48,
-                    ),
+                  children: [
+                    const Icon(Icons.error, color: Colors.red, size: 48),
                     const SizedBox(height: 16),
-                    Text(
-                      "Camera Error: ${error.toString()}",
-                      style: Font.montserratFont(color: Colors.white),
-                      textAlign: TextAlign.center,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Text(
+                        "Camera Error: ${error.errorCode.name}",
+                        style: Font.montserratFont(color: Colors.white),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
@@ -463,7 +715,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
             },
           ),
 
-        // QR Scan overlay with guidelines - only show when camera is ready
+        // QR Scan overlay
         if (isCameraInitialized)
           Center(
             child: Container(
@@ -474,8 +726,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: Stack(
-                children: <Widget>[
-                  // Corner indicators
+                children: [
                   Positioned(top: 0, left: 0, child: _buildCornerIndicator()),
                   Positioned(top: 0, right: 0, child: _buildCornerIndicator(isRight: true)),
                   Positioned(bottom: 0, left: 0, child: _buildCornerIndicator(isBottom: true)),
@@ -485,7 +736,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
             ),
           ),
 
-        // Scan guidelines text
+        // Instructions
         if (isCameraInitialized)
           Positioned(
             bottom: 200.h,
@@ -495,7 +746,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
               color: Colors.black.withOpacity(0.5),
               child: Column(
-                children: <Widget>[
+                children: [
                   Text(
                     "Align QR code within the frame",
                     textAlign: TextAlign.center,
@@ -528,7 +779,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.w),
         child: Column(
-          children: <Widget>[
+          children: [
             SizedBox(height: 80.h),
 
             // NFC Animation
@@ -542,16 +793,16 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
               ),
               child: Stack(
                 alignment: Alignment.center,
-                children: <Widget>[
+                children: [
                   // Wave animation
                   WaveWidget(
                     config: CustomConfig(
-                      colors: <Color>[
+                      colors: [
                         MyTheme.secondaryColor,
                         MyTheme.primaryColor
                       ],
-                      durations: <int>[4000, 5000],
-                      heightPercentages: <double>[0.65, 0.66],
+                      durations: [4000, 5000],
+                      heightPercentages: [0.65, 0.66],
                       blur: const MaskFilter.blur(BlurStyle.solid, 5),
                     ),
                     waveAmplitude: 0,
@@ -565,7 +816,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                     decoration: BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.circle,
-                      boxShadow: <BoxShadow>[
+                      boxShadow: [
                         BoxShadow(
                           color: MyTheme.primaryColor.withOpacity(0.3),
                           blurRadius: 15,
@@ -573,16 +824,10 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                         ),
                       ],
                     ),
-                    child: Image.asset(
-                      'assets/icons/transaction_screen_icons/nfc_phone.png',
-                      width: 40.w,
-                      height: 40.h,
-                      fit: BoxFit.contain,
-                      errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) => Icon(
-                        Icons.contactless_rounded,
-                        size: 40.sp,
-                        color: MyTheme.secondaryColor,
-                      ),
+                    child: Icon(
+                      Icons.contactless_rounded,
+                      size: 40.sp,
+                      color: MyTheme.secondaryColor,
                     ),
                   ),
                 ],
@@ -591,15 +836,36 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
 
             SizedBox(height: 32.h),
 
-            // Instructions
-            Text(
-              "Ready to Pay",
-              style: Font.montserratFont(
-                color: Colors.white,
-                fontSize: 24.sp,
-                fontWeight: FontWeight.bold,
+            // Status indicator
+            if (!_nfcAvailable)
+              Container(
+                padding: EdgeInsets.all(12.r),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.warning, color: Colors.orange),
+                    SizedBox(width: 12.w),
+                    Expanded(
+                      child: Text(
+                        "NFC is not available on this device",
+                        style: Font.montserratFont(color: Colors.orange),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              Text(
+                _isNfcSessionActive ? "Ready to Pay" : "Starting NFC...",
+                style: Font.montserratFont(
+                  color: Colors.white,
+                  fontSize: 24.sp,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
 
             SizedBox(height: 12.h),
 
@@ -610,7 +876,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: Row(
-                children: <Widget>[
+                children: [
                   Icon(
                     Icons.info_outline,
                     color: Colors.white.withOpacity(0.8),
@@ -632,49 +898,10 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
 
             SizedBox(height: 24.h),
 
-            // Transaction Amount
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 24.w),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: <Color>[MyTheme.primaryColor, MyTheme.secondaryColor],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(12.r),
-                boxShadow: <BoxShadow>[
-                  BoxShadow(
-                    color: MyTheme.secondaryColor.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    "Transaction Amount",
-                    style: Font.montserratFont(color: Colors.white, fontSize: 14.sp),
-                  ),
-                  Text(
-                    "\$XXX.XX",
-                    style: Font.montserratFont(
-                      color: Colors.white,
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(height: 24.h),
-
             // Security note
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
+              children: [
                 Icon(
                   Icons.lock_outline,
                   color: Colors.white.withOpacity(0.7),
@@ -723,10 +950,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
     return PaymentCardSelector(
       userId: FirebaseAuth.instance.currentUser?.uid ?? '',
       onCardSelect: (CardModel card) {
-        debugPrint('Selected: ${card.last4}');
-        debugPrint('Selected: ${card.expYear}');
-        debugPrint('Selected: ${card.expMonth}');
-        debugPrint('Selected: ${card.last4}');
+        debugPrint('Selected card: ${card.last4}');
       },
     );
   }
@@ -756,14 +980,14 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
         height: 50.h,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: <Color>[MyTheme.primaryColor, MyTheme.secondaryColor],
+            colors: [MyTheme.primaryColor, MyTheme.secondaryColor],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
           borderRadius: BorderRadius.circular(25.r),
         ),
         child: Stack(
-          children: <Widget>[
+          children: [
             // Animated selected background
             AnimatedPositioned(
               duration: const Duration(milliseconds: 300),
@@ -782,7 +1006,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
 
             // QR and NFC text options
             Row(
-              children: <Widget>[
+              children: [
                 Expanded(
                   child: GestureDetector(
                     onTap: () {

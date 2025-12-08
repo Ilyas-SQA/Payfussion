@@ -32,8 +32,7 @@ class ServiceLocator {
 
       // Firebase services
       getIt.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
-      getIt.registerLazySingleton<FirebaseFirestore>(
-        () => FirebaseFirestore.instance,
+      getIt.registerLazySingleton<FirebaseFirestore>(() => FirebaseFirestore.instance,
       );
       getIt.registerLazySingleton<FirebaseStorage>(
         () => FirebaseStorage.instance,

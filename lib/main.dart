@@ -8,11 +8,13 @@ import 'package:nested/nested.dart';
 import 'package:payfussion/data/repositories/insurance/insurance_repository.dart';
 import 'package:payfussion/data/repositories/notification/notification_repository.dart';
 import 'package:payfussion/data/repositories/ticket/movies_repository.dart';
+import 'package:payfussion/data/repositories/transsaction_limit/transaction_limit.dart';
 import 'package:payfussion/logic/blocs/add_card/card_bloc.dart';
 import 'package:payfussion/logic/blocs/auth/auth_bloc.dart';
 import 'package:payfussion/logic/blocs/bank_transaction/bank_transaction_bloc.dart';
 import 'package:payfussion/logic/blocs/currency/currency_bloc.dart';
 import 'package:payfussion/logic/blocs/donation/donation_bloc.dart';
+import 'package:payfussion/logic/blocs/exchange_currency/exchange_currency_bloc.dart';
 import 'package:payfussion/logic/blocs/governement_fee/governement_fee_bloc.dart';
 import 'package:payfussion/logic/blocs/insurance/insurance_bloc.dart';
 import 'package:payfussion/logic/blocs/notification/notification_bloc.dart';
@@ -33,6 +35,8 @@ import 'package:payfussion/logic/blocs/tickets/flight/flight_event.dart';
 import 'package:payfussion/logic/blocs/tickets/movies/movies_bloc.dart';
 import 'package:payfussion/logic/blocs/tickets/movies/movies_event.dart';
 import 'package:payfussion/logic/blocs/transaction/transaction_bloc.dart';
+import 'package:payfussion/logic/blocs/transaction_limit/transaction_limit_bloc.dart';
+import 'package:payfussion/presentations/setting/avalible_limit_screen.dart';
 import 'package:payfussion/services/biometric_service.dart';
 import 'package:payfussion/services/local_storage.dart';
 import 'package:payfussion/services/notification_service.dart';
@@ -70,6 +74,7 @@ import 'logic/blocs/tickets/car/car_bloc.dart';
 import 'logic/blocs/tickets/flight/flight_bloc.dart';
 import 'logic/blocs/tickets/train/train_bloc.dart';
 import 'logic/blocs/tickets/train/train_event.dart';
+import 'logic/blocs/transaction_limit/transaction_limit_event.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -224,6 +229,7 @@ class MyApp extends StatelessWidget {
             InsurancePaymentRepository(),
           ),
         ),
+        BlocProvider(create: (BuildContext context) => ExchangeCurrencyBloc()),
         BlocProvider(create: (BuildContext context) => ElectricityBillBloc(NotificationBloc(NotificationRepository())),),
         BlocProvider(create: (BuildContext context) => MobileRechargeBloc(NotificationBloc(NotificationRepository()),)),
         BlocProvider(create: (BuildContext context) => GasBillBloc(NotificationBloc(NotificationRepository()),)),
@@ -236,6 +242,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (BuildContext context) => InternetBillBloc(context.read<NotificationBloc>())),
         BlocProvider(create: (BuildContext context) => DonationBloc(context.read<NotificationBloc>())),
         BlocProvider(create: (BuildContext context) => GovernmentFeeBloc(context.read<NotificationBloc>())),
+        BlocProvider(create: (BuildContext context) => LimitBloc(repository: LimitRepository())..add(LoadLimitEvent(SessionController.user.uid.toString())),),
 
       ],
       child: ScreenUtilInit(

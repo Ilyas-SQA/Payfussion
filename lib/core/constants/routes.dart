@@ -1,6 +1,7 @@
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:payfussion/core/widget/bottom_navigation_bar.dart';
 import 'package:payfussion/presentations/currency-exchange/calculator_history_view.dart';
 import 'package:payfussion/presentations/currency-exchange/calculator_view.dart';
 import 'package:payfussion/presentations/currency-exchange/currency_exchange_history_view.dart';
@@ -61,6 +62,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: RouteNames.signUp,
       builder: (BuildContext context, GoRouterState state) => const SignUpScreen(),
+    ),
+    GoRoute(
+      path: RouteNames.bottomNavigationBarScreen,
+      builder: (BuildContext context, GoRouterState state) => const BottomNavigationBarScreen(),
     ),
     GoRoute(
       path: RouteNames.transactionHistory,
