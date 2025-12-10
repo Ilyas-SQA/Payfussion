@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../core/constants/tax.dart';
 import '../../../../services/notification_service.dart';
+import '../../../../services/biometric_service.dart';
 import '../../notification/notification_bloc.dart';
 import '../../notification/notification_event.dart';
 import 'bill_split_event.dart';
@@ -12,8 +13,12 @@ class BillSplitBloc extends Bloc<BillSplitEvent, BillSplitState> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final NotificationBloc _notificationBloc;
+  final BiometricService _biometricService;
 
-  BillSplitBloc(this._notificationBloc) : super(BillSplitInitial()) {
+  BillSplitBloc(
+      this._notificationBloc,
+      this._biometricService,
+      ) : super(BillSplitInitial()) {
     on<SetBillSplitData>(_onSetBillSplitData);
     on<SetSelectedCardForBillSplit>(_onSetSelectedCard);
     on<ProcessBillSplitPayment>(_onProcessBillSplitPayment);
@@ -93,22 +98,66 @@ class BillSplitBloc extends Bloc<BillSplitEvent, BillSplitState> {
         return;
       }
 
+      // ========== BIOMETRIC AUTHENTICATION ==========
+      // Check if biometric is enabled for this user
+      final bool isBiometricEnabled = await _biometricService.isBiometricEnabled();
+
+      if (isBiometricEnabled) {
+        // Check if biometric is available on device
+        final bool isAvailable = await _biometricService.isBiometricAvailable();
+        final bool isEnrolled = await _biometricService.hasBiometricsEnrolled();
+
+        if (isAvailable && isEnrolled) {
+          // Perform biometric authentication
+          final Map<String, dynamic> biometricResult = await _biometricService.authenticate(
+            reason: 'Authenticate to confirm bill split payment of \$${currentState.amountPerPerson.toStringAsFixed(2)}',
+          );
+
+          if (!biometricResult['success']) {
+            // Biometric authentication failed
+            emit(BillSplitError(
+              biometricResult['error'] ?? 'Biometric authentication failed. Payment cancelled.',
+            ));
+
+            // Send failure notification
+            await LocalNotificationService.showCustomNotification(
+              title: 'Authentication Failed',
+              body: 'Biometric authentication failed. Payment was cancelled.',
+              payload: 'biometric_auth_failed',
+            );
+
+            return; // Stop payment processing
+          }
+
+          // Biometric authentication successful - continue with payment
+        } else {
+          // Biometric not available but was enabled - inform user
+          emit(const BillSplitError(
+            'Biometric authentication is not available. Please check your device settings.',
+          ));
+          return;
+        }
+      }
+      // If biometric is not enabled, proceed without biometric check
+      // ========== END BIOMETRIC AUTHENTICATION ==========
+
       // Generate transaction ID
-      final String transactionId = _firestore.collection('transactions').doc().id;
+      final String transactionId = FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser?.uid).
+      collection('payBills').doc().id;
       final DateTime now = DateTime.now();
 
       // Create transaction data
-      final Map<String, dynamic> transactionData = <String, dynamic>{
+      final Map<String, dynamic> billSplitData = <String, dynamic>{
         'id': transactionId,
         'userId': user.uid,
-        'type': 'bill_split',
+        'billType': 'Bill Split',
         'billName': currentState.billName,
-        "billType": "Bill Split",
         'totalAmount': currentState.totalAmount,
         'numberOfPeople': currentState.numberOfPeople,
         'participantNames': currentState.participantNames,
         'customAmounts': currentState.customAmounts,
         'amountPerPerson': currentState.amountPerPerson,
+        'splitType': currentState.splitType,
         'taxAmount': currentState.taxAmount,
         'amount': currentState.totalWithTax,
         'currency': 'USD',
@@ -116,6 +165,7 @@ class BillSplitBloc extends Bloc<BillSplitEvent, BillSplitState> {
         'cardHolderName': currentState.cardHolderName!,
         'cardEnding': currentState.cardEnding!,
         'status': 'completed',
+        'authenticatedWithBiometric': isBiometricEnabled,
         'createdAt': now.toIso8601String(),
         'completedAt': now.toIso8601String(),
       };
@@ -124,7 +174,7 @@ class BillSplitBloc extends Bloc<BillSplitEvent, BillSplitState> {
       await _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
           .collection('payBills')
           .doc(transactionId)
-          .set(transactionData);
+          .set(billSplitData);
 
       // Local notification
       await LocalNotificationService.showTransactionNotification(
@@ -134,7 +184,7 @@ class BillSplitBloc extends Bloc<BillSplitEvent, BillSplitState> {
       );
 
       // Firestore notification
-      final String notificationMessage = _buildNotificationMessage(currentState);
+      final String notificationMessage = _buildNotificationMessage(currentState, isBiometricEnabled);
 
       _notificationBloc.add(AddNotification(
         title: 'Bill Split Payment Successful',
@@ -149,6 +199,7 @@ class BillSplitBloc extends Bloc<BillSplitEvent, BillSplitState> {
           'participantNames': currentState.participantNames,
           'splitType': currentState.splitType,
           'cardEnding': currentState.cardEnding,
+          'authenticatedWithBiometric': isBiometricEnabled,
           'timestamp': now.toIso8601String(),
         },
       ));
@@ -186,8 +237,12 @@ class BillSplitBloc extends Bloc<BillSplitEvent, BillSplitState> {
     emit(BillSplitInitial());
   }
 
-  String _buildNotificationMessage(BillSplitDataSet state) {
+  String _buildNotificationMessage(BillSplitDataSet state, bool authenticatedWithBiometric) {
     final DateTime now = DateTime.now();
+
+    final String authMethod = authenticatedWithBiometric
+        ? '✓ Secured with Biometric Authentication'
+        : '';
 
     final String message = '''Bill Split Payment completed successfully!
 
@@ -202,6 +257,8 @@ Card Ending: ****${state.cardEnding}
 Completed at: ${now.toString().substring(0, 19)}
 
 Participants: ${state.participantNames.join(', ')}
+
+$authMethod
 
 Thank you for using our bill split service!''';
 

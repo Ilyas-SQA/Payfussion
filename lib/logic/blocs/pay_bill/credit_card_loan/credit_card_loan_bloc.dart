@@ -84,11 +84,12 @@ class CreditCardLoanBloc extends Bloc<CreditCardLoanEvent, CreditCardLoanState> 
       }
 
       // Generate transaction ID
-      final String transactionId = _firestore.collection('transactions').doc().id;
+      final String transactionId = _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid).
+      collection('payBills').doc().id;
       final DateTime now = DateTime.now();
 
       // Create transaction data
-      final Map<String, dynamic> transactionData = <String, dynamic>{
+      final Map<String, dynamic> creditCardLoanData = <String, dynamic>{
         'id': transactionId,
         'userId': user.uid,
         'billType': 'Credit Card Loan',
@@ -96,7 +97,6 @@ class CreditCardLoanBloc extends Bloc<CreditCardLoanEvent, CreditCardLoanState> 
         'branchName': currentState.branchName,
         'accountNumber': currentState.accountNumber,
         'cardNumber': currentState.cardNumber,
-        // 'amount': currentState.amount,
         'paymentType': currentState.paymentType,
         'taxAmount': currentState.taxAmount,
         'amount': currentState.totalAmount,
@@ -113,7 +113,7 @@ class CreditCardLoanBloc extends Bloc<CreditCardLoanEvent, CreditCardLoanState> 
       await _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
           .collection('payBills')
           .doc(transactionId)
-          .set(transactionData);
+          .set(creditCardLoanData);
 
       // Local notification
       await LocalNotificationService.showTransactionNotification(

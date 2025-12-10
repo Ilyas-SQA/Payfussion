@@ -739,7 +739,7 @@ class _ScanToPayHomeScreenState extends State<ScanToPayHomeScreen>
         // Instructions
         if (isCameraInitialized)
           Positioned(
-            bottom: 200.h,
+            bottom: 10.h,
             left: 0,
             right: 0,
             child: Container(

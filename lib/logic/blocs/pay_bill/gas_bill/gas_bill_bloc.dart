@@ -90,14 +90,15 @@ class GasBillBloc extends Bloc<GasBillEvent, GasBillState> {
       }
 
       // Generate transaction ID
-      final String transactionId = _firestore.collection('transactions').doc().id;
+      final String transactionId = _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid).
+      collection('payBills').doc().id;
       final DateTime now = DateTime.now();
 
       // Create transaction data
-      final Map<String, dynamic> transactionData = <String, dynamic>{
+      final Map<String, dynamic> gasBillData = <String, dynamic>{
         'id': transactionId,
         'userId': user.uid,
-        'payBills': 'Gas Bill',
+        'billType': 'Gas Bill',
         'companyName': currentState.companyName,
         'region': currentState.region,
         'averageRate': currentState.averageRate,
@@ -105,14 +106,13 @@ class GasBillBloc extends Bloc<GasBillEvent, GasBillState> {
         'consumerName': currentState.consumerName,
         'address': currentState.address,
         'billMonth': currentState.billMonth,
-        // 'amount': currentState.amount,
-        'taxAmount': currentState.taxAmount,
-        'amount': currentState.totalAmount,
-        'currency': 'USD',
         'gasUsage': currentState.gasUsage,
         'previousReading': currentState.previousReading,
         'currentReading': currentState.currentReading,
         'dueDate': currentState.dueDate,
+        'taxAmount': currentState.taxAmount,
+        'amount': currentState.totalAmount,
+        'currency': 'USD',
         'cardId': currentState.cardId!,
         'cardHolderName': currentState.cardHolderName!,
         'cardEnding': currentState.cardEnding!,
@@ -125,7 +125,7 @@ class GasBillBloc extends Bloc<GasBillEvent, GasBillState> {
       await _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
           .collection('payBills')
           .doc(transactionId)
-          .set(transactionData);
+          .set(gasBillData);
 
       // Local notification
       await LocalNotificationService.showTransactionNotification(

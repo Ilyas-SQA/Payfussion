@@ -86,7 +86,8 @@ class MobileRechargeBloc extends Bloc<MobileRechargeEvent, MobileRechargeState> 
       }
 
       // Generate transaction ID
-      final String transactionId = _firestore.collection('transactions').doc().id;
+      final String transactionId = FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser?.uid).
+      collection('payBills').doc().id;
       final DateTime now = DateTime.now();
 
       // Determine transaction type
@@ -95,20 +96,19 @@ class MobileRechargeBloc extends Bloc<MobileRechargeEvent, MobileRechargeState> 
           : 'Mobile Recharge';
 
       // Create transaction data
-      final Map<String, dynamic> transactionData = <String, dynamic>{
+      final Map<String, dynamic> mobileRechargeData = <String, dynamic>{
         'id': transactionId,
         'userId': user.uid,
-        'billType': transactionType,
+        'billType': currentState.packageName != null ? 'Package' : 'Mobile Recharge',
         'companyName': currentState.companyName,
         'network': currentState.network,
         'phoneNumber': currentState.phoneNumber,
-        // 'amount': currentState.amount,
-        'taxAmount': currentState.taxAmount,
-        'amount': currentState.totalAmount,
-        'currency': 'USD',
         'packageName': currentState.packageName,
         'packageData': currentState.packageData,
         'packageValidity': currentState.packageValidity,
+        'taxAmount': currentState.taxAmount,
+        'amount': currentState.totalAmount,
+        'currency': 'USD',
         'cardId': currentState.cardId!,
         'cardHolderName': currentState.cardHolderName!,
         'cardEnding': currentState.cardEnding!,
@@ -121,7 +121,7 @@ class MobileRechargeBloc extends Bloc<MobileRechargeEvent, MobileRechargeState> 
       await _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
           .collection('payBills')
           .doc(transactionId)
-          .set(transactionData);
+          .set(mobileRechargeData);
 
       // Local notification
       await LocalNotificationService.showTransactionNotification(

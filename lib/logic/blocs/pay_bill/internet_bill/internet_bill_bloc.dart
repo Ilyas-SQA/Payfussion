@@ -92,11 +92,12 @@ class InternetBillBloc extends Bloc<InternetBillEvent, InternetBillState> {
       }
 
       // Generate transaction ID
-      final String transactionId = _firestore.collection('transactions').doc().id;
+      final String transactionId = FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser?.uid).
+      collection('payBills').doc().id;
       final DateTime now = DateTime.now();
 
       // Create transaction data
-      final Map<String, dynamic> transactionData = <String, dynamic>{
+      final Map<String, dynamic> internetBillData = <String, dynamic>{
         'id': transactionId,
         'userId': user.uid,
         'billType': 'Internet Bill',
@@ -108,15 +109,14 @@ class InternetBillBloc extends Bloc<InternetBillEvent, InternetBillState> {
         'consumerName': currentState.consumerName,
         'address': currentState.address,
         'billMonth': currentState.billMonth,
-        // 'amount': currentState.amount,
-        'taxAmount': currentState.taxAmount,
-        'amount': currentState.totalAmount,
-        'currency': 'USD',
         'planName': currentState.planName,
         'dataUsage': currentState.dataUsage,
         'downloadSpeed': currentState.downloadSpeed,
         'uploadSpeed': currentState.uploadSpeed,
         'dueDate': currentState.dueDate,
+        'taxAmount': currentState.taxAmount,
+        'amount': currentState.totalAmount,
+        'currency': 'USD',
         'cardId': currentState.cardId!,
         'cardHolderName': currentState.cardHolderName!,
         'cardEnding': currentState.cardEnding!,
@@ -129,7 +129,7 @@ class InternetBillBloc extends Bloc<InternetBillEvent, InternetBillState> {
       await _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
           .collection('payBills')
           .doc(transactionId)
-          .set(transactionData);
+          .set(internetBillData);
 
       // Local notification
       await LocalNotificationService.showTransactionNotification(

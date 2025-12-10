@@ -86,14 +86,15 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
       }
 
       // Generate transaction ID
-      final String transactionId = _firestore.collection('transactions').doc().id;
+      final String transactionId = FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser?.uid).
+      collection('payBills').doc().id;
       final DateTime now = DateTime.now();
 
       // Calculate subscription end date
       final DateTime subscriptionEndDate = _calculateEndDate(now, currentState.planDuration);
 
       // Create transaction data
-      final Map<String, dynamic> transactionData = <String, dynamic>{
+      final Map<String, dynamic> moviesData = <String, dynamic>{
         'id': transactionId,
         'userId': user.uid,
         'billType': 'Streaming Subscription',
@@ -105,7 +106,8 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
         'planDuration': currentState.planDuration,
         'planDescription': currentState.planDescription,
         'autoRenew': currentState.autoRenew,
-        // 'amount': currentState.planPrice,
+        'subscriptionStartDate': now.toIso8601String(),
+        'subscriptionEndDate': subscriptionEndDate.toIso8601String(),
         'taxAmount': currentState.taxAmount,
         'amount': currentState.totalAmount,
         'currency': 'USD',
@@ -113,8 +115,6 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
         'cardHolderName': currentState.cardHolderName!,
         'cardEnding': currentState.cardEnding!,
         'status': 'completed',
-        'subscriptionStartDate': now.toIso8601String(),
-        'subscriptionEndDate': subscriptionEndDate.toIso8601String(),
         'createdAt': now.toIso8601String(),
         'completedAt': now.toIso8601String(),
       };
@@ -123,7 +123,7 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
       await _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
           .collection('payBills')
           .doc(transactionId)
-          .set(transactionData);
+          .set(moviesData);
 
       // Local notification
       await LocalNotificationService.showTransactionNotification(

@@ -15,7 +15,7 @@ import '../widgets/home_widgets/transaction_item.dart';
 import '../widgets/home_widgets/transaction_items_header.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum TransactionCategory { transaction, payBills, insurance, tickets }
+enum TransactionCategory { transaction, payBills, insurance, tickets, donation }
 
 class TransactionHomeScreen extends StatefulWidget {
   const TransactionHomeScreen({super.key});
@@ -83,7 +83,6 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
       curve: Curves.elasticOut,
     ));
 
-    // Start animations
     _headerAnimationController.forward();
     _contentAnimationController.forward();
   }
@@ -93,10 +92,10 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
     _headerAnimationController.dispose();
     _contentAnimationController.dispose();
     _backgroundAnimationController.dispose();
+    searchController.dispose();
     super.dispose();
   }
 
-  /// Get collection name based on selected category
   String _getCollectionName() {
     switch (selectedCategory) {
       case TransactionCategory.transaction:
@@ -107,13 +106,12 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
         return 'insurance';
       case TransactionCategory.tickets:
         return 'movie_bookings';
+      case TransactionCategory.donation:
+        return 'donations';
     }
   }
 
-  /// Map Firestore doc -> your UI TransactionModel based on category
-  TransactionModel _fromFirestore(
-      DocumentSnapshot<Map<String, dynamic>> doc,
-      ) {
+  TransactionModel _fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
     final Map<String, dynamic> data = doc.data() ?? <String, dynamic>{};
 
     switch (selectedCategory) {
@@ -125,6 +123,8 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
         return _mapInsuranceData(doc, data);
       case TransactionCategory.tickets:
         return _mapTicketData(doc, data);
+      case TransactionCategory.donation:
+        return _mapDonationData(doc, data);
     }
   }
 
@@ -169,6 +169,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
       status: uiStatus,
       dateTime: createdAt,
       iconPath: iconPath,
+      additionalData: data, // Store all data for details view
     );
   }
 
@@ -199,21 +200,19 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
         uiStatus = 'Completed';
     }
 
-    // Show company name and bill type
     final companyName = data['companyName'] ?? 'Bill Payment';
     final billType = data['billType'] ?? '';
-    final title = billType.isNotEmpty
-        ? '$companyName - $billType'
-        : companyName;
+    final title = billType.isNotEmpty ? '$companyName - $billType' : companyName;
     final amount = (data['amount'] ?? 0).toDouble();
 
     return TransactionModel(
-      id: data['billNumber'] ?? doc.id, // Use bill number as ID for display
+      id: data['billNumber'] ?? doc.id,
       title: title,
       amount: amount,
       status: uiStatus,
       dateTime: createdAt,
       iconPath: data['companyIcon'] ?? TImageUrl.iconCreditCardTransaction,
+      additionalData: data,
     );
   }
 
@@ -242,19 +241,19 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
         uiStatus = 'Completed';
     }
 
-    // Show company name and insurance type in title
     final companyName = data['companyName'] ?? 'Insurance Company';
     final insuranceType = data['insuranceType'] ?? 'Insurance';
     final String title = '$companyName - $insuranceType';
     final amount = (data['premiumAmount'] ?? 0).toDouble();
 
     return TransactionModel(
-      id: data['policyNumber'] ?? doc.id, // Use policy number as ID for display
+      id: data['policyNumber'] ?? doc.id,
       title: title,
       amount: amount,
       status: uiStatus,
       dateTime: createdAt,
       iconPath: TImageUrl.iconCreditCardTransaction,
+      additionalData: data,
     );
   }
 
@@ -283,42 +282,79 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
         uiStatus = 'Completed';
     }
 
-    // Show movie title only for cleaner display
     final movieTitle = data['movieTitle'] ?? 'Movie Ticket';
-    final cinemaChain = data['cinemaChain'] ?? 'Cinema';
     final numberOfTickets = data['numberOfTickets'] ?? 1;
     final seatType = data['seatType'] ?? '';
-
-    // Create a more user-friendly ID display
     final String displayId = 'Tickets: $numberOfTickets${seatType.isNotEmpty ? ' ($seatType)' : ''}';
 
     return TransactionModel(
-      id: displayId, // Show ticket count and seat type instead of UUID
-      title: movieTitle, // Just movie title for cleaner look
+      id: displayId,
+      title: movieTitle,
       amount: (data['totalAmount'] ?? 0).toDouble(),
       status: uiStatus,
       dateTime: createdAt,
       iconPath: TImageUrl.iconCreditCardTransaction,
+      additionalData: data,
     );
   }
 
-  /// Apply search + filters to a base list
+  TransactionModel _mapDonationData(DocumentSnapshot doc, Map<String, dynamic> data) {
+    DateTime createdAt;
+    final ts = data['createdAt'];
+    if (ts is Timestamp) {
+      createdAt = ts.toDate();
+    } else if (ts is String) {
+      createdAt = DateTime.tryParse(ts) ?? DateTime.now();
+    } else {
+      createdAt = DateTime.now();
+    }
+
+    final String rawStatus = (data['status'] ?? '').toString().toLowerCase();
+    String uiStatus;
+    switch (rawStatus) {
+      case 'completed':
+      case 'success':
+        uiStatus = 'Completed';
+        break;
+      case 'pending':
+        uiStatus = 'Pending';
+        break;
+      case 'failed':
+        uiStatus = 'Failed';
+        break;
+      default:
+        uiStatus = 'Completed';
+    }
+
+    final organizationName = data['organizationName'] ?? 'Donation';
+    final donationType = data['donationType'] ?? '';
+    final title = donationType.isNotEmpty ? '$organizationName - $donationType' : organizationName;
+
+    return TransactionModel(
+      id: data['donationId'] ?? doc.id,
+      title: title,
+      amount: (data['amount'] ?? 0).toDouble(),
+      status: uiStatus,
+      dateTime: createdAt,
+      iconPath: TImageUrl.iconCreditCardTransaction,
+      // additionalData: data,
+    );
+  }
+
   List<TransactionModel> _getFilteredTransactions(List<TransactionModel> base) {
     List<TransactionModel> filtered = List.from(base);
 
-    // search
     if (searchQuery.isNotEmpty) {
       filtered = filtered.where((TransactionModel txn) =>
       txn.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
           txn.id.toLowerCase().contains(searchQuery.toLowerCase())).toList();
     }
 
-    // status
     if (activeFilters['statuses'].isNotEmpty) {
-      filtered = filtered.where((TransactionModel txn) => activeFilters['statuses'].contains(txn.status)).toList();
+      filtered = filtered.where((TransactionModel txn) =>
+          activeFilters['statuses'].contains(txn.status)).toList();
     }
 
-    // date range
     if (activeFilters['dateRange'] != null) {
       final DateTimeRange range = activeFilters['dateRange'];
       filtered = filtered.where((TransactionModel txn) =>
@@ -356,8 +392,6 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
 
     return filtered;
   }
-
-  /// Group by date buckets (Today / Yesterday / This Week / This Month / MMMM yyyy)
   Map<String, List<TransactionModel>> _groupTransactionsByDate(List<TransactionModel> txnList) {
     final Map<String, List<TransactionModel>> grouped = <String, List<TransactionModel>>{};
     if (txnList.isEmpty) return grouped;
@@ -411,20 +445,36 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
     );
   }
 
-  // Category buttons widget
+  void _showTransactionDetail(TransactionModel transaction) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) => TransactionDetailSheet(
+        transaction: transaction,
+        category: selectedCategory,
+      ),
+    );
+  }
+
   Widget _buildCategoryButtons() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
-      child: Row(
-        children: <Widget>[
-          Expanded(child: _buildCategoryButton('Transaction', TransactionCategory.transaction)),
-          SizedBox(width: 6.w),
-          Expanded(child: _buildCategoryButton('PayBills', TransactionCategory.payBills)),
-          SizedBox(width: 6.w),
-          Expanded(child: _buildCategoryButton('Insurance', TransactionCategory.insurance)),
-          SizedBox(width: 6.w),
-          Expanded(child: _buildCategoryButton('Tickets', TransactionCategory.tickets)),
-        ],
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: <Widget>[
+            _buildCategoryButton('Transaction', TransactionCategory.transaction),
+            SizedBox(width: 6.w),
+            _buildCategoryButton('PayBills', TransactionCategory.payBills),
+            SizedBox(width: 6.w),
+            _buildCategoryButton('Insurance', TransactionCategory.insurance),
+            SizedBox(width: 6.w),
+            _buildCategoryButton('Tickets', TransactionCategory.tickets),
+            SizedBox(width: 6.w),
+            _buildCategoryButton('Donation', TransactionCategory.donation),
+          ],
+        ),
       ),
     );
   }
@@ -437,33 +487,37 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
         onTap: () {
           setState(() {
             selectedCategory = category;
-            // Reset search when changing category
             searchQuery = '';
             searchController.clear();
             isSearchActive = false;
           });
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             color: isSelected ? MyTheme.primaryColor : Theme.of(context).scaffoldBackgroundColor,
             borderRadius: BorderRadius.circular(5.r),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.grey.withOpacity(0.3)
+                    : Colors.black.withOpacity(0.3),
                 blurRadius: 5,
                 offset: const Offset(0, 4),
               ),
             ],
           ),
-
           child: Text(
             title,
             textAlign: TextAlign.center,
             style: Font.montserratFont(
               fontSize: 10.sp,
               fontWeight: FontWeight.w600,
-              color: isSelected ? Colors.white : Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,
+              color: isSelected
+                  ? Colors.white
+                  : Theme.of(context).brightness == Brightness.light
+                  ? Colors.black
+                  : Colors.white,
             ),
           ),
         ),
@@ -472,8 +526,6 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
   }
 
   Widget _buildShimmerLoading(BuildContext context) {
-    final bool isDark = Theme.of(context).brightness == Brightness.dark;
-
     return AnimationLimiter(
       child: ListView(
         padding: EdgeInsets.symmetric(vertical: 10.h),
@@ -501,12 +553,10 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          // Header shimmer
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
             child: _buildShimmerBox(context, width: 120.w, height: 20.h),
           ),
-          // Transaction items shimmer
           ...List.generate(3, (int index) => _buildTransactionShimmer(context)),
         ],
       ),
@@ -527,10 +577,8 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
         ),
         child: Row(
           children: <Widget>[
-            // Icon shimmer
             _buildShimmerBox(context, width: 48.w, height: 48.h, borderRadius: 24.r),
             SizedBox(width: 12.w),
-            // Content shimmer
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -602,7 +650,6 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     final String? uid = FirebaseAuth.instance.currentUser?.uid;
@@ -619,7 +666,6 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
           Column(
             children: <Widget>[
               SizedBox(height: 20.h),
-              // Animated header
               SlideTransition(
                 position: _headerSlideAnimation,
                 child: FadeTransition(
@@ -627,13 +673,18 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
                   child: _buildTransactionHeader(),
                 ),
               ),
-              // Category buttons
               _buildCategoryButtons(),
               Expanded(
-                child: uid == null ? _buildNoTransactionsView() : StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                  stream: FirebaseFirestore.instance.collection('users').doc(uid).collection(_getCollectionName()).orderBy(_getOrderByField(), descending: true).snapshots(),
+                child: uid == null
+                    ? _buildNoTransactionsView()
+                    : StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                  stream: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(uid)
+                      .collection(_getCollectionName())
+                      .orderBy(_getOrderByField(), descending: true)
+                      .snapshots(),
                   builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-                    // SHIMMER LOADING STATE
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return _buildShimmerLoading(context);
                     }
@@ -641,7 +692,9 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
                     if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     }
-                    final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs = snapshot.data?.docs ?? <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+
+                    final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs =
+                        snapshot.data?.docs ?? <QueryDocumentSnapshot<Map<String, dynamic>>>[];
                     final List<TransactionModel> base = docs.map(_fromFirestore).toList();
 
                     if (base.isEmpty) {
@@ -653,7 +706,8 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
                       return _buildNoTransactionsView();
                     }
 
-                    final Map<String, List<TransactionModel>> grouped = _groupTransactionsByDate(filtered);
+                    final Map<String, List<TransactionModel>> grouped =
+                    _groupTransactionsByDate(filtered);
                     return _buildTransactionsList(grouped);
                   },
                 ),
@@ -670,8 +724,8 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
       case TransactionCategory.transaction:
         return 'created_at';
       case TransactionCategory.payBills:
-        return 'createdAt';
       case TransactionCategory.insurance:
+      case TransactionCategory.donation:
         return 'createdAt';
       case TransactionCategory.tickets:
         return 'bookingDate';
@@ -688,12 +742,12 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
         return 'Insurance';
       case TransactionCategory.tickets:
         return 'Movie Tickets';
+      case TransactionCategory.donation:
+        return 'Donations';
     }
   }
 
   Widget _buildTransactionHeader() {
-
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Container(
@@ -756,7 +810,9 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
           color: MyTheme.primaryColor,
           borderRadius: BorderRadius.circular(8.r),
         ),
-        child: icon != null ? Icon(icon, color: MyTheme.primaryColor) : SvgPicture.asset(iconPath),
+        child: icon != null
+            ? Icon(icon, color: Colors.white)
+            : SvgPicture.asset(iconPath),
       ),
     );
   }
@@ -775,7 +831,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
                   curve: Curves.elasticOut,
                 ),
               ),
-              child: const Icon(Icons.wallet,size: 150,color: MyTheme.primaryColor,),
+              child: const Icon(Icons.wallet, size: 150, color: MyTheme.primaryColor),
             ),
             SizedBox(height: 20.h),
             SlideTransition(
@@ -814,7 +870,7 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
     );
   }
 
-  Widget _buildTransactionsList(Map<String, List<TransactionModel>> groupedTransactions,) {
+  Widget _buildTransactionsList(Map<String, List<TransactionModel>> groupedTransactions) {
     return AnimationLimiter(
       child: ListView.builder(
         padding: EdgeInsets.symmetric(vertical: 10.h),
@@ -850,16 +906,19 @@ class _TransactionHomeScreenState extends State<TransactionHomeScreen> with Tick
                                 horizontal: 16.w,
                                 vertical: 8.h,
                               ),
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 300),
-                                child: TransactionItem(
-                                  iconPath: transaction.iconPath,
-                                  heading: transaction.title,
-                                  transactionId: transaction.id,
-                                  moneyValue: transaction.amount.toStringAsFixed(2),
-                                  status: transaction.status,
-                                  date: DateFormat('MM/dd/yyyy').format(transaction.dateTime),
-                                  time: DateFormat('hh:mm a').format(transaction.dateTime),
+                              child: GestureDetector(
+                                onTap: () => _showTransactionDetail(transaction),
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 300),
+                                  child: TransactionItem(
+                                    iconPath: transaction.iconPath,
+                                    heading: transaction.title,
+                                    transactionId: transaction.id,
+                                    moneyValue: transaction.amount.toStringAsFixed(2),
+                                    status: transaction.status,
+                                    date: DateFormat('MM/dd/yyyy').format(transaction.dateTime),
+                                    time: DateFormat('hh:mm a').format(transaction.dateTime),
+                                  ),
                                 ),
                               ),
                             );
@@ -1009,20 +1068,33 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              // header
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text('Filter Transactions', style: Font.montserratFont(fontSize: 18.sp, fontWeight: FontWeight.bold)),
-                  IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close)),
+                  Text(
+                    'Filter Transactions',
+                    style: Font.montserratFont(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
+                  ),
                 ],
               ),
               SizedBox(height: 10.h),
               const Divider(),
               SizedBox(height: 10.h),
 
-              // Period
-              Text('Period', style: Font.montserratFont(fontSize: 16.sp, fontWeight: FontWeight.bold)),
+              Text(
+                'Period',
+                style: Font.montserratFont(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               SizedBox(height: 10.h),
               Wrap(
                 spacing: 10.w,
@@ -1032,9 +1104,10 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
                     duration: const Duration(milliseconds: 200),
                     child: ChoiceChip(
                       label: Text(
-                        option, style: Font.montserratFont(
-                        color: isSelected ? Colors.white : Colors.black,
-                      ),
+                        option,
+                        style: Font.montserratFont(
+                          color: isSelected ? Colors.white : Colors.black,
+                        ),
                       ),
                       selected: isSelected,
                       selectedColor: MyTheme.primaryColor,
@@ -1052,8 +1125,13 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
               ),
               SizedBox(height: 20.h),
 
-              // Custom Range
-              Text('Custom Date Range', style: Font.montserratFont(fontSize: 16.sp, fontWeight: FontWeight.bold)),
+              Text(
+                'Custom Date Range',
+                style: Font.montserratFont(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               SizedBox(height: 10.h),
               GestureDetector(
                 onTap: () async {
@@ -1069,7 +1147,9 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
                     builder: (BuildContext context, Widget? child) {
                       return Theme(
                         data: Theme.of(context).copyWith(
-                          colorScheme:  const ColorScheme.light(primary: MyTheme.primaryColor),
+                          colorScheme: const ColorScheme.light(
+                            primary: MyTheme.primaryColor,
+                          ),
                         ),
                         child: child!,
                       );
@@ -1088,11 +1168,17 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey.shade200),
                     borderRadius: BorderRadius.circular(8.r),
-                    color: filters['dateRange'] != null ? MyTheme.primaryColor : Colors.transparent,
+                    color: filters['dateRange'] != null
+                        ? MyTheme.primaryColor.withOpacity(0.1)
+                        : Colors.transparent,
                   ),
                   child: Row(
                     children: <Widget>[
-                      Icon(Icons.calendar_today, color:  MyTheme.primaryColor, size: 18.sp),
+                      Icon(
+                        Icons.calendar_today,
+                        color: MyTheme.primaryColor,
+                        size: 18.sp,
+                      ),
                       SizedBox(width: 10.w),
                       filters['dateRange'] != null
                           ? Text(
@@ -1100,15 +1186,26 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
                             '${DateFormat('MMM d, yyyy').format(filters['dateRange'].end)}',
                         style: Font.montserratFont(fontSize: 14.sp),
                       )
-                          : Text('Select date range', style: Font.montserratFont(fontSize: 14.sp, color: Colors.grey)),
+                          : Text(
+                        'Select date range',
+                        style: Font.montserratFont(
+                          fontSize: 14.sp,
+                          color: Colors.grey,
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
               SizedBox(height: 20.h),
 
-              // Status
-              Text('Status', style: Font.montserratFont(fontSize: 16.sp, fontWeight: FontWeight.bold)),
+              Text(
+                'Status',
+                style: Font.montserratFont(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               SizedBox(height: 10.h),
               Wrap(
                 spacing: 10.w,
@@ -1117,9 +1214,14 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
                   return AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     child: FilterChip(
-                      label: Text(status, style: Font.montserratFont(color: isSelected ? Colors.white : Colors.black)),
+                      label: Text(
+                        status,
+                        style: Font.montserratFont(
+                          color: isSelected ? Colors.white : Colors.black,
+                        ),
+                      ),
                       selected: isSelected,
-                      selectedColor:  MyTheme.primaryColor,
+                      selectedColor: MyTheme.primaryColor,
                       onSelected: (bool selected) {
                         setState(() {
                           if (selected) {
@@ -1136,7 +1238,6 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
 
               const Spacer(),
 
-              // Actions
               Row(
                 children: <Widget>[
                   Expanded(
@@ -1159,7 +1260,13 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                         ),
-                        child: Text('Reset', style: Font.montserratFont(fontSize: 16.sp, color: MyTheme.primaryColor)),
+                        child: Text(
+                          'Reset',
+                          style: Font.montserratFont(
+                            fontSize: 16.sp,
+                            color: MyTheme.primaryColor,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -1175,9 +1282,17 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(vertical: 14.h),
                           backgroundColor: MyTheme.primaryColor,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
                         ),
-                        child: Text('Apply Filters', style: Font.montserratFont(fontSize: 16.sp, color: Colors.white)),
+                        child: Text(
+                          'Apply Filters',
+                          style: Font.montserratFont(
+                            fontSize: 16.sp,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -1188,5 +1303,529 @@ class _TransactionFilterSheetState extends State<TransactionFilterSheet> with Si
         ),
       ),
     );
+  }
+}
+
+class TransactionDetailSheet extends StatefulWidget {
+  final TransactionModel transaction;
+  final TransactionCategory category;
+
+  const TransactionDetailSheet({
+    Key? key,
+    required this.transaction,
+    required this.category,
+  }) : super(key: key);
+
+  @override
+  State<TransactionDetailSheet> createState() => _TransactionDetailSheetState();
+}
+
+class _TransactionDetailSheetState extends State<TransactionDetailSheet>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 400),
+      vsync: this,
+    );
+
+    _scaleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOutCubic,
+    ));
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOutCubic,
+    ));
+
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'completed':
+        return Colors.green;
+      case 'pending':
+        return Colors.orange;
+      case 'failed':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  IconData _getStatusIcon(String status) {
+    switch (status.toLowerCase()) {
+      case 'completed':
+        return Icons.check_circle;
+      case 'pending':
+        return Icons.access_time;
+      case 'failed':
+        return Icons.cancel;
+      default:
+        return Icons.info;
+    }
+  }
+
+  Widget _buildDetailRow(String label, String value, {bool isHighlighted = false}) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8.h),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Expanded(
+            flex: 2,
+            child: Text(
+              label,
+              style: Font.montserratFont(
+                fontSize: 14.sp,
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: Font.montserratFont(
+                fontSize: 14.sp,
+                fontWeight: isHighlighted ? FontWeight.bold : FontWeight.w600,
+                color: isHighlighted ? MyTheme.primaryColor : null,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: EdgeInsets.only(top: 16.h, bottom: 8.h),
+      child: Text(
+        title,
+        style: Font.montserratFont(
+          fontSize: 16.sp,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildTransactionDetails() {
+    final data = widget.transaction.additionalData ?? {};
+
+    return <Widget>[
+      _buildDetailRow('Transaction ID', widget.transaction.id),
+      _buildDetailRow('Recipient', widget.transaction.title),
+      _buildDetailRow(
+        'Amount',
+        'PKR ${widget.transaction.amount.toStringAsFixed(2)}',
+        isHighlighted: true,
+      ),
+      _buildDetailRow(
+        'Date',
+        DateFormat('MMMM dd, yyyy').format(widget.transaction.dateTime),
+      ),
+      _buildDetailRow(
+        'Time',
+        DateFormat('hh:mm a').format(widget.transaction.dateTime),
+      ),
+      if (data['recipient_account'] != null)
+        _buildDetailRow('Account Number', data['recipient_account'].toString()),
+      if (data['bank_name'] != null)
+        _buildDetailRow('Bank', data['bank_name'].toString()),
+      if (data['transaction_type'] != null)
+        _buildDetailRow('Type', data['transaction_type'].toString()),
+      if (data['reference_number'] != null)
+        _buildDetailRow('Reference', data['reference_number'].toString()),
+    ];
+  }
+
+  List<Widget> _buildPayBillDetails() {
+    final data = widget.transaction.additionalData ?? {};
+
+    return <Widget>[
+      _buildDetailRow('Bill Number', widget.transaction.id),
+      _buildDetailRow('Company', data['companyName']?.toString() ?? 'N/A'),
+      _buildDetailRow('Bill Type', data['billType']?.toString() ?? 'N/A'),
+      _buildDetailRow(
+        'Amount',
+        'PKR ${widget.transaction.amount.toStringAsFixed(2)}',
+        isHighlighted: true,
+      ),
+      _buildDetailRow(
+        'Date',
+        DateFormat('MMMM dd, yyyy').format(widget.transaction.dateTime),
+      ),
+      _buildDetailRow(
+        'Time',
+        DateFormat('hh:mm a').format(widget.transaction.dateTime),
+      ),
+      if (data['consumerNumber'] != null)
+        _buildDetailRow('Consumer Number', data['consumerNumber'].toString()),
+      if (data['dueDate'] != null)
+        _buildDetailRow('Due Date', data['dueDate'].toString()),
+      if (data['billingMonth'] != null)
+        _buildDetailRow('Billing Month', data['billingMonth'].toString()),
+    ];
+  }
+
+  List<Widget> _buildInsuranceDetails() {
+    final data = widget.transaction.additionalData ?? {};
+
+    return <Widget>[
+      _buildDetailRow('Policy Number', widget.transaction.id),
+      _buildDetailRow('Company', data['companyName']?.toString() ?? 'N/A'),
+      _buildDetailRow('Insurance Type', data['insuranceType']?.toString() ?? 'N/A'),
+      _buildDetailRow(
+        'Premium Amount',
+        'PKR ${widget.transaction.amount.toStringAsFixed(2)}',
+        isHighlighted: true,
+      ),
+      _buildDetailRow(
+        'Date',
+        DateFormat('MMMM dd, yyyy').format(widget.transaction.dateTime),
+      ),
+      if (data['coverageAmount'] != null)
+        _buildDetailRow(
+          'Coverage',
+          'PKR ${(data['coverageAmount'] as num).toStringAsFixed(2)}',
+        ),
+      if (data['policyStartDate'] != null)
+        _buildDetailRow('Policy Start', data['policyStartDate'].toString()),
+      if (data['policyEndDate'] != null)
+        _buildDetailRow('Policy End', data['policyEndDate'].toString()),
+      if (data['beneficiaryName'] != null)
+        _buildDetailRow('Beneficiary', data['beneficiaryName'].toString()),
+    ];
+  }
+
+  List<Widget> _buildTicketDetails() {
+    final data = widget.transaction.additionalData ?? {};
+
+    return <Widget>[
+      _buildDetailRow('Booking ID', data['bookingId']?.toString() ?? 'N/A'),
+      _buildDetailRow('Movie', widget.transaction.title),
+      _buildDetailRow('Cinema', data['cinemaChain']?.toString() ?? 'N/A'),
+      _buildDetailRow('Location', data['cinemaLocation']?.toString() ?? 'N/A'),
+      _buildDetailRow(
+        'Total Amount',
+        'PKR ${widget.transaction.amount.toStringAsFixed(2)}',
+        isHighlighted: true,
+      ),
+      _buildDetailRow(
+        'Booking Date',
+        DateFormat('MMMM dd, yyyy').format(widget.transaction.dateTime),
+      ),
+      if (data['showDate'] != null)
+        _buildDetailRow('Show Date', data['showDate'].toString()),
+      if (data['showTime'] != null)
+        _buildDetailRow('Show Time', data['showTime'].toString()),
+      if (data['numberOfTickets'] != null)
+        _buildDetailRow('Tickets', data['numberOfTickets'].toString()),
+      if (data['seatType'] != null)
+        _buildDetailRow('Seat Type', data['seatType'].toString()),
+      if (data['seatNumbers'] != null)
+        _buildDetailRow('Seats', data['seatNumbers'].toString()),
+      if (data['hallNumber'] != null)
+        _buildDetailRow('Hall', data['hallNumber'].toString()),
+    ];
+  }
+
+  List<Widget> _buildDonationDetails() {
+    final data = widget.transaction.additionalData ?? {};
+
+    return <Widget>[
+      _buildDetailRow('Donation ID', widget.transaction.id),
+      _buildDetailRow('Organization', data['organizationName']?.toString() ?? 'N/A'),
+      _buildDetailRow('Donation Type', data['donationType']?.toString() ?? 'N/A'),
+      _buildDetailRow(
+        'Amount',
+        'PKR ${widget.transaction.amount.toStringAsFixed(2)}',
+        isHighlighted: true,
+      ),
+      _buildDetailRow(
+        'Date',
+        DateFormat('MMMM dd, yyyy').format(widget.transaction.dateTime),
+      ),
+      _buildDetailRow(
+        'Time',
+        DateFormat('hh:mm a').format(widget.transaction.dateTime),
+      ),
+      if (data['cause'] != null)
+        _buildDetailRow('Cause', data['cause'].toString()),
+      if (data['taxDeductible'] != null)
+        _buildDetailRow(
+          'Tax Deductible',
+          data['taxDeductible'] == true ? 'Yes' : 'No',
+        ),
+      if (data['certificateNumber'] != null)
+        _buildDetailRow('Certificate', data['certificateNumber'].toString()),
+      if (data['donorName'] != null)
+        _buildDetailRow('Donor Name', data['donorName'].toString()),
+      if (data['anonymous'] != null)
+        _buildDetailRow(
+          'Anonymous',
+          data['anonymous'] == true ? 'Yes' : 'No',
+        ),
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return SlideTransition(
+      position: _slideAnimation,
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: Container(
+          margin: EdgeInsets.only(top: 100.h),
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30.r),
+              topRight: Radius.circular(30.r),
+            ),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 20,
+                offset: const Offset(0, -5),
+              ),
+            ],
+          ),
+          child: Column(
+            children: <Widget>[
+              // Handle bar
+              Container(
+                margin: EdgeInsets.only(top: 12.h),
+                width: 50.w,
+                height: 5.h,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+              ),
+
+              // Header
+              Padding(
+                padding: EdgeInsets.all(20.r),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'Transaction Details',
+                      style: Font.montserratFont(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: Icon(
+                        Icons.close,
+                        color: isDark ? Colors.white : Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      // Status Card
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        padding: EdgeInsets.all(20.r),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: <Color>[
+                              _getStatusColor(widget.transaction.status).withOpacity(0.8),
+                              _getStatusColor(widget.transaction.status),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(15.r),
+                          boxShadow: <BoxShadow>[
+                            BoxShadow(
+                              color: _getStatusColor(widget.transaction.status).withOpacity(0.3),
+                              blurRadius: 15,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: <Widget>[
+                            Icon(
+                              _getStatusIcon(widget.transaction.status),
+                              size: 50.sp,
+                              color: Colors.white,
+                            ),
+                            SizedBox(height: 10.h),
+                            Text(
+                              widget.transaction.status,
+                              style: Font.montserratFont(
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(height: 5.h),
+                            Text(
+                              'PKR ${widget.transaction.amount.toStringAsFixed(2)}',
+                              style: Font.montserratFont(
+                                fontSize: 28.sp,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Details Section
+                      _buildSectionTitle('Details'),
+                      Container(
+                        padding: EdgeInsets.all(16.r),
+                        decoration: BoxDecoration(
+                          color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                          borderRadius: BorderRadius.circular(15.r),
+                          boxShadow: <BoxShadow>[
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: _getCategorySpecificDetails(),
+                        ),
+                      ),
+
+                      SizedBox(height: 30.h),
+
+                      // Action Buttons
+                      if (widget.transaction.status.toLowerCase() == 'completed')
+                        Column(
+                          children: <Widget>[
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  // Download receipt logic
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Downloading receipt...'),
+                                      duration: Duration(seconds: 2),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.download, color: Colors.white),
+                                label: Text(
+                                  'Download Receipt',
+                                  style: Font.montserratFont(
+                                    fontSize: 16.sp,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: MyTheme.primaryColor,
+                                  padding: EdgeInsets.symmetric(vertical: 14.h),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.r),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 10.h),
+                            SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton.icon(
+                                onPressed: () {
+                                  // Share receipt logic
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Sharing receipt...'),
+                                      duration: Duration(seconds: 2),
+                                    ),
+                                  );
+                                },
+                                icon: Icon(
+                                  Icons.share,
+                                  color: MyTheme.primaryColor,
+                                ),
+                                label: Text(
+                                  'Share Receipt',
+                                  style: Font.montserratFont(
+                                    fontSize: 16.sp,
+                                    color: MyTheme.primaryColor,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  padding: EdgeInsets.symmetric(vertical: 14.h),
+                                  side: const BorderSide(color: MyTheme.primaryColor),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.r),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                      SizedBox(height: 30.h),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _getCategorySpecificDetails() {
+    switch (widget.category) {
+      case TransactionCategory.transaction:
+        return _buildTransactionDetails();
+      case TransactionCategory.payBills:
+        return _buildPayBillDetails();
+      case TransactionCategory.insurance:
+        return _buildInsuranceDetails();
+      case TransactionCategory.tickets:
+        return _buildTicketDetails();
+      case TransactionCategory.donation:
+        return _buildDonationDetails();
+    }
   }
 }

@@ -109,7 +109,7 @@ class DonationBloc extends Bloc<DonationEvent, DonationState> {
 
       // Save to Firestore transactions collection
       await _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
-          .collection('transactions')
+          .collection('donations')
           .doc(transactionId)
           .set(transactionData);
 

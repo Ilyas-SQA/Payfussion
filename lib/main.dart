@@ -238,7 +238,10 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (BuildContext context) => PostpaidBillBloc(context.read<NotificationBloc>())),
         BlocProvider(create: (BuildContext context) => CreditCardLoanBloc(context.read<NotificationBloc>(),),),
         BlocProvider(create: (BuildContext context) => DthRechargeBloc(context.read<NotificationBloc>())),
-        BlocProvider(create: (BuildContext context) => BillSplitBloc(context.read<NotificationBloc>())),
+        BlocProvider(create: (BuildContext context) => BillSplitBloc(
+          context.read<NotificationBloc>(),
+          BiometricService(),
+        )),
         BlocProvider(create: (BuildContext context) => InternetBillBloc(context.read<NotificationBloc>())),
         BlocProvider(create: (BuildContext context) => DonationBloc(context.read<NotificationBloc>())),
         BlocProvider(create: (BuildContext context) => GovernmentFeeBloc(context.read<NotificationBloc>())),

@@ -85,11 +85,12 @@ class DthRechargeBloc extends Bloc<DthRechargeEvent, DthRechargeState> {
       }
 
       // Generate transaction ID
-      final String transactionId = _firestore.collection('transactions').doc().id;
+      final String transactionId = _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection('payBills').doc().id;
       final DateTime now = DateTime.now();
 
       // Create transaction data
-      final Map<String, dynamic> transactionData = <String, dynamic>{
+      final Map<String, dynamic> dthRechargeData = <String, dynamic>{
         'id': transactionId,
         'userId': user.uid,
         'billType': 'DTH Recharge',
@@ -97,10 +98,10 @@ class DthRechargeBloc extends Bloc<DthRechargeEvent, DthRechargeState> {
         'subscriberId': currentState.subscriberId,
         'customerName': currentState.customerName,
         'selectedPlan': currentState.selectedPlan,
+        'rating': currentState.rating,
         'taxAmount': currentState.taxAmount,
         'amount': currentState.totalAmount,
         'currency': 'USD',
-        'rating': currentState.rating,
         'cardId': currentState.cardId!,
         'cardHolderName': currentState.cardHolderName!,
         'cardEnding': currentState.cardEnding!,
@@ -113,7 +114,7 @@ class DthRechargeBloc extends Bloc<DthRechargeEvent, DthRechargeState> {
       await _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
           .collection('payBills')
           .doc(transactionId)
-          .set(transactionData);
+          .set(dthRechargeData);
 
       // Local notification
       await LocalNotificationService.showTransactionNotification(

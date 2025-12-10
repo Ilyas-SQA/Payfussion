@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:payfussion/core/constants/tax.dart';
 import 'package:payfussion/data/models/pay_bills/bill_item.dart';
@@ -91,29 +93,39 @@ class RentPaymentBloc extends Bloc<RentPaymentEvent, RentPaymentState> {
       await Future.delayed(const Duration(seconds: 2));
 
       // Generate transaction ID
-      final String transactionId =
-          'RENT_${DateTime.now().millisecondsSinceEpoch}';
+      final String transactionId = FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser?.uid).
+      collection('payBills').doc().id;
+      final DateTime now = DateTime.now();
+
 
       // Create bill model for rent payment
-      final PayBillModel rentBill = PayBillModel(
-        id: transactionId,
-        companyName: currentState.companyName,
-        billType: 'Rent',
-        billNumber: currentState.propertyAddress,
-        amount: currentState.totalAmount,
-        feeAmount: currentState.taxAmount,
-        hasFee: true,
-        currency: currentState.currency,
-        status: 'completed',
-        paidAt: DateTime.now(),
-        createdAt: DateTime.now(),
-        cardId: currentState.cardId.toString(),
-        companyIcon: '',
-        cardEnding: currentState.cardEnding.toString(),
-      );
+      final Map<String, dynamic> rentPaymentData = <String, dynamic>{
+        'id': transactionId,
+        'userId': FirebaseAuth.instance.currentUser?.uid,
+        'billType': 'Rent',
+        'companyName': currentState.companyName,
+        'category': currentState.category,
+        'propertyAddress': currentState.propertyAddress,
+        'landlordName': currentState.landlordName,
+        'landlordEmail': currentState.landlordEmail,
+        'landlordPhone': currentState.landlordPhone,
+        'notes': currentState.notes,
+        'taxAmount': currentState.taxAmount,
+        'amount': currentState.totalAmount,
+        'currency': currentState.currency,
+        'cardId': currentState.cardId!,
+        'cardHolderName': currentState.cardHolderName!,
+        'cardEnding': currentState.cardEnding!,
+        'status': 'completed',
+        'createdAt': now.toIso8601String(),
+        'completedAt': now.toIso8601String(),
+      };
 
       // Add to repository
-      await _payBillRepository.addPayBill(rentBill);
+      await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection('payBills')
+          .doc(transactionId)
+          .set(rentPaymentData);
 
       // LOCAL NOTIFICATION
       await LocalNotificationService.showTransactionNotification(
