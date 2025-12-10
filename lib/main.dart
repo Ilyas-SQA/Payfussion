@@ -230,19 +230,48 @@ class MyApp extends StatelessWidget {
           ),
         ),
         BlocProvider(create: (BuildContext context) => ExchangeCurrencyBloc()),
-        BlocProvider(create: (BuildContext context) => ElectricityBillBloc(NotificationBloc(NotificationRepository())),),
-        BlocProvider(create: (BuildContext context) => MobileRechargeBloc(NotificationBloc(NotificationRepository()),)),
-        BlocProvider(create: (BuildContext context) => GasBillBloc(NotificationBloc(NotificationRepository()),)),
-        BlocProvider(create: (BuildContext context) => MoviesBloc(context.read<NotificationBloc>()),),
-        BlocProvider(create: (BuildContext context) => RentPaymentBloc(PayBillRepository(), NotificationBloc(NotificationRepository()),),),
-        BlocProvider(create: (BuildContext context) => PostpaidBillBloc(context.read<NotificationBloc>())),
-        BlocProvider(create: (BuildContext context) => CreditCardLoanBloc(context.read<NotificationBloc>(),),),
-        BlocProvider(create: (BuildContext context) => DthRechargeBloc(context.read<NotificationBloc>())),
+        BlocProvider(create: (BuildContext context) => ElectricityBillBloc(
+          context.read<NotificationBloc>(),
+          BiometricService(),
+        ),),
+        BlocProvider(create: (BuildContext context) => MobileRechargeBloc(
+          context.read<NotificationBloc>(),
+          BiometricService(),
+        ),),
+        BlocProvider(create: (BuildContext context) => GasBillBloc(
+          context.read<NotificationBloc>(),
+          BiometricService(),
+        )),
+        BlocProvider(create: (BuildContext context) => MoviesBloc(
+          context.read<NotificationBloc>(),
+          BiometricService(),
+        ),),
+        BlocProvider(create: (BuildContext context) => RentPaymentBloc(
+          PayBillRepository(),
+          context.read<NotificationBloc>(),
+          BiometricService(),
+        ),),
+        BlocProvider(create: (BuildContext context) => PostpaidBillBloc(
+          context.read<NotificationBloc>(),
+          BiometricService(),
+        )),
+        BlocProvider(create: (BuildContext context) => CreditCardLoanBloc(
+          context.read<NotificationBloc>(),
+          BiometricService(),
+        ),),
+        BlocProvider(create: (BuildContext context) => DthRechargeBloc(
+          context.read<NotificationBloc>(),
+          BiometricService(),
+        )),
         BlocProvider(create: (BuildContext context) => BillSplitBloc(
           context.read<NotificationBloc>(),
           BiometricService(),
         )),
-        BlocProvider(create: (BuildContext context) => InternetBillBloc(context.read<NotificationBloc>())),
+        BlocProvider(create: (BuildContext context) => InternetBillBloc(
+          context.read<NotificationBloc>(),
+          BiometricService(),
+        ),
+        ),
         BlocProvider(create: (BuildContext context) => DonationBloc(context.read<NotificationBloc>())),
         BlocProvider(create: (BuildContext context) => GovernmentFeeBloc(context.read<NotificationBloc>())),
         BlocProvider(create: (BuildContext context) => LimitBloc(repository: LimitRepository())..add(LoadLimitEvent(SessionController.user.uid.toString())),),

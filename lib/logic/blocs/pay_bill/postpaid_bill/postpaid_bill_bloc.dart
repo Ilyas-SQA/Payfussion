@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../core/constants/tax.dart';
+import '../../../../services/biometric_service.dart';
 import '../../../../services/notification_service.dart';
 import '../../notification/notification_bloc.dart';
 import '../../notification/notification_event.dart';
@@ -12,8 +13,12 @@ class PostpaidBillBloc extends Bloc<PostpaidBillEvent, PostpaidBillState> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final NotificationBloc _notificationBloc;
+  final BiometricService _biometricService;
 
-  PostpaidBillBloc(this._notificationBloc) : super(PostpaidBillInitial()) {
+  PostpaidBillBloc(
+      this._notificationBloc,
+      this._biometricService,
+      ) : super(PostpaidBillInitial()) {
     on<SetPostpaidBillData>(_onSetPostpaidBillData);
     on<SetSelectedCardForPostpaidBill>(_onSetSelectedCard);
     on<ProcessPostpaidBillPayment>(_onProcessPayment);
@@ -88,9 +93,56 @@ class PostpaidBillBloc extends Bloc<PostpaidBillEvent, PostpaidBillState> {
         return;
       }
 
+      // ========== BIOMETRIC AUTHENTICATION ==========
+      // Check if biometric is enabled for this user
+      final bool isBiometricEnabled = await _biometricService.isBiometricEnabled();
+
+      if (isBiometricEnabled) {
+        // Check if biometric is available on device
+        final bool isAvailable = await _biometricService.isBiometricAvailable();
+        final bool isEnrolled = await _biometricService.hasBiometricsEnrolled();
+
+        if (isAvailable && isEnrolled) {
+          // Perform biometric authentication
+          final Map<String, dynamic> biometricResult = await _biometricService.authenticate(
+            reason: 'Authenticate to confirm ${currentState.providerName} postpaid bill payment of \$${currentState.totalAmount.toStringAsFixed(2)}',
+          );
+
+          if (!biometricResult['success']) {
+            // Biometric authentication failed
+            emit(PostpaidBillError(
+              biometricResult['error'] ?? 'Biometric authentication failed. Payment cancelled.',
+            ));
+
+            // Send failure notification
+            await LocalNotificationService.showCustomNotification(
+              title: 'Authentication Failed',
+              body: 'Biometric authentication failed. Payment was cancelled.',
+              payload: 'biometric_auth_failed',
+            );
+
+            return; // Stop payment processing
+          }
+
+          // Biometric authentication successful - continue with payment
+        } else {
+          // Biometric not available but was enabled - inform user
+          emit(const PostpaidBillError(
+            'Biometric authentication is not available. Please check your device settings.',
+          ));
+          return;
+        }
+      }
+      // If biometric is not enabled, proceed without biometric check
+      // ========== END BIOMETRIC AUTHENTICATION ==========
+
       // Generate transaction ID
-      final String transactionId = FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser?.uid).
-      collection('payBills').doc().id;
+      final String transactionId = FirebaseFirestore.instance
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection('payBills')
+          .doc()
+          .id;
       final DateTime now = DateTime.now();
 
       // Create transaction data
@@ -115,12 +167,15 @@ class PostpaidBillBloc extends Bloc<PostpaidBillEvent, PostpaidBillState> {
         'cardHolderName': currentState.cardHolderName!,
         'cardEnding': currentState.cardEnding!,
         'status': 'completed',
+        'authenticatedWithBiometric': isBiometricEnabled,
         'createdAt': now.toIso8601String(),
         'completedAt': now.toIso8601String(),
       };
 
       // Save to Firestore transactions collection
-      await _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
+      await _firestore
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser?.uid)
           .collection('payBills')
           .doc(transactionId)
           .set(postpaidBillData);
@@ -150,7 +205,7 @@ class PostpaidBillBloc extends Bloc<PostpaidBillEvent, PostpaidBillState> {
       );
 
       // Firestore notification
-      final String notificationMessage = _buildNotificationMessage(currentState);
+      final String notificationMessage = _buildNotificationMessage(currentState, isBiometricEnabled);
 
       _notificationBloc.add(AddNotification(
         title: 'Postpaid Bill Payment Successful - ${currentState.providerName}',
@@ -168,6 +223,7 @@ class PostpaidBillBloc extends Bloc<PostpaidBillEvent, PostpaidBillState> {
           'taxAmount': currentState.taxAmount,
           'totalAmount': currentState.totalAmount,
           'cardEnding': currentState.cardEnding,
+          'authenticatedWithBiometric': isBiometricEnabled,
           'timestamp': now.toIso8601String(),
         },
       ));
@@ -205,8 +261,12 @@ class PostpaidBillBloc extends Bloc<PostpaidBillEvent, PostpaidBillState> {
     emit(PostpaidBillInitial());
   }
 
-  String _buildNotificationMessage(PostpaidBillDataSet state) {
+  String _buildNotificationMessage(PostpaidBillDataSet state, bool authenticatedWithBiometric) {
     final DateTime now = DateTime.now();
+
+    final String authMethod = authenticatedWithBiometric
+        ? '✓ Secured with Biometric Authentication'
+        : '';
 
     String message = '''Postpaid Bill Payment completed successfully!
 
@@ -222,11 +282,13 @@ Total Paid: USD ${state.totalAmount.toStringAsFixed(2)}
 Card Ending: ****${state.cardEnding}''';
 
     if (state.email != null && state.email!.isNotEmpty) {
-      message += '\n Receipt sent to: ${state.email}';
+      message += '\nReceipt sent to: ${state.email}';
     }
 
     message += '''
 Completed at: ${now.toString().substring(0, 19)}
+
+$authMethod
 
 Thank you for using our service for your ${state.providerName} postpaid bill payment!''';
 

@@ -5,6 +5,7 @@ import 'package:payfussion/core/constants/tax.dart';
 import 'package:payfussion/data/models/pay_bills/bill_item.dart';
 import 'package:payfussion/data/repositories/pay_bill/pay_bill_repository.dart';
 import 'package:payfussion/services/notification_service.dart';
+import '../../../../services/biometric_service.dart';
 import '../../notification/notification_bloc.dart';
 import '../../notification/notification_event.dart';
 import 'rent_payment_event.dart';
@@ -13,8 +14,14 @@ import 'rent_payment_state.dart';
 class RentPaymentBloc extends Bloc<RentPaymentEvent, RentPaymentState> {
   final PayBillRepository _payBillRepository;
   final NotificationBloc _notificationBloc;
+  final BiometricService _biometricService;
 
-  RentPaymentBloc(this._payBillRepository, this._notificationBloc)
+
+  RentPaymentBloc(
+      this._payBillRepository,
+      this._notificationBloc,
+      this._biometricService,
+      )
       : super(RentPaymentInitial()) {
     on<SetRentPaymentData>(_onSetRentPaymentData);
     on<SetRentPaymentCard>(_onSetRentPaymentCard);
@@ -89,14 +96,60 @@ class RentPaymentBloc extends Bloc<RentPaymentEvent, RentPaymentState> {
     emit(RentPaymentProcessing());
 
     try {
+      // ========== BIOMETRIC AUTHENTICATION ==========
+      // Check if biometric is enabled for this user
+      final bool isBiometricEnabled = await _biometricService.isBiometricEnabled();
+
+      if (isBiometricEnabled) {
+        // Check if biometric is available on device
+        final bool isAvailable = await _biometricService.isBiometricAvailable();
+        final bool isEnrolled = await _biometricService.hasBiometricsEnrolled();
+
+        if (isAvailable && isEnrolled) {
+          // Perform biometric authentication
+          final Map<String, dynamic> biometricResult = await _biometricService.authenticate(
+            reason: 'Authenticate to confirm rent payment of ${currentState.currency} ${currentState.totalAmount.toStringAsFixed(2)}',
+          );
+
+          if (!biometricResult['success']) {
+            // Biometric authentication failed
+            emit(RentPaymentError(
+              biometricResult['error'] ?? 'Biometric authentication failed. Payment cancelled.',
+            ));
+
+            // Send failure notification
+            await LocalNotificationService.showCustomNotification(
+              title: 'Authentication Failed',
+              body: 'Biometric authentication failed. Payment was cancelled.',
+              payload: 'biometric_auth_failed',
+            );
+
+            return; // Stop payment processing
+          }
+
+          // Biometric authentication successful - continue with payment
+        } else {
+          // Biometric not available but was enabled - inform user
+          emit(const RentPaymentError(
+            'Biometric authentication is not available. Please check your device settings.',
+          ));
+          return;
+        }
+      }
+      // If biometric is not enabled, proceed without biometric check
+      // ========== END BIOMETRIC AUTHENTICATION ==========
+
       // Simulate payment processing
       await Future.delayed(const Duration(seconds: 2));
 
       // Generate transaction ID
-      final String transactionId = FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser?.uid).
-      collection('payBills').doc().id;
+      final String transactionId = FirebaseFirestore.instance
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection('payBills')
+          .doc()
+          .id;
       final DateTime now = DateTime.now();
-
 
       // Create bill model for rent payment
       final Map<String, dynamic> rentPaymentData = <String, dynamic>{
@@ -117,12 +170,15 @@ class RentPaymentBloc extends Bloc<RentPaymentEvent, RentPaymentState> {
         'cardHolderName': currentState.cardHolderName!,
         'cardEnding': currentState.cardEnding!,
         'status': 'completed',
+        'authenticatedWithBiometric': isBiometricEnabled,
         'createdAt': now.toIso8601String(),
         'completedAt': now.toIso8601String(),
       };
 
       // Add to repository
-      await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser?.uid)
           .collection('payBills')
           .doc(transactionId)
           .set(rentPaymentData);
@@ -137,7 +193,7 @@ class RentPaymentBloc extends Bloc<RentPaymentEvent, RentPaymentState> {
       // FIRESTORE NOTIFICATION
       _notificationBloc.add(AddNotification(
         title: 'Rent Payment Successful - ${currentState.companyName}',
-        message: _buildDetailedNotificationMessage(currentState),
+        message: _buildDetailedNotificationMessage(currentState, isBiometricEnabled),
         type: 'rent_payment_success',
         data: <String, dynamic>{
           'transactionId': transactionId,
@@ -154,6 +210,7 @@ class RentPaymentBloc extends Bloc<RentPaymentEvent, RentPaymentState> {
           'notes': currentState.notes,
           'paymentMethod': 'Card ending in ${currentState.cardEnding}',
           'cardId': currentState.cardId,
+          'authenticatedWithBiometric': isBiometricEnabled,
           'paidAt': DateTime.now().toIso8601String(),
           'status': 'completed',
         },
@@ -195,8 +252,12 @@ class RentPaymentBloc extends Bloc<RentPaymentEvent, RentPaymentState> {
   }
 
   // Build detailed notification message
-  String _buildDetailedNotificationMessage(RentPaymentDataSet state) {
+  String _buildDetailedNotificationMessage(RentPaymentDataSet state, bool authenticatedWithBiometric) {
     final DateTime paymentTime = DateTime.now();
+
+    final String authMethod = authenticatedWithBiometric
+        ? '✓ Secured with Biometric Authentication'
+        : '';
 
     return '''Rent Payment completed successfully!
 
@@ -212,7 +273,9 @@ Rent Amount: ${state.currency} ${state.amount.toStringAsFixed(2)}
 Tax: ${state.currency} ${state.taxAmount.toStringAsFixed(2)}
 Total Paid: ${state.currency} ${state.totalAmount.toStringAsFixed(2)}
 
-${state.notes != null && state.notes!.isNotEmpty ? 'Notes: ${state.notes}\n' : ''} Payment completed at ${paymentTime.toString().substring(0, 19)}
+${state.notes != null && state.notes!.isNotEmpty ? 'Notes: ${state.notes}\n' : ''}Payment completed at ${paymentTime.toString().substring(0, 19)}
+
+$authMethod
 
 Thank you for using our service!''';
   }

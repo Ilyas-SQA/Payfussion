@@ -73,10 +73,7 @@ class BillSplitBloc extends Bloc<BillSplitEvent, BillSplitState> {
     }
   }
 
-  Future<void> _onProcessBillSplitPayment(
-      ProcessBillSplitPayment event,
-      Emitter<BillSplitState> emit,
-      ) async {
+  Future<void> _onProcessBillSplitPayment(ProcessBillSplitPayment event, Emitter<BillSplitState> emit,) async {
     if (state is! BillSplitDataSet) {
       emit(const BillSplitError('Invalid state for payment processing'));
       return;

@@ -10,6 +10,7 @@ import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_fi
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/fonts.dart';
 import '../../data/models/Transactions_Modals/transaction_modal.dart';
+import '../../services/receipt_service.dart';
 import '../widgets/background_theme.dart';
 import '../widgets/home_widgets/transaction_item.dart';
 import '../widgets/home_widgets/transaction_items_header.dart';
@@ -1738,13 +1739,16 @@ class _TransactionDetailSheetState extends State<TransactionDetailSheet>
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton.icon(
-                                onPressed: () {
-                                  // Download receipt logic
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Downloading receipt...'),
-                                      duration: Duration(seconds: 2),
-                                    ),
+                                onPressed: () async {
+                                  await ReceiptService.downloadReceipt(
+                                    context: context,
+                                    transactionId: widget.transaction.id,
+                                    title: widget.transaction.title,
+                                    amount: widget.transaction.amount,
+                                    status: widget.transaction.status,
+                                    dateTime: widget.transaction.dateTime,
+                                    category: _getCategoryName(widget.category),
+                                    additionalData: widget.transaction.additionalData,
                                   );
                                 },
                                 icon: const Icon(Icons.download, color: Colors.white),
@@ -1769,13 +1773,16 @@ class _TransactionDetailSheetState extends State<TransactionDetailSheet>
                             SizedBox(
                               width: double.infinity,
                               child: OutlinedButton.icon(
-                                onPressed: () {
-                                  // Share receipt logic
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Sharing receipt...'),
-                                      duration: Duration(seconds: 2),
-                                    ),
+                                onPressed: () async {
+                                  await ReceiptService.shareReceipt(
+                                    context: context,
+                                    transactionId: widget.transaction.id,
+                                    title: widget.transaction.title,
+                                    amount: widget.transaction.amount,
+                                    status: widget.transaction.status,
+                                    dateTime: widget.transaction.dateTime,
+                                    category: _getCategoryName(widget.category),
+                                    additionalData: widget.transaction.additionalData,
                                   );
                                 },
                                 icon: Icon(
@@ -1812,6 +1819,21 @@ class _TransactionDetailSheetState extends State<TransactionDetailSheet>
         ),
       ),
     );
+  }
+
+  String _getCategoryName(TransactionCategory category) {
+    switch (category) {
+      case TransactionCategory.transaction:
+        return 'Transaction';
+      case TransactionCategory.payBills:
+        return 'Bill Payment';
+      case TransactionCategory.insurance:
+        return 'Insurance';
+      case TransactionCategory.tickets:
+        return 'Ticket Booking';
+      case TransactionCategory.donation:
+        return 'Donation';
+    }
   }
 
   List<Widget> _getCategorySpecificDetails() {

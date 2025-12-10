@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../core/constants/tax.dart';
+import '../../../../services/biometric_service.dart';
 import '../../../../services/notification_service.dart';
 import '../../notification/notification_bloc.dart';
 import '../../notification/notification_event.dart';
@@ -12,8 +13,13 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final NotificationBloc _notificationBloc;
+  final BiometricService _biometricService;
 
-  MoviesBloc(this._notificationBloc) : super(MoviesInitial()) {
+
+  MoviesBloc(
+      this._notificationBloc,
+      this._biometricService,
+      ) : super(MoviesInitial()) {
     on<SetSubscriptionData>(_onSetSubscriptionData);
     on<SetSelectedCardForMovies>(_onSetSelectedCard);
     on<ProcessSubscriptionPayment>(_onProcessSubscriptionPayment);
@@ -85,9 +91,56 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
         return;
       }
 
+      // ========== BIOMETRIC AUTHENTICATION ==========
+      // Check if biometric is enabled for this user
+      final bool isBiometricEnabled = await _biometricService.isBiometricEnabled();
+
+      if (isBiometricEnabled) {
+        // Check if biometric is available on device
+        final bool isAvailable = await _biometricService.isBiometricAvailable();
+        final bool isEnrolled = await _biometricService.hasBiometricsEnrolled();
+
+        if (isAvailable && isEnrolled) {
+          // Perform biometric authentication
+          final Map<String, dynamic> biometricResult = await _biometricService.authenticate(
+            reason: 'Authenticate to confirm ${currentState.serviceName} subscription of \$${currentState.totalAmount.toStringAsFixed(2)}',
+          );
+
+          if (!biometricResult['success']) {
+            // Biometric authentication failed
+            emit(MoviesError(
+              biometricResult['error'] ?? 'Biometric authentication failed. Payment cancelled.',
+            ));
+
+            // Send failure notification
+            await LocalNotificationService.showCustomNotification(
+              title: 'Authentication Failed',
+              body: 'Biometric authentication failed. Payment was cancelled.',
+              payload: 'biometric_auth_failed',
+            );
+
+            return; // Stop payment processing
+          }
+
+          // Biometric authentication successful - continue with payment
+        } else {
+          // Biometric not available but was enabled - inform user
+          emit(const MoviesError(
+            'Biometric authentication is not available. Please check your device settings.',
+          ));
+          return;
+        }
+      }
+      // If biometric is not enabled, proceed without biometric check
+      // ========== END BIOMETRIC AUTHENTICATION ==========
+
       // Generate transaction ID
-      final String transactionId = FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser?.uid).
-      collection('payBills').doc().id;
+      final String transactionId = FirebaseFirestore.instance
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection('payBills')
+          .doc()
+          .id;
       final DateTime now = DateTime.now();
 
       // Calculate subscription end date
@@ -115,12 +168,15 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
         'cardHolderName': currentState.cardHolderName!,
         'cardEnding': currentState.cardEnding!,
         'status': 'completed',
+        'authenticatedWithBiometric': isBiometricEnabled,
         'createdAt': now.toIso8601String(),
         'completedAt': now.toIso8601String(),
       };
 
       // Save to Firestore transactions collection
-      await _firestore.collection("users").doc(FirebaseAuth.instance.currentUser?.uid)
+      await _firestore
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser?.uid)
           .collection('payBills')
           .doc(transactionId)
           .set(moviesData);
@@ -133,7 +189,7 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
       );
 
       // Firestore notification
-      final String notificationMessage = _buildNotificationMessage(currentState);
+      final String notificationMessage = _buildNotificationMessage(currentState, isBiometricEnabled);
 
       _notificationBloc.add(AddNotification(
         title: 'Subscription Active - ${currentState.serviceName}',
@@ -153,6 +209,7 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
           'cardEnding': currentState.cardEnding,
           'subscriptionStartDate': now.toIso8601String(),
           'subscriptionEndDate': subscriptionEndDate.toIso8601String(),
+          'authenticatedWithBiometric': isBiometricEnabled,
           'timestamp': now.toIso8601String(),
         },
       ));
@@ -183,6 +240,7 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
     }
   }
 
+
   Future<void> _onResetSubscription(
       ResetSubscription event,
       Emitter<MoviesState> emit,
@@ -200,9 +258,13 @@ class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
     return startDate.add(const Duration(days: 30)); // Default to 30 days
   }
 
-  String _buildNotificationMessage(MoviesDataSet state) {
+  String _buildNotificationMessage(MoviesDataSet state, bool authenticatedWithBiometric) {
     final DateTime now = DateTime.now();
     final DateTime endDate = _calculateEndDate(now, state.planDuration);
+
+    final String authMethod = authenticatedWithBiometric
+        ? '✓ Secured with Biometric Authentication'
+        : '';
 
     final String message = '''Subscription activated successfully!
 
@@ -210,7 +272,7 @@ Service: ${state.serviceName}
 Category: ${state.category}
 Email: ${state.email}
 Plan: ${state.planName}
- Duration: ${state.planDuration}
+Duration: ${state.planDuration}
 ${state.autoRenew ? 'Auto-Renew: Enabled' : 'Auto-Renew: Disabled'}
 
 Plan Price: USD ${state.planPrice.toStringAsFixed(2)}
@@ -220,6 +282,8 @@ Card Ending: ****${state.cardEnding}
 
 Subscription Start: ${now.toString().substring(0, 19)}
 Subscription End: ${endDate.toString().substring(0, 19)}
+
+$authMethod
 
 Thank you for subscribing to ${state.serviceName}!''';
 
