@@ -150,10 +150,27 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       Emitter<NotificationState> emit,
       ) async {
     try {
+      // Get current notifications before marking as read
+      final currentState = state;
+
       await _notificationRepository.markAllNotificationsAsRead();
+
+      // If we have current notifications, emit them immediately with updated read status
+      if (currentState is NotificationsLoaded) {
+        // Update all notifications to read status
+        final updatedNotifications = currentState.notifications.map((notification) {
+          return notification.copyWith(isRead: true);
+        }).toList();
+        final int unreadCount = await _notificationRepository.getUnreadNotificationsCount();
+
+        emit(NotificationsLoaded(updatedNotifications,unreadCount));
+      }
+
       emit(NotificationSuccess('All notifications marked as read'));
 
-      // The real-time listener will automatically update the state
+      // Load fresh data from repository
+      add(LoadNotifications());
+
     } catch (e) {
       emit(NotificationError('Failed to mark all notifications as read: $e'));
     }
