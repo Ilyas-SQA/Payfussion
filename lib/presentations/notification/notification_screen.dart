@@ -102,12 +102,14 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
           Column(
               children: <Widget>[
                 SlideTransition(
-                    position: Tween<Offset>(begin: const Offset(0, -0.2), end: Offset.zero).animate(_headerController),
-                    child: FadeTransition(opacity: _headerFade, child: _buildFilterTabs())),
+                  position: Tween<Offset>(begin: const Offset(0, -0.2), end: Offset.zero).animate(_headerController),
+                  child: FadeTransition(opacity: _headerFade, child: _buildFilterTabs(),
+                  ),
+                ),
                 Expanded(
-                    child: FadeTransition(
-                        opacity: _contentController,
-                        child: BlocConsumer<NotificationBloc, NotificationState>(
+                  child: FadeTransition(
+                    opacity: _contentController,
+                    child: BlocConsumer<NotificationBloc, NotificationState>(
                             listener: (BuildContext context, NotificationState state) {
                               if (state is NotificationError) {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -118,27 +120,52 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                               }
                             },
                             builder: (BuildContext context, NotificationState state) {
-                              if (state is NotificationLoading) return _buildShimmerLoading();
+                              if (state is NotificationLoading) {
+                                return _buildShimmerLoading();
+                              }
+
                               if (state is NotificationsLoaded) {
-                                final List<NotificationModel> filteredNotifications = _filterNotifications(state.notifications);
-                                if (filteredNotifications.isEmpty) return _buildEmptyState();
+                                final List<NotificationModel> filteredNotifications =
+                                _filterNotifications(state.notifications);
+
+                                if (filteredNotifications.isEmpty) {
+                                  return _buildEmptyState();
+                                }
+
                                 return RefreshIndicator(
-                                    onRefresh: () async { context.read<NotificationBloc>().add(LoadNotifications()); },
+                                    onRefresh: () async {
+                                      context.read<NotificationBloc>().add(LoadNotifications());
+                                    },
                                     child: AnimationLimiter(
                                         child: ListView.builder(
                                             padding: const EdgeInsets.all(16),
                                             itemCount: filteredNotifications.length,
                                             itemBuilder: (BuildContext context, int index) {
-                                              final NotificationModel notification = filteredNotifications[index];
+                                              final NotificationModel notification =
+                                              filteredNotifications[index];
                                               return AnimationConfiguration.staggeredList(
-                                                  position: index, duration: const Duration(milliseconds: 200),
+                                                  position: index,
+                                                  duration: const Duration(milliseconds: 200),
                                                   child: SlideAnimation(
                                                       verticalOffset: 30.0,
-                                                      child: FadeInAnimation(child: _buildNotificationCard(notification))));
-                                            })));
+                                                      child: FadeInAnimation(
+                                                          child: _buildNotificationCard(notification)
+                                                      )
+                                                  )
+                                              );
+                                            }
+                                        )
+                                    )
+                                );
                               }
+
                               return _buildEmptyState();
-                            })))]),
+                            }
+                            ),
+                  ),
+                ),
+              ],
+          ),
         ],
       ),
     );
@@ -153,45 +180,97 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
                   position: index, duration: const Duration(milliseconds: 150),
                   child: SlideAnimation(
                       verticalOffset: 20.0,
-                      child: FadeInAnimation(child: _buildShimmerCard())));
+                      child: FadeInAnimation(child: _buildShimmerCard(context))));
             }));
   }
 
-  Widget _buildShimmerCard() {
+  Widget _buildShimmerCard(BuildContext context) {
+    // Dark mode check
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Colors based on theme
+    final Color cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final Color shadowColor = isDark
+        ? Colors.black.withOpacity(0.3)
+        : Colors.grey.withOpacity(0.1);
+    final Color baseColor = isDark ? Colors.grey[800]! : Colors.grey[300]!;
+    final Color highlightColor = isDark ? Colors.grey[700]! : Colors.grey[100]!;
+
     return Container(
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(12),
-            boxShadow: <BoxShadow>[BoxShadow(color: Colors.grey.withOpacity(0.1), blurRadius: 4, offset: const Offset(0, 2))]),
+            color: cardColor,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                  color: shadowColor,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2))
+            ]),
         child: Shimmer.fromColors(
-            baseColor: Colors.grey[300]!, highlightColor: Colors.grey[100]!,
+            baseColor: baseColor,
+            highlightColor: highlightColor,
             child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Container(width: 40, height: 40, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10))),
+                      Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                              color: isDark ? Colors.grey[700] : Colors.white,
+                              borderRadius: BorderRadius.circular(10))),
                       const SizedBox(width: 12),
                       Expanded(
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                Container(width: double.infinity, height: 16, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+                                Container(
+                                    width: double.infinity,
+                                    height: 16,
+                                    decoration: BoxDecoration(
+                                        color: isDark ? Colors.grey[700] : Colors.white,
+                                        borderRadius: BorderRadius.circular(4))),
                                 const SizedBox(height: 8),
-                                Container(width: double.infinity, height: 14, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+                                Container(
+                                    width: double.infinity,
+                                    height: 14,
+                                    decoration: BoxDecoration(
+                                        color: isDark ? Colors.grey[700] : Colors.white,
+                                        borderRadius: BorderRadius.circular(4))),
                                 const SizedBox(height: 4),
-                                Container(width: 200, height: 14, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+                                Container(
+                                    width: 200,
+                                    height: 14,
+                                    decoration: BoxDecoration(
+                                        color: isDark ? Colors.grey[700] : Colors.white,
+                                        borderRadius: BorderRadius.circular(4))),
                                 const SizedBox(height: 12),
                                 Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
-                                      Container(width: 80, height: 12, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
-                                      Container(width: 60, height: 20, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(6)))
+                                      Container(
+                                          width: 80,
+                                          height: 12,
+                                          decoration: BoxDecoration(
+                                              color: isDark ? Colors.grey[700] : Colors.white,
+                                              borderRadius: BorderRadius.circular(4))),
+                                      Container(
+                                          width: 60,
+                                          height: 20,
+                                          decoration: BoxDecoration(
+                                              color: isDark ? Colors.grey[700] : Colors.white,
+                                              borderRadius: BorderRadius.circular(6)))
                                     ])
                               ])),
-                      Container(width: 20, height: 20, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4)))
-                    ]))));
-  }
+                      Container(
+                          width: 20,
+                          height: 20,
+                          decoration: BoxDecoration(
+                              color: isDark ? Colors.grey[700] : Colors.white,
+                              borderRadius: BorderRadius.circular(4)))
+                    ]))));}
 
   Widget _buildFilterTabs() {
     return Container(
@@ -202,12 +281,17 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
           children: <Widget>[
             _buildFilterChip('all', 'All', Icons.notifications),
             const SizedBox(width: 8),
-            _buildFilterChip('bill_payment_success', 'Bills', Icons.receipt),
+            _buildFilterChip('bill_payment', 'Bills', Icons.receipt),
             const SizedBox(width: 8),
-            _buildFilterChip('movie_booking_success', 'Movies', Icons.movie),
+            _buildFilterChip('movie_booking', 'Movies', Icons.movie),
             const SizedBox(width: 8),
-            _buildFilterChip('train_booking_success', 'Trains', Icons.train),
-            // Add more chips as needed but with proper overflow handling
+            _buildFilterChip('train_booking', 'Trains', Icons.train),
+            const SizedBox(width: 8),
+            _buildFilterChip('flight_booking', 'Flights', Icons.flight),
+            const SizedBox(width: 8),
+            _buildFilterChip('ride_booking', 'Rides', Icons.directions_car),
+            const SizedBox(width: 8),
+            _buildFilterChip('bus_booking', 'Bus', Icons.directions_bus),
           ],
         ),
       ),
@@ -520,10 +604,15 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
   }
 
   List<NotificationModel> _filterNotifications(List<NotificationModel> notifications) {
-    if (_selectedFilter == 'all') return notifications;
-    return notifications.where((NotificationModel notification) => notification.type == _selectedFilter).toList();
-  }
+    if (_selectedFilter == 'all') {
+      return notifications; // Show ALL notifications
+    }
 
+    // Filter by matching notification type prefix (e.g., 'bill_payment' matches both 'bill_payment_success' and 'bill_payment_failed')
+    return notifications.where((NotificationModel notification) {
+      return notification.type.startsWith(_selectedFilter);
+    }).toList();
+  }
   // Fixed notification details modal
   void _showNotificationDetails(NotificationModel notification) {
     showModalBottomSheet(
@@ -793,12 +882,12 @@ class _NotificationScreenState extends State<NotificationScreen> with TickerProv
 
   String _getFilterLabel() {
     switch (_selectedFilter) {
-      case 'bill_payment_success': return 'bill payments';
-      case 'movie_booking_success': return 'movie bookings';
-      case 'train_booking_success': return 'train bookings';
-      case 'flight_booking_success': return 'flight bookings';
-      case 'ride_booking_success': return 'ride bookings';
-      case 'bus_booking_success': return 'bus bookings';
+      case 'bill_payment': return 'bill payments';
+      case 'movie_booking': return 'movie bookings';
+      case 'train_booking': return 'train bookings';
+      case 'flight_booking': return 'flight bookings';
+      case 'ride_booking': return 'ride bookings';
+      case 'bus_booking': return 'bus bookings';
       case 'transaction': return 'transactions';
       case 'transfer': return 'transfers';
       case 'general': return 'general notifications';
