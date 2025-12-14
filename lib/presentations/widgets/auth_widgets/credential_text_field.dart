@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/constants/fonts.dart';
@@ -11,9 +12,14 @@ class AppTextFormField extends StatelessWidget {
   final TextEditingController controller;
   final void Function(String)? onChanged;
   final Widget? prefixIcon;
+  final Widget? suffixIcon;
   final String? Function(String?)? validator;
   final bool useGreenColor;
   final TextInputType? keyboardType;
+  final FocusNode? focusNode;
+  final TextInputAction? textInputAction;
+  final List<TextInputFormatter>? inputFormatters;
+  final void Function()? onEditingComplete;
 
   const AppTextFormField({
     super.key,
@@ -21,9 +27,14 @@ class AppTextFormField extends StatelessWidget {
     required this.helpText,
     required this.controller, this.onChanged,
     this.prefixIcon,
+    this.suffixIcon,
     this.validator,
+    this.focusNode,
     this.useGreenColor = false,
     this.keyboardType,
+    this.textInputAction,
+    this.inputFormatters,
+    this.onEditingComplete,
   });
 
   @override
@@ -43,6 +54,8 @@ class AppTextFormField extends StatelessWidget {
               fontSize: 14.sp,
               fontWeight: FontWeight.w500,
             ),
+            textInputAction: textInputAction,
+            inputFormatters: inputFormatters,
             decoration: InputDecoration(
               contentPadding: EdgeInsets.symmetric(
                 vertical: 16.h,
@@ -54,13 +67,14 @@ class AppTextFormField extends StatelessWidget {
                 fontWeight: FontWeight.bold
               ),
               prefixIcon: prefixIcon,
-              suffixIcon: isPasswordField ? InkWell(
+              suffixIcon: suffixIcon == null ?
+              isPasswordField ? InkWell(
                 onTap: () => context.read<PasswordVisibilityCubit>().toggle(),
                 child: Icon(
                   isObscure ? CupertinoIcons.eye_slash_fill : Icons.remove_red_eye_outlined,
                   color: useGreenColor ? MyTheme.secondaryColor : MyTheme.primaryColor,
                 ),
-              ) : const SizedBox(),
+              ) : const SizedBox() : suffixIcon,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.all(
                   Radius.circular(5.r),
@@ -108,6 +122,7 @@ class AppTextFormField extends StatelessWidget {
             ),
             onChanged: onChanged,
             validator: validator,
+            onEditingComplete: onEditingComplete,
           );
         },
       ),
