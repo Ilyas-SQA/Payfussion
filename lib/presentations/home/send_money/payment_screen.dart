@@ -15,6 +15,7 @@ import '../../../logic/blocs/transaction/transaction_bloc.dart';
 import '../../../logic/blocs/transaction/transaction_event.dart';
 import '../../../logic/blocs/transaction/transaction_state.dart';
 import '../../widgets/background_theme.dart';
+import 'add_new_card_widget.dart';
 
 class PaymentStrings {
   static const String paymentScreen = 'Payment';
@@ -401,10 +402,56 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                     ),
                     if (!isTotal && label == PaymentStrings.transactionFee) ...<Widget>[
                       SizedBox(width: 4.w),
-                      Icon(
-                        Icons.info_outline,
-                        size: 16.sp,
-                        color: AppColors.textSecondary,
+                      IconButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                title: Row(
+                                  children: [
+                                    Icon(Icons.info_outline, color: MyTheme.primaryColor),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      'Transaction Fee',
+                                      style: Font.montserratFont(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                content: Text(
+                                  'This fee is charged to cover payment processing, '
+                                      'taxes, and service handling costs.',
+                                  style: Font.montserratFont(
+                                    fontSize: 14.sp,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text(
+                                      'OK',
+                                      style: Font.montserratFont(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        icon: Icon(
+                          Icons.info_outline,
+                          size: 16.sp,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ],
                   ],
@@ -734,6 +781,7 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                 letterSpacing: 1,
               ),
               cursorHeight: 35,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               decoration: InputDecoration(
                 hintText: PaymentStrings.enterAmount,
                 hintStyle: Font.montserratFont(
@@ -743,6 +791,8 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
+                errorBorder: InputBorder.none,
+                focusedErrorBorder: InputBorder.none,
                 prefixIcon: AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   child: Text(
@@ -756,7 +806,7 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                 prefixIconConstraints: BoxConstraints(minWidth: 30.w, minHeight: 0),
               ),
               validator: (String? value){
-                return value!.isEmpty ? 'Amount cannot be empty' : null;
+                return value!.isEmpty ? 'Please Enter Amount' : null;
               },
               onChanged: (String value) {
                 final String plain = value.replaceAll(RegExp(r'[^0-9.]'), '');
@@ -1167,66 +1217,13 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                     }),
                     SizedBox(height: 16.h),
                     // Add New Card Button
-                    TweenAnimationBuilder<double>(
-                      duration: Duration(milliseconds: 300 + (cards.length * 100)),
-                      tween: Tween(begin: 0.0, end: 1.0),
-                      builder: (BuildContext context, double buttonValue, Widget? child) {
-                        return Transform.translate(
-                          offset: Offset(50 * (1 - buttonValue), 0),
-                          child: Opacity(
-                            opacity: buttonValue,
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16.w),
-                              child: GestureDetector(
-                                onTap: () {
-                                  HapticFeedback.selectionClick();
-                                  PaymentService().saveCard(context);
-                                },
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 20.w),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12.r),
-                                    border: Border.all(
-                                      color: Colors.grey[300]!,
-                                      width: 1.5,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: <Widget>[
-                                      Container(
-                                        width: 40.w,
-                                        height: 40.h,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(8.r),
-                                        ),
-                                        child: Icon(
-                                          Icons.add,
-                                          size: 20.sp,
-                                        ),
-                                      ),
-                                      SizedBox(width: 16.w),
-                                      Text(
-                                        'Add New Card',
-                                        style: Font.montserratFont(
-                                          fontSize: 16.sp,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      const Spacer(),
-                                      Icon(
-                                        Icons.arrow_forward_ios,
-                                        size: 16.sp,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
+                    AddCardButton(
+                      cards: cards,
+                      onAddCard: (context) async {
+                        await PaymentService().saveCard(context);
                       },
                     ),
+
                     SizedBox(height: 16.h),
                   ],
                 ),
