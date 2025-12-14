@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/presentations/widgets/auth_widgets/credential_text_field.dart';
@@ -568,6 +569,10 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
                                   keyboardType: TextInputType.number,
                                   helpText: 'Enter account number',
                                   prefixIcon: const Icon(Icons.account_balance_wallet),
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(13),
+                                  ],
                                 ),
                               ],
                             ),
@@ -650,6 +655,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> with TickerProvid
                                 AppTextFormField(
                                   controller: _phoneNumberController,
                                   validator: _validatePhoneNumber,
+                                  keyboardType: TextInputType.number,
                                   helpText: '+92 300 1234567',
                                   prefixIcon: const Icon(Icons.phone),
                                 ),
@@ -764,6 +770,22 @@ class _BankTransferAmountScreenState extends State<BankTransferAmountScreen> wit
       duration: const Duration(seconds: 20),
       vsync: this,
     )..repeat();
+    _amountController.addListener(() {
+      String text = _amountController.text;
+
+      // remove $
+      if (text.startsWith('\$')) {
+        text = text.replaceFirst('\$', '').trim();
+      }
+
+      // avoid infinite loop
+      _amountController.value = _amountController.value.copyWith(
+        text: '\$ $text',
+        selection: TextSelection.collapsed(
+          offset: ('\$ $text').length,
+        ),
+      );
+    });
   }
 
   @override
@@ -852,6 +874,7 @@ class _BankTransferAmountScreenState extends State<BankTransferAmountScreen> wit
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             // Amount Input
                             Text(
@@ -865,32 +888,19 @@ class _BankTransferAmountScreenState extends State<BankTransferAmountScreen> wit
                             TextField(
                               controller: _amountController,
                               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                              style: Font.montserratFont(
-                                fontSize: 24.sp,
-                                fontWeight: FontWeight.bold,
-                                color: MyTheme.primaryColor,
-                              ),
                               textAlign: TextAlign.center,
                               decoration: InputDecoration(
-                                hintText: '0.00',
-                                prefixText: '\$ ',
-                                prefixStyle: Font.montserratFont(
-                                  fontSize: 24.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: MyTheme.primaryColor,
-                                ),
+                                hintText: '\$ 0.00',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.r),
-                                  borderSide: const BorderSide(color: MyTheme.primaryColor),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                  borderSide: const BorderSide(color: MyTheme.primaryColor, width: 2),
                                 ),
                                 errorText: state.amountError,
                               ),
-                              onChanged: (String value) {
-                                context.read<BankTransactionBloc>().add(BankTransferAmountChanged(value));
+                              onChanged: (value) {
+                                final clean = value.replaceAll(RegExp(r'[^\d.]'), '');
+                                context.read<BankTransactionBloc>().add(
+                                  BankTransferAmountChanged(clean),
+                                );
                               },
                             ),
 
@@ -916,8 +926,60 @@ class _BankTransferAmountScreenState extends State<BankTransferAmountScreen> wit
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: <Widget>[
-                                        Text('Transaction Fee:', style: Font.montserratFont(fontSize: 14.sp)),
-                                        Text('\$${state.transactionFee.toStringAsFixed(2)}', style: Font.montserratFont(fontSize: 14.sp)),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'Transaction Fee:',
+                                              style: Font.montserratFont(fontSize: 14.sp),
+                                            ),
+                                            SizedBox(width: 4.w),
+                                            InkWell(
+                                              onTap: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (_) => AlertDialog(
+                                                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(12.r),
+                                                    ),
+                                                    title: Row(
+                                                      children: [
+                                                        Icon(Icons.info_outline, color: MyTheme.primaryColor),
+                                                        SizedBox(width: 8.w),
+                                                        Text(
+                                                          'Transaction Fee',
+                                                          style: Font.montserratFont(
+                                                            fontWeight: FontWeight.w600,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    content: Text(
+                                                      'This fee covers payment processing and applicable taxes '
+                                                          'required to complete your transfer.',
+                                                      style: Font.montserratFont(fontSize: 14.sp),
+                                                    ),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () => Navigator.pop(context),
+                                                        child: const Text('OK'),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              },
+                                              child: Icon(
+                                                Icons.info_outline,
+                                                size: 16.sp,
+                                                color: MyTheme.primaryColor,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Text(
+                                          '\$${state.transactionFee.toStringAsFixed(2)}',
+                                          style: Font.montserratFont(fontSize: 14.sp),
+                                        ),
                                       ],
                                     ),
                                     Divider(height: 16.h),
