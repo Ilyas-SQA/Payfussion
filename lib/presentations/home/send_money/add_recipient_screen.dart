@@ -38,6 +38,11 @@ class RecipientStrings {
   static const String takePhoto = 'Take Photo';
   static const String chooseFromGallery = 'Choose from Gallery';
   static const String cancel = 'Cancel';
+
+  // Validation messages
+  static const String nameRequired = 'Please enter recipient name';
+  static const String bankRequired = 'Please select a bank';
+  static const String accountRequired = 'Please enter account number';
 }
 
 class AddRecipientScreen extends StatefulWidget {
@@ -105,6 +110,11 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
   final TextEditingController _nameCtrl = TextEditingController();
   final TextEditingController _accCtrl = TextEditingController();
   final FocusNode _accFocus = FocusNode();
+
+  // Validation state
+  bool _showNameError = false;
+  bool _showBankError = false;
+  bool _showAccountError = false;
 
   // Animation controllers
   late AnimationController _headerController;
@@ -200,16 +210,48 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
     super.dispose();
   }
 
+  void _validateAndSubmit({bool addAnother = false}) {
+    final state = context.read<RecipientBloc>().state;
+
+    setState(() {
+      _showNameError = state.name.trim().isEmpty;
+      _showBankError = state.selectedBank == null;
+      _showAccountError = state.accountNumber.trim().isEmpty;
+    });
+
+    // If any validation fails, return
+    if (_showNameError || _showBankError || _showAccountError) {
+      HapticFeedback.mediumImpact();
+      return;
+    }
+
+    // All validations passed, submit the form
+    context.read<RecipientBloc>().add(SubmitPressed(addAnother: addAnother));
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<RecipientBloc, AddRecipientState>(
-      listenWhen: (AddRecipientState p, AddRecipientState c) => p.submitStatus != c.submitStatus,
+      listenWhen: (AddRecipientState p, AddRecipientState c) =>
+      p.submitStatus != c.submitStatus || p.selectedBank != c.selectedBank,
       listener: (BuildContext context, AddRecipientState state) {
         if (state.submitStatus == SubmitStatus.success) {
+          // Reset validation errors on success
+          setState(() {
+            _showNameError = false;
+            _showBankError = false;
+            _showAccountError = false;
+          });
+
           showDialog(
             context: context,
             builder: (_) => _successDialog(context),
           );
+        }
+
+        // Clear bank error when bank is selected
+        if (state.selectedBank != null && _showBankError) {
+          setState(() => _showBankError = false);
         }
       },
       builder: (BuildContext context, AddRecipientState state) {
@@ -268,12 +310,28 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                           label: RecipientStrings.fullName,
                           hintText: RecipientStrings.enterFullName,
                           prefix: Icons.person_outline,
-                          onChanged: (String v) => context.read<RecipientBloc>().add(NameChanged(v)),
+                          onChanged: (String v) {
+                            context.read<RecipientBloc>().add(NameChanged(v));
+                            if (_showNameError && v.trim().isNotEmpty) {
+                              setState(() => _showNameError = false);
+                            }
+                          },
+                          showError: _showNameError,
+                          errorText: RecipientStrings.nameRequired,
                         ),
                         SizedBox(height: 16.h),
 
                         // Bank Dropdown
-                        BankDropdownWidget(state: state),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            BankDropdownWidget(
+                              state: state.copyWith(
+                                bankError: _showBankError ? RecipientStrings.bankRequired : null,
+                              ),
+                            ),
+                          ],
+                        ),
                         SizedBox(height: 16.h),
 
                         // Account Field
@@ -286,15 +344,6 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
             ),
 
             SizedBox(height: 24.h),
-
-            // Error Banner
-            if (state.errorMessage != null)
-              FadeTransition(
-                opacity: _formFade,
-                child: _errorBanner(state.errorMessage!),
-              ),
-
-            SizedBox(height: 16.h),
 
             // Animated Buttons
             FadeTransition(
@@ -312,7 +361,9 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                         duration: const Duration(milliseconds: 200),
                         height: 56.h,
                         child: OutlinedButton.icon(
-                          onPressed: state.submitStatus == SubmitStatus.submitting || state.verifyStatus == VerifyStatus.verifying ? null : () => context.read<RecipientBloc>().add(const SubmitPressed(addAnother: true)),
+                          onPressed: state.submitStatus == SubmitStatus.submitting || state.verifyStatus == VerifyStatus.verifying
+                              ? null
+                              : () => _validateAndSubmit(addAnother: true),
                           style: OutlinedButton.styleFrom(
                             side: const BorderSide(color: MyTheme.primaryColor),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
@@ -321,9 +372,9 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                           label: Text(
                             RecipientStrings.saveAndAddAnother,
                             style: Font.montserratFont(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -395,8 +446,8 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
               color: state.imageFile != null ? null : MyTheme.primaryColor.withOpacity(0.1),
               shape: BoxShape.circle,
               border: Border.all(
-                  color: MyTheme.primaryColor.withOpacity(0.3),
-                  width: 2
+                color: MyTheme.primaryColor.withOpacity(0.3),
+                width: 2,
               ),
               image: state.imageFile != null ? DecorationImage(
                   image: FileImage(state.imageFile as File),
@@ -485,7 +536,6 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
                     onTap: () {
                       Navigator.pop(context);
                       context.read<RecipientBloc>().add(RemovePhotoRequested());
-                      // HapticFeedback.selectionClick();
                     },
                   ),
                 ListTile(
@@ -510,6 +560,8 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
     required String hintText,
     required IconData prefix,
     required Function(String) onChanged,
+    bool showError = false,
+    String? errorText,
   }) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
@@ -526,26 +578,25 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
               ),
             ),
           ),
-          Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              borderRadius: BorderRadius.circular(12.r),
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                    color: AppColors.secondaryBlue.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2)
-                )
-              ],
-            ),
-            child: AppTextFormField(
-              controller: controller,
-              onChanged: onChanged,
-              isPasswordField: false,
-              helpText: hintText,
-              prefixIcon: Icon(prefix,color: MyTheme.primaryColor,),
-            ),
+          AppTextFormField(
+            controller: controller,
+            onChanged: onChanged,
+            isPasswordField: false,
+            helpText: hintText,
+            prefixIcon: Icon(prefix, color: MyTheme.primaryColor),
           ),
+          if (showError && errorText != null)
+            Padding(
+              padding: EdgeInsets.only(left: 4.w, top: 6.h),
+              child: Text(
+                errorText,
+                style: Font.montserratFont(
+                  fontSize: 12.sp,
+                  color: AppColors.errorRed,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -571,10 +622,15 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
               ),
             ),
           ),
-          TextField(
+          AppTextFormField(
             controller: _accCtrl,
             focusNode: _accFocus,
-            onChanged: (String v) => bloc.add(AccountNumberChanged(v)),
+            onChanged: (String v) {
+              bloc.add(AccountNumberChanged(v));
+              if (_showAccountError && v.trim().isNotEmpty) {
+                setState(() => _showAccountError = false);
+              }
+            },
             keyboardType: TextInputType.number,
             textInputAction: TextInputAction.done,
             inputFormatters: <TextInputFormatter>[
@@ -587,98 +643,74 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
               }
               FocusScope.of(context).unfocus();
             },
-            decoration: InputDecoration(
-              hintText: RecipientStrings.enterAccountNumber,
-              hintStyle: Font.montserratFont(
-                fontSize: 14,
+            suffixIcon: verifying ?
+            Padding(
+              padding: EdgeInsets.all(12.r),
+              child: SizedBox(
+                width: 20.w,
+                height: 20.h,
+                child: const CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: MyTheme.primaryColor,
+                ),
               ),
-              errorText: state.accountError,
-              prefixIcon: Icon(Icons.credit_card_outlined, color: MyTheme.primaryColor, size: 22.sp),
-              suffixIcon: verifying ?
-              Padding(
-                padding: EdgeInsets.all(12.r),
-                child: SizedBox(
-                  width: 20.w,
-                  height: 20.h,
-                  child: const CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: MyTheme.primaryColor
+            ) :
+            verified ?
+            Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Icon(Icons.check_circle, color: Colors.green, size: 18.sp),
+                  SizedBox(width: 6.w),
+                  Text(
+                      'Verified',
+                      style: Font.montserratFont(
+                          color: Colors.green,
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w500
+                      )
+                  ),
+                  SizedBox(width: 8.w),
+                ]
+            ) :
+            (state.accountNumber.isNotEmpty && state.accountError == null) ?
+            InkWell(
+              onTap: () {
+                bloc.add(VerifyAccountRequested());
+                HapticFeedback.mediumImpact();
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Text(
+                  'Verify',
+                  style: Font.montserratFont(
+                    color: MyTheme.primaryColor,
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              ) :
-              verified ?
-              Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Icon(Icons.check_circle, color: Colors.green, size: 18.sp),
-                    SizedBox(width: 6.w),
-                    Text(
-                        'Verified',
-                        style: Font.montserratFont(
-                            color: Colors.green,
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w500
-                        )
-                    ),
-                    SizedBox(width: 8.w),
-                  ]
-              ) :
-              (state.accountNumber.isNotEmpty && state.accountError == null) ?
-              InkWell(
-                onTap: () {
-                  bloc.add(VerifyAccountRequested());
-                  HapticFeedback.mediumImpact();
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Text(
-                    'Verify',
-                    style: Font.montserratFont(
-                      color: MyTheme.primaryColor,
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ) : null,
-              contentPadding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
-            ),
-            style: Font.montserratFont(
-                fontSize: 14,
-                letterSpacing: 1.2,
-            ),
+              ),
+            ) : null,
+            prefixIcon: Icon(Icons.credit_card_outlined, color: MyTheme.primaryColor, size: 22.sp),
+            helpText: RecipientStrings.enterAccountNumber,
           ),
+          if (_showAccountError)
+            Padding(
+              padding: EdgeInsets.only(left: 4.w, top: 6.h),
+              child: Text(
+                RecipientStrings.accountRequired,
+                style: Font.montserratFont(
+                  fontSize: 12.sp,
+                  color: AppColors.errorRed,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
         ],
       ),
     );
   }
 
-  Widget _errorBanner(String message) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-      decoration: BoxDecoration(
-        color: AppColors.errorRed.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.errorRed.withOpacity(0.3), width: 1),
-      ),
-      child: Row(
-          children: <Widget>[
-            Icon(Icons.error_outline, color: AppColors.errorRed, size: 20.sp),
-            SizedBox(width: 12.w),
-            Expanded(
-              child: Text(
-                message,
-                style: Font.montserratFont(color: AppColors.errorRed, fontSize: 14.sp),
-              ),
-            ),
-          ]
-      ),
-    );
-  }
-
   Widget _submitButton(AddRecipientState state) {
-    final RecipientBloc bloc = context.read<RecipientBloc>();
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       height: 56.h,
@@ -689,7 +721,7 @@ class _RecipientFormState extends State<RecipientForm> with TickerProviderStateM
             : () {
           HapticFeedback.mediumImpact();
           FocusScope.of(context).unfocus();
-          bloc.add(const SubmitPressed());
+          _validateAndSubmit();
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: MyTheme.primaryColor,
