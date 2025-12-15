@@ -499,6 +499,7 @@ class _PostpaidBillFormScreenState extends State<PostpaidBillFormScreen>
           label: 'Bill Cycle',
           child: DropdownButtonFormField<String>(
             value: _selectedBillCycle,
+            dropdownColor: Theme.of(context).scaffoldBackgroundColor,
             decoration: InputDecoration(
               prefixIcon: const Icon(Icons.calendar_today),
               border: OutlineInputBorder(
@@ -508,7 +509,12 @@ class _PostpaidBillFormScreenState extends State<PostpaidBillFormScreen>
             items: _billCycles.map((String cycle) {
               return DropdownMenuItem<String>(
                 value: cycle,
-                child: Text(cycle),
+                child: Text(
+                  cycle,
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,
+                  ),
+                ),
               );
             }).toList(),
             onChanged: (String? value) {
