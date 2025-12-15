@@ -8,11 +8,13 @@ import '../../../core/constants/fonts.dart';
 class AddCardButton extends StatefulWidget {
   final List cards;
   final Function(BuildContext) onAddCard;
+  final EdgeInsetsGeometry padding;
 
   const AddCardButton({
     Key? key,
     required this.cards,
     required this.onAddCard,
+    required this.padding,
   }) : super(key: key);
 
   @override
@@ -54,7 +56,7 @@ class _AddCardButtonState extends State<AddCardButton> {
           child: Opacity(
             opacity: buttonValue,
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              padding: widget.padding,
               child: GestureDetector(
                 onTap: _isLoading ? null : _handleAddCard,
                 child: Container(
