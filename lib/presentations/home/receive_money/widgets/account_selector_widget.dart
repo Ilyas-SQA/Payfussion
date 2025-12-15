@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:payfussion/presentations/home/send_money/add_new_card_widget.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/fonts.dart';
@@ -194,7 +195,13 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
         ),
 
         SizedBox(height: 16.h),
-        _buildAddCardButton(),
+        AddCardButton(
+          cards: cards,
+          padding: EdgeInsets.zero,
+          onAddCard: (context) async {
+            await PaymentService().saveCard(context);
+          },
+        ),
       ],
     );
   }
@@ -301,7 +308,6 @@ class _AccountSelectorWidgetState extends State<AccountSelectorWidget> {
   Widget _buildAddCardButton() {
     return InkWell(
       onTap: () {
-        PaymentService().saveCard(context);
       },
       child: Container(
         padding: EdgeInsets.all(16.r),

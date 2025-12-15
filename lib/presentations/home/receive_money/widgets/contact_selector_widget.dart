@@ -154,7 +154,7 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
       width: double.infinity,
       padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: <BoxShadow>[
           BoxShadow(
@@ -201,7 +201,6 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                   style: Font.montserratFont(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
                   ),
                   semanticsLabel: 'Contact name: ${recipient.name}',
                 ),
@@ -210,7 +209,6 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                   '${recipient.institutionName} - ${_formatAccountNumber(recipient.accountNumber)}',
                   style: Font.montserratFont(
                     fontSize: 14.sp,
-                    color: AppColors.textSecondary,
                   ),
                 ),
               ],
@@ -448,7 +446,6 @@ class _ContactSelectorWidgetState extends State<ContactSelectorWidget> {
                                         '${recipient.institutionName} - ${_formatAccountNumber(recipient.accountNumber)}',
                                         style: Font.montserratFont(
                                           fontSize: 14.sp,
-                                          color: AppColors.textSecondary,
                                         ),
                                       ),
                                       trailing: isSelected
