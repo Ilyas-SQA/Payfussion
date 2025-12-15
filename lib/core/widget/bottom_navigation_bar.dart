@@ -6,7 +6,7 @@ import 'package:payfussion/presentations/home/paybill/electricity_bill/electrici
 import 'package:payfussion/presentations/setting/setting_screen.dart';
 import 'package:payfussion/presentations/transaction/transaction_home_screen.dart';
 
-import '../../presentations/home/home_screen.dart';
+import '../../presentations/home/home/home_screen.dart';
 import '../../presentations/scan_to_pay/scan_to_pay_home.dart';
 import '../constants/fonts.dart';
 
