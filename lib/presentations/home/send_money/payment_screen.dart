@@ -1218,6 +1218,7 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                     SizedBox(height: 16.h),
                     // Add New Card Button
                     AddCardButton(
+                      padding: EdgeInsets.zero,
                       cards: cards,
                       onAddCard: (context) async {
                         await PaymentService().saveCard(context);
