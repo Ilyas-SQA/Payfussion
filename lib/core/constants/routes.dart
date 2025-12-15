@@ -79,16 +79,16 @@ final GoRouter appRouter = GoRouter(
       path: RouteNames.faqs,
       builder: (BuildContext context, GoRouterState state) => const FaqsScreen(),
     ),
-    GoRoute(
-      path: RouteNames.homeScreen,
-      builder: (BuildContext context, GoRouterState state) => BlocProvider(create: (_) => RouteCubit(), child: const RouteScreen()),
-    ),
-
-    GoRoute(
-      path: '/',
-      builder: (BuildContext context, GoRouterState state) =>
-          BlocProvider(create: (_) => RouteCubit(), child: const RouteScreen()),
-    ),
+    // GoRoute(
+    //   path: RouteNames.homeScreen,
+    //   builder: (BuildContext context, GoRouterState state) => BlocProvider(create: (_) => RouteCubit(), child: const RouteScreen()),
+    // ),
+    //
+    // GoRoute(
+    //   path: '/',
+    //   builder: (BuildContext context, GoRouterState state) =>
+    //       BlocProvider(create: (_) => RouteCubit(), child: const RouteScreen()),
+    // ),
     GoRoute(
       path: RouteNames.addCard,
       builder: (BuildContext context, GoRouterState state) {
