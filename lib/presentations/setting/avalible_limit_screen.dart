@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/core/theme/theme.dart';
-
 import '../../data/models/transaction_limit/transaction_limit_model.dart';
 import '../../logic/blocs/transaction_limit/transaction_limit_bloc.dart';
 import '../../logic/blocs/transaction_limit/transaction_limit_event.dart';
@@ -33,7 +32,7 @@ class LimitSettingContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LimitBloc, LimitState>(
-      builder: (context, state) {
+      builder: (BuildContext context, LimitState state) {
         if (state is LimitLoading) {
           return _buildLoadingContainer(context);
         }
@@ -112,9 +111,7 @@ class LimitSettingContainer extends StatelessWidget {
         borderRadius: BorderRadius.circular(5.r),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).brightness == Brightness.light
-                ? Colors.grey.withOpacity(0.3)
-                : Colors.black.withOpacity(0.3),
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
             blurRadius: 5,
             offset: const Offset(0, 4),
           ),
@@ -143,7 +140,7 @@ class LimitSettingContainer extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: MyTheme.primaryColor, width: 1),
                   ),
-                  child: Text(
+                  child: const Text(
                     'Custom Limit',
                     style: TextStyle(
                       fontSize: 10,
@@ -287,7 +284,7 @@ class LimitSettingContainer extends StatelessWidget {
               ),
               Text(
                 '${limitData.utilityBills} bills',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 11,
                   color: MyTheme.primaryColor,
                   fontWeight: FontWeight.w600,
@@ -471,7 +468,7 @@ class _LimitOptionsBottomSheet extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
-                                color: isSelected ? MyTheme.primaryColor : Colors.black,
+                                color: isSelected ? MyTheme.primaryColor : Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,
                               ),
                             ),
                             const SizedBox(width: 8),
