@@ -55,7 +55,7 @@ class NoteInputWidget extends StatelessWidget {
             minLines: 2,
             textCapitalization: TextCapitalization.sentences,
             onChanged: (String value) => provider.setNote(value),
-            style: Font.montserratFont(fontSize: 16.sp, color: AppColors.textPrimary),
+            style: Font.montserratFont(fontSize: 16.sp,),
             decoration: InputDecoration(
               hintText: 'What\'s this payment for?',
               hintStyle: Font.montserratFont(
