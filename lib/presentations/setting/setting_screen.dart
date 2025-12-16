@@ -562,6 +562,7 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                         onChanged: (String? v) => ctx.read<SettingsBloc>().add(
                           TransactionPrivacyModeChanged(v ?? 'Public'),
                         ),
+                        dropdownColor: Theme.of(context).scaffoldBackgroundColor,
                         underline: const SizedBox(),
                         items: <DropdownMenuItem<String>>[
                           DropdownMenuItem(
