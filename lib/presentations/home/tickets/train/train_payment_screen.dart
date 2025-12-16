@@ -258,6 +258,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
       ],
     );
   }
+  bool _isLoading = false;
 
   Widget _buildPaymentMethod() {
     return _buildCard(
@@ -270,11 +271,32 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
             child: Text("Payment Method", style: Font.montserratFont(fontSize: 18, fontWeight: FontWeight.bold)),
           ),
           AppButton(
-            onTap: () => PaymentService().saveCard(context),
+            onTap: _isLoading
+                ? null  // Loading ho to button disable
+                : () async {
+              setState(() {
+                _isLoading = true;
+              });
+
+              try {
+                await PaymentService().saveCard(context);
+              } catch (e) {
+                // Error handling
+                print('Error: $e');
+              } finally {
+                if (mounted) {
+                  setState(() {
+                    _isLoading = false;
+                  });
+                }
+              }
+            },
             height: 30,
             width: 100,
             color: MyTheme.secondaryColor,
             text: "Add Card",
+            // Agar AppButton mein loading indicator ka support hai to:
+            // isLoading: _isLoading,
           ),
         ],
       ),
@@ -433,6 +455,7 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
         AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           child: DropdownButtonFormField<String>(
+
             initialValue: _selectedClass,
             decoration: const InputDecoration(
               border: OutlineInputBorder(
@@ -453,6 +476,11 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
               focusColor: MyTheme.secondaryColor,
             ),
             items: <String>['Economy', 'Business'].map((String cls) => DropdownMenuItem(value: cls, child: Text(cls))).toList(),
+            dropdownColor: Theme.of(context).scaffoldBackgroundColor,
+            style: Font.montserratFont(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
             onChanged: (String? value) => setState(() => _selectedClass = value!),
           ),
         ),
@@ -552,11 +580,16 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        _buildCardItem(_selectedCard!, true, () => _showCardSelection(cards)),
+        _buildCardItem(_selectedCard!, true,()=>{}),
         const SizedBox(height: 8),
-        Text(
-          'Tap to change card',
-          style: Font.montserratFont(fontSize: 10, color: Colors.grey),
+        GestureDetector(
+          onTap: (){
+            _showCardSelection(cards);
+          },
+          child: Text(
+            'Tap to change card',
+            style: Font.montserratFont(fontSize: 10, color: Colors.grey),
+          ),
         ),
       ],
     );
@@ -721,14 +754,10 @@ class _TrainPaymentScreenState extends State<TrainPaymentScreen> with TickerProv
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey.shade300,
-                  foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-                child: const Text('Cancel'),
+              child: AppButton(
+                onTap: () => Navigator.pop(context),
+                color: MyTheme.secondaryColor,
+                text: 'Cancel',
               ),
             ),
           ],
