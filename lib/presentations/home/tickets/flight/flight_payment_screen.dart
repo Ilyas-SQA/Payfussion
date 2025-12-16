@@ -435,7 +435,12 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
                           ),
                           focusColor: MyTheme.secondaryColor,
                         ),
-                        items: <String>['Economy', 'Premium Economy', 'Business', 'First Class'].map((String cls) => DropdownMenuItem(
+                        dropdownColor: Theme.of(context).scaffoldBackgroundColor,
+                        style: Font.montserratFont(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                        ),
+                        items: <String>['Economy', 'Business', 'First Class'].map((String cls) => DropdownMenuItem(
                           value: cls,
                           child: Text(cls,style: Font.montserratFont(fontSize: 12),),
                         )).toList(),
@@ -455,6 +460,8 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
       ),
     );
   }
+
+  bool _isAddingCard = false;
 
   Widget _buildPaymentMethod() {
     return Container(
@@ -490,10 +497,29 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
                     height: 35.h,
                     width: 110,
                     backgroundColor: MyTheme.secondaryColor,
-                    onPressed: () {
-                      PaymentService().saveCard(context);
+                    onPressed: _isAddingCard
+                        ? null  // Loading ho to button disable
+                        : () async {
+                      setState(() {
+                        _isAddingCard = true;
+                      });
+
+                      try {
+                        await PaymentService().saveCard(context);
+                      } catch (e) {
+                        // Error handling
+                        print('Error: $e');
+                      } finally {
+                        if (mounted) {
+                          setState(() {
+                            _isAddingCard = false;
+                          });
+                        }
+                      }
                     },
                     text: "Add Card",
+                    // Agar CustomButton mein loading parameter hai to:
+                    // isLoading: _isAddingCard,
                   ),
                 ),
               ],
@@ -691,17 +717,21 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
                 card: _selectedCard!,
                 isSelected: true,
                 onTap: () {
-                  _showCardSelectionBottomSheet(context, state.cards);
                 },
               ),
               if (_selectedCard != null) ...<Widget>[
                 const SizedBox(height: 8),
-                Text(
-                  'Tap to change card',
-                  style: Font.montserratFont(
-                    fontSize: 10,
-                    color: Colors.grey,
-                    fontStyle: FontStyle.italic,
+                GestureDetector(
+                  onTap: (){
+                    _showCardSelectionBottomSheet(context, state.cards);
+                  },
+                  child: Text(
+                    'Tap to change card',
+                    style: Font.montserratFont(
+                      fontSize: 10,
+                      color: Colors.grey,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
                 ),
               ],
@@ -871,14 +901,10 @@ class _FlightPaymentScreenState extends State<FlightPaymentScreen> with TickerPr
                 const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey.shade300,
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                    child: const Text('Cancel'),
+                  child: AppButton(
+                    onTap: () => Navigator.pop(context),
+                    color: MyTheme.secondaryColor,
+                    text: 'Cancel',
                   ),
                 ),
               ],
