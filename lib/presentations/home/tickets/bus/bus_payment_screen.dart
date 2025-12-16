@@ -423,6 +423,11 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
                           ),
                           focusColor: MyTheme.secondaryColor,
                         ),
+                        dropdownColor: Theme.of(context).scaffoldBackgroundColor,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
                         items: <String>['Standard', 'Premium'].map((String type) => DropdownMenuItem(
                           value: type,
                           child: Text(type),
@@ -443,6 +448,8 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
       ),
     );
   }
+
+  bool _isAddingCard = false;
 
   Widget _buildPaymentMethod() {
     return Container(
@@ -478,8 +485,24 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
                     height: 35.h,
                     width: 110,
                     backgroundColor: MyTheme.secondaryColor,
-                    onPressed: () {
-                      PaymentService().saveCard(context);
+                    onPressed: _isAddingCard ? null :
+                        () async {
+                      setState(() {
+                        _isAddingCard = true;
+                      });
+
+                      try {
+                        await PaymentService().saveCard(context);
+                      } catch (e) {
+                        // Error handling
+                        print('Error: $e');
+                      } finally {
+                        if (mounted) {
+                          setState(() {
+                            _isAddingCard = false;
+                          });
+                        }
+                      }
                     },
                     text: "Add Card",
                   ),
@@ -680,17 +703,21 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
                 card: _selectedCard!,
                 isSelected: true,
                 onTap: () {
-                  _showCardSelectionBottomSheet(context, state.cards);
                 },
               ),
               if (_selectedCard != null) ...<Widget>[
                 const SizedBox(height: 8),
-                Text(
-                  'Tap to change card',
-                  style: Font.montserratFont(
-                    fontSize: 10,
-                    color: Colors.grey,
-                    fontStyle: FontStyle.italic,
+                GestureDetector(
+                  onTap: (){
+                    _showCardSelectionBottomSheet(context, state.cards);
+                  },
+                  child: Text(
+                    'Tap to change card',
+                    style: Font.montserratFont(
+                      fontSize: 10,
+                      color: Colors.grey,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
                 ),
               ],
@@ -860,14 +887,10 @@ class _BusPaymentScreenState extends State<BusPaymentScreen> with TickerProvider
                 const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey.shade300,
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                    child: const Text('Cancel'),
+                  child: AppButton(
+                    onTap: () => Navigator.pop(context),
+                    text: 'Cancel',
+                    color: MyTheme.secondaryColor,
                   ),
                 ),
               ],
