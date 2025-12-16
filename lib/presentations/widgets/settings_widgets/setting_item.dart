@@ -229,7 +229,6 @@ Widget currencyPicker({required BuildContext context}) =>
           duration: const Duration(milliseconds: 300),
           child: InkWell(
             onTap: () {
-
               showCurrencyPicker(
                 context: context,
                 showFlag: true,
@@ -248,7 +247,7 @@ Widget currencyPicker({required BuildContext context}) =>
             borderRadius: BorderRadius.circular(8.r),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              width: 80,
+              width: 90,
               padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 12.w),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8.r),
