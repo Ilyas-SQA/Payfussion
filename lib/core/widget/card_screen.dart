@@ -65,6 +65,27 @@ class CardsScreen extends StatefulWidget {
 
 class _CardsScreenState extends State<CardsScreen> {
   CardModel? _selectedCard;
+  bool _isAddingCard = false; // Loading state for adding card
+
+  Future<void> _handleAddNewCard() async {
+    // Agar already loading hai to return kardo
+    if (_isAddingCard) return;
+
+    setState(() {
+      _isAddingCard = true;
+    });
+
+    try {
+      await PaymentService().saveCard(context);
+    } finally {
+      // Card add hone ke baad ya cancel hone ke baad loading state ko false kardo
+      if (mounted) {
+        setState(() {
+          _isAddingCard = false;
+        });
+      }
+    }
+  }
 
   void _proceedToSummary() {
     if (_selectedCard == null) {
@@ -89,7 +110,6 @@ class _CardsScreenState extends State<CardsScreen> {
     final GovernmentFeeState governmentFeeState = context.read<GovernmentFeeBloc>().state;
 
     if (donationState is DonationDataSet) {
-      // Donation flow
       context.read<DonationBloc>().add(SetSelectedCardForDonation(
         cardId: _selectedCard!.id,
         cardHolderName: _selectedCard!.cardholderName,
@@ -102,8 +122,7 @@ class _CardsScreenState extends State<CardsScreen> {
           builder: (BuildContext context) => const DonationSummaryScreen(),
         ),
       );
-    }else if (governmentFeeState is GovernmentFeeDataSet) {
-      // Government fee flow
+    } else if (governmentFeeState is GovernmentFeeDataSet) {
       context.read<GovernmentFeeBloc>().add(SetSelectedCardForGovernmentFee(
         cardId: _selectedCard!.id,
         cardHolderName: _selectedCard!.cardholderName,
@@ -117,7 +136,6 @@ class _CardsScreenState extends State<CardsScreen> {
         ),
       );
     } else if (mobileRechargeState is MobileRechargeDataSet) {
-      // Mobile recharge flow
       context.read<MobileRechargeBloc>().add(SetSelectedCard(
         cardId: _selectedCard!.id,
         cardHolderName: _selectedCard!.cardholderName,
@@ -130,8 +148,7 @@ class _CardsScreenState extends State<CardsScreen> {
           builder: (BuildContext context) => const RechargeSummaryScreen(),
         ),
       );
-    } else if(rentPaymentState is RentPaymentDataSet){
-      // Rent payment flow
+    } else if (rentPaymentState is RentPaymentDataSet) {
       context.read<RentPaymentBloc>().add(SetRentPaymentCard(
         cardId: _selectedCard!.id,
         cardHolderName: _selectedCard!.cardholderName,
@@ -143,8 +160,7 @@ class _CardsScreenState extends State<CardsScreen> {
           builder: (BuildContext context) => const RentPaymentSummaryScreen(),
         ),
       );
-    }else if(internetBillState is InternetBillDataSet){
-      // Internet bill flow
+    } else if (internetBillState is InternetBillDataSet) {
       context.read<InternetBillBloc>().add(SetSelectedCardForInternetBill(
         cardId: _selectedCard!.id,
         cardHolderName: _selectedCard!.cardholderName,
@@ -156,8 +172,7 @@ class _CardsScreenState extends State<CardsScreen> {
           builder: (BuildContext context) => const InternetBillSummaryScreen(),
         ),
       );
-    }else if (electricityBillState is ElectricityBillDataSet) {
-      // Electricity bill flow
+    } else if (electricityBillState is ElectricityBillDataSet) {
       context.read<ElectricityBillBloc>().add(SetSelectedCardForElectricityBill(
         cardId: _selectedCard!.id,
         cardHolderName: _selectedCard!.cardholderName,
@@ -171,7 +186,6 @@ class _CardsScreenState extends State<CardsScreen> {
         ),
       );
     } else if (gasBillState is GasBillDataSet) {
-      // Gas bill flow
       context.read<GasBillBloc>().add(SetSelectedCardForGasBill(
         cardId: _selectedCard!.id,
         cardHolderName: _selectedCard!.cardholderName,
@@ -185,7 +199,6 @@ class _CardsScreenState extends State<CardsScreen> {
         ),
       );
     } else if (moviesState is MoviesDataSet) {
-      // Movies flow
       context.read<MoviesBloc>().add(SetSelectedCardForMovies(
         cardId: _selectedCard!.id,
         cardHolderName: _selectedCard!.cardholderName,
@@ -199,7 +212,6 @@ class _CardsScreenState extends State<CardsScreen> {
         ),
       );
     } else if (creditLoanState is CreditCardLoanDataSet) {
-      // Credit card loan flow
       context.read<CreditCardLoanBloc>().add(SetSelectedCardForLoan(
         cardId: _selectedCard!.id,
         cardHolderName: _selectedCard!.cardholderName,
@@ -213,7 +225,6 @@ class _CardsScreenState extends State<CardsScreen> {
         ),
       );
     } else if (dthState is DthRechargeDataSet) {
-      // DTH recharge flow
       context.read<DthRechargeBloc>().add(SetSelectedCardForDth(
         cardId: _selectedCard!.id,
         cardHolderName: _selectedCard!.cardholderName,
@@ -227,7 +238,6 @@ class _CardsScreenState extends State<CardsScreen> {
         ),
       );
     } else if (postpaidBillState is PostpaidBillDataSet) {
-      // Postpaid bill flow
       context.read<PostpaidBillBloc>().add(SetSelectedCardForPostpaidBill(
         cardId: _selectedCard!.id,
         cardHolderName: _selectedCard!.cardholderName,
@@ -241,7 +251,6 @@ class _CardsScreenState extends State<CardsScreen> {
         ),
       );
     } else if (billSplitState is BillSplitDataSet) {
-      // Bill split flow
       context.read<BillSplitBloc>().add(SetSelectedCardForBillSplit(
         cardId: _selectedCard!.id,
         cardHolderName: _selectedCard!.cardholderName,
@@ -364,18 +373,19 @@ class _CardsScreenState extends State<CardsScreen> {
                           );
                         }).toList(),
 
-                        // Add New Card Button
+                        // Add New Card Button with Loading State
                         GestureDetector(
-                          onTap: () {
-                            PaymentService().saveCard(context);
-                          },
+                          onTap: _isAddingCard ? null : _handleAddNewCard,
                           child: Container(
                             padding: EdgeInsets.all(16.w),
                             margin: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
                             decoration: BoxDecoration(
                               color: Theme.of(context).scaffoldBackgroundColor,
                               borderRadius: BorderRadius.circular(12.r),
-                              border: Border.all(color: MyTheme.primaryColor, width: 1.5),
+                              border: Border.all(
+                                  color: MyTheme.primaryColor,
+                                  width: 1.5
+                              ),
                               boxShadow: <BoxShadow>[
                                 BoxShadow(
                                   color: Colors.grey.withOpacity(0.3),
@@ -387,14 +397,15 @@ class _CardsScreenState extends State<CardsScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                Icon(
-                                  Icons.add_circle_outline,
-                                  color: MyTheme.primaryColor,
-                                  size: 24.sp,
-                                ),
+
+                                  Icon(
+                                    Icons.add_circle_outline,
+                                    color: MyTheme.primaryColor,
+                                    size: 24.sp,
+                                  ),
                                 SizedBox(width: 12.w),
                                 Text(
-                                  "Add New Card",
+                                   "Add New Card",
                                   style: TextStyle(
                                     fontSize: 16.sp,
                                     fontWeight: FontWeight.w600,
