@@ -1,10 +1,8 @@
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
 import '../../core/constants/routes_name.dart';
 import '../../logic/blocs/auth/auth_bloc.dart';
 import '../../logic/blocs/auth/auth_event.dart';
@@ -134,7 +132,7 @@ class SplashServices {
                 Navigator.of(dialogContext).pop();
                 context.go(RouteNames.signIn);
               },
-              child: const Text('Sign In',style: TextStyle(color: Colors.black),),
+              child: const Text('Sign In',),
             ),
             TextButton(
               onPressed: () {
@@ -142,7 +140,7 @@ class SplashServices {
                 // Retry biometric authentication
                 _performBiometricAuthentication(context);
               },
-              child: const Text('Try Again',style: TextStyle(color: Colors.black)),
+              child: const Text('Try Again',),
             ),
           ],
         );
