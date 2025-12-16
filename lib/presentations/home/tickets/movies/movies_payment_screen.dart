@@ -431,6 +431,11 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
                         ),
                         focusColor: MyTheme.secondaryColor,
                       ),
+                      style: Font.montserratFont(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      dropdownColor: Theme.of(context).scaffoldBackgroundColor,
                       items: <String>['Regular', 'Recliner', 'Premium', 'IMAX'].map((String type) => DropdownMenuItem(
                         value: type,
                         child: Text(type),
@@ -450,6 +455,8 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
       ),
     );
   }
+
+  bool _isAddingCard = false;
 
   Widget _buildPaymentMethod() {
     return Container(
@@ -482,12 +489,31 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
               Flexible(
                 child: CustomButton(
                   height: 35.h,
-                  width: 120.w,
+                  width: 110,
                   backgroundColor: MyTheme.secondaryColor,
-                  onPressed: () {
-                    PaymentService().saveCard(context);
+                  onPressed: _isAddingCard
+                      ? null  // Loading ho to button disable
+                      : () async {
+                    setState(() {
+                      _isAddingCard = true;
+                    });
+
+                    try {
+                      await PaymentService().saveCard(context);
+                    } catch (e) {
+                      // Error handling
+                      print('Error: $e');
+                    } finally {
+                      if (mounted) {
+                        setState(() {
+                          _isAddingCard = false;
+                        });
+                      }
+                    }
                   },
-                  text: "Add Card",
+                  text:  "Add Card",
+                  // Agar CustomButton mein loading parameter hai to:
+                  // isLoading: _isAddingCard,
                 ),
               ),
             ],
@@ -710,18 +736,19 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
                 context: context,
                 card: _selectedCard!,
                 isSelected: true,
-                onTap: () {
-                  _showCardSelectionBottomSheet(context, state.cards);
-                },
+                onTap: () {},
               ),
               if (_selectedCard != null) ...<Widget>[
                 const SizedBox(height: 8),
-                Text(
-                  'Tap to change card',
-                  style: Font.montserratFont(
-                    fontSize: 10,
-                    color: Colors.grey,
-                    fontStyle: FontStyle.italic,
+                GestureDetector(
+                  onTap: () => _showCardSelectionBottomSheet(context, state.cards),
+                  child: Text(
+                    'Tap to change card',
+                    style: Font.montserratFont(
+                      fontSize: 10,
+                      color: Colors.grey,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
                 ),
               ],
@@ -889,14 +916,10 @@ class _MoviePaymentScreenState extends State<MoviePaymentScreen> with TickerProv
                 const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey.shade300,
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                    child: const Text('Cancel'),
+                  child: AppButton(
+                    onTap: () => Navigator.pop(context),
+                    color: MyTheme.secondaryColor,
+                    text: 'Cancel',
                   ),
                 ),
               ],
