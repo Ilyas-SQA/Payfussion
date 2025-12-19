@@ -19,13 +19,8 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen> wit
 
 
   // --- Style Constants (consistent with your app) ---
-  static const Color _primaryColor = Color(0xFF2D9CDB);
   static const Color _textColorWhite = Color(0xFFFFFFFF);
-  static const Color _warningColor = Color(0xFFF2C94C); // For specific warnings or info
   static const Color _errorColor = Color(0xFFEB5757); // For error or dispute related items
-
-  static const String _fontFamilyHeading = 'Montserrat';
-  static const String _fontFamilyBody = 'Roboto';
 
 
 
@@ -271,10 +266,11 @@ class _CashbackAndRefundsScreenState extends State<CashbackAndRefundsScreen> wit
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: MyTheme.primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      )),
+                    backgroundColor: MyTheme.primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
                 ),
               ],
             ),

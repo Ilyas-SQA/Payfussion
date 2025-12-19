@@ -10,7 +10,7 @@ import 'package:payfussion/presentations/setting/avalible_limit_screen.dart';
 import 'package:payfussion/presentations/setting/community_forum/community_forum_screen.dart';
 import 'package:payfussion/presentations/setting/profile_screens/cashbacks_and_refund_screen.dart';
 import 'package:payfussion/presentations/setting/submit_ticket/show_ticket_screen.dart';
-import 'package:payfussion/presentations/setting/tax_and_legal_compliance.dart';
+import 'package:payfussion/presentations/setting/tax_legal/tax_and_legal_compliance.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/constants/fonts.dart';
 import '../../core/constants/image_url.dart';

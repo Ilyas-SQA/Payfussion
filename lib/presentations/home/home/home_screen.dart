@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:payfussion/core/constants/image_url.dart';
 import 'package:payfussion/core/theme/theme.dart';
 import 'package:payfussion/presentations/home/home/boxses_widget.dart';
 import 'package:payfussion/presentations/home/home/card_list.dart';
@@ -92,6 +91,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     await _transactionController.forward();
   }
 
+  ValueNotifier<bool> visible = ValueNotifier(false);
+  String amount = "5000";
+
 
   @override
   void dispose() {
@@ -107,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size(double.infinity, 80),
+        preferredSize: const Size(double.infinity, 70),
         child: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
@@ -122,8 +124,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ],
           ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              const SizedBox(height: 25,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -256,9 +260,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             padding: const EdgeInsets.all(5.0),
             child: Column(
               children: <Widget>[
-                /// Animated Card Section
-                const CardList(),
                 SizedBox(height: 30.h,),
+                CardList(),
                 /// Animated Action Buttons
                 FadeTransition(
                   opacity: _actionButtonsAnimation,

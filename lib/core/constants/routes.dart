@@ -24,7 +24,7 @@ import 'package:payfussion/presentations/setting/faqs_screen.dart';
 import 'package:payfussion/presentations/setting/profile_screens/cashbacks_and_refund_screen.dart';
 import 'package:payfussion/presentations/setting/profile_screens/change_password.dart';
 import 'package:payfussion/presentations/setting/submit_ticket/show_ticket_screen.dart';
-import 'package:payfussion/presentations/setting/tax_and_legal_compliance.dart';
+import 'package:payfussion/presentations/setting/tax_legal/tax_and_legal_compliance.dart';
 
 import '../../data/models/pay_bills/bill_item.dart';
 import '../../logic/cubits/route_cubit/route_cubit.dart';
