@@ -111,7 +111,143 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
                   )),
                   child: FadeTransition(
                     opacity: _fadeAnimation,
-                    child: _buildTicketsList(),
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: _ticketRepository.getCurrentUserTicketsStream(),
+                      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                TweenAnimationBuilder<double>(
+                                  duration: const Duration(milliseconds: 1000),
+                                  tween: Tween(begin: 0.0, end: 1.0),
+                                  builder: (BuildContext context, double value, Widget? child) {
+                                    return Transform.rotate(
+                                      angle: value * 2 * 3.14159,
+                                      child: SizedBox(
+                                        height: 50.h,
+                                        width: 50.w,
+                                        child: const CircularProgressIndicator(
+                                          color: MyTheme.primaryColor,
+                                          strokeWidth: 3,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                SizedBox(height: 20.h),
+                                Text(
+                                  'Loading tickets...',
+                                  style: Font.montserratFont(
+                                    fontSize: 16.sp,
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Icon(
+                                  Icons.error_outline,
+                                  size: 60.r,
+                                  color: Colors.red,
+                                ),
+                                SizedBox(height: 20.h),
+                                Text(
+                                  'Error loading tickets',
+                                  style: Font.montserratFont(
+                                    fontSize: 18.sp,
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                SizedBox(height: 10.h),
+                                Text(
+                                  snapshot.error.toString(),
+                                  textAlign: TextAlign.center,
+                                  style: Font.montserratFont(
+                                    fontSize: 14.sp,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                TweenAnimationBuilder<double>(
+                                  duration: const Duration(milliseconds: 800),
+                                  tween: Tween(begin: 0.0, end: 1.0),
+                                  builder: (BuildContext context, double value, Widget? child) {
+                                    return Transform.scale(
+                                      scale: 0.8 + (0.2 * value),
+                                      child: Icon(
+                                        Icons.confirmation_number_outlined,
+                                        size: 80.r,
+                                        color: MyTheme.primaryColor,
+                                      ),
+                                    );
+                                  },
+                                ),
+                                SizedBox(height: 20.h),
+                                Text(
+                                  'No tickets found',
+                                  style: Font.montserratFont(
+                                    fontSize: 18.sp,
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                SizedBox(height: 10.h),
+                                Text(
+                                  'You haven\'t created any tickets yet',
+                                  style: Font.montserratFont(
+                                    fontSize: 14.sp,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+
+                        return ListView.builder(
+                          padding: EdgeInsets.symmetric(horizontal: 20.w),
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final QueryDocumentSnapshot<Object?> ticket = snapshot.data!.docs[index];
+                            final Map<String, dynamic> data = ticket.data() as Map<String, dynamic>;
+
+                            return TweenAnimationBuilder<double>(
+                              duration: Duration(milliseconds: 600 + (index * 100)),
+                              tween: Tween(begin: 0.0, end: 1.0),
+                              builder: (BuildContext context, double value, Widget? child) {
+                                return Transform.translate(
+                                  offset: Offset(50 * (1 - value), 0),
+                                  child: Opacity(
+                                    opacity: value,
+                                    child: _buildTicketCard(data, ticket.id),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -129,178 +265,7 @@ class _ShowTicketScreenState extends State<ShowTicketScreen>
     );
   }
 
-  Widget _buildTicketsList() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: _ticketRepository.getCurrentUserTicketsStream(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildLoadingState();
-        }
 
-        if (snapshot.hasError) {
-          return _buildErrorState(snapshot.error.toString());
-        }
-
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return _buildEmptyState();
-        }
-
-        return _buildTicketsListView(snapshot.data!.docs);
-      },
-    );
-  }
-
-  Widget _buildLoadingState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          TweenAnimationBuilder<double>(
-            duration: const Duration(milliseconds: 1000),
-            tween: Tween(begin: 0.0, end: 1.0),
-            builder: (BuildContext context, double value, Widget? child) {
-              return Transform.rotate(
-                angle: value * 2 * 3.14159,
-                child: SizedBox(
-                  height: 50.h,
-                  width: 50.w,
-                  child: const CircularProgressIndicator(
-                    color: MyTheme.primaryColor,
-                    strokeWidth: 3,
-                  ),
-                ),
-              );
-            },
-          ),
-          SizedBox(height: 20.h),
-          Text(
-            'Loading tickets...',
-            style: Font.montserratFont(
-              fontSize: 16.sp,
-              color: Colors.grey,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildErrorState(String error) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Icon(
-            Icons.error_outline,
-            size: 60.r,
-            color: Colors.red,
-          ),
-          SizedBox(height: 20.h),
-          Text(
-            'Error loading tickets',
-            style: Font.montserratFont(
-              fontSize: 18.sp,
-              color: Colors.red,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          SizedBox(height: 10.h),
-          Text(
-            error,
-            textAlign: TextAlign.center,
-            style: Font.montserratFont(
-              fontSize: 14.sp,
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          TweenAnimationBuilder<double>(
-            duration: const Duration(milliseconds: 800),
-            tween: Tween(begin: 0.0, end: 1.0),
-            builder: (BuildContext context, double value, Widget? child) {
-              return Transform.scale(
-                scale: 0.8 + (0.2 * value),
-                child: Icon(
-                  Icons.confirmation_number_outlined,
-                  size: 80.r,
-                  color: MyTheme.primaryColor,
-                ),
-              );
-            },
-          ),
-          SizedBox(height: 20.h),
-          Text(
-            'No tickets found',
-            style: Font.montserratFont(
-              fontSize: 18.sp,
-              color: Colors.grey,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          SizedBox(height: 10.h),
-          Text(
-            'You haven\'t created any tickets yet',
-            style: Font.montserratFont(
-              fontSize: 14.sp,
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTicketsListView(List<QueryDocumentSnapshot> tickets) {
-    // Sort tickets by date in Flutter instead of Firestore
-    tickets.sort((QueryDocumentSnapshot<Object?> a, QueryDocumentSnapshot<Object?> b) {
-      final Map<String, dynamic> aData = a.data() as Map<String, dynamic>;
-      final Map<String, dynamic> bData = b.data() as Map<String, dynamic>;
-
-      final Timestamp? aDate = aData['date'] as Timestamp?;
-      final Timestamp? bDate = bData['date'] as Timestamp?;
-
-      // Handle null dates
-      if (aDate == null && bDate == null) return 0;
-      if (aDate == null) return 1;
-      if (bDate == null) return -1;
-
-      // Sort by date descending (newest first)
-      return bDate.compareTo(aDate);
-    });
-
-    return ListView.builder(
-      padding: EdgeInsets.symmetric(horizontal: 20.w),
-      itemCount: tickets.length,
-      itemBuilder: (BuildContext context, int index) {
-        final QueryDocumentSnapshot<Object?> ticket = tickets[index];
-        final Map<String, dynamic> data = ticket.data() as Map<String, dynamic>;
-
-        return TweenAnimationBuilder<double>(
-          duration: Duration(milliseconds: 600 + (index * 100)),
-          tween: Tween(begin: 0.0, end: 1.0),
-          builder: (BuildContext context, double value, Widget? child) {
-            return Transform.translate(
-              offset: Offset(50 * (1 - value), 0),
-              child: Opacity(
-                opacity: value,
-                child: _buildTicketCard(data, ticket.id),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
 
   Widget _buildTicketCard(Map<String, dynamic> data, String documentId) {
     final title = data['title'] ?? 'No Title';
