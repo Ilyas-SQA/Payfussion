@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AMLKYCPolicyScreen extends StatelessWidget {
   const AMLKYCPolicyScreen({Key? key}) : super(key: key);
@@ -6,14 +7,7 @@ class AMLKYCPolicyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1E293B),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F172A),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
         title: const Text(
           'AML & KYC Policy',
           style: TextStyle(color: Colors.white, fontSize: 20),
@@ -25,41 +19,49 @@ class AMLKYCPolicyScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSection(
+              context,
               'Introduction',
               'PayFusion is committed to maintaining the highest standards of Anti-Money Laundering (AML) and Know Your Customer (KYC) compliance. This policy outlines our procedures to prevent financial crimes and ensure a secure platform for all users.',
             ),
             const SizedBox(height: 24),
             _buildSection(
+              context,
               'Customer Identification',
               'We are required to verify the identity of all our customers. During the registration process, you must provide:\n\n• Full legal name\n• Date of birth\n• Residential address\n• Government-issued identification (e.g., passport, national ID card)\n• Proof of address (e.g., utility bill, bank statement)',
             ),
             const SizedBox(height: 24),
             _buildSection(
+              context,
               'Transaction Monitoring',
               'PayFusion continuously monitors all transactions to detect suspicious activities. Our automated systems analyze:\n\n• Transaction amounts and frequency\n• Geographic locations\n• Unusual patterns or behavior\n• High-risk jurisdictions',
             ),
             const SizedBox(height: 24),
             _buildSection(
+              context,
               'Reporting Obligations',
               'We are legally obligated to report suspicious transactions to relevant authorities. If we identify potentially illegal activities, we will:\n\n• Conduct internal investigations\n• File Suspicious Activity Reports (SARs)\n• Cooperate fully with law enforcement\n• Maintain confidentiality of investigations',
             ),
             const SizedBox(height: 24),
             _buildSection(
+              context,
               'Enhanced Due Diligence',
               'For high-risk customers or transactions, we may require additional verification:\n\n• Source of funds documentation\n• Purpose of transaction details\n• Enhanced background checks\n• Ongoing monitoring',
             ),
             const SizedBox(height: 24),
             _buildSection(
+              context,
               'Record Keeping',
               'We maintain comprehensive records of all customer information and transactions for a minimum of 5 years, in accordance with regulatory requirements.',
             ),
             const SizedBox(height: 24),
             _buildSection(
+              context,
               'Customer Responsibility',
               'You agree to:\n\n• Provide accurate and truthful information\n• Update your information promptly when changes occur\n• Not use our services for illegal purposes\n• Cooperate with verification requests',
             ),
             const SizedBox(height: 24),
             _buildSection(
+              context,
               'Contact Us',
               'If you have questions about our AML/KYC policies, please contact our compliance team at compliance@payfusion.com',
             ),
@@ -70,13 +72,19 @@ class AMLKYCPolicyScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSection(String title, String content) {
+  Widget _buildSection(BuildContext context,String title, String content) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF334155).withOpacity(0.5),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF475569).withOpacity(0.5)),
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(5.r),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.grey.withOpacity(0.3) : Colors.black.withOpacity(0.3),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
