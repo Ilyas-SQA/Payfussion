@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:payfussion/presentations/setting/receipts_invoice_screen.dart';
-import '../../core/constants/fonts.dart';
-import '../../core/theme/theme.dart';
-import '../widgets/background_theme.dart';
-import 'annual_tax_screen.dart';
+import 'package:payfussion/presentations/setting/tax_legal/kyc_policy_screen.dart';
+import 'package:payfussion/presentations/setting/tax_legal/local_tax_guidance_screen.dart';
+import 'package:payfussion/presentations/setting/tax_legal/privacy_policy_screen.dart';
+import 'package:payfussion/presentations/setting/tax_legal/sensitive_document_protection_screen.dart';
+import 'package:payfussion/presentations/setting/tax_legal/term_service_screen.dart';
+import '../../../core/constants/fonts.dart';
+import '../../../core/theme/theme.dart';
+import '../../widgets/background_theme.dart';
+import '../annual_tax_screen.dart';
 
 
 class TaxComplianceScreen extends StatefulWidget {
@@ -102,9 +107,11 @@ class _TaxComplianceScreenState extends State<TaxComplianceScreen> with TickerPr
                       'Read about PayFusion’s Anti-Money Laundering and Know Your Customer policies to understand how we ensure a secure platform.',
                   actionText: 'View Policy',
                   onTap: () {
-                    // TODO: Implement navigation to AML/KYC Policy details
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Navigate to AML/KYC Policy')),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AMLKYCPolicyScreen(),
+                      ),
                     );
                   },
                 ),
@@ -118,9 +125,11 @@ class _TaxComplianceScreenState extends State<TaxComplianceScreen> with TickerPr
                       'Review the terms and conditions for using PayFusion services.',
                   actionText: 'Read Terms',
                   onTap: () {
-                    // TODO: Implement navigation to Terms of Service
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Navigate to Terms of Service')),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const TermsOfServiceScreen(),
+                      ),
                     );
                   },
                 ),
@@ -134,9 +143,11 @@ class _TaxComplianceScreenState extends State<TaxComplianceScreen> with TickerPr
                       'Understand how we collect, use, and protect your personal information.',
                   actionText: 'View Policy',
                   onTap: () {
-                    // TODO: Implement navigation to Privacy Policy
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Navigate to Privacy Policy')),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PrivacyPolicyScreen(),
+                      ),
                     );
                   },
                 ),
@@ -151,10 +162,10 @@ class _TaxComplianceScreenState extends State<TaxComplianceScreen> with TickerPr
                       'Ensure compliance with local tax and legal regulations in your country. (e.g., [User\'s Country] if detected, or general prompt).',
                   actionText: 'Select Country / Learn More',
                   onTap: () {
-                    // TODO: Implement country selection or navigation to guidance
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Navigate to Country Specific Info'),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LocalTaxGuidanceScreen(),
                       ),
                     );
                   },
@@ -171,12 +182,10 @@ class _TaxComplianceScreenState extends State<TaxComplianceScreen> with TickerPr
                       'Only you can access sensitive tax documents with biometric or PIN authentication. Manage your preferences in Security Settings.',
                   actionText: 'Manage Access Settings',
                   onTap: () {
-                    // TODO: Navigate to relevant security settings page
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Navigate to Security Settings for Document Access',
-                        ),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SensitiveDocumentProtectionScreen(),
                       ),
                     );
                   },
