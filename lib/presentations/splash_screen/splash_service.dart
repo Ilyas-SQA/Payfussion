@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,12 +14,104 @@ import '../../services/service_locator.dart';
 /// A class containing services related to the splash screen.
 class SplashServices {
   final BiometricService _biometricService = getIt<BiometricService>();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   void checkAuthentication(BuildContext context) async {
     final User? auth = FirebaseAuth.instance.currentUser;
 
     Timer(const Duration(seconds: 3), () async {
       if (auth != null) {
+        // Reload user to get latest email verification status
+        await auth.reload();
+        final User? updatedUser = FirebaseAuth.instance.currentUser;
+
+        // ✅ CHECK 1: Email Verified?
+        if (updatedUser?.emailVerified != true) {
+          // Email not verified, redirect to verification screen
+          if (context.mounted) {
+            context.go(
+              RouteNames.emailVerification,
+              extra: {
+                'email': updatedUser?.email ?? '',
+                'uid': updatedUser?.uid ?? '',
+              },
+            );
+          }
+          return;
+        }
+
+        // ✅ CHECK 2-4: Firestore validations
+        try {
+          final userDoc = await _firestore.collection('users').doc(auth.uid).get();
+
+          // Check if document exists
+          if (!userDoc.exists) {
+            await FirebaseAuth.instance.signOut();
+            if (context.mounted) {
+              _showErrorDialog(
+                context,
+                'Account Error',
+                'User data not found. Please sign in again.',
+                RouteNames.signIn,
+              );
+            }
+            return;
+          }
+
+          final userData = userDoc.data()!;
+
+          // Check if account is suspended
+          if (userData['suspendAccount'] == true) {
+            await FirebaseAuth.instance.signOut();
+            if (context.mounted) {
+              _showErrorDialog(
+                context,
+                'Account Suspended',
+                'Your account has been suspended. Please contact support at support@payfussion.com',
+                RouteNames.signIn,
+              );
+            }
+            return;
+          }
+
+          // Check if account is verified by admin
+          if (userData['accountVerified'] == false) {
+            await FirebaseAuth.instance.signOut();
+            if (context.mounted) {
+              _showErrorDialog(
+                context,
+                'Pending Approval',
+                'Your account is pending admin approval. Please wait for verification.',
+                RouteNames.signIn,
+              );
+            }
+            return;
+          }
+
+          // Update email verified status in Firestore if needed
+          if (userData['isEmailVerified'] != true) {
+            await _firestore.collection('users').doc(auth.uid).update({
+              'isEmailVerified': true,
+              'updateAt': FieldValue.serverTimestamp(),
+            });
+          }
+
+        } catch (e) {
+          print('Error checking user status: $e');
+          await FirebaseAuth.instance.signOut();
+          if (context.mounted) {
+            _showErrorDialog(
+              context,
+              'Error',
+              'An error occurred. Please sign in again.',
+              RouteNames.signIn,
+            );
+          }
+          return;
+        }
+
+        // ✅ All checks passed - Continue with normal flow
+
         /// User session retrieve karo
         await SessionController().getUserFromPreference();
 
@@ -41,6 +134,33 @@ class SplashServices {
         }
       }
     });
+  }
+
+  void _showErrorDialog(
+      BuildContext context,
+      String title,
+      String message,
+      String route,
+      ) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                context.go(route);
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _performBiometricAuthentication(BuildContext context) async {
@@ -80,8 +200,6 @@ class SplashServices {
     }
   }
 
-
-
   void _showBiometricUnavailableDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -106,8 +224,7 @@ class SplashServices {
                 /// Disable biometric and go to home
                 await SessionController().saveBiometric(false);
                 if (context.mounted) {
-                  context.read<AuthBloc>().add(LoginWithBiometric());
-                  context.go(RouteNames.homeScreen);
+                  context.go(RouteNames.bottomNavigationBarScreen);
                 }
               },
               child: const Text('Continue Without Biometric'),
@@ -132,7 +249,7 @@ class SplashServices {
                 Navigator.of(dialogContext).pop();
                 context.go(RouteNames.signIn);
               },
-              child: const Text('Sign In',),
+              child: const Text('Sign In'),
             ),
             TextButton(
               onPressed: () {
@@ -140,7 +257,7 @@ class SplashServices {
                 // Retry biometric authentication
                 _performBiometricAuthentication(context);
               },
-              child: const Text('Try Again',),
+              child: const Text('Try Again'),
             ),
           ],
         );
@@ -172,32 +289,3 @@ class SplashServices {
     );
   }
 }
-
-
-//
-// import 'dart:async';
-//
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:flutter/material.dart';
-// import 'package:go_router/go_router.dart';
-//
-// import '../../core/constants/routes_name.dart';
-// import '../../services/session_manager_service.dart';
-//
-// /// A class containing services related to the splash screen.
-// class SplashServices {
-//   void checkAuthentication(BuildContext context) async {
-//     final User? auth = FirebaseAuth.instance.currentUser;
-//
-//     Timer(const Duration(seconds: 3), () async {
-//       if (auth != null) {
-//         /// User is authenticated, proceed to the home screen
-//         await SessionController().getUserFromPreference();
-//         context.go(RouteNames.signIn);
-//       } else {
-//         /// User is not authenticated, redirect to the sign-in screen
-//         context.go(RouteNames.signIn);
-//       }
-//     });
-//   }
-// }
