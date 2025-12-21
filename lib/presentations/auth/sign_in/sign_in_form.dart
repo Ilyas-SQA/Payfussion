@@ -10,6 +10,7 @@ import '../../../../../logic/blocs/auth/auth_event.dart';
 import '../../../core/constants/fonts.dart';
 import '../../../logic/blocs/auth/auth_state.dart';
 import '../../widgets/auth_widgets/credential_text_field.dart';
+import '../email_verify/email_verify_screen.dart';
 import '../otp_verification/otp_verification_screen.dart';
 
 class SignInForm extends StatefulWidget {
@@ -134,6 +135,22 @@ class _SignInFormState extends State<SignInForm> with SingleTickerProviderStateM
     );
   }
 
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -147,18 +164,49 @@ class _SignInFormState extends State<SignInForm> with SingleTickerProviderStateM
     final ThemeData theme = Theme.of(context);
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (BuildContext context, AuthState state) {
-        if (state is TwoFactorVerificationRequired) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (BuildContext context) => const OtpVerificationScreen(),
-            ),
-          );
+        if (state is EmailVerificationRequired) {
+          // Navigate to email verification screen
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => EmailVerificationScreen(
+                    email: state.email,
+                    uid: state.uid,
+                  ),
+                ),
+              );
+            }
+          });
+        } else if (state is TwoFactorVerificationRequired) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => const OtpVerificationScreen(),
+                ),
+              );
+            }
+          });
         } else if (state is SignInSuccess) {
-          Navigator.pushReplacementNamed(context, '/home');
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              Navigator.pushReplacementNamed(context, '/home');
+            }
+          });
+        } else if (state is AuthStateFailure) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              _showErrorDialog(state.message);
+            }
+          });
         }
       },
       builder: (BuildContext context, AuthState state) {
+        final bool isLoading = state is AuthLoading;
+
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Form(
@@ -244,7 +292,7 @@ class _SignInFormState extends State<SignInForm> with SingleTickerProviderStateM
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           alignment: Alignment.centerLeft,
                         ),
-                        onPressed: () => context.push('/forgetPassword'),
+                        onPressed: isLoading ? null : () => context.push('/forgetPassword'),
                         child: Text(
                           "Forget Password?",
                           style: Font.montserratFont(
@@ -266,8 +314,8 @@ class _SignInFormState extends State<SignInForm> with SingleTickerProviderStateM
                   child: ScaleTransition(
                     scale: _buttonAnimation,
                     child: AppButton(
-                      text: 'Sign In',
-                      onTap: _handleSignIn,
+                      text: isLoading ? 'Signing In...' : 'Sign In',
+                      onTap: isLoading ? null : _handleSignIn,
                     ),
                   ),
                 ),
@@ -305,7 +353,7 @@ class _SignInFormState extends State<SignInForm> with SingleTickerProviderStateM
                   child: ScaleTransition(
                     scale: _biometricButtonAnimation,
                     child: AppButton(
-                      onTap: () {
+                      onTap: isLoading ? null : () {
                         context.read<AuthBloc>().add(LoginWithBiometric());
                       },
                       text: 'Sign in with Biometric',
@@ -343,7 +391,7 @@ class _SignInFormState extends State<SignInForm> with SingleTickerProviderStateM
                           TextSpan(
                             text: ' Create Account.',
                             recognizer: TapGestureRecognizer()
-                              ..onTap = () => context.push('/signUp'),
+                              ..onTap = isLoading ? null : () => context.push('/signUp'),
                             style: Font.montserratFont(
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w700,
