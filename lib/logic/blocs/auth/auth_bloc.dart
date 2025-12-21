@@ -66,7 +66,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       result.fold(
             (Failure failure) => _emitError(emit, failure.message),
-            (_) => emit(const SignUpSuccess()),
+            (_) {
+          // Get the current user to get their UID
+          final User? user = FirebaseAuth.instance.currentUser;
+          if (user != null) {
+            // Emit email verification required state
+            emit(EmailVerificationRequired(
+              email: event.email,
+              uid: user.uid,
+            ));
+          } else {
+            emit(const SignUpSuccess());
+          }
+        },
       );
     } catch (e) {
       _emitError(emit, "An unexpected error occurred: ${e.toString()}");
@@ -82,7 +94,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
 
       await result.fold(
-            (Failure failure) async => _emitError(emit, failure.message),
+            (Failure failure) async {
+          // Check if it's an email verification error
+          if (failure.message.contains('Email not verified')) {
+            // Get current user for email verification screen
+            final User? user = FirebaseAuth.instance.currentUser;
+            if (user != null) {
+              emit(EmailVerificationRequired(
+                email: user.email ?? event.email,
+                uid: user.uid,
+              ));
+            } else {
+              _emitError(emit, failure.message);
+            }
+          } else {
+            _emitError(emit, failure.message);
+          }
+        },
             (UserModel user) async {
           try {
             // Save user data locally
