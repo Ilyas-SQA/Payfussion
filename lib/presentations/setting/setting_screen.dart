@@ -243,7 +243,57 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
                         SizedBox(height: 35.h),
 
                         // Privacy Settings
-                        _buildPrivacySection(),
+                        Column(
+                        children: <Widget>[
+                          SettingItemsHeader(itemHeaderText: 'Privacy Settings'),
+                          SizedBox(height: 20.h),
+                          SettingContainer(
+                            child: AnimationLimiter(
+                              child: Column(
+                                children: AnimationConfiguration.toStaggeredList(
+                                  duration: const Duration(milliseconds: 150),
+                                  childAnimationBuilder: (Widget widget) => SlideAnimation(
+                                    horizontalOffset: 20.0,
+                                    child: FadeInAnimation(child: widget),
+                                  ),
+                                  children: <Widget>[
+                                    SettingTile(
+                                      icon:  TImageUrl.currency,
+                                      title: 'Currency',
+                                      subtitle: 'Choose your currency',
+                                      trailingBuilder: (BuildContext ctx) => currencyPicker(context: ctx),
+                                    ),
+                                    SizedBox(height: 20.h),
+                                    SettingTile(
+                                      icon: TImageUrl.refund,
+                                      title: 'Refund and cashback',
+                                      subtitle: 'Checkout our policies of refund\nand cash backs',
+                                      trailingBuilder: (BuildContext ctx) => _animatedArrow(() {
+                                        context.push(
+                                          '/refundAndCashback',
+                                          extra: const CashbackAndRefundsScreen(),
+                                        );
+                                      }),
+                                    ),
+                                    SizedBox(height: 20.h),
+                                    SettingTile(
+                                      icon: TImageUrl.tax,
+                                      title: 'Tax and Legal Compliance',
+                                      subtitle: 'Generate annual reports, view\nguidelines, and know custom tax laws',
+                                      trailingBuilder: (BuildContext ctx) => _animatedArrow(() {
+                                        context.push(
+                                          '/taxAndLegalCompliance',
+                                          extra: const TaxComplianceScreen(),
+                                        );
+                                      }),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                         SizedBox(height: 35.h),
 
                         // Payment & Transactions
@@ -465,59 +515,6 @@ class _SettingScreenState extends State<SettingScreen> with TickerProviderStateM
     );
   }
 
-  Widget _buildPrivacySection() {
-    return Column(
-      children: <Widget>[
-        SettingItemsHeader(itemHeaderText: 'Privacy Settings'),
-        SizedBox(height: 20.h),
-        SettingContainer(
-          child: AnimationLimiter(
-            child: Column(
-              children: AnimationConfiguration.toStaggeredList(
-                duration: const Duration(milliseconds: 150),
-                childAnimationBuilder: (Widget widget) => SlideAnimation(
-                  horizontalOffset: 20.0,
-                  child: FadeInAnimation(child: widget),
-                ),
-                children: <Widget>[
-                  SettingTile(
-                    icon:  TImageUrl.currency,
-                    title: 'Currency',
-                    subtitle: 'Choose your currency',
-                    trailingBuilder: (BuildContext ctx) => currencyPicker(context: ctx),
-                  ),
-                  SizedBox(height: 20.h),
-                  SettingTile(
-                    icon: TImageUrl.refund,
-                    title: 'Refund and cashback',
-                    subtitle: 'Checkout our policies of refund\nand cash backs',
-                    trailingBuilder: (BuildContext ctx) => _animatedArrow(() {
-                      context.push(
-                        '/refundAndCashback',
-                        extra: const CashbackAndRefundsScreen(),
-                      );
-                    }),
-                  ),
-                  SizedBox(height: 20.h),
-                  SettingTile(
-                    icon: TImageUrl.tax,
-                    title: 'Tax and Legal Compliance',
-                    subtitle: 'Generate annual reports, view\nguidelines, and know custom tax laws',
-                    trailingBuilder: (BuildContext ctx) => _animatedArrow(() {
-                      context.push(
-                        '/taxAndLegalCompliance',
-                        extra: const TaxComplianceScreen(),
-                      );
-                    }),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 
   Widget _buildPaymentSection(ThemeData theme) {
     return Column(

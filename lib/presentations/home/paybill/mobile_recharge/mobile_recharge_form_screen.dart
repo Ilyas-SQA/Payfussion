@@ -35,7 +35,7 @@ class _MobileRechargeFormScreenState extends State<MobileRechargeFormScreen>
   final GlobalKey<FormState> _packagesFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _rechargeFormKey = GlobalKey<FormState>();
 
-  // Enhanced animation controllers
+  /// Enhanced animation controllers
   late AnimationController _backgroundAnimationController;
   late AnimationController _fadeController;
   late AnimationController _slideController;

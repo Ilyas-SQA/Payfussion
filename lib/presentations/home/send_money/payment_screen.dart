@@ -859,7 +859,7 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                         opacity: value,
                         child: Column(
                           children: <Widget>[
-                            _cardTile(selected, isSelected: true, onTap: null),
+                            CardTile(selected, isSelected: true, onTap: null),
                             if (cState.cards.length > 1) ...<Widget>[
                               SizedBox(height: 8.h),
                               GestureDetector(
@@ -1052,7 +1052,7 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
     return cards.isNotEmpty ? cards.first : null;
   }
 
-  Widget _cardTile(CardModel card, {required bool isSelected, VoidCallback? onTap}) {
+  Widget CardTile(CardModel card, {required bool isSelected, VoidCallback? onTap}) {
     final String brand = (card.brand ?? 'Card').toString();
     final String last4 = (card.last4 ?? '****').toString();
     final String holder = '';
@@ -1200,7 +1200,7 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                               opacity: cardValue,
                               child: Padding(
                                 padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 16.w),
-                                child: _cardTile(
+                                child: CardTile(
                                   card,
                                   isSelected: isSel,
                                   onTap: () {
@@ -1217,12 +1217,15 @@ class _PaymentFormState extends State<PaymentForm> with TickerProviderStateMixin
                     }),
                     SizedBox(height: 16.h),
                     // Add New Card Button
-                    AddCardButton(
-                      padding: EdgeInsets.zero,
-                      cards: cards,
-                      onAddCard: (context) async {
-                        await PaymentService().saveCard(context);
-                      },
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: AddCardButton(
+                        padding: EdgeInsets.zero,
+                        cards: cards,
+                        onAddCard: (context) async {
+                          await PaymentService().saveCard(context);
+                        },
+                      ),
                     ),
 
                     SizedBox(height: 16.h),

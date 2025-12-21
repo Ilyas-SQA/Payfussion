@@ -1,21 +1,21 @@
 import 'package:local_auth/local_auth.dart';
 
-// Abstract base class
+/// Abstract base class
 abstract class AuthState {
   const AuthState();
 }
 
-// Initial state when no action has been taken
+/// Initial state when no action has been taken
 class AuthInitial extends AuthState {
   const AuthInitial() : super();
 }
 
-// Loading state for actions like updating the profile or changing the name
+/// Loading state for actions like updating the profile or changing the name
 class AuthLoading extends AuthState {
   const AuthLoading() : super();
 }
 
-// Success states for actions
+/// Success states for actions
 class SignInSuccess extends AuthState {
   final bool shouldEnableBiometric;
   const SignInSuccess({this.shouldEnableBiometric = false}) : super();
@@ -25,7 +25,23 @@ class SignUpSuccess extends AuthState {
   const SignUpSuccess() : super();
 }
 
-// Biometric states
+/// NEW: Email verification required state
+class EmailVerificationRequired extends AuthState {
+  final String email;
+  final String uid;
+
+  const EmailVerificationRequired({
+    required this.email,
+    required this.uid,
+  }) : super();
+}
+
+/// NEW: Email verified successfully
+class EmailVerifiedSuccess extends AuthState {
+  const EmailVerifiedSuccess() : super();
+}
+
+/// Biometric states
 class BiometricSetupInProgress extends AuthState {
   const BiometricSetupInProgress() : super();
 }
@@ -55,13 +71,13 @@ class ForgotSuccess extends AuthState {}
 
 class ForgotLoading extends AuthState {}
 
-// Failure states, for example, errors when updating the profile or name
+/// Failure states, for example, errors when updating the profile or name
 class AuthStateFailure extends AuthState {
   final String message;
   AuthStateFailure(this.message);
 }
 
-// Biometric states
+/// Biometric states
 class BiometricCheckInProgress extends AuthState {}
 
 class BiometricAvailable extends AuthState {
@@ -74,7 +90,7 @@ class BiometricAuthFailure extends AuthState {
   BiometricAuthFailure(this.message);
 }
 
-// For enabling/disabling biometric authentication settings
+/// For enabling/disabling biometric authentication settings
 class EnableBiometricState extends AuthState {
   final bool isEnabled;
   EnableBiometricState(this.isEnabled);
@@ -114,4 +130,3 @@ class OtpError extends AuthState {
   final String error;
   OtpError({required this.error});
 }
-

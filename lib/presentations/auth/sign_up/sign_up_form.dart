@@ -10,6 +10,7 @@ import '../../../core/constants/routes_name.dart';
 import '../../../core/widget/text_field/phone_textfield.dart';
 import '../../../logic/blocs/auth/auth_bloc.dart';
 import '../../../logic/blocs/auth/auth_event.dart';
+import '../../../logic/blocs/auth/auth_state.dart';
 import '../../widgets/auth_widgets/credential_text_field.dart';
 import '../../widgets/helper_widgets/error_dialog.dart';
 
@@ -112,7 +113,7 @@ class _SignUpFormState extends State<SignUpForm> with SingleTickerProviderStateM
 
   void _handleSignUp() {
     if (!_formKey.currentState!.validate()) {
-      return; // Stop if form is invalid
+      return;
     }
 
     final String firstName = firstNameController.text.trim();
@@ -151,151 +152,187 @@ class _SignUpFormState extends State<SignUpForm> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          children: <Widget>[
-            _buildAnimatedField(
-              0,
-              AppTextFormField(
-                controller: firstNameController,
-                helpText: "First Name",
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'First name is required';
-                  }
-                  return null;
-                },
-              ),
-            ),
-            SizedBox(height: 20.h),
-            _buildAnimatedField(
-              1,
-              AppTextFormField(
-                controller: lastNameController,
-                helpText: "Last Name",
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Last name is required';
-                  }
-                  return null;
-                },
-              ),
-            ),
-            SizedBox(height: 20.h),
-            _buildAnimatedField(
-              2,
-              AppTextFormField(
-                controller: emailController,
-                helpText: "Enter Your Email",
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Email is required';
-                  }
-                  final RegExp emailRegex = RegExp(_emailRegex);
-                  if (!emailRegex.hasMatch(value)) {
-                    return 'Enter a valid email';
-                  }
-                  return null;
-                },
-              ),
-            ),
-            SizedBox(height: 20.h),
-            _buildAnimatedField(
-              3,
-              PhoneCredentialsField(
-                controller: phoneNumberController,
-                helpText: "Enter Your Phone No",
-                validator: (PhoneNumber? value) {
-                  if (value == null || value.completeNumber.isEmpty) {
-                    return 'Phone number is required';
-                  }
 
-                  // Validate the phone number format using regex
-                  final RegExp phoneRegex = RegExp(_phoneRegex);
-                  if (!phoneRegex.hasMatch(value.completeNumber)) {
-                    return 'Enter a valid phone number';
-                  }
-
-                  return null;  // Return null if validation passes
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (BuildContext context, AuthState state) {
+        if (state is EmailVerificationRequired) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              context.go(
+                RouteNames.emailVerification,
+                extra: {
+                  'email': state.email,
+                  'uid': state.uid,
                 },
-              ),
-            ),
-
-
-            SizedBox(height: 20.h),
-            _buildAnimatedField(
-              4,
-              AppTextFormField(
-                controller: passwordController,
-                isPasswordField: true,
-                helpText: "Enter Password",
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Password is required';
-                  }
-                  if (value.length < 8) {
-                    return 'Password must be at least 8 characters';
-                  }
-                  return null;
-                },
-              ),
-            ),
-            SizedBox(height: 20.h),
-            _buildAnimatedField(
-              5,
-              AppTextFormField(
-                controller: confirmPasswordController,
-                isPasswordField: true,
-                helpText: "Confirm Password",
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Confirm password is required';
-                  }
-                  if (value != passwordController.text) {
-                    return 'Passwords do not match';
-                  }
-                  return null;
-                },
-              ),
-            ),
-            SizedBox(height: 34.h),
-            _buildAnimatedField(
-              6,
-              AppButton(
-                onTap: _handleSignUp,
-                text: 'Sign Up',
-              ),
-            ),
-            SizedBox(height: 24.h),
-            _buildAnimatedField(
-              7,
-              RichText(
-                text: TextSpan(
-                  text: 'Already have an account? ',
-                  style: Font.montserratFont(
-                    fontSize: 14.sp,
-                    color: Theme.brightnessOf(context) == Brightness.light ? Colors.black : Colors.white,
-                  ),
-                  children: <InlineSpan>[
-                    TextSpan(
-                      text: ' Sign In.',
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () => context.go(RouteNames.signIn),
-                      style: Font.montserratFont(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w700,
-                        color: Theme.brightnessOf(context) == Brightness.light ? Colors.black : Colors.white,
-                      ),
-                    ),
-                  ],
+              );
+              // Option 2: If using Navigator directly
+              // Navigator.of(context).pushReplacement(
+              //   MaterialPageRoute(
+              //     builder: (context) => EmailVerificationScreen(
+              //       email: state.email,
+              //       uid: state.uid,
+              //     ),
+              //   ),
+              // );
+            }
+          });
+        } else if (state is AuthStateFailure) {
+          // Show error after build completes
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              _showError(state.message);
+            }
+          });
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: <Widget>[
+              _buildAnimatedField(
+                0,
+                AppTextFormField(
+                  controller: firstNameController,
+                  helpText: "First Name",
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'First name is required';
+                    }
+                    return null;
+                  },
                 ),
               ),
-            ),
-            SizedBox(height: 50.h),
-          ],
+              SizedBox(height: 20.h),
+              _buildAnimatedField(
+                1,
+                AppTextFormField(
+                  controller: lastNameController,
+                  helpText: "Last Name",
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Last name is required';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              SizedBox(height: 20.h),
+              _buildAnimatedField(
+                2,
+                AppTextFormField(
+                  controller: emailController,
+                  helpText: "Enter Your Email",
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Email is required';
+                    }
+                    final RegExp emailRegex = RegExp(_emailRegex);
+                    if (!emailRegex.hasMatch(value)) {
+                      return 'Enter a valid email';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              SizedBox(height: 20.h),
+              _buildAnimatedField(
+                3,
+                PhoneCredentialsField(
+                  controller: phoneNumberController,
+                  helpText: "Enter Your Phone No",
+                  validator: (PhoneNumber? value) {
+                    if (value == null || value.completeNumber.isEmpty) {
+                      return 'Phone number is required';
+                    }
+
+                    final RegExp phoneRegex = RegExp(_phoneRegex);
+                    if (!phoneRegex.hasMatch(value.completeNumber)) {
+                      return 'Enter a valid phone number';
+                    }
+
+                    return null;
+                  },
+                ),
+              ),
+              SizedBox(height: 20.h),
+              _buildAnimatedField(
+                4,
+                AppTextFormField(
+                  controller: passwordController,
+                  isPasswordField: true,
+                  helpText: "Enter Password",
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Password is required';
+                    }
+                    if (value.length < 8) {
+                      return 'Password must be at least 8 characters';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              SizedBox(height: 20.h),
+              _buildAnimatedField(
+                5,
+                AppTextFormField(
+                  controller: confirmPasswordController,
+                  isPasswordField: true,
+                  helpText: "Confirm Password",
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Confirm password is required';
+                    }
+                    if (value != passwordController.text) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              SizedBox(height: 34.h),
+              _buildAnimatedField(
+                6,
+                BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    final isLoading = state is AuthLoading;
+                    return AppButton(
+                      onTap: isLoading ? null : _handleSignUp,
+                      text: isLoading ? 'Creating Account...' : 'Sign Up',
+                    );
+                  },
+                ),
+              ),
+              SizedBox(height: 24.h),
+              _buildAnimatedField(
+                7,
+                RichText(
+                  text: TextSpan(
+                    text: 'Already have an account? ',
+                    style: Font.montserratFont(
+                      fontSize: 14.sp,
+                      color: Theme.brightnessOf(context) == Brightness.light ? Colors.black : Colors.white,
+                    ),
+                    children: <InlineSpan>[
+                      TextSpan(
+                        text: ' Sign In.',
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () => context.go(RouteNames.signIn),
+                        style: Font.montserratFont(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w700,
+                          color: Theme.brightnessOf(context) == Brightness.light ? Colors.black : Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 50.h),
+            ],
+          ),
         ),
       ),
     );

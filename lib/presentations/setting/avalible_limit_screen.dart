@@ -206,9 +206,7 @@ class LimitSettingContainer extends StatelessWidget {
                     'Rs. ${_formatAmount(limitData.remainingAmount)}',
                     style: TextStyle(
                       fontSize: 16,
-                      color: limitData.usagePercentage > 0.8
-                          ? Colors.red
-                          : MyTheme.primaryColor,
+                      color: limitData.usagePercentage > 0.8 ? Colors.red : MyTheme.primaryColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -246,7 +244,7 @@ class LimitSettingContainer extends StatelessWidget {
                 height: 8,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
+                  color: MyTheme.primaryColor,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: FractionallySizedBox(
@@ -327,19 +325,12 @@ class _LimitOptionsBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LimitBloc, LimitState>(
-      builder: (context, state) {
+      builder: (BuildContext context, LimitState state) {
         if (state is! LimitLoaded) return const SizedBox();
-
-        final tempSelected = state.tempSelectedLimit ??
-            state.availableLimits.firstWhere(
-                  (opt) =>
-              opt.amount == state.limitData.totalLimit &&
-                  opt.utilityBills == state.limitData.utilityBills,
-              orElse: () => state.availableLimits.isNotEmpty
-                  ? state.availableLimits[0]
-                  : LimitOption(amount: 250000, utilityBills: 5),
-            );
-
+        final LimitOption tempSelected = state.tempSelectedLimit ?? state.availableLimits.firstWhere((opt) =>
+        opt.amount == state.limitData.totalLimit && opt.utilityBills == state.limitData.utilityBills,
+          orElse: () => state.availableLimits.isNotEmpty ? state.availableLimits[0] : LimitOption(amount: 250000, utilityBills: 5),
+        );
         return Container(
           height: MediaQuery.of(context).size.height * 0.75,
           decoration: BoxDecoration(

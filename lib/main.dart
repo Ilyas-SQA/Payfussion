@@ -283,7 +283,7 @@ class MyApp extends StatelessWidget {
         builder: (BuildContext context, Widget? child) {
           return BlocBuilder<ThemeBloc, ThemeState>(
             builder: (BuildContext context, ThemeState themeState) {
-              final ThemeMode currentThemeMode = themeState.themeMode;
+              // final ThemeMode currentThemeMode = themeState.themeMode;
               return MaterialApp.router(
                 debugShowCheckedModeBanner: false,
                 title: 'PayFussion',

@@ -12,7 +12,6 @@ import '../../../logic/blocs/bank_transaction/bank_transaction_event.dart';
 import '../../../logic/blocs/bank_transaction/bank_transaction_state.dart';
 import '../../widgets/background_theme.dart';
 
-// Updated SelectBankScreen with toggle selection and MyTheme.primaryColor
 class SelectBankScreen extends StatefulWidget {
   const SelectBankScreen({Key? key}) : super(key: key);
 
@@ -28,7 +27,6 @@ class _SelectBankScreenState extends State<SelectBankScreen> with TickerProvider
   @override
   void initState() {
     super.initState();
-    // Fetch banks when screen loads
     context.read<BankTransactionBloc>().add(const FetchBanks());
     _backgroundAnimationController = AnimationController(
       duration: const Duration(seconds: 20),

@@ -80,13 +80,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<Either<Failure, Unit>> signUp({
-    required String firstName,
-    required String lastName,
-    required String email,
-    required String phoneNumber,
-    required String password,
-  }) async {
+  Future<Either<Failure, Unit>> signUp({required String firstName, required String lastName, required String email, required String phoneNumber, required String password,}) async {
     try {
       final UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
@@ -98,16 +92,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       await user.sendEmailVerification();
 
       await _firestore.collection('users').doc(user.uid).set(<String, dynamic>{
+        'profileUrl': '',
         'uid': user.uid,
         'firstName': firstName,
         'lastName': lastName,
         'email': email,
         'phoneNumber': phoneNumber,
-        'createdAt': FieldValue.serverTimestamp(),
         'isEmailVerified': false,
-        'profileUrl': '',
         "transaction": true,
         "twoStepAuthentication": false,
+        "kycVerification": false,
+        "suspendAccount": false,
+        "accountVerified": false,
+        'createdAt': FieldValue.serverTimestamp(),
+        'updateAt': FieldValue.serverTimestamp(),
       });
       // await user.sendEmailVerification();
 
@@ -144,25 +142,83 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
+  // Replace your existing signInWithEmail method in AuthRemoteDataSourceImpl
+
+  @override
   Future<Either<Failure, UserModel>> signInWithEmail(
-    String email,
-    String password,
-  ) async {
+      String email,
+      String password,
+      ) async {
     try {
       final UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
+
       final User? user = userCredential.user;
       if (user == null) {
         return left(AuthFailure('Sign in failed. User is null.'));
       }
-      final DocumentSnapshot<Map<String, dynamic>> userDoc = await _firestore.collection('users').doc(user.uid).get();
-      if (userDoc.exists) {
-        return right(UserModel.fromJson(userDoc.data()!));
-      } else {
-        return left(AuthFailure('User data not found.'));
+
+      // Check if email is verified
+      if (!user.emailVerified) {
+        // Send verification email again
+        try {
+          await user.sendEmailVerification();
+        } catch (e) {
+          // Ignore if email already sent
+        }
+
+        // Don't sign out here - let the bloc handle it
+        // This way we can get the user info for the verification screen
+        return left(AuthFailure(
+          'Email not verified. Please check your email and verify your account before logging in.',
+        ));
       }
+
+      // Get user document from Firestore
+      final DocumentSnapshot<Map<String, dynamic>> userDoc =
+      await _firestore.collection('users').doc(user.uid).get();
+
+      if (!userDoc.exists) {
+        await _auth.signOut();
+        return left(AuthFailure('User data not found in database.'));
+      }
+
+      final userData = userDoc.data()!;
+
+      // Check if account is suspended
+      if (userData['suspendAccount'] == true) {
+        await _auth.signOut();
+        return left(AuthFailure(
+          'Your account has been suspended. Please contact support at support@payfussion.com for assistance.',
+        ));
+      }
+
+      // Check if account is verified by admin
+      if (userData['accountVerified'] == false) {
+        await _auth.signOut();
+        return left(AuthFailure(
+          'Your account is pending admin approval. You will receive a notification once your account is verified. Please contact support if you have questions.',
+        ));
+      }
+
+      // Update email verified status in Firestore if needed
+      if (userData['isEmailVerified'] != true) {
+        await _firestore.collection('users').doc(user.uid).update({
+          'isEmailVerified': true,
+          'updateAt': FieldValue.serverTimestamp(),
+        });
+        userData['isEmailVerified'] = true;
+      }
+
+      // Update last login time
+      await _firestore.collection('users').doc(user.uid).update({
+        'lastLogin': FieldValue.serverTimestamp(),
+        'updateAt': FieldValue.serverTimestamp(),
+      });
+
+      return right(UserModel.fromJson(userData));
     } on FirebaseAuthException catch (e) {
       return left(AuthFailure(TFirebaseAuthException(e.code).message));
     } catch (e) {
@@ -171,10 +227,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<Either<Failure, UserModel>> signInWithPhoneAndPassword(
-    String phoneNumber,
-    String password,
-  ) async {
+  Future<Either<Failure, UserModel>> signInWithPhoneAndPassword(String phoneNumber, String password,) async {
     try {
       // Lookup email by phone number in Firestore
       final QuerySnapshot<Map<String, dynamic>> userDoc = await _firestore
