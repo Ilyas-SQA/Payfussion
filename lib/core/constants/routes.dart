@@ -29,6 +29,7 @@ import 'package:payfussion/presentations/setting/tax_legal/tax_and_legal_complia
 import '../../data/models/pay_bills/bill_item.dart';
 import '../../logic/cubits/route_cubit/route_cubit.dart';
 import '../../presentations/add_card/add_card_homescreen.dart';
+import '../../presentations/auth/email_verify/email_verify_screen.dart';
 import '../../presentations/auth/forget_password/forget_password_screen.dart';
 import '../../presentations/auth/sign_in/sign_in.dart';
 import '../../presentations/auth/sign_up/sign_up_screen.dart';
@@ -393,6 +394,21 @@ final GoRouter appRouter = GoRouter(
             child: const TrainListScreen(),
           );
         }
+    ),
+
+    GoRoute(
+      path: RouteNames.emailVerification,
+      name: 'emailVerification',
+      builder: (BuildContext context, GoRouterState state) {
+        final Map<String, dynamic>? extra = state.extra as Map<String, dynamic>?;
+        final String email = extra?['email'] as String? ?? '';
+        final String uid = extra?['uid'] as String? ?? '';
+
+        return EmailVerificationScreen(
+          email: email,
+          uid: uid,
+        );
+      },
     ),
   ],
 );
